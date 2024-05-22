@@ -14,7 +14,7 @@ import Link from 'next/link'
 const Testimonials = () => {
   const [loading, setLoading] = useState(false)
   const [testimonials, setTestimonials] = useState(false)
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
 
   const fetchTestimonials = async () => {

@@ -11,7 +11,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      let url = 'https://real-value-server.vercel.app/'
+      let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
       // url = 'http://localhost:5000/'
         const response = await axios.post(url + 'api/user/signup', {
         username,

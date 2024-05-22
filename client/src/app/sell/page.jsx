@@ -28,7 +28,7 @@ import why3 from '@/images/sell/why3.jpeg'
 import Image from 'next/image'
 
 const SellRequestForm = () => {
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = "http://localhost:5000/";
   const [showForm, setShowForm] = useState(false)
   const [showModal, setShowModal] = useState(false)

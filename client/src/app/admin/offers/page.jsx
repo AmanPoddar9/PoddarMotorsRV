@@ -7,7 +7,7 @@ const Offers = () => {
   const [offers, setOffers] = useState([])
   const [newOfferImage, setNewOfferImage] = useState(null)
   const [uploading, setUploading] = useState(false)
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
 
   useEffect(() => {

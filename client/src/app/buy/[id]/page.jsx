@@ -50,7 +50,7 @@ const page = ({ params: { id } }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null)
   const [mainSwiper, setMainSwiper] = useState(null)
 
-  const bookingPOSTURL = 'https://real-value-server.vercel.app/api/bookings'
+  const bookingPOSTURL = 'https://poddar-motors-rv-hkxu.vercel.app/api/bookings'
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
@@ -102,7 +102,7 @@ const page = ({ params: { id } }) => {
       })
   }
 
-  const getListingURL = `https://real-value-server.vercel.app/api/listings/${id}`
+  const getListingURL = `https://poddar-motors-rv-hkxu.vercel.app/api/listings/${id}`
 
   useEffect(() => {
     axios

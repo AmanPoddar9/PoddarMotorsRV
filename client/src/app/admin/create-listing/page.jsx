@@ -12,7 +12,7 @@ const CreateListing = () => {
   const [images, setImages] = useState([])
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
 
   const [formData, setFormData] = useState({
@@ -43,9 +43,9 @@ const CreateListing = () => {
 
   const uploadImagesToCloudinary = async (images) => {
     let tempArr = []
-    const NAME_OF_UPLOAD_PRESET = 'jyz7szi4'
-    const YOUR_ID = 'dsi5cmgg9'
-    const API_KEY = '455265386657195'
+    const NAME_OF_UPLOAD_PRESET = 'hnm31bqf'
+    const YOUR_ID = 'djyvxi14o'
+    const API_KEY = '969818645141645'
 
     // Loop through each extracted image and upload to Cloudinary
     for (let i = 0; i < images.length; i++) {

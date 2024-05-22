@@ -6,7 +6,7 @@ import AdminNavbar from '@/app/components/AdminNavbar'
 const Features = () => {
   const [features, setFeatures] = useState([])
   const [newFeatureText, setNewFeatureText] = useState('')
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
 
   useEffect(() => {

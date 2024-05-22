@@ -10,7 +10,7 @@ const BookingsPage = () => {
   const [archivedBookings, setArchivedBookings] = useState([])
 
   const [showArchive, setShowArchive] = useState(false)
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
   // Function to fetch bookings from the server
   const fetchBookings = async () => {

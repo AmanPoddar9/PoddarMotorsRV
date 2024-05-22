@@ -94,7 +94,7 @@ const Hero = () => {
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState([])
   const [brands, setBrands] = useState([])
-  const url = 'https://real-value-server.vercel.app/'
+  const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
   const fetchAllTypes = async () => {
     try {

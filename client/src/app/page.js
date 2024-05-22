@@ -14,7 +14,7 @@ export default async function Home() {
   let data
   try {
     data = await fetch(
-      `https://real-value-server.vercel.app/api/listings/featured`,
+      `https://poddar-motors-rv-hkxu.vercel.app/api/listings/featured`,
       { cache: 'no-store' },
     ).then((res) => res.json())
   } catch (e) {

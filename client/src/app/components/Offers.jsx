@@ -12,7 +12,7 @@ import { Oval } from 'react-loader-spinner'
 const Offers = () => {
   const [loading, setLoading] = useState(true)
   const [offers, setOffers] = useState([])
-  let url = 'https://real-value-server.vercel.app/'
+  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
 
   const fetchOffers = async () => {

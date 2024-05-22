@@ -20,7 +20,7 @@ const FeaturedCars = ({ featuredCarData }) => {
       const fetchFeaturedCars = async () => {
         try {
           const response = await fetch(
-            'https://real-value-server.vercel.app/api/listings/featured',
+            'https://poddar-motors-rv-hkxu.vercel.app/api/listings/featured',
           )
           if (!response.ok) {
             throw new Error('Failed to fetch data')
