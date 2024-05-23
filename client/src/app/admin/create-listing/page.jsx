@@ -73,6 +73,7 @@ const CreateListing = () => {
     setImageFile(e.target.files[0])
     const form = new FormData()
     const file = e.target.files[0]
+    console.log(file.type)
     if (
       file.type !== 'application/zip' &&
       file.type !== 'zip' &&
@@ -241,9 +242,7 @@ const CreateListing = () => {
               className="border border-gray-300 rounded-md py-2 px-4 mb-2"
             />
             {uploading && imagesLength && (
-              <div>
-                Uploading... {images.length} / {imagesLength}
-              </div>
+              <div>Uploading... Please wait...</div>
             )}
           </div>
           <div>
