@@ -73,7 +73,12 @@ const CreateListing = () => {
     setImageFile(e.target.files[0])
     const form = new FormData()
     const file = e.target.files[0]
-    if (file.type != 'application/zip') {
+    if (
+      file.type !== 'application/zip' &&
+      file.type !== 'zip' &&
+      file.type !== 'application/x-zip-compressed' &&
+      file.type !== 'application/x-zip'
+    ) {
       alert('Please upload zip file only')
       return
     }
@@ -167,14 +172,7 @@ const CreateListing = () => {
     }
   }
 
-  const transmissionTypes = [
-    'AMT',
-    'CVT',
-    'DCT',
-    'TC',
-    'iMT',
-    'MT'
-  ]
+  const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -412,8 +410,10 @@ const CreateListing = () => {
               className="mt-1 p-2 w-full border rounded-md"
             >
               <option value="">Select Type</option>
-              {carTypes.map((type) => (
-                <option value={type}>{type}</option>
+              {carTypes.map((type, i) => (
+                <option value={type} key={i}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
@@ -432,12 +432,11 @@ const CreateListing = () => {
               className="mt-1 p-2 w-full border rounded-md"
             >
               <option value="">Select Transmission Type</option>
-              {
-                transmissionTypes.map((type)=>
-              <option value={type}>{type}</option>
-                
-                )
-              }
+              {transmissionTypes.map((type, i) => (
+                <option value={type} key={i}>
+                  {type}
+                </option>
+              ))}
             </select>
           </div>
           <div>
