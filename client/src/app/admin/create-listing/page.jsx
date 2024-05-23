@@ -73,7 +73,6 @@ const CreateListing = () => {
     setImageFile(e.target.files[0])
     const form = new FormData()
     const file = e.target.files[0]
-    console.log(file.type)
     if (
       file.type !== 'application/zip' &&
       file.type !== 'zip' &&
