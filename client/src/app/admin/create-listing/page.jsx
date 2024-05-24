@@ -243,7 +243,7 @@ const CreateListing = () => {
             />
             {uploading && imagesLength && (
               <div>
-                               <Spin size='small'/> Uploading... 
+                <Spin size="small" /> Uploading...
               </div>
             )}
           </div>

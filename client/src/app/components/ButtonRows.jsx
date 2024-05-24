@@ -108,9 +108,14 @@ const BrandScrollContainer = ({ brands, brandsMapping }) => {
 
 const ButtonRows = () => {
   const [loading, setLoading] = useState(true)
-  const [types, setTypes] = useState([])
   const [brands, setBrands] = useState([])
 
+  const types = [
+    'Hatchback',
+    'Compact SUV',
+    'Full Size Sedan',
+    'MUV/MPV',
+  ]
   const brandsMapping = {
     Maruti: suzuki,
     Mahindra: mahindra,
@@ -139,18 +144,18 @@ const ButtonRows = () => {
     return () => window.removeEventListener('resize', updateComponent)
   })
 
-  const fetchAllTypes = async () => {
-    try {
-      setLoading(true)
-      const response = await axios.get(url + 'api/listings/types')
-      if (response.data) {
-        setTypes(response.data)
-        setLoading(false)
-      }
-    } catch (e) {
-      console.log(e.message)
-    }
-  }
+  // const fetchAllTypes = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const response = await axios.get(url + 'api/listings/types')
+  //     if (response.data) {
+  //       setTypes(response.data)
+  //       setLoading(false)
+  //     }
+  //   } catch (e) {
+  //     console.log(e.message)
+  //   }
+  // }
 
   const fetchAllBrands = async () => {
     try {
@@ -166,7 +171,7 @@ const ButtonRows = () => {
   }
 
   useEffect(() => {
-    fetchAllTypes()
+    // fetchAllTypes()
     fetchAllBrands()
   }, [])
 
