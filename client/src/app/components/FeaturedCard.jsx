@@ -8,13 +8,22 @@ const FeaturedCard = ({ car }) => {
   return (
     <a href={`/buy/${car._id}`}>
       <div className="max-w-sm rounded-lg align-top overflow-hidden shadow-lg  hover:scale-105  hover:shadow-xl transition-transform duration-200 border-2 border-transparent bg-custom-seasalt">
-        <Image
-          className="w-[100%] object-cover !h-[20rem]"
-          src={car.images[0]}
-          width={300}
-          height={300}
-          alt={`${car.brand} ${car.model}`}
-        />
+        {car.images[0] ? (
+          <Image
+            className="w-[100%] object-cover !h-[20rem]"
+            src={car.images[0]}
+            width={300}
+            height={300}
+            alt={`${car.brand} ${car.model}`}
+          />
+        ) : (
+          <div className="w-[100%] h-[20rem] bg-custom-jet">
+            {/* Message to show user that this image is  > 10mb */}
+            <div className="text-white text-center text-lg pt-20">
+              Image not available or too large
+            </div>
+          </div>
+        )}
 
         <div className="md:mb-0 px-6 pt-4 align-top justify-between">
           <div className="font-bold text-xl mb-2 text-custom-black  w-[80%] inline-block">

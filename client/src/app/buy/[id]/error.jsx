@@ -9,6 +9,8 @@ export default function Error({ error, reset }) {
     router.replace('/buy')
   }
 
+  console.log(error)
+
   return (
     <div style={styles.container}>
       <h2>Something went wrong! Maybe you entered the wrong car ID?</h2>

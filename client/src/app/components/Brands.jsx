@@ -1,4 +1,4 @@
-import React from 'react'
+ import React from 'react'
 
 // finance brands
 import poona from '../../images/finance_logos/poona.png'
