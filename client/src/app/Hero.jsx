@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import carImage2 from '../images/car-image-2.jpg'
+import carImage2 from '../images/hero.jpg'
 import Image from 'next/image'
 import ButtonCloud from './components/ButtonCloud'
 
