@@ -241,7 +241,9 @@ const CreateListing = () => {
               className="border border-gray-300 rounded-md py-2 px-4 mb-2"
             />
             {uploading && imagesLength && (
-              <div>Uploading... Please wait...</div>
+              <div>
+                               <Spin size='small'/> Uploading... 
+              </div>
             )}
           </div>
           <div>

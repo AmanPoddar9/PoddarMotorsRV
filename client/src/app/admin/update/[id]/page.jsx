@@ -4,6 +4,7 @@ import axios from 'axios'
 import AdminNavbar from '@/app/components/AdminNavbar'
 import JSZip from 'jszip'
 import { useRouter } from 'next/router'
+import { Spin } from 'antd'
 
 const CreateListing = () => {
   const [features, setFeatures] = useState([])
@@ -87,6 +88,7 @@ const CreateListing = () => {
 
     // Loop through each extracted image and upload to Cloudinary
     for (let i = 0; i < images.length; i++) {
+      try{
       let image = images[i]
       const data = new FormData()
       data.append('file', image)
@@ -103,7 +105,11 @@ const CreateListing = () => {
       // You can handle the Cloudinary response here as needed
       tempArr.push(img.secure_url)
       setImages(tempArr)
-      console.log('Uploaded image:', img.secure_url)
+      console.log('Uploaded image:', i, ' ', img.secure_url)
+    }
+    catch(e){
+      console.log(`Error uploading image ${i}:`, e.response.message)
+    }
     }
   }
 
@@ -276,7 +282,7 @@ const CreateListing = () => {
             />
             {uploading && imagesLength && (
               <div>
-                Uploading... {images.length} / {imagesLength}
+               <Spin size='small'/> Uploading... 
               </div>
             )}
           </div>

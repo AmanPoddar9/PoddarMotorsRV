@@ -108,6 +108,7 @@ const page = ({ params: { id } }) => {
     axios
       .get(getListingURL)
       .then((res) => {
+        res.data.images = res.data.images.filter(img=> img != null)
         setCarData(res.data)
       })
       .catch((err) => {
@@ -208,7 +209,7 @@ const page = ({ params: { id } }) => {
           {carData.images &&
             carData.images.map((carImage, i) => (
               <SwiperSlide key={i} style={{ paddingBottom: '40px' }}>
-                <Image
+               {carImage && <Image
                   src={carImage}
                   alt="car-img"
                   width={600}
@@ -219,7 +220,7 @@ const page = ({ params: { id } }) => {
                     height: '18rem',
                     objectFit: 'cover',
                   }}
-                />
+                />}
               </SwiperSlide>
             ))}
         </Swiper>
