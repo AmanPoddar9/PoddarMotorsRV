@@ -20,11 +20,11 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/ISd5TaEAx4Y?si=WO0vPc1UyysXfzpW"
+              src="https://www.youtube.com/embed/VlrElIqM9HE?enablejsapi=1"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="unsafe-url"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             ></iframe>
           </div>
@@ -32,11 +32,11 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/7GbDem2XWIE?si=Kx3KYreS-7vJXkq1"
+              src="https://www.youtube.com/embed/SoUEdK_yIqI?enablejsapi=1"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="unsafe-url"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             ></iframe>
           </div>
@@ -44,11 +44,11 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/fsXkjDqU8eo?si=43BFgwFY3QzvxV03"
+              src="https://www.youtube.com/embed/bpGkFT4VUko?enablejsapi=1"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="unsafe-url"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             ></iframe>
           </div>
