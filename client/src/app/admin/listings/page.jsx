@@ -4,16 +4,17 @@ import Link from 'next/link'
 import axios from 'axios'
 import AdminNavbar from '@/app/components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
-import { Button, Input } from 'antd'
+import { Button, Input, Spin } from 'antd'
 
 const Listings = () => {
   const [listings, setListings] = useState([])
   const [filteredListings, setFilteredListings] = useState([])
   const [loading, setLoading] = useState(false)
   const [filterString, setFilterString] = useState([])
+  const [deleting, setDeleting] = useState(null)
+
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
-
   useEffect(() => {
     fetchListings()
   }, [])
@@ -32,6 +33,7 @@ const Listings = () => {
 
   const deleteListing = async (id) => {
     try {
+      setDeleting(id)
       await axios.delete(url + `api/listings/${id}`)
       fetchListings()
     } catch (error) {
@@ -41,15 +43,20 @@ const Listings = () => {
   const goToUpdate = (id) => {
     window.location.href = './update/' + id
   }
-  const filterSearch =()=>{
-    if(filterString.length==0){
+  const filterSearch = () => {
+    if (filterString.length == 0) {
       setFilteredListings(listings)
       return
     }
     let tempArr = [...listings]
     const tempFilterString = filterString.toLowerCase()
     console.log(tempArr, tempFilterString)
-    tempArr=tempArr.filter((item)=>item.brand.toLowerCase().includes(tempFilterString) || item.model.toLowerCase().includes(tempFilterString) || item.vehicleNumber.toLowerCase().includes(tempFilterString))
+    tempArr = tempArr.filter(
+      (item) =>
+        item.brand.toLowerCase().includes(tempFilterString) ||
+        item.model.toLowerCase().includes(tempFilterString) ||
+        item.vehicleNumber.toLowerCase().includes(tempFilterString),
+    )
     console.log(tempArr)
     setFilteredListings(tempArr)
   }
@@ -65,11 +72,11 @@ const Listings = () => {
         >
           Create New Listing
         </Link>
-        <div className='mb-4'>
+        <div className="mb-4">
           <Input
             placeholder="Search by brand, model, reg. no."
             style={{ width: '70%' }}
-            onChange={(e)=>setFilterString(e.target.value)}
+            onChange={(e) => setFilterString(e.target.value)}
             value={filterString}
           />
           <button
@@ -78,11 +85,17 @@ const Listings = () => {
           >
             Search
           </button>
-          <button onClick={()=>{setFilteredListings(listings); setFilterString('')}} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded inline-block">
+          <button
+            onClick={() => {
+              setFilteredListings(listings)
+              setFilterString('')
+            }}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
+          >
             Clear
           </button>
         </div>
-        <div className='my-4'>Total Listings: {filteredListings.length}</div>
+        <div className="my-4">Total Listings: {filteredListings.length}</div>
 
         {loading ? (
           <div className="flex items-center justify-center p-10">
@@ -110,7 +123,13 @@ const Listings = () => {
                   onClick={() => deleteListing(listing._id)}
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
                 >
-                  Delete
+                  {deleting == listing._id ? (
+                    <>
+                      <Spin size="small" />
+                    </>
+                  ) : (
+                    'Delete'
+                  )}
                 </button>
 
                 <button

@@ -210,6 +210,7 @@ const CreateListing = () => {
       })
       setLoading(false)
       alert('Listing created successfully')
+      window.location.reload()
     } catch (error) {
       setLoading(false)
       console.error('Error creating listing:', error)

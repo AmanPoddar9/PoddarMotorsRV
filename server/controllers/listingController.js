@@ -3,6 +3,8 @@ const ListingImages = require("../models/listingImages");
 
 const AdmZip = require("adm-zip");
 var detect = require("detect-file-type");
+const axios = require("axios");
+const CryptoJS = require("crypto-js");
 
 exports.createListing = async (req, res) => {
   try {
@@ -55,7 +57,6 @@ exports.getAllTypes = async (req, res) => {
   }
 };
 
-
 exports.getAllFuelTypes = async (req, res) => {
   try {
     const brands = await Listing.distinct("fuelType");
@@ -73,7 +74,6 @@ exports.getAllTransmissionTypes = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 exports.getAllSeats = async (req, res) => {
   try {
@@ -183,14 +183,64 @@ exports.updateListingById = async (req, res) => {
   }
 };
 
+const extractPublicId = (url) => {
+  const parts = url.split("/");
+  const versionAndId = parts[parts.length - 1];
+  const publicId = versionAndId.split(".")[0];
+  return publicId;
+};
+const deleteSingleImage = async (publicId) => {
+  const CLOUD_NAME = "djyvxi14o";
+  const API_KEY = "969818645141645";
+  const API_SECRET = "6zE7tZ-h5zzcqAKksmyFJL3-Lzg";
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signature = CryptoJS.SHA1(
+    `public_id=${publicId}&timestamp=${timestamp}${API_SECRET}`
+  ).toString();
+  const data = new FormData();
+  data.append("public_id", publicId);
+  data.append("api_key", API_KEY);
+  data.append("timestamp", timestamp);
+  data.append("signature", signature);
+  try {
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/djyvxi14o/image/destroy`,
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+    const result = await response.json();
+    console.log("Deleted image:", publicId, result);
+  } catch (error) {
+    console.error("Error deleting image:", error);
+  }
+};
 // Delete one listing by ID
 exports.deleteListingById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const listing = await Listing.findById(id);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+    const publicIds = [];
+    listing.images.map((url) => {
+      const publicId = extractPublicId(url);
+      if (publicId.length > 0) {
+        publicIds.push(publicId);
+      }
+    });
+    for (let i = 0; i < publicIds.length; i++) {
+      await deleteSingleImage(publicIds[i]);
+    }
     const deletedListing = await Listing.findByIdAndDelete(id);
+
     if (!deletedListing) {
       return res.status(404).json({ error: "Listing not found" });
     }
+
     res.json({
       message: "Listing deleted successfully",
       listing: deletedListing,
