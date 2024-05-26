@@ -143,7 +143,16 @@ exports.getFilteredListings = async (req, res) => {
           break;
       }
     });
-    const listings = await Listing.find(query);
+    let listings = await Listing.find(query);
+
+    if (filters.search) {
+      const searchQuery = filters.search.toLowerCase();
+      listings = listings.filter((car) =>
+        car.model.toLowerCase().includes(searchQuery) ||
+        car.brand.toLowerCase().includes(searchQuery)
+      );
+    }
+
     res.json(listings);
   } catch (error) {
     res.status(500).json({ error: error.message });

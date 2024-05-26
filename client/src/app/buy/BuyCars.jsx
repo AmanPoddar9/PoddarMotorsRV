@@ -13,6 +13,7 @@ import axios from 'axios'
 import { Button, Slider } from 'antd'
 import { AmountWithCommas } from '@/app/utils'
 import FeaturedCard from '@/app/components/FeaturedCard'
+import { FaSearch } from 'react-icons/fa'
 
 const sortOptions = [
   { name: 'Price: Low to High', href: '#', current: false, param: 'price_asc' },
@@ -49,6 +50,8 @@ export default function Buy({ allListings }) {
   const [brands, setBrands] = useState([])
   const [types, setTypes] = useState([])
   const [listings, setListings] = useState([])
+  const [filteredListings, setFilteredListings] = useState([])
+
   const [seatsCount, setSeatsCount] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -146,7 +149,7 @@ export default function Buy({ allListings }) {
     window.location.reload()
   }
 
-  const updateFilters = async (inputFilters) => {
+  const updateFilters = async (inputFilters, clear) => {
     setMobileFiltersOpen(false)
     let obj = {}
     if (inputFilters) {
@@ -168,6 +171,9 @@ export default function Buy({ allListings }) {
           obj[key] = tempArr
         }
       })
+    }
+    if(searchQuery.length>0 && !clear){
+      obj['search'] = searchQuery
     }
     try {
       const response = await axios.post(url + 'api/listings/filtered', obj)
@@ -191,24 +197,6 @@ export default function Buy({ allListings }) {
     }
   }
 
-  const handleClearSearch = () => {
-    setSearchQuery('')
-    window.location.reload()
-  }
-
-  const handleSearch = () => {
-    fetchAllListings()
-    console.log(listings)
-
-    const query = searchQuery.toLowerCase()
-    // fetchAllListings from db
-    const filtered = listings.filter(
-      (car) =>
-        car.model.toLowerCase().includes(query) ||
-        car.brand.toLowerCase().includes(query),
-    )
-    setListings(filtered)
-  }
 
   const fetchAllBrands = async () => {
     try {
@@ -774,15 +762,23 @@ export default function Buy({ allListings }) {
                     placeholder="Search cars by brand/model..."
                     className="border rounded-l-md p-2 w-[100%]"
                   />
+                      <button
+                    onClick={() => updateFilters()}
+
+                className="items-center 
+                justify-center
+                px-3 py-3  ml-2 text-base
+                 font-medium 
+                 text-center border 
+                 rounded-lg 
+                 text-custom-black hover:text-custom-jet focus:ring-4  !hover:border-custom-jet !bg-custom-yellow"
+              >
+                <FaSearch />
+              </button>
+           
                   <button
-                    onClick={handleSearch}
-                    className="bg-blue-500 text-white p-2 rounded-r-md"
-                  >
-                    Search
-                  </button>
-                  <button
-                    onClick={handleClearSearch}
-                    className="bg-gray-500 text-white p-2 ml-2 rounded-md"
+                    onClick={()=>{setSearchQuery(''); updateFilters(null, true);}}
+                    className="bg-custom-platinum text-custom-jet  py-2 px-4 ml-2 rounded-md"
                   >
                     Clear
                   </button>
