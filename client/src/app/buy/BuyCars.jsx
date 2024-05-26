@@ -146,21 +146,6 @@ export default function Buy({ allListings }) {
     window.location.reload()
   }
 
-  const handleClearSearch = () => {
-    setSearchQuery('')
-    window.location.reload()
-  }
-
-  const handleSearch = () => {
-    const query = searchQuery.toLowerCase()
-    const filtered = listings.filter(
-      (car) =>
-        car.model.toLowerCase().includes(query) ||
-        car.brand.toLowerCase().includes(query),
-    )
-    setListings(filtered)
-  }
-
   const updateFilters = async (inputFilters) => {
     setMobileFiltersOpen(false)
     let obj = {}
@@ -191,6 +176,7 @@ export default function Buy({ allListings }) {
       console.log(e.message)
     }
   }
+
   const fetchAllListings = async () => {
     try {
       setLoading(true)
@@ -203,6 +189,25 @@ export default function Buy({ allListings }) {
       console.log(e.message)
       setLoading(false)
     }
+  }
+
+  const handleClearSearch = () => {
+    setSearchQuery('')
+    window.location.reload()
+  }
+
+  const handleSearch = () => {
+    fetchAllListings()
+    console.log(listings)
+
+    const query = searchQuery.toLowerCase()
+    // fetchAllListings from db
+    const filtered = listings.filter(
+      (car) =>
+        car.model.toLowerCase().includes(query) ||
+        car.brand.toLowerCase().includes(query),
+    )
+    setListings(filtered)
   }
 
   const fetchAllBrands = async () => {
