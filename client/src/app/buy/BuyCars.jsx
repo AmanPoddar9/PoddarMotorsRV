@@ -562,7 +562,7 @@ export default function Buy({ allListings }) {
                     Filter
                   </Button>
                   <Button
-                    onClick={() => clearFilters()}
+                    onClick={() => {setSearchQuery(''); clearFilters();}}
                     className="w-[100%]  mt-4 w-[80%] mx-auto !bg-custom-seasalt "
                   >
                     Clear Filters
