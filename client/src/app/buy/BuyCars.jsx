@@ -15,6 +15,8 @@ import { AmountWithCommas } from '@/app/utils'
 import FeaturedCard from '@/app/components/FeaturedCard'
 import { FaSearch } from 'react-icons/fa'
 
+import { Oval } from 'react-loader-spinner'
+
 const sortOptions = [
   { name: 'Price: Low to High', href: '#', current: false, param: 'price_asc' },
   {
@@ -151,6 +153,7 @@ export default function Buy({ allListings }) {
 
   const updateFilters = async (inputFilters, clear) => {
     setMobileFiltersOpen(false)
+    setLoading(true)
     let obj = {}
     if (inputFilters) {
       obj = inputFilters
@@ -172,7 +175,7 @@ export default function Buy({ allListings }) {
         }
       })
     }
-    if(searchQuery.length>0 && !clear){
+    if (searchQuery.length > 0 && !clear) {
       obj['search'] = searchQuery
     }
     try {
@@ -181,6 +184,7 @@ export default function Buy({ allListings }) {
     } catch (e) {
       console.log(e.message)
     }
+    setLoading(false)
   }
 
   const fetchAllListings = async () => {
@@ -196,7 +200,6 @@ export default function Buy({ allListings }) {
       setLoading(false)
     }
   }
-
 
   const fetchAllBrands = async () => {
     try {
@@ -762,45 +765,59 @@ export default function Buy({ allListings }) {
                     placeholder="Search cars by brand/model..."
                     className="border rounded-l-md p-2 w-[100%]"
                   />
-                      <button
+                  <button
                     onClick={() => updateFilters()}
-
-                className="items-center 
+                    className="items-center 
                 justify-center
                 px-3 py-3  ml-2 text-base
                  font-medium 
                  text-center border 
                  rounded-lg 
                  text-custom-black hover:text-custom-jet focus:ring-4  !hover:border-custom-jet !bg-custom-yellow"
-              >
-                <FaSearch />
-              </button>
-           
+                  >
+                    <FaSearch />
+                  </button>
+
                   <button
-                    onClick={()=>{setSearchQuery(''); updateFilters(null, true);}}
+                    onClick={() => {
+                      setSearchQuery('')
+                      updateFilters(null, true)
+                    }}
                     className="bg-custom-platinum text-custom-jet  py-2 px-4 ml-2 rounded-md"
                   >
                     Clear
                   </button>
                 </div>
+                {loading ? (
+                  <div className="flex items-center justify-center p-2 h-[60%]">
+                    <Oval
+                      color="#fded03"
+                      height={50}
+                      width={50}
+                      secondaryColor="#b45309"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(300px, 1fr))',
+                    }}
+                    className="py-10 px-2 md:px-10 lg:gap-x-4 gap-y-10 w-[100%]  max-h-[70vh] overflow-y-auto"
+                  >
+                    {listings.length ? (
+                      listings.map((car) => (
+                        <FeaturedCard key={car._id} car={car} />
+                      ))
+                    ) : (
+                      <div className="text-center font-semibold p-4 lg:col-span-4">
+                        Sorry, no vehicles match the filters set...
+                      </div>
+                    )}
+                  </div>
+                )}
                 {/* Product grid */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                  }}
-                  className="py-10 px-2 md:px-10 lg:gap-x-4 gap-y-10 w-[100%]  max-h-[70vh] overflow-y-auto"
-                >
-                  {listings.length ? (
-                    listings.map((car) => (
-                      <FeaturedCard key={car._id} car={car} />
-                    ))
-                  ) : (
-                    <div className="text-center font-semibold p-4 lg:col-span-4">
-                      Sorry, no vehicles match the filters set...
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </section>
