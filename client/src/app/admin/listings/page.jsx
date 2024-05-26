@@ -50,14 +50,12 @@ const Listings = () => {
     }
     let tempArr = [...listings]
     const tempFilterString = filterString.toLowerCase()
-    console.log(tempArr, tempFilterString)
     tempArr = tempArr.filter(
       (item) =>
         item.brand.toLowerCase().includes(tempFilterString) ||
         item.model.toLowerCase().includes(tempFilterString) ||
         item.vehicleNumber.toLowerCase().includes(tempFilterString),
     )
-    console.log(tempArr)
     setFilteredListings(tempArr)
   }
   return (

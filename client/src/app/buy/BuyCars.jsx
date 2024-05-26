@@ -51,6 +51,7 @@ export default function Buy({ allListings }) {
   const [listings, setListings] = useState([])
   const [seatsCount, setSeatsCount] = useState([])
   const [loading, setLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState([
     {
       id: 'brand',
@@ -143,6 +144,21 @@ export default function Buy({ allListings }) {
   const clearFilters = () => {
     localStorage.removeItem('filters')
     window.location.reload()
+  }
+
+  const handleClearSearch = () => {
+    setSearchQuery('')
+    window.location.reload()
+  }
+
+  const handleSearch = () => {
+    const query = searchQuery.toLowerCase()
+    const filtered = listings.filter(
+      (car) =>
+        car.model.toLowerCase().includes(query) ||
+        car.brand.toLowerCase().includes(query),
+    )
+    setListings(filtered)
   }
 
   const updateFilters = async (inputFilters) => {
@@ -314,7 +330,6 @@ export default function Buy({ allListings }) {
       const response = await axios.get(url + 'api/listings/fuel')
       if (response.data) {
         response.data.sort()
-        console.log(response.data)
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'fuelType')
         let checkedSegments = []
@@ -337,7 +352,6 @@ export default function Buy({ allListings }) {
       const response = await axios.get(url + 'api/listings/transmission')
       if (response.data) {
         response.data.sort()
-        console.log(response.data)
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'transmissionType')
         let checkedSegments = []
@@ -641,7 +655,7 @@ export default function Buy({ allListings }) {
               <form
                 className="hidden lg:block max-h-[70vh] overflow-y-auto"
                 style={{
-                  flexGrow: 2,
+                  flexGrow: 3,
                   paddingRight: '14px',
                 }}
               >
@@ -746,23 +760,46 @@ export default function Buy({ allListings }) {
                 </Button>
               </form>
 
-              {/* Product grid */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                }}
-                className="py-10 px-2 md:px-10 lg:gap-x-4 gap-y-10 lg:w-[75%] w-[100%]  max-h-[70vh] overflow-y-auto"
-              >
-                {listings.length ? (
-                  listings.map((car) => (
-                    <FeaturedCard key={car._id} car={car} />
-                  ))
-                ) : (
-                  <div className="text-center font-semibold p-4 lg:col-span-4">
-                    Sorry, no vehicles match the filters set...
-                  </div>
-                )}
+              <div className="lg:w-[75%] w-[100%] ">
+                <div className="flex justify-center items-center py-4 px-2 md:px-10">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search cars..."
+                    className="border rounded-l-md p-2 w-[100%]"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    className="bg-blue-500 text-white p-2 rounded-r-md"
+                  >
+                    Search
+                  </button>
+                  <button
+                    onClick={handleClearSearch}
+                    className="bg-gray-500 text-white p-2 ml-2 rounded-md"
+                  >
+                    Clear
+                  </button>
+                </div>
+                {/* Product grid */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  }}
+                  className="py-10 px-2 md:px-10 lg:gap-x-4 gap-y-10 w-[100%]  max-h-[70vh] overflow-y-auto"
+                >
+                  {listings.length ? (
+                    listings.map((car) => (
+                      <FeaturedCard key={car._id} car={car} />
+                    ))
+                  ) : (
+                    <div className="text-center font-semibold p-4 lg:col-span-4">
+                      Sorry, no vehicles match the filters set...
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </section>
