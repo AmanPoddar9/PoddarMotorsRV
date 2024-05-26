@@ -766,7 +766,7 @@ export default function Buy({ allListings }) {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search cars..."
+                    placeholder="Search cars by brand/model..."
                     className="border rounded-l-md p-2 w-[100%]"
                   />
                   <button
