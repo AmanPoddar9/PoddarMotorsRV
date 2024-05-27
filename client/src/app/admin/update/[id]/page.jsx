@@ -374,6 +374,7 @@ const CreateListing = () => {
               type="number"
               id="year"
               name="year"
+              min={2000}
               value={formData.year}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -403,6 +404,7 @@ const CreateListing = () => {
               type="number"
               id="ownership"
               name="ownership"
+              min={1}
               value={formData.ownership}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -419,6 +421,7 @@ const CreateListing = () => {
               type="number"
               id="kmDriven"
               name="kmDriven"
+              min={1}
               value={formData.kmDriven}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -432,6 +435,7 @@ const CreateListing = () => {
               type="number"
               id="price"
               name="price"
+              min={1}
               value={formData.price}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -482,6 +486,7 @@ const CreateListing = () => {
               type="number"
               id="seats"
               name="seats"
+              min={1}
               value={formData.seats}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -498,6 +503,7 @@ const CreateListing = () => {
               type="number"
               id="displacement"
               name="displacement"
+              min={1}
               value={formData.displacement}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -514,6 +520,7 @@ const CreateListing = () => {
               type="number"
               id="cylinders"
               name="cylinders"
+              min={1}
               value={formData.cylinders}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -530,6 +537,7 @@ const CreateListing = () => {
               type="number"
               id="maxPower"
               name="maxPower"
+              min={1}
               value={formData.maxPower}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -546,6 +554,7 @@ const CreateListing = () => {
               type="number"
               id="bootspace"
               name="bootspace"
+              min={1}
               value={formData.bootspace}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -562,6 +571,7 @@ const CreateListing = () => {
               type="number"
               id="fuelTank"
               name="fuelTank"
+              min={1}
               value={formData.fuelTank}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -575,6 +585,7 @@ const CreateListing = () => {
               type="number"
               id="gears"
               name="gears"
+              min={1}
               value={formData.gears}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"
@@ -591,6 +602,7 @@ const CreateListing = () => {
               type="number"
               id="mileage"
               name="mileage"
+              min={1}
               value={formData.mileage}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"

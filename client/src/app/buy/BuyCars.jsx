@@ -290,11 +290,23 @@ export default function Buy({ allListings }) {
     }
   }
 
+  const carTypes = [
+    'Micro Car',
+    'Hatchback',
+    'Compact Sedan',
+    'Mid Size Sedan',
+    'Full Size Sedan',
+    'Compact SUV',
+    'Mid Size SUV',
+    'Full Size SUV',
+    'MUV/MPV',
+    'Luxury',
+  ]
+
   const fetchAllTypes = async () => {
     try {
       const response = await axios.get(url + 'api/listings/types')
       if (response.data) {
-        response.data.sort()
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'type')
         let checkedSegments = []
@@ -305,6 +317,9 @@ export default function Buy({ allListings }) {
             checkedSegments.push(type)
           }
         }
+        response.data.sort((a, b) => {
+          return carTypes.indexOf(a) - carTypes.indexOf(b);
+        })
         tempObj[index]['options'] = response.data.map((item) => {
           return {
             value: item,
@@ -313,7 +328,7 @@ export default function Buy({ allListings }) {
           }
         })
         setFilters(tempObj)
-
+        
         setTypes(response.data)
       }
     } catch (e) {
@@ -565,8 +580,11 @@ export default function Buy({ allListings }) {
                     Filter
                   </Button>
                   <Button
-                    onClick={() => {setSearchQuery(''); clearFilters();}}
-                    className="w-[100%]  mt-4 w-[80%] mx-auto !bg-custom-seasalt "
+                    onClick={() => {
+                      setSearchQuery('')
+                      clearFilters()
+                    }}
+                    className="mt-4 w-[80%] mx-auto !bg-custom-seasalt "
                   >
                     Clear Filters
                   </Button>
@@ -757,37 +775,48 @@ export default function Buy({ allListings }) {
               </form>
 
               <div className="lg:w-[75%] w-[100%] ">
-                <div className="flex justify-center items-center py-4 px-2 md:px-10">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search cars by brand/model..."
-                    className="border rounded-l-md p-2 w-[100%]"
-                  />
-                  <button
-                    onClick={() => updateFilters()}
-                    className="items-center 
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    updateFilters()
+                  }}
+                >
+                  <div className="flex justify-center items-center py-4 px-2 md:px-10">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search cars by brand/model..."
+                      className="border rounded-l-md p-2 w-[100%]"
+                    />
+                    <button
+                      type="submit"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        updateFilters()
+                      }}
+                      className="items-center 
                 justify-center
                 px-3 py-3  ml-2 text-base
                  font-medium 
                  text-center border 
                  rounded-lg 
                  text-custom-black hover:text-custom-jet focus:ring-4  !hover:border-custom-jet !bg-custom-yellow"
-                  >
-                    <FaSearch />
-                  </button>
+                    >
+                      <FaSearch />
+                    </button>
 
-                  <button
-                    onClick={() => {
-                      setSearchQuery('')
-                      updateFilters(null, true)
-                    }}
-                    className="bg-custom-platinum text-custom-jet  py-2 px-4 ml-2 rounded-md"
-                  >
-                    Clear
-                  </button>
-                </div>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('')
+                        updateFilters(null, true)
+                      }}
+                      className="bg-custom-platinum text-custom-jet  py-2 px-4 ml-2 rounded-md"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </form>
                 {loading ? (
                   <div className="flex items-center justify-center p-2 h-[60%]">
                     <Oval
