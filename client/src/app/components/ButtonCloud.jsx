@@ -19,9 +19,9 @@ const ButtonCloud = ({ options, label }) => {
   }
 
   const budgetsMapping = {
-    '<4 Lakh': '0-400000',
+    'Under 4 Lakh': '0-400000',
     '4-8 Lakh': '400000-800000',
-    '>8 Lakh': '800000',
+    'Above 8 Lakh': '800000',
   }
 
   useEffect(() => {

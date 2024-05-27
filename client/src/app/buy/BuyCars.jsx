@@ -72,10 +72,10 @@ export default function Buy({ allListings }) {
       id: 'budget',
       name: 'Budget',
       options: [
-        { value: '0-400000', label: '< 4lakhs', checked: false },
+        { value: '0-400000', label: 'Under 4 Lakhs', checked: false },
         { value: '400000-800000', label: '4-8 Lakhs', checked: false },
         { value: '800000-1200000', label: '8-12 Lakhs', checked: false },
-        { value: '1200000', label: '12 Lakhs +', checked: false },
+        { value: '1200000', label: 'Above 12 Lakhs', checked: false },
       ],
     },
     {

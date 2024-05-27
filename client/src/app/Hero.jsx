@@ -74,7 +74,7 @@ const segments = [
 
 const budgets = [
   {
-    label: '<4 Lakh',
+    label: 'Under 4 Lakh',
     key: '1',
     range: '0-400000',
   },
@@ -84,7 +84,7 @@ const budgets = [
     range: '400000-800000',
   },
   {
-    label: '>8 Lakh',
+    label: 'Above 8 Lakh',
     key: '3',
     range: '800000',
   },

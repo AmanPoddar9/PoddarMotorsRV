@@ -30,9 +30,9 @@ import volvo from '@/images/brands/volvo.png'
 import Image from 'next/image'
 
 const budgetsMapping = {
-  '<4 Lakh': '0-400000',
+  'Under 4 Lakh': '0-400000',
   '4-8 Lakh': '400000-800000',
-  '>8 Lakh': '800000',
+  'Above 8 Lakh': '800000',
 }
 const handleBtnClick = (item, type) => {
   let tempObj = {}
@@ -277,9 +277,9 @@ const ButtonRows = () => {
             <div className="flex flex-wrap gap-4">
               {isDesktop ? (
                 <>
-                  <ButtonCard item="<4 Lakh" type={'Budget'} />
+                  <ButtonCard item="Under 4 Lakh" type={'Budget'} />
                   <ButtonCard item="4-8 Lakh" type={'Budget'} />
-                  <ButtonCard item=">8 Lakh" type={'Budget'} />
+                  <ButtonCard item="Above 8 Lakh" type={'Budget'} />
                 </>
               ) : (
                 <Swiper
