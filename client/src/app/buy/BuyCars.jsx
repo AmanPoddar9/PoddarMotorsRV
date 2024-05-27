@@ -113,10 +113,10 @@ export default function Buy({ allListings }) {
       id: 'kmDriven',
       name: 'KM Driven',
       options: [
-        { value: '0-10000', label: '< 10 Thousand', checked: false },
+        { value: '0-10000', label: 'Under 10 Thousand', checked: false },
         { value: '10000-20000', label: '10-20 Thousand', checked: false },
         { value: '20000-50000', label: '20-50 Thousand', checked: false },
-        { value: '50000', label: '50 Thousand +', checked: false },
+        { value: '50000', label: 'Above 50 Thousand', checked: false },
       ],
     },
     {
