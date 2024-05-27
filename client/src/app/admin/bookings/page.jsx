@@ -100,7 +100,7 @@ const BookingsPage = () => {
     <div>
       <AdminNavbar />
 
-      <div className="container mx-auto mb-8">
+      <div className="container mx-auto mb-8 min-h-[70vh]">
         <h1 className="text-3xl font-semibold mb-6">Bookings</h1>
         <div className="text-center my-4">
           <button

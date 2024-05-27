@@ -46,7 +46,7 @@ const Features = () => {
   return (
     <div>
       <AdminNavbar />
-      <div className="max-w-3xl mx-auto py-8 px-4">
+      <div className="max-w-3xl mx-auto py-8 px-4 min-h-[70vh]">
         <h1 className="text-3xl font-bold mb-6">Manage Features</h1>
         <div className="mb-6">
           <input

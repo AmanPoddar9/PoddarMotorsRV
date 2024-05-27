@@ -124,7 +124,7 @@ const SellRequestsPage = () => {
   return (
     <div>
       <AdminNavbar />
-      <div className="container mx-auto">
+      <div className="container mx-auto min-h-[70vh]">
         <h1 className="text-2xl font-bold my-4">Sell Requests</h1>
         <div className="text-center my-4">
           <button
