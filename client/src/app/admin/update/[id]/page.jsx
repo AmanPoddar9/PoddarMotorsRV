@@ -603,6 +603,7 @@ const CreateListing = () => {
               id="mileage"
               name="mileage"
               min={1}
+              step={0.1}
               value={formData.mileage}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md"

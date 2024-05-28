@@ -117,7 +117,7 @@ const ButtonRows = () => {
     'MUV/MPV',
   ]
   const brandsMapping = {
-    Maruti: suzuki,
+    'Maruti Suzuki': suzuki,
     Mahindra: mahindra,
     Hyundai: hyundai,
     Tata: tata,
