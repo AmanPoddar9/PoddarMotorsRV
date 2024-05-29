@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+      <meta name="google-site-verification" content="uL--6MiSuQXVZ6-5v0W39EvGPd7r4cPjvjMWa-EBrKE" />
       <Script id="meta-pixel-code" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
