@@ -64,11 +64,20 @@ const Testimonials = () => {
               navigation
               scrollbar={{ draggable: true }}
               loop={true}
-              centeredSlides={true}
+              centeredSlides={false}
               pagination={{ clickable: true }}
               autoplay={{ delay: 2500, disableOnInteraction: false }}
               breakpoints={{
-                640: { slidesPerView: 1, spaceBetween: 32 },
+                640: {
+                  slidesPerView: 1,
+                  spaceBetween: 32,
+                  loop: true,
+                  autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                  },
+                },
                 768: { slidesPerView: 2, spaceBetween: 32 },
                 1024: { slidesPerView: 3, spaceBetween: 32 },
               }}
