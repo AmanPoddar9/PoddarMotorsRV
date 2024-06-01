@@ -21,6 +21,7 @@ import renault from '@/images/brands/renault.png'
 import skoda from '@/images/brands/skoda.png'
 import suzuki from '@/images/brands/suzuki.png'
 import tata from '@/images/brands/tata.png'
+import toyota from '@/images/brands/toyota.png'
 import volkswagen from '@/images/brands/volkswagen.png'
 import volvo from '@/images/brands/volvo.png'
 
@@ -41,15 +42,17 @@ const brandsMapping = {
   Honda: honda,
   Hyundai: hyundai,
   Jeep: jeep,
-  Kia: kia,
+  KIA: kia,
   Mahindra: mahindra,
   Mercedes: mercedes,
-  MG: mg,
+  'MG Motor': mg,
   Nissan: nissan,
   Renault: renault,
   Skoda: skoda,
   Tata: tata,
+  Toyota: toyota,
   Maruti: suzuki,
+  'Maruti Suzuki': suzuki,
   Volkswagen: volkswagen,
   Volvo: volvo,
 }
