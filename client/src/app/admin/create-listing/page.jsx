@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '@/app/components/AdminNavbar'
-import JSZip from 'jszip'
+import JSZip, { file } from 'jszip'
 import { Spin } from 'antd'
 
 const CreateListing = () => {
@@ -14,7 +14,7 @@ const CreateListing = () => {
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
+  url = 'http://localhost:5000/'
 
   const [formData, setFormData] = useState({
     brand: '',
@@ -129,13 +129,74 @@ const CreateListing = () => {
       })
 
       setImagesLength(extractedImages.length)
-      await uploadImagesToCloudinary(extractedImages)
+      await uploadImagesToS3(extractedImages, file)
 
       setUploading(false)
     } catch (error) {
       setUploading(false)
       console.error('Error uploading image:', error.message)
     }
+  }
+
+  const readFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const readFiles = (files) => {
+    return Promise.all(files.map((file) => readFile(file)));
+  };
+
+
+  const uploadImagesToS3 = async(imagesArray, files)=>{
+    console.log(imagesArray)
+    const uris = await readFiles(imagesArray);
+    console.log(uris)
+    const obj = {}
+    imagesArray.map((fileObj, index)=> {
+      let filePath = fileObj['name']
+    let fileName = filePath.split('/')[filePath.split('/').length-1]
+    console.log(fileName)
+    obj[fileName] = uris[index]
+  })
+
+    const res = await fetch('/api/upload-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(obj),
+    });
+    console.log(res.data)
+    // const signedUrls = await res.json();
+    // console.log(signedUrls)
+    // await Promise.all(
+    //   signedUrls.map(async ({ fileName, uploadURL }) => {
+    //     const file = selectedFiles.find(file => file.name === fileName);
+    //     await fetch(uploadURL, {
+    //       method: 'PUT',
+    //       headers: {
+    //         'Content-Type': file.type,
+    //       },
+    //       body: file,
+    //     });
+    //   })
+    // );
+    // const bucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+    // const region = process.env.NEXT_PUBLIC_AWS_REGION;
+    // const urls = signedUrls.map(({ fileName }) => 
+    //   `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`
+    // );
+
+    // setImageUrls(urls);
+    // alert('Files uploaded successfully!');
+    return
   }
 
   useEffect(() => {
