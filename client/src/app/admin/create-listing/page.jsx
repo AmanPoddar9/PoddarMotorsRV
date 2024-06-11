@@ -14,7 +14,6 @@ const CreateListing = () => {
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  url = 'http://localhost:5000/'
 
   const [formData, setFormData] = useState({
     brand: '',
@@ -70,6 +69,10 @@ const CreateListing = () => {
     }
   }
 
+  const getFileName = (path) => {
+    return path.split('/').pop()
+  }
+
   const handleImageChange = async (e) => {
     setImageFile(e.target.files[0])
     const form = new FormData()
@@ -108,28 +111,22 @@ const CreateListing = () => {
             return
 
           // Read the image file
-          const imageData = await file.async('blob')
+          const imageData = await file.async('base64')
 
-          // Convert the Blob to a data URL
-          const imageFile = new File([imageData], filename)
+          const image = {
+            name: filename,
+            data: imageData,
+          }
 
-          extractedImages.push(imageFile)
+          extractedImages.push(image)
         }),
       )
 
-      const getFileName = (path) => {
-        return path.split('/').pop()
-      }
-
-      // Sort the files based on the filename
-      extractedImages.sort((a, b) => {
-        const fileNameA = getFileName(a.name)
-        const fileNameB = getFileName(b.name)
-        return fileNameA.localeCompare(fileNameB)
-      })
+      // Sort the file.
+      extractedImages.sort((a, b) => a.name.localeCompare(b.name))
 
       setImagesLength(extractedImages.length)
-      await uploadImagesToS3(extractedImages, file)
+      await uploadImagesToS3(extractedImages)
 
       setUploading(false)
     } catch (error) {
@@ -138,42 +135,15 @@ const CreateListing = () => {
     }
   }
 
-  const readFile = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const readFiles = (files) => {
-    return Promise.all(files.map((file) => readFile(file)));
-  };
-
-
-  const uploadImagesToS3 = async(imagesArray, files)=>{
-    console.log(imagesArray)
-    const uris = await readFiles(imagesArray);
-    console.log(uris)
-    const obj = {}
-    imagesArray.map((fileObj, index)=> {
-      let filePath = fileObj['name']
-    let fileName = filePath.split('/')[filePath.split('/').length-1]
-    console.log(fileName)
-    obj[fileName] = uris[index]
-  })
-
-    const res = await fetch('/api/upload-url', {
+  const uploadImagesToS3 = async (imagesArray) => {
+    const res = await fetch('/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(obj),
-    });
-    console.log(res.data)
+      body: JSON.stringify(imagesArray),
+    })
+    console.log(res)
     // const signedUrls = await res.json();
     // console.log(signedUrls)
     // await Promise.all(
@@ -190,7 +160,7 @@ const CreateListing = () => {
     // );
     // const bucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
     // const region = process.env.NEXT_PUBLIC_AWS_REGION;
-    // const urls = signedUrls.map(({ fileName }) => 
+    // const urls = signedUrls.map(({ fileName }) =>
     //   `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`
     // );
 

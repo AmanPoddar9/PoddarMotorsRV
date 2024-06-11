@@ -7,7 +7,6 @@ const Features = () => {
   const [features, setFeatures] = useState([])
   const [newFeatureText, setNewFeatureText] = useState('')
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
 
   useEffect(() => {
     fetchFeatures()

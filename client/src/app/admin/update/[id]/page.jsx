@@ -42,7 +42,6 @@ const CreateListing = () => {
     selectedFeatures: [],
   })
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
   useEffect(() => {
     if (Object.keys(currListing).length) {
@@ -88,28 +87,27 @@ const CreateListing = () => {
 
     // Loop through each extracted image and upload to Cloudinary
     for (let i = 0; i < images.length; i++) {
-      try{
-      let image = images[i]
-      const data = new FormData()
-      data.append('file', image)
-      data.append('upload_preset', NAME_OF_UPLOAD_PRESET)
-      data.append('api_key', API_KEY)
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${YOUR_ID}/image/upload`,
-        {
-          method: 'POST',
-          body: data,
-        },
-      )
-      const img = await res.json()
-      // You can handle the Cloudinary response here as needed
-      tempArr.push(img.secure_url)
-      setImages(tempArr)
-      console.log('Uploaded image:', i, ' ', img.secure_url)
-    }
-    catch(e){
-      console.log(`Error uploading image ${i}:`, e.response.message)
-    }
+      try {
+        let image = images[i]
+        const data = new FormData()
+        data.append('file', image)
+        data.append('upload_preset', NAME_OF_UPLOAD_PRESET)
+        data.append('api_key', API_KEY)
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${YOUR_ID}/image/upload`,
+          {
+            method: 'POST',
+            body: data,
+          },
+        )
+        const img = await res.json()
+        // You can handle the Cloudinary response here as needed
+        tempArr.push(img.secure_url)
+        setImages(tempArr)
+        console.log('Uploaded image:', i, ' ', img.secure_url)
+      } catch (e) {
+        console.log(`Error uploading image ${i}:`, e.response.message)
+      }
     }
   }
 
@@ -282,7 +280,7 @@ const CreateListing = () => {
             />
             {uploading && imagesLength && (
               <div>
-               <Spin size='small'/> Uploading... 
+                <Spin size="small" /> Uploading...
               </div>
             )}
           </div>
