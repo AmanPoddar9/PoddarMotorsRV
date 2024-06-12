@@ -18,7 +18,6 @@ export async function POST(req) {
     })
 
     const imagesArray = await req.json()
-    console.log('In server')
 
     const bucketName = 'realvaluestorage'
     const uploadedURLS = []
@@ -27,19 +26,7 @@ export async function POST(req) {
       const { name, data } = imagesArray[i]
       const extension = name.split('.').pop()
       const key = `${Math.random().toString(36).substring(2, 15)}.${extension}`
-      console.log(name)
-      console.log(key)
-      // const params = {
-      //   Bucket: bucketName,
-      //   Key: key,
-      //   Body: Buffer.from(data, 'base64'),
-      //   ContentType: `image/${extension}`,
-      //   ACL: 'public-read',
-      // }
 
-      // console.log('Done with buffer')
-
-      // const command = new PutObjectAclCommand(params)
       const params = {
         Bucket: bucketName,
         Key: key,
@@ -51,11 +38,21 @@ export async function POST(req) {
 
       await s3Client.send(command)
 
+      const paramsACL = {
+        Bucket: bucketName,
+        Key: key,
+        Body: Buffer.from(data, 'base64'),
+        ContentType: `image/${extension}`,
+        ACL: 'public-read',
+      }
+
+      const commandACL = new PutObjectAclCommand(paramsACL)
+
+      await s3Client.send(commandACL)
+
       const url = `https://${bucketName}.s3.amazonaws.com/${key}`
       uploadedURLS.push(url)
     }
-
-    console.log(uploadedURLS)
 
     return new Response(JSON.stringify({ urls: uploadedURLS }), { status: 200 })
   } catch (err) {

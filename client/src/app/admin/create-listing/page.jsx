@@ -13,6 +13,7 @@ const CreateListing = () => {
   const [images, setImages] = useState([])
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
+  const [error, setError] = useState(null)
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
   const [formData, setFormData] = useState({
@@ -39,6 +40,7 @@ const CreateListing = () => {
     location: '',
     featured: false,
     selectedFeatures: [],
+    images: [],
   })
 
   const uploadImagesToCloudinary = async (images) => {
@@ -126,8 +128,9 @@ const CreateListing = () => {
       extractedImages.sort((a, b) => a.name.localeCompare(b.name))
 
       setImagesLength(extractedImages.length)
-      await uploadImagesToS3(extractedImages)
+      const imageURLs = await uploadImagesToS3(extractedImages)
 
+      if (images.length === 0) setImages(imageURLs)
       setUploading(false)
     } catch (error) {
       setUploading(false)
@@ -143,30 +146,19 @@ const CreateListing = () => {
       },
       body: JSON.stringify(imagesArray),
     })
-    console.log(res)
-    // const signedUrls = await res.json();
-    // console.log(signedUrls)
-    // await Promise.all(
-    //   signedUrls.map(async ({ fileName, uploadURL }) => {
-    //     const file = selectedFiles.find(file => file.name === fileName);
-    //     await fetch(uploadURL, {
-    //       method: 'PUT',
-    //       headers: {
-    //         'Content-Type': file.type,
-    //       },
-    //       body: file,
-    //     });
-    //   })
-    // );
-    // const bucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
-    // const region = process.env.NEXT_PUBLIC_AWS_REGION;
-    // const urls = signedUrls.map(({ fileName }) =>
-    //   `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`
-    // );
 
-    // setImageUrls(urls);
-    // alert('Files uploaded successfully!');
-    return
+    if (!res.ok) {
+      setError('Error uploading images')
+    }
+
+    try {
+      const data = await res.json()
+      const urls = data.urls
+      setImages(urls)
+      return urls
+    } catch (err) {
+      setError('Error uploading images')
+    }
   }
 
   useEffect(() => {
@@ -205,6 +197,7 @@ const CreateListing = () => {
   }
 
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -278,6 +271,7 @@ const CreateListing = () => {
                 <Spin size="small" /> Uploading...
               </div>
             )}
+            {error && <div className="text-red-500">{error}</div>}
           </div>
           <div>
             <label htmlFor="brand" className="block font-medium text-gray-700">
