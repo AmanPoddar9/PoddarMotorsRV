@@ -184,7 +184,7 @@ const CreateListing = () => {
     })
 
     if (!res.ok) {
-      setError('Error uploading images')
+      setError('Error uploading images! Please try uploading file again.')
     }
 
     try {
@@ -194,7 +194,7 @@ const CreateListing = () => {
       setImages(urls)
       return urls
     } catch (err) {
-      setError('Error uploading images')
+      setError('Error uploading images! Please try uploading file again.')
     }
   }
 
