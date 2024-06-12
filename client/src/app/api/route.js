@@ -53,7 +53,7 @@ export async function POST(req) {
       const url = `https://${bucketName}.s3.amazonaws.com/${key}`
       uploadedURLS.push(url)
     }
-
+    console.log(uploadedURLS)
     return new Response(JSON.stringify({ urls: uploadedURLS }), { status: 200 })
   } catch (err) {
     console.error(err)

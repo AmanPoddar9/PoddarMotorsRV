@@ -129,7 +129,7 @@ const CreateListing = () => {
 
       setImagesLength(extractedImages.length)
       const imageURLs = await uploadImagesToS3(extractedImages)
-
+      console.log(imageURLs)
       if (images.length === 0) setImages(imageURLs)
       setUploading(false)
     } catch (error) {
@@ -148,16 +148,17 @@ const CreateListing = () => {
     })
 
     if (!res.ok) {
-      setError('Error uploading images')
+      setError('Error uploading images! Please try uploading file again.')
     }
 
     try {
       const data = await res.json()
       const urls = data.urls
+      console.log(urls)
       setImages(urls)
       return urls
     } catch (err) {
-      setError('Error uploading images')
+      setError('Error uploading images! Please try uploading file again.')
     }
   }
 
@@ -205,6 +206,7 @@ const CreateListing = () => {
       const tempData = formData
       tempData['features'] = formData['selectedFeatures']
       tempData['images'] = images
+      console.log(tempData['images'])
       setImages([])
       await axios.post(url + 'api/listings', tempData)
       setFormData({

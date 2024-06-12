@@ -190,6 +190,7 @@ const CreateListing = () => {
     try {
       const data = await res.json()
       const urls = data.urls
+      console.log(urls)
       setImages(urls)
       return urls
     } catch (err) {
@@ -242,6 +243,7 @@ const CreateListing = () => {
       if (images.length) {
         tempData['images'] = images
       }
+      console.log(images)
       setImages([])
       const tempArr = window.location.href.split('/')
       const id = tempArr[tempArr.length - 1]
