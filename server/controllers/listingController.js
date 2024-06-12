@@ -1,10 +1,97 @@
 const Listing = require("../models/listing");
 const ListingImages = require("../models/listingImages");
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 const AdmZip = require("adm-zip");
 var detect = require("detect-file-type");
 const axios = require("axios");
 const CryptoJS = require("crypto-js");
+
+const s3Client = new S3Client({
+  region: 'ap-south-1',
+  credentials: {
+    accessKeyId: 'AKIAZQ3DNQ6CJUV7YGIH',
+    secretAccessKey: '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',
+  },
+})
+
+// Delete one listing by ID
+exports.deleteListingByIdCloudinary = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const listing = await Listing.findById(id);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+    const publicIds = [];
+    listing.images.map((url) => {
+      const publicId = extractPublicId(url);
+      if (publicId.length > 0) {
+        publicIds.push(publicId);
+      }
+    });
+    for (let i = 0; i < publicIds.length; i++) {
+      await deleteSingleImage(publicIds[i]);
+    }
+    const deletedListing = await Listing.findByIdAndDelete(id);
+
+    if (!deletedListing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    res.json({
+      message: "Listing deleted successfully",
+      listing: deletedListing,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.deleteListingById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const listing = await Listing.findById(id);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    const urls = listing.images;
+
+    const bucketName = 'realvaluestorage';
+
+    for (let url of urls) {
+      // Extract the key from the URL
+      const key = url.split(`${bucketName}.s3.amazonaws.com/`)[1];
+      if (key) {
+        const params = {
+          Bucket: bucketName,
+          Key: key,
+        };
+
+        const command = new DeleteObjectCommand(params);
+        await s3Client.send(command);
+
+      }
+    }
+
+    const deletedListing = await Listing.findByIdAndDelete(id);
+
+    if (!deletedListing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    res.json({
+      message: "Listing deleted successfully",
+      listing: deletedListing,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error deleting listing' });
+  }
+}
 
 exports.createListing = async (req, res) => {
   try {
@@ -223,38 +310,5 @@ const deleteSingleImage = async (publicId) => {
     console.log("Deleted image:", publicId, result);
   } catch (error) {
     console.error("Error deleting image:", error);
-  }
-};
-// Delete one listing by ID
-exports.deleteListingById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const listing = await Listing.findById(id);
-    if (!listing) {
-      return res.status(404).json({ error: "Listing not found" });
-    }
-    const publicIds = [];
-    listing.images.map((url) => {
-      const publicId = extractPublicId(url);
-      if (publicId.length > 0) {
-        publicIds.push(publicId);
-      }
-    });
-    for (let i = 0; i < publicIds.length; i++) {
-      await deleteSingleImage(publicIds[i]);
-    }
-    const deletedListing = await Listing.findByIdAndDelete(id);
-
-    if (!deletedListing) {
-      return res.status(404).json({ error: "Listing not found" });
-    }
-
-    res.json({
-      message: "Listing deleted successfully",
-      listing: deletedListing,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
   }
 };
