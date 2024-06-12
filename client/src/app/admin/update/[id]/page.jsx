@@ -42,7 +42,6 @@ const CreateListing = () => {
     selectedFeatures: [],
   })
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
   useEffect(() => {
     if (Object.keys(currListing).length) {
@@ -88,28 +87,27 @@ const CreateListing = () => {
 
     // Loop through each extracted image and upload to Cloudinary
     for (let i = 0; i < images.length; i++) {
-      try{
-      let image = images[i]
-      const data = new FormData()
-      data.append('file', image)
-      data.append('upload_preset', NAME_OF_UPLOAD_PRESET)
-      data.append('api_key', API_KEY)
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${YOUR_ID}/image/upload`,
-        {
-          method: 'POST',
-          body: data,
-        },
-      )
-      const img = await res.json()
-      // You can handle the Cloudinary response here as needed
-      tempArr.push(img.secure_url)
-      setImages(tempArr)
-      console.log('Uploaded image:', i, ' ', img.secure_url)
-    }
-    catch(e){
-      console.log(`Error uploading image ${i}:`, e.response.message)
-    }
+      try {
+        let image = images[i]
+        const data = new FormData()
+        data.append('file', image)
+        data.append('upload_preset', NAME_OF_UPLOAD_PRESET)
+        data.append('api_key', API_KEY)
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${YOUR_ID}/image/upload`,
+          {
+            method: 'POST',
+            body: data,
+          },
+        )
+        const img = await res.json()
+        // You can handle the Cloudinary response here as needed
+        tempArr.push(img.secure_url)
+        setImages(tempArr)
+        console.log('Uploaded image:', i, ' ', img.secure_url)
+      } catch (e) {
+        console.log(`Error uploading image ${i}:`, e.response.message)
+      }
     }
   }
 
@@ -151,33 +149,51 @@ const CreateListing = () => {
             return
 
           // Read the image file
-          const imageData = await file.async('blob')
+          const imageData = await file.async('base64')
 
-          // Convert the Blob to a data URL
-          const imageFile = new File([imageData], filename)
+          const image = {
+            name: filename,
+            data: imageData,
+          }
 
-          extractedImages.push(imageFile)
+          extractedImages.push(image)
         }),
       )
 
-      const getFileName = (path) => {
-        return path.split('/').pop()
-      }
-
-      // Sort the files based on the filename
-      extractedImages.sort((a, b) => {
-        const fileNameA = getFileName(a.name)
-        const fileNameB = getFileName(b.name)
-        return fileNameA.localeCompare(fileNameB)
-      })
+      // Sort the file.
+      extractedImages.sort((a, b) => a.name.localeCompare(b.name))
 
       setImagesLength(extractedImages.length)
-      await uploadImagesToCloudinary(extractedImages)
+      const imageURLs = await uploadImagesToS3(extractedImages)
 
+      if (images.length === 0) setImages(imageURLs)
       setUploading(false)
     } catch (error) {
       setUploading(false)
       console.error('Error uploading image:', error.message)
+    }
+  }
+
+  const uploadImagesToS3 = async (imagesArray) => {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(imagesArray),
+    })
+
+    if (!res.ok) {
+      setError('Error uploading images')
+    }
+
+    try {
+      const data = await res.json()
+      const urls = data.urls
+      setImages(urls)
+      return urls
+    } catch (err) {
+      setError('Error uploading images')
     }
   }
 
@@ -282,7 +298,7 @@ const CreateListing = () => {
             />
             {uploading && imagesLength && (
               <div>
-               <Spin size='small'/> Uploading... 
+                <Spin size="small" /> Uploading...
               </div>
             )}
           </div>
@@ -453,8 +469,10 @@ const CreateListing = () => {
               className="mt-1 p-2 w-full border rounded-md"
             >
               <option value="">Select Type</option>
-              {carTypes.map((type) => (
-                <option value={type}>{type}</option>
+              {carTypes.map((type, i) => (
+                <option value={type} key={i}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
@@ -473,8 +491,10 @@ const CreateListing = () => {
               className="mt-1 p-2 w-full border rounded-md"
             >
               <option value="">Select Transmission Type</option>
-              {transmissionTypes.map((type) => (
-                <option value={type}>{type}</option>
+              {transmissionTypes.map((type, i) => (
+                <option value={type} key={i}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
@@ -645,7 +665,7 @@ const CreateListing = () => {
               <label className="block font-medium text-gray-700">
                 Features
               </label>
-              {features.map((feature) => (
+              {features.map((feature, i) => (
                 <div key={feature._id} className="flex items-center">
                   <input
                     checked={formData.selectedFeatures.includes(feature.text)}

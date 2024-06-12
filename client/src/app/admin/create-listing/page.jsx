@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '@/app/components/AdminNavbar'
-import JSZip from 'jszip'
+import JSZip, { file } from 'jszip'
 import { Spin } from 'antd'
 
 const CreateListing = () => {
@@ -13,8 +13,8 @@ const CreateListing = () => {
   const [images, setImages] = useState([])
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
+  const [error, setError] = useState(null)
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
 
   const [formData, setFormData] = useState({
     brand: '',
@@ -40,6 +40,7 @@ const CreateListing = () => {
     location: '',
     featured: false,
     selectedFeatures: [],
+    images: [],
   })
 
   const uploadImagesToCloudinary = async (images) => {
@@ -68,6 +69,10 @@ const CreateListing = () => {
       setImages(tempArr)
       console.log('Uploaded image:', img.secure_url)
     }
+  }
+
+  const getFileName = (path) => {
+    return path.split('/').pop()
   }
 
   const handleImageChange = async (e) => {
@@ -108,33 +113,51 @@ const CreateListing = () => {
             return
 
           // Read the image file
-          const imageData = await file.async('blob')
+          const imageData = await file.async('base64')
 
-          // Convert the Blob to a data URL
-          const imageFile = new File([imageData], filename)
+          const image = {
+            name: filename,
+            data: imageData,
+          }
 
-          extractedImages.push(imageFile)
+          extractedImages.push(image)
         }),
       )
 
-      const getFileName = (path) => {
-        return path.split('/').pop()
-      }
-
-      // Sort the files based on the filename
-      extractedImages.sort((a, b) => {
-        const fileNameA = getFileName(a.name)
-        const fileNameB = getFileName(b.name)
-        return fileNameA.localeCompare(fileNameB)
-      })
+      // Sort the file.
+      extractedImages.sort((a, b) => a.name.localeCompare(b.name))
 
       setImagesLength(extractedImages.length)
-      await uploadImagesToCloudinary(extractedImages)
+      const imageURLs = await uploadImagesToS3(extractedImages)
 
+      if (images.length === 0) setImages(imageURLs)
       setUploading(false)
     } catch (error) {
       setUploading(false)
       console.error('Error uploading image:', error.message)
+    }
+  }
+
+  const uploadImagesToS3 = async (imagesArray) => {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(imagesArray),
+    })
+
+    if (!res.ok) {
+      setError('Error uploading images')
+    }
+
+    try {
+      const data = await res.json()
+      const urls = data.urls
+      setImages(urls)
+      return urls
+    } catch (err) {
+      setError('Error uploading images')
     }
   }
 
@@ -174,6 +197,7 @@ const CreateListing = () => {
   }
 
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -247,6 +271,7 @@ const CreateListing = () => {
                 <Spin size="small" /> Uploading...
               </div>
             )}
+            {error && <div className="text-red-500">{error}</div>}
           </div>
           <div>
             <label htmlFor="brand" className="block font-medium text-gray-700">
