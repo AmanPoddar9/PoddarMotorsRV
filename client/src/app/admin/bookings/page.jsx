@@ -117,10 +117,10 @@ const BookingsPage = () => {
               className="bg-white shadow-md rounded-md p-4"
             >
               <div className="mb-4">
-                <p className="font-semibold">
+              {booking.listingId &&  <p className="font-semibold">
                   Listing: {booking.listingId.brand} {booking.listingId.model} -{' '}
                   {booking.listingId.vehicleNumber}
-                </p>
+                </p>}
                 <p className="mt-1">Name: {booking.name}</p>
                 <p className="mt-1">Mobile Number: {booking.mobileNumber}</p>
                 <p className="mt-1">
