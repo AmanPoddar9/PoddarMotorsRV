@@ -128,7 +128,13 @@ const CreateListing = () => {
       extractedImages.sort((a, b) => a.name.localeCompare(b.name))
 
       setImagesLength(extractedImages.length)
-      const imageURLs = await uploadImagesToS3(extractedImages)
+      const [part1, part2, part3] = splitArrayIntoThree(extractedImages);
+      console.log(part1, part2, part3)
+      const imageURLs1 = await uploadImagesToS3(part1)
+      const imageURLs2 = await uploadImagesToS3(part2)
+      const imageURLs3 = await uploadImagesToS3(part3)
+      console.log(imageURLs1, imageURLs2, imageURLs3)
+      const imageURLs = [...imageURLs1, ...imageURLs2, ...imageURLs3]
       console.log(imageURLs)
       if (images.length === 0) setImages(imageURLs)
       setUploading(false)
@@ -137,6 +143,18 @@ const CreateListing = () => {
       console.error('Error uploading image:', error.message)
     }
   }
+
+  function splitArrayIntoThree(arr) {
+    const len = arr.length;
+    console.log(len)
+    const partSize = Math.ceil(len / 3);
+    console.log("PArt size:", partSize)
+    const part1 = arr.slice(0, partSize);
+    const part2 = arr.slice(partSize, partSize * 2);
+    const part3 = arr.slice(partSize * 2);
+
+    return [part1, part2, part3];
+}
 
   const uploadImagesToS3 = async (imagesArray) => {
     const res = await fetch('/api', {
