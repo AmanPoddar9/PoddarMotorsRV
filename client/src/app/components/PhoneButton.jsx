@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 const PhoneButton = () => {
-  const phoneNumber = '8873002702'
+  const phoneNumber = '8709119090'
 
   const pathname = usePathname()
   const isBuyPage = /^\/buy\/[a-zA-Z0-9-_]+$/.test(pathname)
