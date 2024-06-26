@@ -85,9 +85,9 @@ const BookingsPage = () => {
         Date: item.date,
         Time: item.time,
         'Mobile Number': item.mobileNumber,
-        Brand: item.listingId.brand,
-        Model: item.listingId.model,
-        'Vehicle No.': item.listingId.vehicleNumber,
+        Brand: item.listingId?.brand,
+        Model: item.listingId?.model,
+        'Vehicle No.': item.listingId?.vehicleNumber,
       }
     })
     const ws = XLSX.utils.json_to_sheet(tempArr)
@@ -118,8 +118,8 @@ const BookingsPage = () => {
             >
               <div className="mb-4">
               {booking.listingId &&  <p className="font-semibold">
-                  Listing: {booking.listingId.brand} {booking.listingId.model} -{' '}
-                  {booking.listingId.vehicleNumber}
+                  Listing: {booking.listingId?.brand} {booking.listingId?.model} -{' '}
+                  {booking.listingId?.vehicleNumber}
                 </p>}
                 <p className="mt-1">Name: {booking.name}</p>
                 <p className="mt-1">Mobile Number: {booking.mobileNumber}</p>
@@ -172,8 +172,8 @@ const BookingsPage = () => {
               >
                 <div className="mb-4">
                   <p className="font-semibold">
-                    Listing: {booking.listingId.brand} {booking.listingId.model}{' '}
-                    - {booking.listingId.vehicleNumber}
+                    Listing: {booking.listingId?.brand} {booking.listingId?.model}{' '}
+                    - {booking.listingId?.vehicleNumber}
                   </p>
                   <p className="mt-1">Name: {booking.name}</p>
                   <p className="mt-1">Mobile Number: {booking.mobileNumber}</p>
