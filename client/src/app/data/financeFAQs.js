@@ -56,7 +56,7 @@ export const financeFAQs = [
     answer: (
       <div>
         {/* Add a unordered list */}
-        <ul>
+        <ul class="custom-list">
           <li>Make sure you have a good credit score.</li>
           <li>Have a down payment ready.</li>
           <li>
