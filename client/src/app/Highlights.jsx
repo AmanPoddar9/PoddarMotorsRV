@@ -20,7 +20,7 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/VlrElIqM9HE?enablejsapi=1"
+              src="https://www.youtube.com/shorts/JcqdIqcY-Jw"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -32,7 +32,7 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/SoUEdK_yIqI?enablejsapi=1"
+              src="https://www.youtube.com/shorts/zKMXCnvbOTo"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

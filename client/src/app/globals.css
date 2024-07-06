@@ -188,4 +188,8 @@ html {
     height: 74vh;
     overflow-y: auto;
   }
+  .custom-list {
+    list-style: disc;
+    margin-left: 20px;
+  }
 }
