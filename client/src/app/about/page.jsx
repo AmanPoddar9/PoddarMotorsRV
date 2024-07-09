@@ -54,7 +54,7 @@ const AboutUs = () => {
           </div>
           <Image
             src={dayImage}
-            alt="Showroom during the day"
+            alt="Real Value Showroom"
             className="mx-auto md:w-[40%] w-[100%]"
           />
         </div>
@@ -166,7 +166,7 @@ const AboutUs = () => {
         </article>
         <Image
           src={cars}
-          alt="Showroom with cars"
+          alt="Used Cars in Showroom"
           className="mx-auto w-[100%] md:w-[40%] h-[70%]"
         />
       </section>
@@ -224,7 +224,7 @@ const AboutUs = () => {
         </article>
         <Image
           src={night}
-          alt="Showroom at night"
+          alt="Used Car Showroom"
           className="mx-auto w-[100%] md:w-[45%] h-[60%]"
         />
       </section>
