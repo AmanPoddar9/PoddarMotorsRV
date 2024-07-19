@@ -244,7 +244,7 @@ const page = ({ params: { id } }) => {
                 <SwiperSlide key={i} style={{ paddingBottom: '40px' }}>
                   <Image
                     src={carImage}
-                    alt="car-img"
+                    alt="second hand cars sale Poddar Motors Real Value Ranchi"
                     width={600}
                     height={400}
                     style={{ borderRadius: '15px' }}
