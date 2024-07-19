@@ -4,7 +4,7 @@ import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import PhoneButton from './components/PhoneButton'
-import Script from 'next/script';
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,8 +17,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-      <meta name="google-site-verification" content="uL--6MiSuQXVZ6-5v0W39EvGPd7r4cPjvjMWa-EBrKE" />
-      <Script id="meta-pixel-code" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
+        <meta
+          name="google-site-verification"
+          content="uL--6MiSuQXVZ6-5v0W39EvGPd7r4cPjvjMWa-EBrKE"
+        />
+        <Script
+          id="meta-pixel-code"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -29,15 +36,31 @@ export default function RootLayout({ children }) {
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '397160436657081');
           fbq('track', 'PageView');
-        ` }} />
+        `,
+          }}
+        />
         <noscript>
-          <img height="1" width="1" style={{ display: 'none' }}
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
             src="https://www.facebook.com/tr?id=397160436657081&ev=PageView&noscript=1"
           />
         </noscript>
-
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-W72KKBE49S"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-W72KKBE49S');
+          `}
+        </Script>
       </head>
-      <body style={{width:'100vw', overflowX:'hidden', paddingTop:'4rem'}}>
+      <body style={{ width: '100vw', overflowX: 'hidden', paddingTop: '4rem' }}>
         <Navbar />
         <AntdRegistry>{children}</AntdRegistry>
         <PhoneButton />
