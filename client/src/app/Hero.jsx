@@ -199,7 +199,7 @@ const Hero = () => {
           </a>
         </div>
         <div className="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
-          <Image src={carImage2} alt="Hero car image" priority />
+          <Image src={carImage2} alt="Second hand cars in Ranchi" priority />
         </div>
       </div>
 

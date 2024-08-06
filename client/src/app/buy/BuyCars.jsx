@@ -318,7 +318,7 @@ export default function Buy({ allListings }) {
           }
         }
         response.data.sort((a, b) => {
-          return carTypes.indexOf(a) - carTypes.indexOf(b);
+          return carTypes.indexOf(a) - carTypes.indexOf(b)
         })
         tempObj[index]['options'] = response.data.map((item) => {
           return {
@@ -328,7 +328,7 @@ export default function Buy({ allListings }) {
           }
         })
         setFilters(tempObj)
-        
+
         setTypes(response.data)
       }
     } catch (e) {

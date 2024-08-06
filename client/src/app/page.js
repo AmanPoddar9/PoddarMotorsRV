@@ -30,7 +30,7 @@ export default async function Home() {
       <Offers />
       <Highlights />
       <Testimonials />
-      <Faq FAQs={homeFAQ} title="Buy related" />
+      <Faq FAQs={homeFAQ} title="FAQs while buying a used car" />
       {/* <Contact /> */}
     </div>
   )

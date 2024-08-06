@@ -9,8 +9,8 @@ import Script from 'next/script'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Poddar Motors',
-  description: 'Real Value by Poddar Motors',
+  title: 'Poddar Motors Real Value',
+  description: 'Second hand car dealership in Ranchi Jharkhand',
 }
 
 export default function RootLayout({ children }) {
