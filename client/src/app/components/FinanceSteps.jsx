@@ -31,7 +31,7 @@ const FinanceSteps = () => {
                 <li>d. Rent Agreement (*)</li>
                 <li>e. Cheque Book</li>
                 <li>f. Passport-sized Photo</li>
-                <li>g. ITR (2 years) </li>
+                <li>g. ITR -Income Tax Return (2 years) </li>
               </ol>
             </div>
           </div>

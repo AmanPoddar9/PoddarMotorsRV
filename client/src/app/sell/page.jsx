@@ -172,10 +172,13 @@ const SellRequestForm = () => {
           property="og:url"
           content="https://poddar-motors-rv-hkxu.vercel.app/sell"
         />
-        <meta name="twitter:title" content="Sell Your Car - Poddar Motors" />
+        <meta
+          name="twitter:title"
+          content="Sell Your Car - Poddar Motors Real Value "
+        />
         <meta
           name="twitter:description"
-          content="Sell your car quickly and easily with Poddar Motors. Get the best price for your used car in Ranchi and Dhanbad."
+          content="Sell your car quickly and easily with Poddar Motors Real Value . Get the best price for your used car in Ranchi and Jharkhand."
         />
         <meta name="twitter:image" content={landing.src} />
         <meta name="twitter:card" content="summary_large_image" />
