@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from '../styles/Sell.module.css'
 import axios from 'axios'
+import Head from 'next/head'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import FaqCard from '../components/FaqCard'
