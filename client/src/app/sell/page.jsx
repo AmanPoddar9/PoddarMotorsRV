@@ -154,7 +154,7 @@ const SellRequestForm = () => {
         <title>Sell Your Car | Best Price & Instant Payment | Real Value</title>
         <meta
           name="description"
-          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment. Submit your car details now!"
+          content="Sell your car quickly and easily with Poddar Motors Real Value. Get the best price, hassle-free process, and instant payment. Submit your car details now!"
         />
         <meta
           name="keywords"
@@ -162,7 +162,7 @@ const SellRequestForm = () => {
         />
         <meta
           property="og:title"
-          content="Sell Your Car | Best Price & Instant Payment | Real Value"
+          content="Sell Your Car | Best Price & Instant Payment | Poddar Motors Real Value"
         />
         <meta
           property="og:description"
@@ -191,7 +191,7 @@ const SellRequestForm = () => {
       <div className="text-left md:px-6 bg-custom-black text-custom-seasalt overflow-x-hidden py-16 pt-8">
         <div>
           <div className="text-left max-w-screen-xl mx-auto mb-4 pt-4 md:text-5xl text-3xl font-bold md:px-0 px-4">
-            Sell Quick With Real Value
+            Sell Quick With Poddar Motors Real Value
           </div>
           <div className="max-w-screen-xl mx-auto md:px-0 pl-[5vw]">
             <div className="flex flex-col items-center justify-center border-2 border-opacity-30 border-custom-seasalt rounded-md relative  mt-8 w-max">
@@ -244,7 +244,7 @@ const SellRequestForm = () => {
                     onChange={handleChange}
                     className="w-full p-2 border border-custom-jet rounded text-black"
                     pattern="^(?:\+?91\s?)?0?[0-9]{10}$"
-                    title="Please enter a valid phone number (e.g., +91XXXXXXXXXX or XXXXXXXXXX)"
+                    title="8709119090"
                     required
                   />
                 </div>
