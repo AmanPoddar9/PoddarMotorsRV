@@ -150,6 +150,44 @@ const SellRequestForm = () => {
 
   return (
     <>
+      <Head>
+        <title>Sell Your Car | Best Price & Instant Payment | Real Value</title>
+        <meta
+          name="description"
+          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment. Submit your car details now!"
+        />
+        <meta
+          name="keywords"
+          content="sell car, best car price, instant car payment, car valuation, car selling process, hassle-free car sale"
+        />
+        <meta
+          property="og:title"
+          content="Sell Your Car | Best Price & Instant Payment | Real Value"
+        />
+        <meta
+          property="og:description"
+          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment."
+        />
+        <meta property="og:image" content="/path-to-your-image.jpg" />
+        <meta
+          property="og:url"
+          content="https://poddar-motors-rv-hkxu.vercel.app/sell"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Sell Your Car | Best Price & Instant Payment | Real Value"
+        />
+        <meta
+          name="twitter:description"
+          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment."
+        />
+        <meta name="twitter:image" content="/path-to-your-image.jpg" />
+        <link
+          rel="canonical"
+          href="https://poddar-motors-rv-hkxu.vercel.app/sell"
+        />
+      </Head>
       <div className="text-left md:px-6 bg-custom-black text-custom-seasalt overflow-x-hidden py-16 pt-8">
         <div>
           <div className="text-left max-w-screen-xl mx-auto mb-4 pt-4 md:text-5xl text-3xl font-bold md:px-0 px-4">
