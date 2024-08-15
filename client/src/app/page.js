@@ -9,6 +9,7 @@ import Faq from './components/Faq'
 import Contact from './components/Contact'
 import { homeFAQ } from './data/homeFAQs'
 import ButtonRows from './components/ButtonRows'
+import Head from 'next/head'
 
 export default async function Home() {
   let data
@@ -23,6 +24,35 @@ export default async function Home() {
   }
   return (
     <div style={{ overflow: 'hidden !important' }}>
+      <Head>
+        <title>Home | Poddar Motors Real Value</title>
+        <meta
+          name="description"
+          content="Discover the best deals on used cars with Poddar Motors Real Value. Browse our featured cars and enjoy top-notch services."
+        />
+        <meta
+          name="keywords"
+          content="used cars, best car deals, car sales, car services, Poddar Motors Real Value"
+        />
+        <meta property="og:title" content="Home | Poddar Motors Real Value" />
+        <meta
+          property="og:description"
+          content="Discover the best deals on used cars with Poddar Motors Real Value. Browse our featured cars and enjoy top-notch services."
+        />
+        <meta property="og:image" content="/path-to-your-og-image.jpg" />
+        <meta
+          property="og:url"
+          content="https://poddar-motors-rv-hkxu.vercel.app"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Home | Poddar Motors Real Value" />
+        <meta
+          name="twitter:description"
+          content="Discover the best deals on used cars with Poddar Motors Real Value."
+        />
+        <meta name="twitter:image" content="/path-to-your-twitter-image.jpg" />
+        <link rel="canonical" href="https://poddar-motors-rv-hkxu.vercel.app" />
+      </Head>
       <Hero />
       <ButtonRows />
       <FeaturedCars featuredCarData={data} />
