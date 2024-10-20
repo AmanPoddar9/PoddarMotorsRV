@@ -5,7 +5,7 @@ const Highlights = () => {
     <div className="py-16 bg-custom-platinum">
       <div className="mx-auto max-w-7xl sm:px-6 lg:px-6 px-4">
         <h2 className="text-4xl font-bold text-custom-black mb-5 pt-7">
-          Why Choose Us?
+          Learn More from our YouTube Channel
         </h2>
 
         <div
@@ -68,7 +68,7 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/bpGkFT4VUko?enablejsapi=1"
+              src="https://www.youtube.com/embed/3itLjzY3EV4?si=C8zXOEkEOXoUh8y6"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -80,7 +80,7 @@ const Highlights = () => {
             <iframe
               width="100%"
               height="250"
-              src="https://www.youtube.com/embed/bpGkFT4VUko?enablejsapi=1"
+              src="https://www.youtube.com/embed/UKZyllAkv_w?si=6B8qDMdEzwJiFiPM"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -88,16 +88,6 @@ const Highlights = () => {
               allowFullScreen
             ></iframe>
           </div>
-          <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/3kIJQBe0UPs?si=qUDDIZRAdlCb09G1"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
         </div>
       </div>
     </div>
