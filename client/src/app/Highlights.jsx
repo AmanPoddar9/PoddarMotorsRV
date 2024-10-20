@@ -1,8 +1,48 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 
 const Highlights = () => {
   return (
     <section className="py-16 bg-custom-platinum">
+      <Helmet>
+        {/* Page Title for SEO */}
+        <title>
+          Learn More from Our YouTube Channel - Used Cars, Maintenance, and Auto
+          Financing
+        </title>
+
+        {/* Meta Description for SEO */}
+        <meta
+          name="description"
+          content="Explore our YouTube channel for expert insights on used cars, car maintenance, auto financing, and more. Stay updated with our latest tips and tutorials."
+        />
+
+        {/* Structured Data for Google to Index */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "VideoObject",
+              "name": "Learn More from our YouTube Channel",
+              "description": "Explore our YouTube channel for expert insights on used cars, maintenance, and auto financing.",
+              "thumbnailUrl": "https://img.youtube.com/vi/JcqdIqcY-Jw/maxresdefault.jpg",
+              "uploadDate": "2023-10-10",
+              "duration": "PT2M30S",
+              "contentUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw",
+              "embedUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw",
+              "publisher": {
+                "@type": "Organization",
+                "name": "Poddar Motors",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://example.com/logo.png"
+                }
+              }
+            }
+          `}
+        </script>
+      </Helmet>
+
       <div className="mx-auto max-w-7xl sm:px-6 lg:px-6 px-4">
         <header>
           <h2 className="text-4xl font-bold text-custom-black mb-5 pt-7">
@@ -129,21 +169,6 @@ const Highlights = () => {
             </p>
           </div>
         </div>
-
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {`{
-            "@context": "https://schema.org",
-            "@type": "VideoObject",
-            "name": "Learn More from our YouTube Channel",
-            "description": "Explore our YouTube channel for expert insights on used cars, maintenance, and auto financing.",
-            "thumbnailUrl": "https://img.youtube.com/vi/JcqdIqcY-Jw/maxresdefault.jpg",
-            "uploadDate": "2023-10-10",
-            "duration": "PT2M30S",
-            "contentUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw",
-            "embedUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw"
-          }`}
-        </script>
       </div>
     </section>
   )
