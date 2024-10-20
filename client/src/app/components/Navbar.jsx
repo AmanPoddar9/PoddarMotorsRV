@@ -64,6 +64,8 @@ const Navbar = () => {
             <NavLink href="/finance" text="Finance" />
             <NavLink href="/contact" text="Contact Us" />
             <NavLink href="/about" text="About Us" />
+            <NavLink href="/videos" text="Videos" />{' '}
+            {/* Add this line for desktop */}
           </div>
           <div className="md:hidden m-auto">
             <Button
@@ -155,6 +157,16 @@ const Navbar = () => {
               onClick={onClose}
             >
               Contact Us
+            </a>
+          </Link>
+          <Link legacyBehavior href="/videos">
+            {' '}
+            {/* Add this line for mobile */}
+            <a
+              className="text-white font-bold focus:text-custom-yellow"
+              onClick={onClose}
+            >
+              Videos
             </a>
           </Link>
         </div>
