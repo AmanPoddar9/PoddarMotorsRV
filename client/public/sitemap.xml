@@ -42,6 +42,21 @@
   <lastmod>2024-10-19T06:25:57+00:00</lastmod>
   <priority>0.80</priority>
 </url>
+ <video:video>
+      <video:thumbnail_loc>https://img.youtube.com/vi/JcqdIqcY-Jw/default.jpg</video:thumbnail_loc>
+      <video:title><![CDATA[Sell your car in 30 mintues]]></video:title>
+      <video:description><![CDATA[Sell your car in 30 minutes in Ranchi and Jharkhand.]]></video:description>
+      <video:content_loc>https://www.youtube.com/watch?v=JcqdIqcY-Jw</video:content_loc>
+      <video:player_loc>https://www.youtube.com/embed/JcqdIqcY-Jw</video:player_loc>
+  </video:video>
+  <video:video>
+      <video:thumbnail_loc>https://img.youtube.com/vi/nt6Zsosgv-A/default.jpg</video:thumbnail_loc>
+      <video:title><![CDATA[Buy second hand sedans]]></video:title>
+      <video:description><![CDATA[Second hand Sedans for sale in Ranchi.]]></video:description>
+      <video:content_loc>https://www.youtube.com/watch?v=nt6Zsosgv-A</video:content_loc>
+      <video:player_loc>https://www.youtube.com/embed/nt6Zsosgv-A</video:player_loc>
+  </video:video>
+</url>
 
 
 </urlset>

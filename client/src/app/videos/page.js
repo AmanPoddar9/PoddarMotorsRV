@@ -4,15 +4,13 @@ const Videos = () => {
   const videoData = [
     {
       id: 'JcqdIqcY-Jw', // Replace with actual video IDs
-      title: 'Car Review: Model X',
-      description:
-        'An in-depth review of the Model X, showcasing its features and performance.',
+      title: 'Sell Your Car in 30 minutes',
+      description: 'Sell your car in 30 minutes in Ranchi and Jharkhand.',
     },
     {
       id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Test Drive: Model Y',
-      description:
-        'Join us as we take the Model Y for a test drive and explore its capabilities.',
+      title: 'Second hand sedans',
+      description: 'Buy second hand sedans in Ranchi',
     },
     {
       id: 'nt6Zsosgv-A', // Replace with actual video ID
