@@ -161,15 +161,19 @@ const SellRequestForm = () => {
   return (
     <>
       <Head>
-        <title>Sell Your Car | Best Price & Instant Payment | Real Value</title>
+        <title>
+          Sell Your Car Fast | Get the Best Price Instantly | Real Value
+        </title>
         <meta
           name="description"
-          content="Sell your car quickly and easily with Poddar Motor s Real Value. Get the best price, hassle-free process, and instant payment. Submit your car details now!"
+          content="Quickly sell your car with Poddar Motors. Get the best price and enjoy a hassle-free process. Submit your details for an instant valuation!"
         />
+
         <meta
           name="keywords"
-          content="sell car, best car price, instant car payment, car valuation, car selling process, hassle-free car sale"
+          content="sell used car, car valuation, fast car sale, best car price, instant payment for cars, hassle-free car selling , sell car in ranchi, get car valuation, car for sale, sell my car, get car valuation, car dealerships in ranchi, sell car in Ranchi, sell car in Bokaro, Sell car in Jamshedpur, car sales"
         />
+
         <meta
           property="og:title"
           content="Sell Your Car | Best Price & Instant Payment | Poddar Motors Real Value"
@@ -202,7 +206,7 @@ const SellRequestForm = () => {
         <div className="flex flex-col md:flex-row max-w-screen-xl mx-auto md:space-x-8">
           {/* Left Section - Heading */}
           <div className="md:w-1/2 mb-8 md:mb-0">
-            <h1 className="text-left mb-4 pt-4 md:text-5xl text-3xl font-bold">
+            <h1 className="text-left mb-4 pt-4 text-4xl font-bold text-custom-yellow md:text-5xl">
               Sell Quick With Poddar Motors Real Value & get instant valuation
             </h1>
           </div>
@@ -212,14 +216,14 @@ const SellRequestForm = () => {
             <div className="flex flex-col items-center justify-center border-2 border-opacity-30 border-custom-seasalt rounded-md relative w-full">
               <Image
                 src={landing}
+                alt="Landing image for selling cars"
                 className="md:h-[60vh] md:w-auto w-[90vw] h-auto"
               />
+
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="
-              hover:bg-custom-yellow hover:text-custom-black text-xl 
-              border-1 border-opacity-45 text-custom-seasalt md:px-16 md:py-4 px-10 py-2 w-full h-full
-              "
+                className="bg-custom-yellow text-custom-black hover:bg-custom-black hover:text-white text-xl 
+  border border-transparent md:px-16 md:py-4 px-10 py-2 rounded transition duration-300"
               >
                 Get Valuation!
               </button>
@@ -414,7 +418,10 @@ const SellRequestForm = () => {
               "
               >
                 <div className="">
-                  <Image src={step.image} />
+                  <Image
+                    src={step.image}
+                    alt="Car selling process, how to sell car?"
+                  />
                   <p className="mt-2 text-center text-sm text-custom-black">
                     {step.description}{' '}
                     {/* This is where the description goes */}
