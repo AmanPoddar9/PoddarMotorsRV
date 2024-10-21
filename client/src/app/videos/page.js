@@ -15,24 +15,24 @@ const Videos = () => {
         'Join us as we take the Model Y for a test drive and explore its capabilities.',
     },
     {
-      id: 'your_third_video_id', // Replace with actual video ID
+      id: 'nt6Zsosgv-A', // Replace with actual video ID
       title: 'Top 5 Cars of 2024',
       description: 'Our selection of the top 5 cars to consider in 2024.',
     },
     {
-      id: 'your_fourth_video_id', // Replace with actual video ID
+      id: 'nt6Zsosgv-A', // Replace with actual video ID
       title: 'Luxury Cars Overview',
       description:
         'A detailed look at some of the most luxurious cars available today.',
     },
     {
-      id: 'your_fifth_video_id', // Replace with actual video ID
+      id: 'nt6Zsosgv-A', // Replace with actual video ID
       title: 'Eco-Friendly Cars',
       description:
         'Discover the best eco-friendly cars for a sustainable future.',
     },
     {
-      id: 'your_sixth_video_id', // Replace with actual video ID
+      id: 'nt6Zsosgv-A', // Replace with actual video ID
       title: 'Affordable Cars Under 10 Lakhs',
       description:
         'Our picks for the best budget-friendly cars available right now.',
@@ -50,7 +50,7 @@ const Videos = () => {
         />
         <meta
           name="keywords"
-          content="car videos, car reviews, Poddar Motors"
+          content="car videos, used cars in Ranchi, Poddar Motors Real value"
         />
       </Head>
       <h1 className="text-3xl font-bold mb-4 text-center">Our Car Videos</h1>
