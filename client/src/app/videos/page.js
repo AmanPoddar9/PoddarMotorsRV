@@ -10,7 +10,7 @@ const Videos = () => {
     {
       id: 'nt6Zsosgv-A', // Replace with actual video ID
       title: 'Second hand sedans',
-      description: 'Buy second hand sedans in Ranchi',
+      description: 'Second hand Sedans for sale in Ranchi.',
     },
     {
       id: 'nt6Zsosgv-A', // Replace with actual video ID
