@@ -13,9 +13,11 @@ const Videos = () => {
       description: 'Second hand Sedans for sale in Ranchi.',
     },
     {
-      id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Top 5 Cars of 2024',
-      description: 'Our selection of the top 5 cars to consider in 2024.',
+      id: 'dNMn37Ct0OE', // Replace with actual video ID
+      title:
+        'Customer से कार खरीदने से पहले ऐसे होता है, 242 points quality Check!',
+      description:
+        'जब आप Real Value से अपनी कार खरीदते हैं, तो आपको सिर्फ एक प्री-ओन्ड कार नहीं मिलती, बल्कि एक सख्त गुणवत्ता जांच से गुजर चुकी कार मिलती है। हम हर कार पर 242 पॉइंट्स क्वालिटी चेक करते हैं ताकि आप पूरी शांति और भरोसे के साथ ड्राइव कर सकें। इंजन से लेकर ब्रेक्स, सस्पेंशन से लेकर इंटीरियर तक, हर छोटे-बड़े पहलू की जाँच की जाती है ताकि आपकी कार हर तरह से Perfect हो।',
     },
     {
       id: 'nt6Zsosgv-A', // Replace with actual video ID
