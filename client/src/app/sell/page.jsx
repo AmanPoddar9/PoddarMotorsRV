@@ -190,12 +190,17 @@ const SellRequestForm = () => {
         />
       </Head>
       <div className="text-left md:px-6 bg-custom-black text-custom-seasalt overflow-x-hidden py-16 pt-8">
-        <div>
-          <h1 className="text-left max-w-screen-xl mx-auto mb-4 pt-4 md:text-5xl text-3xl font-bold md:px-0 px-4">
-            Sell Quick With Poddar Motors Real Value & get instant valuation
-          </h1>
-          <div className="max-w-screen-xl mx-auto md:px-0 pl-[5vw]">
-            <div className="flex flex-col items-center justify-center border-2 border-opacity-30 border-custom-seasalt rounded-md relative  mt-8 w-max">
+        <div className="flex flex-col md:flex-row max-w-screen-xl mx-auto md:space-x-8">
+          {/* Left Section - Heading */}
+          <div className="md:w-1/2 mb-8 md:mb-0">
+            <h1 className="text-left mb-4 pt-4 md:text-5xl text-3xl font-bold">
+              Sell Quick With Poddar Motors Real Value & get instant valuation
+            </h1>
+          </div>
+
+          {/* Right Section - Image and Button */}
+          <div className="md:w-1/2 flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center border-2 border-opacity-30 border-custom-seasalt rounded-md relative w-full">
               <Image
                 src={landing}
                 className="md:h-[60vh] md:w-auto w-[90vw] h-auto"
@@ -204,7 +209,7 @@ const SellRequestForm = () => {
                 onClick={() => setShowForm(!showForm)}
                 className="
             hover:bg-custom-yellow hover:text-custom-black text-xl 
-            border-1 border-opacity-45 text-custom-seasalt md:px-16 md:py-4 px-10 py-2 w-[100%] h-[100%] 
+            border-1 border-opacity-45 text-custom-seasalt md:px-16 md:py-4 px-10 py-2 w-full h-full
             "
               >
                 Get Valuation!
@@ -213,15 +218,22 @@ const SellRequestForm = () => {
           </div>
         </div>
 
+        {/* Modal Form */}
         {showForm && (
           <div className="modal">
-            <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit}>
+            <form
+              className="grid grid-cols-1 gap-4 p-4 bg-custom-gray rounded-lg shadow-lg"
+              onSubmit={handleSubmit}
+            >
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-2xl text-custom-seasalt">
                   Valuation Form
                 </h3>
                 <button onClick={() => setShowForm(false)}>
-                  <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  <XMarkIcon
+                    className="h-6 w-6 text-custom-seasalt"
+                    aria-hidden="true"
+                  />
                 </button>
               </div>
               <div>
