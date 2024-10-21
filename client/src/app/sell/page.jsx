@@ -142,14 +142,19 @@ const SellRequestForm = () => {
     {
       title: 'Best Price',
       image: why1,
+      description: 'Get the maximum price for your car GUARANTEED',
     },
     {
       title: 'Hassle Free',
       image: why2,
+      description:
+        'All paperwork and transfer regulations will be taken care of by us',
     },
     {
       title: 'Instant Payment',
       image: why3,
+      description:
+        'No hidden charges and complete payment will be made upfront and instantly',
     },
   ]
 
@@ -440,6 +445,9 @@ const SellRequestForm = () => {
               "
               >
                 <Image src={step.image} />
+                <p className="mt-2 text-center text-sm text-custom-black">
+                  {step.description} {/* This is where the description goes */}
+                </p>
               </div>
             ))}
           </div>
