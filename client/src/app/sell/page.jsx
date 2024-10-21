@@ -206,8 +206,8 @@ const SellRequestForm = () => {
         <div className="flex flex-col md:flex-row max-w-screen-xl mx-auto md:space-x-8">
           {/* Left Section - Heading */}
           <div className="md:w-1/2 mb-8 md:mb-0">
-            <h1 className="text-left mb-4 pt-4 text-4xl font-bold text-custom-yellow md:text-5xl">
-              Sell Quick With Poddar Motors Real Value & get instant valuation
+            <h1 className="text-left mb-4 pt-4 text-4xl font-bold text-custom-white md:text-5xl">
+              Find out what your used car is worth
             </h1>
           </div>
 
