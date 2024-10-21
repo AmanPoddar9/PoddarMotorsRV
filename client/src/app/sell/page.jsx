@@ -116,21 +116,25 @@ const SellRequestForm = () => {
       title: 'Digital Verification',
       subTitle: 'Submit the above form',
       image: steps1,
+      description: 'Step 1: Submit the above form.',
     },
     {
       title: 'Call Our Purchase Expert',
       subTitle: 'Get valuation instantly',
       image: steps2,
+      description: 'Step 2: Our Purchase team will call you',
     },
     {
       title: 'Physical Inspection',
       subTitle: '',
       image: steps3,
+      description: 'Step 3: Bring your car for physical inspection',
     },
     {
       title: 'Car Pickup and Payment',
       subTitle: '',
       image: steps4,
+      description: 'Step 4: Instant payment and Paperwork.',
     },
   ]
 
@@ -208,9 +212,9 @@ const SellRequestForm = () => {
               <button
                 onClick={() => setShowForm(!showForm)}
                 className="
-            hover:bg-custom-yellow hover:text-custom-black text-xl 
-            border-1 border-opacity-45 text-custom-seasalt md:px-16 md:py-4 px-10 py-2 w-full h-full
-            "
+              hover:bg-custom-yellow hover:text-custom-black text-xl 
+              border-1 border-opacity-45 text-custom-seasalt md:px-16 md:py-4 px-10 py-2 w-full h-full
+              "
               >
                 Get Valuation!
               </button>
@@ -389,23 +393,27 @@ const SellRequestForm = () => {
       <div className="text-left md:px-6 bg-custom-seasalt text-custom-black overflow-x-hidden pb-16 pt-0">
         <div className="max-w-screen-xl mx-auto">
           <div className="font-semibold text-3xl my-8  mt-20 md:px-0 px-4">
-            4 Steps To Sell Your Car
+            Steps To Sell Your Car
           </div>
           <div className="">
             {stepsToSell.map((step, index) => (
               <div
                 key={index}
                 className="
-            md:inline-block 
-            block w-[17rem] bg-custom-seasalt p-4 rounded-lg 
-            shadow-md align-top mr-8 md:my-2 my-4 hover:scale-105  
-            hover:shadow-xl  transition-transform duration-200
-            md:ml-0 md:translate-x-0 
-            ml-[50%] -translate-x-[50%]
-            "
+              md:inline-block 
+              block w-[17rem] bg-custom-seasalt p-4 rounded-lg 
+              shadow-md align-top mr-8 md:my-2 my-4 hover:scale-105  
+              hover:shadow-xl  transition-transform duration-200
+              md:ml-0 md:translate-x-0 
+              ml-[50%] -translate-x-[50%]
+              "
               >
                 <div className="">
                   <Image src={step.image} />
+                  <p className="mt-2 text-center text-sm text-custom-black">
+                    {step.description}{' '}
+                    {/* This is where the description goes */}
+                  </p>
                 </div>
               </div>
             ))}
@@ -423,13 +431,13 @@ const SellRequestForm = () => {
               <div
                 key={index}
                 className="
-            md:inline-block block  w-[20rem]
-             bg-custom-seasalt p-4 rounded-lg shadow-md 
-             align-top mr-8 md:my-2 my-4 
-             hover:scale-105  hover:shadow-xl  transition-transform duration-200 
-            md:ml-0 md:translate-x-0 
-            ml-[50%] -translate-x-[50%]
-            "
+              md:inline-block block  w-[20rem]
+              bg-custom-seasalt p-4 rounded-lg shadow-md 
+              align-top mr-8 md:my-2 my-4 
+              hover:scale-105  hover:shadow-xl  transition-transform duration-200 
+              md:ml-0 md:translate-x-0 
+              ml-[50%] -translate-x-[50%]
+              "
               >
                 <Image src={step.image} />
               </div>
