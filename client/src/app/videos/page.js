@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import React from 'react'
 
 const Videos = () => {
   const videoData = [
@@ -67,7 +68,7 @@ const Videos = () => {
         {videoData.map((video) => (
           <div
             key={video.id}
-            className="bg-white shadow-md rounded-lg overflow-hidden"
+            className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-xl duration-300"
           >
             <iframe
               width="100%"
@@ -77,10 +78,13 @@ const Videos = () => {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              className="rounded-t-lg"
             ></iframe>
             <div className="p-4">
-              <h2 className="text-lg font-semibold">{video.title}</h2>
-              <p className="text-gray-700">{video.description}</p>
+              <h2 className="text-lg font-semibold text-gray-800">
+                {video.title}
+              </h2>
+              <p className="text-gray-600 mt-2">{video.description}</p>
             </div>
           </div>
         ))}
