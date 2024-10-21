@@ -20,22 +20,24 @@ const Videos = () => {
         'जब आप Real Value से अपनी कार खरीदते हैं, तो आपको सिर्फ एक प्री-ओन्ड कार नहीं मिलती, बल्कि एक सख्त गुणवत्ता जांच से गुजर चुकी कार मिलती है। हम हर कार पर 242 पॉइंट्स क्वालिटी चेक करते हैं ताकि आप पूरी शांति और भरोसे के साथ ड्राइव कर सकें। इंजन से लेकर ब्रेक्स, सस्पेंशन से लेकर इंटीरियर तक, हर छोटे-बड़े पहलू की जाँच की जाती है ताकि आपकी कार हर तरह से Perfect हो।',
     },
     {
-      id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Luxury Cars Overview',
+      id: 'kOxavW5GrfA', // Replace with actual video ID
+      title:
+        'Second-Hand Mahindra Bolero for Sale in Ranchi | Best Prices & Financing Options',
       description:
-        'A detailed look at some of the most luxurious cars available today.',
+        'Second hand Mahindra Bolero Stock available for sale at real value ranchi jharkhand. Best dealership in jharkhand for used pre owned cars.🚗Why Choose Real Value? Leading and oldest Second-hand car dealer in Jharkhand 0% Down payment Finance Facility (https://www.poddarmotors.com/finance) 🚘More than 100+ Used cars used cars at one place. From Budget Friendly to Luxury second hand used cars available as per requirement and budget. Visit-- https://www.poddarmotors.com/buy ',
     },
     {
-      id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Eco-Friendly Cars',
+      id: '6SlTQNeRes', // Replace with actual video ID
+      title:
+        'Maruti Suzuki Celerio at Real Value! Explore Affordable Second-Hand Cars in Jharkhand',
       description:
-        'Discover the best eco-friendly cars for a sustainable future.',
+        'Maruti Suzuki Celerio Stock available for sale at Poddar Motors Real Value Ranchi, Best destination for second hand preowned used cars in Jharkhand! Buy Smart Sell Fast!.',
     },
     {
-      id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Affordable Cars Under 10 Lakhs',
-      description:
-        'Our picks for the best budget-friendly cars available right now.',
+      id: 'jEgCH2bK16M', // Replace with actual video ID
+      title:
+        'Maruti Suzuki Swift @ 1.5 Lacs ONLY !! | Used Cars in Ranchi Jharkhand | Real Value Ranchi',
+      description: 'Maruti Suzuki swift for sale',
     },
     // Add more video objects as needed
   ]
