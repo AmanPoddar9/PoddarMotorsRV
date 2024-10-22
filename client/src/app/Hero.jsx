@@ -182,12 +182,13 @@ const Hero = () => {
           </h1>
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
             {/* Added a link to financing options */}
-            Your one-stop-shop for buying, selling, and financing cars.
-            <a href="/  " className="text-custom-yellow hover:underline">
+            Your one-stop-shop for buying, selling,
+            <a href="/finance" className="text-custom-yellow hover:underline">
               {' '}
-              Learn more about our financing options.
+              Financing
             </a>
-            We offer the best prices and the best deals on all types of cars.
+            and cars.
+            <p>A brand you can trust</p>
           </p>
           <a
             href="/buy"
