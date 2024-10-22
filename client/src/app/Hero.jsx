@@ -185,7 +185,7 @@ const Hero = () => {
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
             {/* Added a link to financing options */}
             Your one-stop-shop for buying, selling, and financing cars.
-            <a href="/finance" className="text-custom-yellow hover:underline">
+            <a href="/  " className="text-custom-yellow hover:underline">
               {' '}
               Learn more about our financing options.
             </a>
@@ -214,9 +214,9 @@ const Hero = () => {
             </span>
           </a>
         </div>
-        <div className="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
+        {/* <div className="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
           <Image src={carImage2} alt="Second hand cars in Ranchi" priority />
-        </div>
+        </div> */}
       </div>
 
       <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4">
