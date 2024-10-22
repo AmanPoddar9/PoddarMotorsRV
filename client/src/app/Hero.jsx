@@ -8,7 +8,7 @@ import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
 
 // Importing BrandCard component
-import { BrandCard } from './components/BrandCard' // Adjust the import path as needed
+import { BrandCard } from './components/ui/Buttonrows/BrandCard' // Adjust the import path as needed
 
 import audi from '@/images/brands/audi.png'
 import bmw from '@/images/brands/bmw.png'
