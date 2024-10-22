@@ -182,12 +182,11 @@ const Hero = () => {
           </h1>
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
             {/* Added a link to financing options */}
-            Your one-stop-shop for buying, selling,
+            Your one-stop shop for buying, selling and
             <a href="/finance" className="text-custom-yellow hover:underline">
               {' '}
-              Financing
+              Financing used cars
             </a>
-            and cars.
             <p>A brand you can trust</p>
           </p>
           <a
