@@ -73,7 +73,7 @@ const ButtonCard = ({ item, type }) => (
   </div>
 )
 
-const BrandCard = ({ logoUrl, name }) => (
+export const BrandCard = ({ logoUrl, name }) => (
   <div
     className="flex flex-col md:inline-block items-center justify-center bg-custom-seasalt cursor-pointer shadow-md rounded-lg p-3 hover:bg-custom-platinum"
     onClick={() => handleBrandClick(name)}
