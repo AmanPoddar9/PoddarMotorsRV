@@ -172,32 +172,6 @@ const ButtonRows = () => {
 
   return (
     <section className="pt-12 pb-24 bg-white text-custom-black">
-      <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4 relative z-20">
-        <div className="mr-auto place-self-center lg:col-span-7">
-          <p className="max-w-2xl mb-12 font-light text-custom-platinum md:text-lg lg:mb-0 lg:text-xl">
-            Or get started directly by...
-          </p>
-          <div className="button-container -mt-4">
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={brands} label="Brand" />
-            </span>
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={types} label="Segment" />
-            </span>
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={budgets} label="Budget" />
-            </span>
-            <span className="button-wrapper mr-3 md:mt-9">
-              <a
-                href="/buy"
-                className="inline-flex items-center justify-center px-6 py-4 text-lg translate-y-[0.2rem] font-medium text-center border rounded-lg text-custom-seasalt hover:text-custom-jet focus:ring-4 border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10"
-              >
-                View All Cars
-              </a>
-            </span>
-          </div>
-        </div>
-      </div>
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6">
         <div className="mb-6">
           <h2 className="text-4xl font-bold mb-5 text-custom-black">
