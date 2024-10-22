@@ -177,7 +177,8 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4">
+      {/* This section is moved below the background image */}
+      <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4 relative z-20">
         <div className="mr-auto place-self-center lg:col-span-7">
           <p className="max-w-2xl mb-12 font-light text-custom-platinum md:text-lg lg:mb-0 lg:text-xl">
             Or get started directly by...
