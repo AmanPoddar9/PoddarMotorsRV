@@ -30,6 +30,21 @@ import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
 
+const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+const [isDesktop, setDesktop] = useState(false)
+const updateComponent = () => {
+  setDesktop(window.innerWidth > 1024)
+}
+useEffect(() => {
+  if (window.innerWidth > 1024) {
+    setDesktop(true)
+  }
+}, [])
+
+useEffect(() => {
+  window.addEventListener('resize', updateComponent)
+  return () => window.removeEventListener('resize', updateComponent)
+})
 const imageStyles = {
   width: '2.5rem',
   height: '2.5rem',
