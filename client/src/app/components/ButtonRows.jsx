@@ -110,12 +110,7 @@ const ButtonRows = () => {
   const [loading, setLoading] = useState(true)
   const [brands, setBrands] = useState([])
 
-  const types = [
-    'Hatchback',
-    'Compact SUV',
-    'Full Size Sedan',
-    'MUV/MPV',
-  ]
+  const types = ['Hatchback', 'Compact SUV', 'Full Size Sedan', 'MUV/MPV']
   const brandsMapping = {
     'Maruti Suzuki': suzuki,
     Mahindra: mahindra,
@@ -180,7 +175,7 @@ const ButtonRows = () => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6">
         <div className="mb-6">
           <h2 className="text-4xl font-bold mb-5 text-custom-black">
-            Find your dream car.
+            Find your dream car
           </h2>
         </div>
       </div>
@@ -196,7 +191,9 @@ const ButtonRows = () => {
       ) : (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6">
-            <h3 className="text-2xl font-bold mb-3 text-custom-jet">Brands</h3>
+            <h3 className="text-2xl font-bold mb-3 text-custom-jet">
+              Choose a Brand
+            </h3>
             {isDesktop ? (
               <BrandScrollContainer
                 brands={Object.keys(brandsMapping)}
@@ -232,7 +229,7 @@ const ButtonRows = () => {
               </Swiper>
             )}
             <h3 className="text-2xl font-bold mb-3 mt-8 text-custom-jet">
-              Types
+              Car Segment
             </h3>
             <div className="flex flex-wrap gap-4">
               {isDesktop ? (
