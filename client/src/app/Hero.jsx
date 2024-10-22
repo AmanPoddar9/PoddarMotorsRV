@@ -181,7 +181,7 @@ const Hero = () => {
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
             {/* Added a link to financing options */}
             Your one-stop-shop for buying, selling, and financing cars.
-            <a href="/finance" className="text-custom-yellow hover:underline">
+            <a href="/financing" className="text-custom-yellow hover:underline">
               {' '}
               Learn more about our financing options.
             </a>
@@ -189,13 +189,13 @@ const Hero = () => {
           </p>
           <a
             href="/buy"
-            className="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center border rounded-lg focus:ring-4 focus:ring-custom-black text-custom-black border-custom-black bg-custom-platinum mr-5 hover:!bg-custom-yellow"
+            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-center border rounded-lg focus:ring-4 focus:ring-custom-black text-custom-black border-custom-black bg-custom-platinum mr-5 hover:!bg-custom-yellow" // Increased padding and font size
           >
             Buy Car
           </a>
           <a
             href="/sell"
-            className="inline-flex items-center justify-center px-5 py-3 text-base font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow"
+            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow" // Increased padding and font size
             style={{
               textDecoration: 'underline',
               textDecorationColor: 'transparent',
@@ -234,10 +234,10 @@ const Hero = () => {
               <a
                 href="/buy"
                 className="inline-flex items-center 
-                justify-center px-5 py-3 text-base
+                justify-center px-6 py-4 text-lg
                 translate-y-[0.2rem]
                  font-medium text-center border rounded-lg 
-                 text-custom-seasalt hover:text-custom-jet focus:ring-4  border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10"
+                 text-custom-seasalt hover:text-custom-jet focus:ring-4  border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10" // Increased padding and font size
               >
                 <FaSearch />
               </a>
@@ -251,9 +251,43 @@ const Hero = () => {
         {`{
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Poddar Motors Real Value",
-          "description": "Explore a wide selection of quality used cars at Poddar Motors.",
-          "brand": ["Audi", "BMW", "Ford", "Honda", "Hyundai", "Jeep", "KIA", "Mahindra", "Mercedes", "MG Motor", "Nissan", "Renault", "Skoda", "Tata", "Toyota", "Volkswagen", "Volvo"]
+          "name": "Poddar Motors",
+          "url": "https://poddarmotors.com",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://poddarmotors.com/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }`}
+      </script>
+
+      <script type="application/ld+json">
+        {`{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "Cars",
+          "brand": ${JSON.stringify([
+            'Audi',
+            'BMW',
+            'Fiat',
+            'Ford',
+            'Honda',
+            'Hyundai',
+            'Jeep',
+            'KIA',
+            'Mahindra',
+            'Mercedes',
+            'MG Motor',
+            'Nissan',
+            'Renault',
+            'Skoda',
+            'Tata',
+            'Toyota',
+            'Maruti',
+            'Maruti Suzuki',
+            'Volkswagen',
+            'Volvo',
+          ])}
         }`}
       </script>
     </section>
