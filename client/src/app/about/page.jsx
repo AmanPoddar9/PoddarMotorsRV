@@ -55,6 +55,32 @@ const AboutUs = () => {
         />{' '}
         {/* Add a relevant image URL */}
         <meta property="og:url" content="https://poddarmotors.com/about" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Real Value',
+              url: 'https://poddarmotors.com', // Update with your URL
+              logo: 'URL to your logo', // Optional: add your logo URL
+              description:
+                'Leading used car dealership in Ranchi, dedicated to providing quality vehicles and exceptional service.',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Ranchi',
+                addressRegion: 'Jharkhand',
+                postalCode: '834001', // Add your postal code
+                streetAddress: 'Real Value Kokar, Ranchi', // Add your street address
+              },
+              contactPoint: {
+                '@type': 'ContactPoint',
+                telephone: '+91-8709119090', // Add your contact number
+                contactType: 'Company director',
+              },
+            }),
+          }}
+        />
       </Head>
       <section className="container mx-auto max-w-screen-xl">
         <header className="container px-6 py-10 max-w-screen-xl mx-auto">
@@ -185,15 +211,25 @@ const AboutUs = () => {
             <ul className="text-xl">
               <li>
                 <b>Buying:</b> Find your next car from our extensive inventory
-                of quality used vehicles.
+                of quality used vehicles{' '}
+                <a href="/buy" className="text-blue-500">
+                  click here
+                </a>{' '}
+                .
               </li>
               <li className="mt-4">
                 <b>Selling:</b> Sell your car to us with confidence, knowing
-                you're getting a fair deal.
+                you're getting a fair deal.{' '}
+                <a href="/sell" className="text-blue-500">
+                  click here
+                </a>{' '}
               </li>
               <li className="mt-4">
                 <b>Financing:</b> Take advantage of our financing options to
-                make your purchase more affordable.
+                make your purchase more affordable.{' '}
+                <a href="/finance" className="text-blue-500">
+                  finance
+                </a>{' '}
               </li>
             </ul>
           </div>
