@@ -164,22 +164,20 @@ const Hero = () => {
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl">
             <TypewriterEffectSmooth
-              words={'Buy Smart With Real Value'
-                .split(' ')
-                .map((word, index) => {
-                  if (index <= 2) {
-                    return {
-                      text: word,
-                      className:
-                        'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl text-custom-seasalt',
-                    }
-                  }
+              words={'Welcome To Real Value'.split(' ').map((word, index) => {
+                if (index <= 1) {
                   return {
                     text: word,
                     className:
-                      'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl !text-custom-yellow',
+                      'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl text-custom-seasalt',
                   }
-                })}
+                }
+                return {
+                  text: word,
+                  className:
+                    'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl !text-custom-yellow',
+                }
+              })}
             />
           </h1>
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
