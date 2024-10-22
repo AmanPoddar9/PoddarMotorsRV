@@ -22,16 +22,46 @@ import dayImage from '@/images/about/day.jpg'
 import twilightImage from '@/images/about/twilight.jpg'
 import night from '@/images/about/night.jpg'
 import cars from '@/images/about/cars.jpg'
+import Head from 'next/head'
 
 const AboutUs = () => {
   return (
     <main className="bg-custom-seasalt pt-6">
+      <Head>
+        <title>
+          About Us - Real Value | Your Trusted Used Car Dealer in Ranchi
+        </title>
+        <meta
+          name="description"
+          content="Learn about Real Value, the leading used car dealership in Ranchi, dedicated to providing quality vehicles and exceptional service."
+        />
+        <meta
+          name="keywords"
+          content="used cars, Ranchi, quality vehicles, car dealership, Real Value"
+        />
+        <meta
+          name="author"
+          content="Aman Poddar, Milan Poddar, Parakh Poddar"
+        />
+        {/* Open Graph tags for social media */}
+        <meta property="og:title" content="About Us - Real Value" />
+        <meta
+          property="og:description"
+          content="Discover Real Value, your trusted used car dealer in Ranchi."
+        />
+        <meta
+          property="og:image"
+          content="https://www.instagram.com/p/DAXzCSMBzhq/?img_index=1"
+        />{' '}
+        {/* Add a relevant image URL */}
+        <meta property="og:url" content="https://poddarmotors.com/about" />
+      </Head>
       <section className="container mx-auto max-w-screen-xl">
         <header className="container px-6 py-10 max-w-screen-xl mx-auto">
           <h1 className="text-4xl font-bold text-left">About Us</h1>
-          <p className="mt-4 text-xl text-custom-jet">
-            Who we are and what we do
-          </p>
+          <h2 className="mt-4 text-xl text-custom-jet">
+            Be a part of our journey
+          </h2>
         </header>
         <div className="px-6 py-6 text-justify bg-custom-seasalt mb-8 text-2xl flex flex-col md:flex-row justify-evenly gap-x-16">
           <div>
@@ -104,24 +134,28 @@ const AboutUs = () => {
             <h2 className="text-4xl font-bold mb-4">Our Journey</h2>
           </header>
           <p className="text-xl">
-            At Real Value, we believe in transforming the used car market to
-            provide our customers with the highest quality vehicles at the best
-            prices. With three strategically located showrooms in Ranchi, we are
-            here to serve you with dedication and integrity.
+            At Real Value, a leading used car dealership in Ranchi, we believe
+            in transforming the used car market to provide our customers with
+            the highest quality vehicles at the best prices.
           </p>
           <header className="mt-8">
             <h2 className="text-4xl font-bold mb-8">Our Mission</h2>
           </header>
           <p className="text-xl">
-            Our mission is simple: to organize the used cars market in Ranchi
-            and offer the best cars to our customers at the most competitive
-            prices. We strive to ensure that every customer finds their perfect
-            vehicle and enjoys a seamless buying or selling experience.
+            <p className="text-xl">
+              Our mission is simple: to organize the used cars market in Ranchi
+              and offer the best cars to our customers at the most competitive
+              prices. Check out our stock{' '}
+              <a href="/buy" className="text-blue-500">
+                services
+              </a>{' '}
+              to learn more.
+            </p>
           </p>
         </article>
         <Image
           src={twilightImage}
-          alt="Showroom at twilight"
+          alt="Real value showroom in Kokar"
           className="mx-auto w-[100%] h-[100%] md:w-[40%] md:h-[70%] my-auto"
           objectFit="contain"
           objectPosition="center"

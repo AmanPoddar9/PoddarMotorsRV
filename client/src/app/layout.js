@@ -22,6 +22,8 @@ export default function RootLayout({ children }) {
           name="google-site-verification"
           content="uL--6MiSuQXVZ6-5v0W39EvGPd7r4cPjvjMWa-EBrKE"
         />
+
+        {/* Facebook meta code */}
         <Script
           id="meta-pixel-code"
           strategy="afterInteractive"
