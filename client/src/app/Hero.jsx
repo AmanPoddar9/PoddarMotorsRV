@@ -3,6 +3,12 @@ import React, { useEffect, useState } from 'react'
 import carImage2 from '../images/about4.jpeg'
 import Image from 'next/image'
 import ButtonCloud from './components/ButtonCloud'
+import axios from 'axios'
+import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
+import { FaSearch } from 'react-icons/fa'
+
+// Importing BrandCard component
+import { BrandCard } from './components/BrandCard' // Adjust the import path as needed
 
 import audi from '@/images/brands/audi.png'
 import bmw from '@/images/brands/bmw.png'
@@ -24,10 +30,6 @@ import tata from '@/images/brands/tata.png'
 import toyota from '@/images/brands/toyota.png'
 import volkswagen from '@/images/brands/volkswagen.png'
 import volvo from '@/images/brands/volvo.png'
-
-import axios from 'axios'
-import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
-import { FaSearch } from 'react-icons/fa'
 
 const imageStyles = {
   width: '2.5rem',
@@ -97,16 +99,7 @@ const Hero = () => {
       const response = await axios.get(url + 'api/listings/brands')
       if (response.data) {
         const arr = response.data.map((b, index) => ({
-          label: (
-            <div>
-              <Image
-                style={imageStyles}
-                src={brandsMapping[b]}
-                alt={`${b} car brand logo`}
-              />{' '}
-              {b}
-            </div>
-          ),
+          label: b,
           key: `${index + 1}`,
         }))
         setBrands(arr)
@@ -177,6 +170,22 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* New Brand Card Section */}
+      <div className="max-w-screen-xl pt-10 mx-auto pb-10 lg:px-6 px-4 relative z-20">
+        <h2 className="text-2xl font-bold text-custom-yellow mb-4">
+          Our Brands
+        </h2>
+        <div className="flex flex-wrap gap-4">
+          {brands.map((brand, index) => (
+            <BrandCard
+              key={index}
+              logoUrl={brandsMapping[brand.label]}
+              name={brand.label}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* This section is moved below the background image */}
       <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4 relative z-20">
         <div className="mr-auto place-self-center lg:col-span-7">
@@ -196,56 +205,15 @@ const Hero = () => {
             <span className="button-wrapper mr-3 md:mt-9">
               <a
                 href="/buy"
-                className="inline-flex items-center justify-center px-6 py-4 text-lg translate-y-[0.2rem] font-medium text-center border rounded-lg text-custom-seasalt hover:text-custom-jet focus:ring-4 border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10"
+                className="inline-flex items-center justify-center px-6 py-4 text-lg translate-y-[0.2rem] font-medium text-center border rounded-lg text-custom-seasalt hover:text-custom-jet focus:ring-4 border-custom-jet hover:!bg-custom-yellow hover:border-custom-yellow focus:ring-custom-yellow"
               >
-                View All Cars
+                Search Cars
+                <FaSearch className="ml-2" />
               </a>
             </span>
           </div>
         </div>
       </div>
-
-      {/* Structured Data for SEO */}
-      <script type="application/ld+json">
-        {`{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Poddar Motors",
-          "url": "https://poddarmotors.com",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://poddarmotors.com/?s={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }`}
-      </script>
-
-      <script type="application/ld+json">
-        {`{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          "name": "Cars",
-          "brand": ${JSON.stringify([
-            'Audi',
-            'BMW',
-            'Fiat',
-            'Ford',
-            'Honda',
-            'Hyundai',
-            'Jeep',
-            'KIA',
-            'Mahindra',
-            'Mercedes',
-            'MG Motor',
-            'Nissan',
-            'Renault',
-            'Skoda',
-            'Tata',
-            'Toyota',
-            'Maruti Suzuki',
-          ])}
-        }`}
-      </script>
     </section>
   )
 }
