@@ -3,9 +3,10 @@
       xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+      xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"> <!-- Added video namespace -->
+      
 <!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
 
 <url>
   <loc>https://www.poddarmotors.com/</loc>
@@ -41,8 +42,7 @@
   <loc>https://www.poddarmotors.com/videos</loc>
   <lastmod>2024-10-19T06:25:57+00:00</lastmod>
   <priority>0.80</priority>
-</url>
- <video:video>
+  <video:video> <!-- Wrapped video tags inside a url tag -->
       <video:thumbnail_loc>https://img.youtube.com/vi/JcqdIqcY-Jw/default.jpg</video:thumbnail_loc>
       <video:title><![CDATA[Sell your car in 30 mintues]]></video:title>
       <video:description><![CDATA[Sell your car in 30 minutes in Ranchi and Jharkhand.]]></video:description>
@@ -57,6 +57,4 @@
       <video:player_loc>https://www.youtube.com/embed/nt6Zsosgv-A</video:player_loc>
   </video:video>
 </url>
-
-
 </urlset>
