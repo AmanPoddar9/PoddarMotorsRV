@@ -54,8 +54,6 @@ const brandsMapping = {
   Toyota: toyota,
   Maruti: suzuki,
   'Maruti Suzuki': suzuki,
-  Volkswagen: volkswagen,
-  Volvo: volvo,
 }
 
 const segments = [
@@ -155,8 +153,14 @@ const Hero = () => {
   }, [])
 
   return (
-    <section className="bg-custom-black mx-auto">
-      <div className="grid max-w-screen-xl pb-10 pt-9 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:px-6 px-4">
+    <section className="relative bg-custom-black mx-auto overflow-hidden">
+      {/* Background Image with reduced opacity */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-30" // Set the opacity for the background
+        style={{ backgroundImage: `url(${carImage2.src})` }}
+      />
+
+      <div className="grid max-w-screen-xl pb-10 pt-9 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:px-6 px-4 relative z-10">
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl">
             <TypewriterEffectSmooth
@@ -239,14 +243,13 @@ const Hero = () => {
                  font-medium text-center border rounded-lg 
                  text-custom-seasalt hover:text-custom-jet focus:ring-4  border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10" // Increased padding and font size
               >
-                <FaSearch />
+                View All Cars
               </a>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Structured Data for SEO */}
       <script type="application/ld+json">
         {`{
           "@context": "https://schema.org",
