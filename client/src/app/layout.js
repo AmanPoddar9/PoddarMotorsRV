@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'Poddar Motors Real Value',
-  description: 'Second hand car dealership in Ranchi Jharkhand',
+  description:
+    'Second hand car dealership in Ranchi Jharkhand, Used car finance, used cars for sale',
 }
 
 export default function RootLayout({ children }) {

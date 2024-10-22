@@ -11,6 +11,12 @@ import { homeFAQ } from './data/homeFAQs'
 import ButtonRows from './components/ButtonRows'
 import Head from 'next/head'
 
+export const metadata = {
+  title: 'Poddar Motors Real Value home page',
+  description:
+    'Second hand car dealership in Ranchi Jharkhand, Used car finance, used cars for sale, Maruti suzuki, Mahindra , Hyundai',
+}
+
 export default async function Home() {
   let data
   try {
@@ -22,6 +28,7 @@ export default async function Home() {
     console.log(e.message)
     data = []
   }
+
   return (
     <div style={{ overflow: 'hidden !important' }}>
       <Head>

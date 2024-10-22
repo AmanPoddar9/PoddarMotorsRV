@@ -207,8 +207,12 @@ const SellRequestForm = () => {
           {/* Left Section - Heading */}
           <div className="md:w-1/2 mb-8 md:mb-0">
             <h1 className="text-left mb-4 pt-4 text-4xl font-bold text-custom-white md:text-5xl">
-              Find out what your used car is worth
+              Want to sell your car?
             </h1>
+            <p>
+              Get the best value for your car by following the four steps given
+              below!
+            </p>
           </div>
 
           {/* Right Section - Image and Button */}
