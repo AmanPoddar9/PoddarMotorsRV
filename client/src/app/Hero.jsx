@@ -28,6 +28,7 @@ import volvo from '@/images/brands/volvo.png'
 import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
+
 const imageStyles = {
   width: '2.5rem',
   height: '2.5rem',
@@ -56,6 +57,7 @@ const brandsMapping = {
   Volkswagen: volkswagen,
   Volvo: volvo,
 }
+
 const segments = [
   {
     label: 'SUV',
@@ -126,7 +128,13 @@ const Hero = () => {
           return {
             label: (
               <div>
-                <Image style={imageStyles} src={brandsMapping[b]} alt={b} /> {b}
+                {/* Added alt text for better SEO */}
+                <Image
+                  style={imageStyles}
+                  src={brandsMapping[b]}
+                  alt={`${b} car brand logo`}
+                />{' '}
+                {b}
               </div>
             ),
             key: `${index + 1}`,
@@ -171,8 +179,13 @@ const Hero = () => {
             />
           </h1>
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
-            Your one-stop-shop for buying, selling, and financing cars. We offer
-            the best prices and the best deals on all types of cars.
+            {/* Added a link to financing options */}
+            Your one-stop-shop for buying, selling, and financing cars.
+            <a href="/financing" className="text-custom-yellow hover:underline">
+              {' '}
+              Learn more about our financing options.
+            </a>
+            We offer the best prices and the best deals on all types of cars.
           </p>
           <a
             href="/buy"
@@ -182,11 +195,10 @@ const Hero = () => {
           </a>
           <a
             href="/sell"
-            className="inline-flex items-center justify-center px-5 py-3 text-base font-medium border text-center  rounded-lg hover:!text-custom-yellow text-custom-seasalt  focus:ring-custom-yellow  !border-custom-yellow"
+            className="inline-flex items-center justify-center px-5 py-3 text-base font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow"
             style={{
               textDecoration: 'underline',
               textDecorationColor: 'transparent',
-              // border: '1px solid #f6e05e',
             }}
           >
             Sell Car
@@ -233,6 +245,17 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {/* Structured Data for SEO */}
+      <script type="application/ld+json">
+        {`{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Poddar Motors",
+          "description": "Explore a wide selection of quality used cars at Poddar Motors.",
+          "brand": ["Audi", "BMW", "Ford", "Honda", "Hyundai", "Jeep", "KIA", "Mahindra", "Mercedes", "MG Motor", "Nissan", "Renault", "Skoda", "Tata", "Toyota", "Volkswagen", "Volvo"]
+        }`}
+      </script>
     </section>
   )
 }
