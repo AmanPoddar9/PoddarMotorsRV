@@ -191,9 +191,7 @@ const ButtonRows = () => {
       ) : (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6">
-            <h3 className="text-2xl font-bold mb-3 text-custom-jet">
-              Choose your Brand
-            </h3>
+            <h3 className="text-2xl font-bold mb-3 text-custom-jet">Brands</h3>
             {isDesktop ? (
               <BrandScrollContainer
                 brands={Object.keys(brandsMapping)}

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import carImage2 from '../images/about4.jpeg'
 import Image from 'next/image'
 import ButtonCloud from './components/ButtonCloud'
-import ButtonRows from './components/ButtonRows'
 
 import audi from '@/images/brands/audi.png'
 import bmw from '@/images/brands/bmw.png'
@@ -30,53 +29,12 @@ import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
 
-const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-const [isDesktop, setDesktop] = useState(false)
-const updateComponent = () => {
-  setDesktop(window.innerWidth > 1024)
-}
-useEffect(() => {
-  if (window.innerWidth > 1024) {
-    setDesktop(true)
-  }
-}, [])
-
-useEffect(() => {
-  window.addEventListener('resize', updateComponent)
-  return () => window.removeEventListener('resize', updateComponent)
-})
 const imageStyles = {
   width: '2.5rem',
   height: '2.5rem',
   display: 'inline',
 }
-const handleBrandClick = (item) => {
-  const tempObj = {
-    Brand: item,
-  }
-  localStorage.setItem('filters', JSON.stringify(tempObj))
-  if (item == '') {
-    localStorage.removeItem('filters')
-  }
-  window.location.href = '/buy'
-}
-const ButtonCard = ({ item, type }) => (
-  <div
-    className="bg-custom-seasalt text-custom-jet shadow-md rounded-lg p-4 w-40 hover:bg-custom-platinum cursor-pointer"
-    onClick={() => handleBtnClick(item, type)}
-  >
-    <div className="text-center ">{item}</div>
-  </div>
-)
-const brandsMapping2 = {
-  'Maruti Suzuki': suzuki,
-  Mahindra: mahindra,
-  Hyundai: hyundai,
-  Tata: tata,
-  Honda: honda,
-  Volkswagen: volkswagen,
-  Audi: audi,
-}
+
 const brandsMapping = {
   Audi: audi,
   BMW: bmw,
@@ -243,45 +201,6 @@ const Hero = () => {
                 View All Cars
               </a>
             </span>
-          </div>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6">
-            <h3 className="text-2xl font-bold mb-3 text-custom-jet">
-              Choose your Brand
-            </h3>
-            {isDesktop ? (
-              <BrandScrollContainer
-                brands={Object.keys(brandsMapping2)}
-                brandsMapping2={brandsMapping2}
-              />
-            ) : (
-              <Swiper
-                slidesPerView={3.5}
-                spaceBetween={30}
-                freeMode={true}
-                modules={[FreeMode]}
-                className="mySwiperCloudBrands"
-              >
-                {Object.keys(brandsMapping2).map(
-                  (brand, i) =>
-                    brandsMapping2[brand] && (
-                      <SwiperSlide style={{ paddingBottom: '40px' }} key={i}>
-                        <BrandCard
-                          logoUrl={brandsMapping2[brand]}
-                          name={brand}
-                        />
-                      </SwiperSlide>
-                    ),
-                )}
-                <SwiperSlide style={{ paddingBottom: '40px' }}>
-                  <div
-                    className="flex flex-col w-max px-2 items-center py-8 justify-center  cursor-pointer shadow-md rounded-lg p-3 bg-custom-yellow"
-                    onClick={() => handleBrandClick('')}
-                  >
-                    View All
-                  </div>
-                </SwiperSlide>
-              </Swiper>
-            )}
           </div>
         </div>
       </div>
