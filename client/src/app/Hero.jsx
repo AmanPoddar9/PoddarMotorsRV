@@ -24,7 +24,7 @@ import tata from '@/images/brands/tata.png'
 import toyota from '@/images/brands/toyota.png'
 import volkswagen from '@/images/brands/volkswagen.png'
 import volvo from '@/images/brands/volvo.png'
-import { useRouter } from 'next/router'
+
 import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
@@ -57,16 +57,40 @@ const brandsMapping = {
 }
 
 const segments = [
-  { label: 'SUV', key: '1' },
-  { label: 'Sedan', key: '2' },
-  { label: 'Hatchback', key: '3' },
-  { label: 'MUV', key: '4' },
+  {
+    label: 'SUV',
+    key: '1',
+  },
+  {
+    label: 'Sedan',
+    key: '2',
+  },
+  {
+    label: 'Hatchback',
+    key: '3',
+  },
+  {
+    label: 'MUV',
+    key: '3',
+  },
 ]
 
 const budgets = [
-  { label: 'Under 4 Lakh', key: '1', range: '0-400000' },
-  { label: '4-8 Lakh', key: '2', range: '400000-800000' },
-  { label: 'Above 8 Lakh', key: '3', range: '800000' },
+  {
+    label: 'Under 4 Lakh',
+    key: '1',
+    range: '0-400000',
+  },
+  {
+    label: '4-8 Lakh',
+    key: '2',
+    range: '400000-800000',
+  },
+  {
+    label: 'Above 8 Lakh',
+    key: '3',
+    range: '800000',
+  },
 ]
 
 const Hero = () => {
@@ -75,24 +99,17 @@ const Hero = () => {
   const [brands, setBrands] = useState([])
   const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
-  const router = useRouter()
-
-  const scrollToFAQ = (e) => {
-    e.preventDefault()
-    const faqSection = document.getElementById('faqhome')
-    if (faqSection) {
-      faqSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
   const fetchAllTypes = async () => {
     try {
       setLoading(true)
       const response = await axios.get(url + 'api/listings/types')
       if (response.data) {
-        const arr = response.data.map((type, index) => ({
-          label: type,
-          key: `${index + 1}`,
-        }))
+        const arr = response.data.map((type, index) => {
+          return {
+            label: type,
+            key: `${index + 1}`,
+          }
+        })
         setTypes(arr)
         setLoading(false)
       }
@@ -105,19 +122,22 @@ const Hero = () => {
     try {
       const response = await axios.get(url + 'api/listings/brands')
       if (response.data) {
-        const arr = response.data.map((b, index) => ({
-          label: (
-            <div>
-              <Image
-                style={imageStyles}
-                src={brandsMapping[b]}
-                alt={`${b} car brand logo`}
-              />{' '}
-              {b}
-            </div>
-          ),
-          key: `${index + 1}`,
-        }))
+        const arr = response.data.map((b, index) => {
+          return {
+            label: (
+              <div>
+                {/* Added alt text for better SEO */}
+                <Image
+                  style={imageStyles}
+                  src={brandsMapping[b]}
+                  alt={`${b} car brand logo`}
+                />{' '}
+                {b}
+              </div>
+            ),
+            key: `${index + 1}`,
+          }
+        })
         setBrands(arr)
         setLoading(false)
       }
@@ -136,7 +156,7 @@ const Hero = () => {
     <section className="relative bg-custom-black mx-auto overflow-hidden">
       {/* Background Image with reduced opacity */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-30"
+        className="absolute inset-0 bg-cover bg-center opacity-30" // Set the opacity for the background
         style={{ backgroundImage: `url(${carImage2.src})` }}
       />
 
@@ -144,38 +164,40 @@ const Hero = () => {
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl">
             <TypewriterEffectSmooth
-              words={'Welcome To Real Value'.split(' ').map((word, index) => ({
-                text: word,
-                className:
-                  index <= 1
-                    ? 'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl text-custom-seasalt'
-                    : 'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl !text-custom-yellow',
-              }))}
+              words={'Welcome To Real Value'.split(' ').map((word, index) => {
+                if (index <= 1) {
+                  return {
+                    text: word,
+                    className:
+                      'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl text-custom-seasalt',
+                  }
+                }
+                return {
+                  text: word,
+                  className:
+                    'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl !text-custom-yellow',
+                }
+              })}
             />
           </h1>
           <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
-            Your one-stop shop for buying, selling, and
+            {/* Added a link to financing options */}
+            Your one-stop shop for buying, selling and
             <a href="/finance" className="text-custom-yellow hover:underline">
               {' '}
               Financing used cars
             </a>
-            <p>
-              Have questions regarding Buying used cars?{' '}
-              <a href="#faqhome" onClick={scrollToFAQ}>
-                {' '}
-                click here
-              </a>
-            </p>
+            <p>A brand you can trust</p>
           </p>
           <a
             href="/buy"
-            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-center border rounded-lg focus:ring-4 focus:ring-custom-black text-custom-black border-custom-black bg-custom-platinum mr-5 hover:!bg-custom-yellow"
+            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-center border rounded-lg focus:ring-4 focus:ring-custom-black text-custom-black border-custom-black bg-custom-platinum mr-5 hover:!bg-custom-yellow" // Increased padding and font size
           >
             Buy Car
           </a>
           <a
             href="/sell"
-            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow"
+            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow" // Increased padding and font size
             style={{
               textDecoration: 'underline',
               textDecorationColor: 'transparent',
@@ -186,15 +208,18 @@ const Hero = () => {
               className="ml-2"
               style={{ textDecoration: 'none', fontSize: '1.2rem' }}
             >
-              &#8594;
+              &#8594; {/* Unicode arrow character pointing right */}
             </span>
           </a>
         </div>
+        {/* <div className="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
+          <Image src={carImage2} alt="Second hand cars in Ranchi" priority />
+        </div> */}
       </div>
 
       <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4">
         <div className="mr-auto place-self-center lg:col-span-7">
-          <p className="max-w-2xl mb-12 font-light text-custom-platinum md:text-lg lg:mb-0 lg:text-xl">
+          <p className="max-w-2xl mb-12 font-light text-custom-platinum md:text-lg lg:mb-0 lg:text-xl ">
             Or get started directly by...
           </p>
           <div className="button-container -mt-4">
@@ -210,7 +235,11 @@ const Hero = () => {
             <span className="button-wrapper mr-3 md:mt-9">
               <a
                 href="/buy"
-                className="inline-flex items-center justify-center px-6 py-4 text-lg translate-y-[0.2rem] font-medium text-center border rounded-lg text-custom-seasalt hover:text-custom-jet focus:ring-4 border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10"
+                className="inline-flex items-center 
+                justify-center px-6 py-4 text-lg
+                translate-y-[0.2rem]
+                 font-medium text-center border rounded-lg 
+                 text-custom-seasalt hover:text-custom-jet focus:ring-4  border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10" // Increased padding and font size
               >
                 View All Cars
               </a>
@@ -219,7 +248,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Structured Data for SEO */}
       <script type="application/ld+json">
         {`{
           "@context": "https://schema.org",
@@ -256,7 +284,10 @@ const Hero = () => {
             'Skoda',
             'Tata',
             'Toyota',
+            'Maruti',
             'Maruti Suzuki',
+            'Volkswagen',
+            'Volvo',
           ])}
         }`}
       </script>
