@@ -24,7 +24,7 @@ import tata from '@/images/brands/tata.png'
 import toyota from '@/images/brands/toyota.png'
 import volkswagen from '@/images/brands/volkswagen.png'
 import volvo from '@/images/brands/volvo.png'
-
+import { useRouter } from 'next/router'
 import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
 import { FaSearch } from 'react-icons/fa'
@@ -75,6 +75,15 @@ const Hero = () => {
   const [brands, setBrands] = useState([])
   const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
+  const router = useRouter()
+
+  const scrollToFAQ = (e) => {
+    e.preventDefault()
+    const faqSection = document.getElementById('faqhome')
+    if (faqSection) {
+      faqSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   const fetchAllTypes = async () => {
     try {
       setLoading(true)
@@ -152,7 +161,10 @@ const Hero = () => {
             </a>
             <p>
               Have questions regarding Buying used cars?{' '}
-              <a href="#faqhome"> click here</a>
+              <a href="#faqhome" onClick={scrollToFAQ}>
+                {' '}
+                click here
+              </a>
             </p>
           </p>
           <a
