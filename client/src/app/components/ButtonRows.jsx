@@ -175,7 +175,7 @@ const ButtonRows = () => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6">
         <div className="mb-6">
           <h2 className="text-4xl font-bold mb-5 text-custom-black">
-            Find your dream car
+            <a href="/buy"> Find your dream car</a>
           </h2>
         </div>
       </div>

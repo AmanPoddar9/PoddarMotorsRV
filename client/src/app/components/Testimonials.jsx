@@ -41,7 +41,7 @@ const Testimonials = () => {
             Don't believe us?
           </h2>
           <span className="text-lg text-custom-platinum font-medium block mb-2">
-            Testimonials from our happy customers!
+            Testimonials from our happy <a href="/about">customers</a>!
           </span>
         </div>
 
