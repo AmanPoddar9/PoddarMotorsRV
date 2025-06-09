@@ -171,7 +171,7 @@ exports.getAllSeats = async (req, res) => {
   }
 };
 
-exports.geFeaturedListings = async (req, res) => {
+exports.getFeaturedListings = async (req, res) => {
   try {
     const listings = await Listing.find({ featured: true });
     res.json(listings);

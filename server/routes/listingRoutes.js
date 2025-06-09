@@ -17,7 +17,7 @@ router.post('/images', upload.single('image'), listingController.uploadImage)
 // Read all listings
 router.get('/', listingController.getAllListings)
 
-router.get('/featured', listingController.geFeaturedListings)
+router.get('/featured', listingController.getFeaturedListings)
 
 router.get('/brands', listingController.getAllBrands)
 router.get('/types', listingController.getAllTypes)
