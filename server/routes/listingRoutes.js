@@ -26,6 +26,8 @@ router.get('/transmission', listingController.getAllTransmissionTypes)
 
 router.get('/seats', listingController.getAllSeats)
 
+router.get('/slug/:slug', listingController.getListingBySlug)
+
 // Read one listing by ID
 router.get('/:id', listingController.getListingById)
 

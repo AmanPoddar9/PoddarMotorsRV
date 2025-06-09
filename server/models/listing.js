@@ -5,6 +5,7 @@ const listingSchema = new mongoose.Schema({
   brand: { type: String, required: true },
   model: { type: String, required: true },
   variant: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
   vehicleNumber: { type: String, required: true },
   fuelType: {
     type: String,

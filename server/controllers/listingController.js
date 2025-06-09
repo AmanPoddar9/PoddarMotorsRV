@@ -1,6 +1,7 @@
 const Listing = require("../models/listing");
 const ListingImages = require("../models/listingImages");
 const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const slugify = require('slugify');
 
 const AdmZip = require("adm-zip");
 var detect = require("detect-file-type");
@@ -96,6 +97,7 @@ exports.deleteListingById = async (req, res) => {
 exports.createListing = async (req, res) => {
   try {
     const data = req.body;
+    data.slug = slugify(`${data.model}-${data.variant}`, { lower: true });
     const listing = new Listing(data);
     await listing.save();
     res.status(201).json({ message: "Listing created successfully", listing });
@@ -260,10 +262,26 @@ exports.getListingById = async (req, res) => {
   }
 };
 
+exports.getListingBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const listing = await Listing.findOne({ slug });
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+    res.json(listing);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 // Update one listing by ID
 exports.updateListingById = async (req, res) => {
   try {
     const { id } = req.params;
+    if (req.body.model || req.body.variant) {
+      req.body.slug = slugify(`${req.body.model || ''}-${req.body.variant || ''}`, { lower: true });
+    }
     const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
       new: true,
     });
