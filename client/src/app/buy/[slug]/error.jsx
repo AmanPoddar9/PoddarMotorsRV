@@ -11,7 +11,7 @@ export default function Error({ error, reset }) {
 
   return (
     <div style={styles.container}>
-      <h2>Something went wrong! Maybe you entered the wrong car ID?</h2>
+      <h2>Something went wrong! Maybe you entered the wrong car slug?</h2>
       <button onClick={resetLink} style={styles.button}>
         Go back to buy page
       </button>

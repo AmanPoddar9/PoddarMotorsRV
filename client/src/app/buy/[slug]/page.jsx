@@ -39,7 +39,7 @@ import BookingCard from '@/app/components/BookingCard'
 // import { BsFillFuelPumpFill } from "react-icons/bs";
 // import { CiCreditCard1 } from "react-icons/ci";
 
-const page = ({ params: { id } }) => {
+const page = ({ params: { slug } }) => {
   // API call to this route: 662bed523ec1ae8416673630
   const [loading, setLoading] = useState(true)
   const [carData, setCarData] = useState(null)
@@ -82,7 +82,7 @@ const page = ({ params: { id } }) => {
     setConfirmLoading(true)
     axios
       .post(bookingPOSTURL, {
-        listingId: id,
+        listingId: carData._id,
         date: data.formattedDate,
         time: data.formattedTime,
         name: data.name,
@@ -102,7 +102,7 @@ const page = ({ params: { id } }) => {
       })
   }
 
-  const getListingURL = `https://poddar-motors-rv-hkxu.vercel.app/api/listings/${id}`
+  const getListingURL = `https://poddar-motors-rv-hkxu.vercel.app/api/listings/slug/${slug}`
 
   useEffect(() => {
     axios
