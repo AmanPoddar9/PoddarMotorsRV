@@ -64,8 +64,10 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body style={{ width: '100vw', overflowX: 'hidden', paddingTop: '4rem' }}>
-        <Navbar />
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <Navbar />
+          {children}
+        </AntdRegistry>
         <PhoneButton />
         <Footer />
       </body>
