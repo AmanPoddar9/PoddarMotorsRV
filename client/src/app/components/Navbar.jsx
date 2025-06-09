@@ -1,10 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Drawer, Button } from 'antd'
+import dynamic from 'next/dynamic'
+const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
+  ssr: false,
+})
+const Button = dynamic(() => import('antd').then((mod) => mod.Button), {
+  ssr: false,
+})
 import Link from 'next/link'
 import { MenuOutlined } from '@ant-design/icons'
-import { Space } from 'antd'
+const Space = dynamic(() => import('antd').then((mod) => mod.Space), {
+  ssr: false,
+})
 
 // logo
 import Logo from '../../images/logo_text.png'
