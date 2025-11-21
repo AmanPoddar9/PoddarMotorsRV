@@ -47,7 +47,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+import { useRouter, useSearchParams } from 'next/navigation'
+
 export default function Buy({ allListings }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [brands, setBrands] = useState([])
   const [types, setTypes] = useState([])
@@ -57,6 +61,8 @@ export default function Buy({ allListings }) {
   const [seatsCount, setSeatsCount] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  
+  // Initialize filters from URL or defaults
   const [filters, setFilters] = useState([
     {
       id: 'brand',
@@ -147,37 +153,88 @@ export default function Buy({ allListings }) {
   }
 
   const clearFilters = () => {
-    localStorage.removeItem('filters')
-    window.location.reload()
+    router.push('/buy')
+    setSearchQuery('')
+    // Reset filters state manually if needed, or let useEffect handle it on route change
+    // For immediate feedback, we might want to reset locally too, but route change will trigger re-fetch
   }
 
   const updateFilters = async (inputFilters, clear) => {
     setMobileFiltersOpen(false)
     setLoading(true)
+    
+    // Construct query params from current state (or inputFilters if provided)
+    const params = new URLSearchParams()
+    
+    // If clearing, just push empty
+    if (clear) {
+      router.push('/buy')
+      return
+    }
+
+    // Helper to add params
+    const addParam = (key, value) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => params.append(key, v))
+      } else {
+        params.append(key, value)
+      }
+    }
+
+    filters.forEach((filter) => {
+      const key = filter.id
+      if (filter.type === 'slider') {
+         // Only add if different from default to keep URL clean? Or always add?
+         // Let's always add for consistency if it's not default range
+         const val = filter.config.value
+         if (val[0] !== filter.config.min || val[1] !== filter.config.max) {
+             addParam(key, val.join('-')) // Send as range string "min-max"
+         }
+      } else {
+        filter.options.forEach((opt) => {
+          if (opt.checked) {
+            addParam(key, opt.value)
+          }
+        })
+      }
+    })
+
+    if (searchQuery) {
+      params.set('search', searchQuery)
+    }
+
+    // Update URL
+    router.push(`/buy?${params.toString()}`)
+    
+    // Fetch data based on these params
+    // We can reuse the logic to fetch filtered data
+    // Ideally, we should parse the params back into an object for the API call
+    // But since we have the state here, we can construct the object directly
+    
     let obj = {}
-    if (inputFilters) {
-      obj = inputFilters
-    } else {
-      filters.map((filter) => {
-        const key = filter['id']
+    filters.forEach((filter) => {
+        const key = filter.id
         let tempArr = []
-        if (filter['type'] == 'slider') {
-          tempArr = filter['config']['value']
+        if (filter.type === 'slider') {
+          tempArr = filter.config.value
         } else {
-          filter['options'].map((opt) => {
-            if (opt['checked'] == true) {
-              tempArr.push(opt['value'])
+          filter.options.forEach((opt) => {
+            if (opt.checked) {
+              tempArr.push(opt.value)
             }
           })
         }
         if (tempArr.length) {
-          obj[key] = tempArr
+            // For slider, we might want to send it differently if API expects it
+            // The original code sent `tempArr` which was `[min, max]` for slider
+            obj[key] = tempArr
         }
-      })
-    }
-    if (searchQuery.length > 0 && !clear) {
+    })
+    
+    if (searchQuery.length > 0) {
       obj['search'] = searchQuery
     }
+
     try {
       const response = await axios.post(url + 'api/listings/filtered', obj)
       setListings(response.data)
@@ -207,30 +264,27 @@ export default function Buy({ allListings }) {
       if (response.data) {
         response.data.sort()
         const tempObj = [...filters]
-        let checkedBrands = []
-        if (localStorage.getItem('filters')) {
-          const filtersObj = JSON.parse(localStorage.getItem('filters'))
-          const brand = filtersObj['Brand']
-          if (brand) {
-            checkedBrands.push(brand)
-          }
-        }
+        
+        // Get checked brands from URL
+        const brandParams = searchParams.getAll('brand')
+        
         const index = tempObj.findIndex((item) => item.id == 'brand')
         tempObj[index]['options'] = response.data.map((item) => {
           return {
             value: item,
             label: item,
-            checked: checkedBrands.includes(item),
+            checked: brandParams.includes(item),
           }
         })
         setFilters(tempObj)
-
         setBrands(response.data)
       }
     } catch (e) {
       console.log(e.message)
     }
   }
+  
+  // ... (sliderFormatter, handleSliderChange, handleCheckboxChange remain similar but should not rely on localStorage)
   const sliderFormatter = (value) => {
     if (value) return AmountWithCommas(value)
   }
@@ -242,81 +296,99 @@ export default function Buy({ allListings }) {
   }
   const handleCheckboxChange = (id, label, checked) => {
     const tempFilters = [...filters]
-
     const index = tempFilters.findIndex((item) => item.id == id)
     const options = tempFilters[index]['options']
-
     const optionsIndex = options.findIndex((item) => item.label == label)
     options[optionsIndex]['checked'] = checked
-
     tempFilters[index]['options'] = options
-
     setFilters(tempFilters)
   }
 
-  const updateCheckedPrices = () => {
-    if (localStorage.getItem('filters')) {
-      const filtersObj = JSON.parse(localStorage.getItem('filters'))
-      const price = filtersObj['Budget']
-
-      const tempFilters = [...filters]
-      const priceIndex = tempFilters.findIndex((item) => item.id == 'budget')
-
-      let newOptions = []
-      if (price) {
-        let priceObj = tempFilters[priceIndex]['options'].find(
-          (item) => item.value == price,
-        )
-        if (priceObj) {
-          newOptions = tempFilters[priceIndex]['options'].map((item) => {
-            let tempItem = { ...item }
-            if (item['value'] == price) {
-              tempItem['checked'] = true
-            }
-            return tempItem
-          })
-        } else {
-          newOptions = tempFilters[priceIndex]['options'].map((item, index) => {
-            let tempItem = { ...item }
-            if (index >= 2) {
-              tempItem['checked'] = true
-            }
-            return tempItem
-          })
-        }
-        tempFilters[priceIndex]['options'] = newOptions
-        setFilters(tempFilters)
+  // Helper to sync state from URL on mount/update
+  useEffect(() => {
+      // This effect runs when searchParams change (e.g. navigation)
+      // We need to update the filter state (checkboxes etc) to match the URL
+      // AND fetch the filtered data
+      
+      const currentParams = new URLSearchParams(searchParams.toString())
+      
+      // If no params, fetch all
+      if ([...currentParams.keys()].length === 0) {
+          if (allListings && listings.length === 0) {
+             // Initial load with no params
+             setListings(allListings)
+          } else {
+             // Navigation to /buy with no params
+             fetchAllListings()
+          }
+          // Reset filters visual state
+          // We need to ensure fetchAllBrands etc are called to populate options first
+          // But those are async.
+          return
       }
-    }
-  }
 
-  const carTypes = [
-    'Micro Car',
-    'Hatchback',
-    'Compact Sedan',
-    'Mid Size Sedan',
-    'Full Size Sedan',
-    'Compact SUV',
-    'Mid Size SUV',
-    'Full Size SUV',
-    'MUV/MPV',
-    'Luxury',
-  ]
+      // Construct filter object for API
+      let apiObj = {}
+      
+      // Update local filter state to match URL
+      // This is tricky because options (brands, types) might not be loaded yet
+      // We'll handle the "checked" status in the fetchAll* functions or a separate sync function
+      
+      // For API call:
+      for (const [key, value] of currentParams.entries()) {
+          if (key === 'search') {
+              apiObj['search'] = value
+              setSearchQuery(value)
+              continue
+          }
+          // Handle array params
+          if (!apiObj[key]) apiObj[key] = []
+          
+          if (key === 'modelYear') {
+              // Expecting "min-max" string in URL
+              const [min, max] = value.split('-').map(Number)
+              apiObj[key] = [min, max]
+          } else {
+              apiObj[key].push(value)
+          }
+      }
+      
+      // Call API
+      const fetchFiltered = async () => {
+          setLoading(true)
+          try {
+              const response = await axios.post(url + 'api/listings/filtered', apiObj)
+              setListings(response.data)
+          } catch (e) {
+              console.log(e)
+          }
+          setLoading(false)
+      }
+      fetchFiltered()
 
+  }, [searchParams]) // Re-run when URL changes
+
+  // Initial data fetch for options
+  useEffect(() => {
+    fetchAllBrands()
+    fetchAllTypes()
+    fetchAllSeats()
+    fetchAllFuelTypes()
+    fetchAllTransmissionTypes()
+    // updateCheckedPrices() // Replaced by URL logic
+  }, [searchParams]) // Re-run to update "checked" state based on URL
+
+  // ... (Rest of the fetch functions need to be updated to check searchParams instead of localStorage)
+  
   const fetchAllTypes = async () => {
     try {
       const response = await axios.get(url + 'api/listings/types')
       if (response.data) {
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'type')
-        let checkedSegments = []
-        if (localStorage.getItem('filters')) {
-          const filtersObj = JSON.parse(localStorage.getItem('filters'))
-          const type = filtersObj['Segment']
-          if (type) {
-            checkedSegments.push(type)
-          }
-        }
+        
+        const typeParams = searchParams.getAll('type')
+        
         response.data.sort((a, b) => {
           return carTypes.indexOf(a) - carTypes.indexOf(b)
         })
@@ -324,11 +396,10 @@ export default function Buy({ allListings }) {
           return {
             value: item,
             label: item,
-            checked: checkedSegments.includes(item),
+            checked: typeParams.includes(item),
           }
         })
         setFilters(tempObj)
-
         setTypes(response.data)
       }
     } catch (e) {
@@ -343,12 +414,14 @@ export default function Buy({ allListings }) {
         response.data.sort()
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'fuelType')
-        let checkedSegments = []
+        
+        const fuelParams = searchParams.getAll('fuelType')
+        
         tempObj[index]['options'] = response.data.map((item) => {
           return {
             value: item,
             label: item,
-            checked: checkedSegments.includes(item),
+            checked: fuelParams.includes(item),
           }
         })
         setFilters(tempObj)
@@ -365,12 +438,14 @@ export default function Buy({ allListings }) {
         response.data.sort()
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'transmissionType')
-        let checkedSegments = []
+        
+        const transParams = searchParams.getAll('transmissionType')
+        
         tempObj[index]['options'] = response.data.map((item) => {
           return {
             value: item,
             label: item,
-            checked: checkedSegments.includes(item),
+            checked: transParams.includes(item),
           }
         })
         setFilters(tempObj)
@@ -387,11 +462,14 @@ export default function Buy({ allListings }) {
         response.data.sort()
         const tempObj = [...filters]
         const index = tempObj.findIndex((item) => item.id == 'seats')
+        
+        const seatParams = searchParams.getAll('seats')
+        
         tempObj[index]['options'] = response.data.map((item) => {
           return {
             value: item,
             label: item,
-            checked: false,
+            checked: seatParams.includes(item.toString()), // Params are strings
           }
         })
         setFilters(tempObj)
@@ -401,41 +479,42 @@ export default function Buy({ allListings }) {
       console.log(e.message)
     }
   }
-
-  const fetchInitialFilteredListings = () => {
-    const filtersObj = JSON.parse(localStorage.getItem('filters'))
-    const brand = filtersObj['Brand']
-    const type = filtersObj['Segment']
-    const budget = filtersObj['Budget']
-    let newFiltersObj = {}
-    if (brand) {
-      newFiltersObj['brand'] = [brand]
-    }
-    if (type) {
-      newFiltersObj['type'] = [type]
-    }
-    if (budget) {
-      newFiltersObj['budget'] = [budget]
-    }
-    updateFilters(newFiltersObj)
-  }
+  
+  // Update static options (Budget, Owners, KM) based on URL
   useEffect(() => {
-    if (localStorage.getItem('filters')) {
-      fetchInitialFilteredListings()
-    } else {
-      if (allListings) {
-        setListings(allListings)
-      } else {
-        fetchAllListings()
+      const tempFilters = [...filters]
+      
+      // Budget
+      const budgetParams = searchParams.getAll('budget')
+      const budgetIndex = tempFilters.findIndex(i => i.id === 'budget')
+      tempFilters[budgetIndex].options.forEach(opt => {
+          opt.checked = budgetParams.includes(opt.value)
+      })
+      
+      // Owners
+      const ownerParams = searchParams.getAll('ownership')
+      const ownerIndex = tempFilters.findIndex(i => i.id === 'ownership')
+      tempFilters[ownerIndex].options.forEach(opt => {
+          opt.checked = ownerParams.includes(opt.value.toString())
+      })
+      
+      // KM Driven
+      const kmParams = searchParams.getAll('kmDriven')
+      const kmIndex = tempFilters.findIndex(i => i.id === 'kmDriven')
+      tempFilters[kmIndex].options.forEach(opt => {
+          opt.checked = kmParams.includes(opt.value)
+      })
+      
+      // Year Slider
+      const yearParam = searchParams.get('modelYear')
+      if (yearParam) {
+          const [min, max] = yearParam.split('-').map(Number)
+          const yearIndex = tempFilters.findIndex(i => i.id === 'modelYear')
+          tempFilters[yearIndex].config.value = [min, max]
       }
-    }
-    fetchAllBrands()
-    fetchAllTypes()
-    fetchAllSeats()
-    fetchAllFuelTypes()
-    fetchAllTransmissionTypes()
-    updateCheckedPrices()
-  }, [])
+      
+      setFilters(tempFilters)
+  }, [searchParams])
 
   return (
     <div className="bg-white buyCarsSection">
