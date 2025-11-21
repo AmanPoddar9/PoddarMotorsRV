@@ -168,8 +168,6 @@ const Navbar = () => {
             </a>
           </Link>
           <Link legacyBehavior href="/videos">
-            {' '}
-            {/* Add this line for mobile */}
             <a
               className="text-white font-bold focus:text-custom-yellow"
               onClick={onClose}
