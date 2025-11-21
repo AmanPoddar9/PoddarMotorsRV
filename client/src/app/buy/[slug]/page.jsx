@@ -102,7 +102,10 @@ const page = ({ params: { slug } }) => {
       })
   }
 
-  const getListingURL = `https://poddar-motors-rv-hkxu.vercel.app/api/listings/slug/${slug}`
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug)
+  const getListingURL = isObjectId
+    ? `https://poddar-motors-rv-hkxu.vercel.app/api/listings/${slug}`
+    : `https://poddar-motors-rv-hkxu.vercel.app/api/listings/slug/${slug}`
 
   useEffect(() => {
     axios

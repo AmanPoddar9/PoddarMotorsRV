@@ -6,7 +6,7 @@ import { toTitleCase } from '@/app/utils'
 
 const FeaturedCard = ({ car }) => {
   return (
-    <a href={`/buy/${car.slug}`}>
+    <a href={car.slug ? `/buy/${car.slug}` : `/buy/${car._id}`}>
       <div className="max-w-sm rounded-lg align-top overflow-hidden shadow-lg  hover:scale-105  hover:shadow-xl transition-transform duration-200 border-2 border-transparent bg-custom-seasalt">
         {car.images[0] ? (
           <Image
