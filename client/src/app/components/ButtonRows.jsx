@@ -66,30 +66,31 @@ const handleBrandClick = (item) => {
 
 const ButtonCard = ({ item, type }) => (
   <div
-    className="bg-custom-seasalt text-custom-jet shadow-md rounded-lg p-4 w-40 hover:bg-custom-platinum cursor-pointer"
+    className="bg-custom-jet/50 text-white shadow-lg rounded-xl p-5 w-44 hover:bg-custom-jet hover:scale-105 cursor-pointer transition-all duration-300 border border-white/10 backdrop-blur-sm"
     onClick={() => handleBtnClick(item, type)}
   >
-    <div className="text-center ">{item}</div>
+    <div className="text-center font-medium">{item}</div>
   </div>
 )
 
 export const BrandCard = ({ logoUrl, name }) => (
   <div
-    className="flex flex-col md:inline-block items-center justify-center bg-custom-seasalt cursor-pointer shadow-md rounded-lg p-3 hover:bg-custom-platinum"
+    className="flex flex-col md:inline-block items-center justify-center bg-custom-jet/50 cursor-pointer shadow-lg rounded-xl p-4 hover:bg-custom-jet hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-sm"
     onClick={() => handleBrandClick(name)}
   >
     <Image
       src={logoUrl}
-      alt="brand"
-      className="h-16 w-16 object-contain"
+      alt={`${name} logo`}
+      className="h-16 w-16 object-contain filter brightness-0 invert"
       width={60}
       height={60}
     />
   </div>
 )
+
 const BrandScrollContainer = ({ brands, brandsMapping }) => {
   return (
-    <span className="flex overflow-x-auto py-2 gap-x-5">
+    <span className="flex overflow-x-auto py-2 gap-x-5 scrollbar-hide">
       {brands.map(
         (brand, i) =>
           brandsMapping[brand] && (
@@ -97,7 +98,7 @@ const BrandScrollContainer = ({ brands, brandsMapping }) => {
           ),
       )}
       <div
-        className="flex flex-col md:inline-block align-top bg-custom-yellow md:py-8 md:mx-4 items-center justify-center  cursor-pointer shadow-md rounded-lg p-3 "
+        className="flex flex-col md:inline-block align-top bg-custom-accent hover:bg-yellow-400 md:py-8 md:mx-4 items-center justify-center cursor-pointer shadow-lg rounded-xl p-4 transition-all duration-300 text-custom-black font-bold"
         onClick={() => handleBrandClick('')}
       >
         View All
@@ -171,27 +172,36 @@ const ButtonRows = () => {
   }, [])
 
   return (
-    <section className="pt-12 pb-24 bg-white text-custom-black">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6">
-        <div className="mb-6">
-          <h2 className="text-4xl font-bold mb-5 text-custom-black">
-            <a href="/buy"> Find your dream car</a>
+    <section className="pt-12 pb-24 bg-custom-black text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+      </div>
+      
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6 relative z-10">
+        <div className="mb-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-display font-bold mb-3 text-white">
+            <a href="/buy" className="hover:text-custom-accent transition-colors">Find Your <span className="text-custom-accent">Dream Car</span></a>
           </h2>
+          <p className="text-custom-platinum text-lg">Browse by brand, type, or budget</p>
         </div>
       </div>
       {loading ? (
-        <div className="flex items-center justify-center p-2">
+        <div className="flex items-center justify-center p-10">
           <Oval
-            color="#fded03"
+            color="#F59E0B"
             height={50}
             width={50}
-            secondaryColor="#b45309"
+            secondaryColor="#78350f"
           />
         </div>
       ) : (
         <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6">
-            <h3 className="text-2xl font-bold mb-3 text-custom-jet">Brands</h3>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6 relative z-10">
+            <h3 className="text-2xl font-bold mb-5 text-white flex items-center gap-2">
+              <span className="w-1 h-6 bg-custom-accent rounded-full"></span>
+              Popular Brands
+            </h3>
             {isDesktop ? (
               <BrandScrollContainer
                 brands={Object.keys(brandsMapping)}
@@ -200,15 +210,15 @@ const ButtonRows = () => {
             ) : (
               <Swiper
                 slidesPerView={3.5}
-                spaceBetween={30}
+                spaceBetween={20}
                 freeMode={true}
                 modules={[FreeMode]}
-                className="mySwiperCloudBrands"
+                className="mySwiperCloudBrands !pb-10"
               >
                 {Object.keys(brandsMapping).map(
                   (brand, i) =>
                     brandsMapping[brand] && (
-                      <SwiperSlide style={{ paddingBottom: '40px' }} key={i}>
+                      <SwiperSlide key={i}>
                         <BrandCard
                           logoUrl={brandsMapping[brand]}
                           name={brand}
@@ -216,9 +226,9 @@ const ButtonRows = () => {
                       </SwiperSlide>
                     ),
                 )}
-                <SwiperSlide style={{ paddingBottom: '40px' }}>
+                <SwiperSlide>
                   <div
-                    className="flex flex-col w-max px-2 items-center py-8 justify-center  cursor-pointer shadow-md rounded-lg p-3 bg-custom-yellow"
+                    className="flex flex-col items-center justify-center py-8 px-4 cursor-pointer shadow-lg rounded-xl bg-custom-accent hover:bg-yellow-400 transition-all text-custom-black font-bold"
                     onClick={() => handleBrandClick('')}
                   >
                     View All
@@ -226,8 +236,10 @@ const ButtonRows = () => {
                 </SwiperSlide>
               </Swiper>
             )}
-            <h3 className="text-2xl font-bold mb-3 mt-8 text-custom-jet">
-              Types
+            
+            <h3 className="text-2xl font-bold mb-5 mt-12 text-white flex items-center gap-2">
+              <span className="w-1 h-6 bg-custom-accent rounded-full"></span>
+              Body Types
             </h3>
             <div className="flex flex-wrap gap-4">
               {isDesktop ? (
@@ -236,37 +248,39 @@ const ButtonRows = () => {
                     <ButtonCard key={index} item={type} type={'Segment'} />
                   ))}
                   <div
-                    className="bg-custom-yellow shadow-md rounded-lg p-4 w-40  cursor-pointer"
+                    className="bg-custom-accent hover:bg-yellow-400 shadow-lg rounded-xl p-5 w-44 cursor-pointer transition-all duration-300 text-custom-black font-bold"
                     onClick={() => handleBtnClick('', 'Segment')}
                   >
-                    <div className="text-center ">View All</div>
+                    <div className="text-center">View All</div>
                   </div>
                 </>
               ) : (
                 <Swiper
                   slidesPerView={2.2}
-                  spaceBetween={50}
+                  spaceBetween={20}
                   freeMode={true}
                   modules={[FreeMode]}
-                  className="mySwiperCloud"
+                  className="mySwiperCloud !pb-10"
                 >
                   {types.map((type, index) => (
-                    <SwiperSlide key={index} style={{ paddingBottom: '40px' }}>
+                    <SwiperSlide key={index}>
                       <ButtonCard item={type} type={'Segment'} />
                     </SwiperSlide>
                   ))}
-                  <SwiperSlide key={'all'} style={{ paddingBottom: '40px' }}>
+                  <SwiperSlide key={'all'}>
                     <div
-                      className="bg-custom-yellow shadow-md rounded-lg p-4 w-40  cursor-pointer"
+                      className="bg-custom-accent shadow-lg rounded-xl p-5 w-40 cursor-pointer text-custom-black font-bold"
                       onClick={() => handleBtnClick('', 'type')}
                     >
-                      <div className="text-center ">View All</div>
+                      <div className="text-center">View All</div>
                     </div>
                   </SwiperSlide>
                 </Swiper>
               )}
             </div>
-            <h3 className="text-2xl font-bold mb-3 mt-8 text-custom-jet">
+            
+            <h3 className="text-2xl font-bold mb-5 mt-12 text-white flex items-center gap-2">
+              <span className="w-1 h-6 bg-custom-accent rounded-full"></span>
               Price Range
             </h3>
             <div className="flex flex-wrap gap-4">
@@ -279,19 +293,19 @@ const ButtonRows = () => {
               ) : (
                 <Swiper
                   slidesPerView={2.2}
-                  spaceBetween={50}
+                  spaceBetween={20}
                   freeMode={true}
                   modules={[FreeMode]}
-                  className="mySwiperCloudPrice"
+                  className="mySwiperCloudPrice !pb-10"
                 >
-                  <SwiperSlide style={{ paddingBottom: '40px' }}>
-                    <ButtonCard item="<4 Lakh" type={'Budget'} />
+                  <SwiperSlide>
+                    <ButtonCard item="Under 4 Lakh" type={'Budget'} />
                   </SwiperSlide>
-                  <SwiperSlide style={{ paddingBottom: '40px' }}>
+                  <SwiperSlide>
                     <ButtonCard item="4-8 Lakh" type={'Budget'} />
                   </SwiperSlide>
-                  <SwiperSlide style={{ paddingBottom: '40px' }}>
-                    <ButtonCard item=">8 Lakh" type={'Budget'} />
+                  <SwiperSlide>
+                    <ButtonCard item="Above 8 Lakh" type={'Budget'} />
                   </SwiperSlide>
                 </Swiper>
               )}

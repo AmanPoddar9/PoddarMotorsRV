@@ -39,39 +39,42 @@ const FeaturedCars = ({ featuredCarData }) => {
   }, [])
 
   return (
-    <section className="py-10 !bg-custom-platinum">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6">
-        <div className="mb-14">
-          <h2 className="text-4xl font-bold text-custom-black mb-5">
-            Featured Cars
+    <section className="py-20 bg-custom-black relative overflow-hidden">
+      {/* Background Gradient */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-custom-black via-custom-jet/20 to-custom-black pointer-events-none"></div>
+      
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6 relative z-10">
+        <div className="mb-14 text-center">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+            Featured <span className="text-custom-accent">Cars</span>
           </h2>
+          <p className="text-custom-platinum text-lg max-w-2xl mx-auto">
+            Handpicked vehicles that offer the best value and performance.
+          </p>
         </div>
 
-        {error && <p>Error, please try again...</p>}
+        {error && <p className="text-red-500 text-center">Error, please try again...</p>}
 
         {loading ? (
-          <div className="flex items-center justify-center p-2">
+          <div className="flex items-center justify-center p-10">
             <Oval
-              color="#fded03"
+              color="#F59E0B"
               height={50}
               width={50}
-              secondaryColor="#b45309"
+              secondaryColor="#78350f"
             />
           </div>
         ) : (
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
-            className="myfeaturedCarsSwiper"
+            className="myfeaturedCarsSwiper !pb-14"
             slidesPerView={1}
             spaceBetween={32}
             navigation
-            scrollbar={{ draggable: true }}
-            loop={true}
-            centeredSlides={true}
-            pagination={{ clickable: true }}
+            pagination={{ clickable: true, dynamicBullets: true }}
             autoplay={{
-              delay: 2000,
-              disableOnInteraction: true,
+              delay: 3000,
+              disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
             breakpoints={{
@@ -84,11 +87,7 @@ const FeaturedCars = ({ featuredCarData }) => {
               carData.map((car) => (
                 <SwiperSlide
                   key={car._id}
-                  style={{
-                    paddingBottom: '60px',
-                    paddingLeft: '7px',
-                    paddingRight: '7px',
-                  }}
+                  className="!h-auto"
                 >
                   <FeaturedCard car={car} />
                 </SwiperSlide>

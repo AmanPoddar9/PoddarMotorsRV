@@ -27,12 +27,13 @@ import volvo from '@/images/brands/volvo.png'
 
 import axios from 'axios'
 import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
-import { FaSearch } from 'react-icons/fa'
+import Link from 'next/link'
 
 const imageStyles = {
-  width: '2.5rem',
-  height: '2.5rem',
+  width: '1.5rem',
+  height: '1.5rem',
   display: 'inline',
+  marginRight: '0.5rem',
 }
 
 const brandsMapping = {
@@ -57,40 +58,16 @@ const brandsMapping = {
 }
 
 const segments = [
-  {
-    label: 'SUV',
-    key: '1',
-  },
-  {
-    label: 'Sedan',
-    key: '2',
-  },
-  {
-    label: 'Hatchback',
-    key: '3',
-  },
-  {
-    label: 'MUV',
-    key: '3',
-  },
+  { label: 'SUV', key: '1' },
+  { label: 'Sedan', key: '2' },
+  { label: 'Hatchback', key: '3' },
+  { label: 'MUV', key: '4' },
 ]
 
 const budgets = [
-  {
-    label: 'Under 4 Lakh',
-    key: '1',
-    range: '0-400000',
-  },
-  {
-    label: '4-8 Lakh',
-    key: '2',
-    range: '400000-800000',
-  },
-  {
-    label: 'Above 8 Lakh',
-    key: '3',
-    range: '800000',
-  },
+  { label: 'Under 4 Lakh', key: '1', range: '0-400000' },
+  { label: '4-8 Lakh', key: '2', range: '400000-800000' },
+  { label: 'Above 8 Lakh', key: '3', range: '800000' },
 ]
 
 const Hero = () => {
@@ -104,12 +81,10 @@ const Hero = () => {
       setLoading(true)
       const response = await axios.get(url + 'api/listings/types')
       if (response.data) {
-        const arr = response.data.map((type, index) => {
-          return {
-            label: type,
-            key: `${index + 1}`,
-          }
-        })
+        const arr = response.data.map((type, index) => ({
+          label: type,
+          key: `${index + 1}`,
+        }))
         setTypes(arr)
         setLoading(false)
       }
@@ -122,22 +97,19 @@ const Hero = () => {
     try {
       const response = await axios.get(url + 'api/listings/brands')
       if (response.data) {
-        const arr = response.data.map((b, index) => {
-          return {
-            label: (
-              <div>
-                {/* Added alt text for better SEO */}
-                <Image
-                  style={imageStyles}
-                  src={brandsMapping[b]}
-                  alt={`${b} car brand logo`}
-                />{' '}
-                {b}
-              </div>
-            ),
-            key: `${index + 1}`,
-          }
-        })
+        const arr = response.data.map((b, index) => ({
+          label: (
+            <div className="flex items-center">
+              <Image
+                style={imageStyles}
+                src={brandsMapping[b]}
+                alt={`${b} car brand logo`}
+              />
+              {b}
+            </div>
+          ),
+          key: `${index + 1}`,
+        }))
         setBrands(arr)
         setLoading(false)
       }
@@ -153,101 +125,80 @@ const Hero = () => {
   }, [])
 
   return (
-    <section className="relative bg-custom-black mx-auto overflow-hidden">
-      {/* Background Image with reduced opacity */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-30" // Set the opacity for the background
-        style={{ backgroundImage: `url(${carImage2.src})` }}
-      />
+    <section className="relative h-screen w-full overflow-hidden flex flex-col justify-center items-center text-center">
+      {/* Background Image with Gradient Overlay */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src={carImage2}
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-custom-black/70 via-custom-black/50 to-custom-black/90"></div>
+      </div>
 
-      <div className="grid max-w-screen-xl pb-10 pt-9 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:px-6 px-4 relative z-10">
-        <div className="mr-auto place-self-center lg:col-span-7">
-          <h1 className="max-w-2xl">
-            <TypewriterEffectSmooth
-              words={'Welcome To Real Value'.split(' ').map((word, index) => {
-                if (index <= 1) {
-                  return {
-                    text: word,
-                    className:
-                      'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl text-custom-seasalt',
-                  }
-                }
-                return {
-                  text: word,
-                  className:
-                    'mb-4 text-3xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl !text-custom-yellow',
-                }
-              })}
-            />
-          </h1>
-          <p className="max-w-2xl mb-6 font-light lg:mb-8 text-sm md:text-lg lg:text-xl text-custom-platinum">
-            {/* Added a link to financing options */}
-            Your one-stop shop for buying, selling and
-            <a href="/finance" className="text-custom-yellow hover:underline">
-              {' '}
-              Financing used cars
-            </a>
-            <p>A brand you can trust</p>
-          </p>
-          <a
+      <div className="relative z-10 max-w-5xl px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+        <h1 className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight">
+          Experience the <span className="text-custom-accent">Real Value</span>
+        </h1>
+        
+        <div className="mb-8">
+          <TypewriterEffectSmooth
+            words={[
+              { text: 'Premium', className: 'text-custom-platinum text-xl md:text-3xl' },
+              { text: 'Used', className: 'text-custom-platinum text-xl md:text-3xl' },
+              { text: 'Cars', className: 'text-custom-platinum text-xl md:text-3xl' },
+              { text: 'For', className: 'text-custom-platinum text-xl md:text-3xl' },
+              { text: 'You.', className: 'text-custom-accent text-xl md:text-3xl font-bold' },
+            ]}
+          />
+        </div>
+
+        <p className="max-w-2xl mb-10 text-lg md:text-xl text-white font-normal">
+          Your trusted partner for buying, selling, and financing pre-owned vehicles in Ranchi.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 mb-16">
+          <Link
             href="/buy"
-            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-center border rounded-lg focus:ring-4 focus:ring-custom-black text-custom-black border-custom-black bg-custom-platinum mr-5 hover:!bg-custom-yellow" // Increased padding and font size
+            className="px-8 py-4 bg-custom-accent text-custom-black font-bold text-lg rounded-full hover:bg-yellow-400 transition-all duration-300 shadow-lg shadow-yellow-500/20 transform hover:-translate-y-1"
           >
-            Buy Car
-          </a>
-          <a
+            Find Your Car
+          </Link>
+          <Link
             href="/sell"
-            className="inline-flex items-center justify-center px-6 py-4 text-lg font-medium border text-center rounded-lg hover:!text-custom-yellow text-custom-seasalt focus:ring-custom-yellow !border-custom-yellow" // Increased padding and font size
-            style={{
-              textDecoration: 'underline',
-              textDecorationColor: 'transparent',
-            }}
+            className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-lg rounded-full hover:bg-white hover:text-custom-black transition-all duration-300 transform hover:-translate-y-1"
           >
-            Sell Car
-            <span
-              className="ml-2"
-              style={{ textDecoration: 'none', fontSize: '1.2rem' }}
-            >
-              &#8594; {/* Unicode arrow character pointing right */}
-            </span>
-          </a>
+            Sell Your Car
+          </Link>
         </div>
-        {/* <div className="mt-10 lg:mt-0 lg:col-span-5 lg:flex">
-          <Image src={carImage2} alt="Second hand cars in Ranchi" priority />
-        </div> */}
-      </div>
 
-      <div className="max-w-screen-xl pt-10 mx-auto pb-16 lg:pb-24 lg:pt-0 lg:px-6 px-4">
-        <div className="mr-auto place-self-center lg:col-span-7">
-          <p className="max-w-2xl mb-12 font-light text-custom-platinum md:text-lg lg:mb-0 lg:text-xl ">
-            Or get started directly by...
-          </p>
-          <div className="button-container -mt-4">
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={brands} label="Brand" />
-            </span>
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={types} label="Segment" />
-            </span>
-            <span className="button-wrapper mr-3">
-              <ButtonCloud options={budgets} label="Budget" />
-            </span>
-            <span className="button-wrapper mr-3 md:mt-9">
-              <a
-                href="/buy"
-                className="inline-flex items-center 
-                justify-center px-6 py-4 text-lg
-                translate-y-[0.2rem]
-                 font-medium text-center border rounded-lg 
-                 text-custom-seasalt hover:text-custom-jet focus:ring-4  border-custom-jet hover:!bg-custom-yellow focus:ring-custom-jet md:mt-10" // Increased padding and font size
-              >
-                View All Cars
-              </a>
-            </span>
-          </div>
+        {/* Search Bar */}
+        <div className="w-full max-w-2xl glass p-2 rounded-full flex items-center gap-3 animate-slide-up">
+          <input
+            type="text"
+            placeholder="Search for your dream car..."
+            className="flex-1 bg-transparent text-white placeholder-white/60 px-6 py-3 outline-none text-lg"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                window.location.href = '/buy';
+              }
+            }}
+          />
+          <Link
+            href="/buy"
+            className="px-8 py-3 bg-custom-accent text-custom-black font-bold rounded-full hover:bg-yellow-400 transition-all duration-300 flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Search
+          </Link>
         </div>
       </div>
 
+      {/* Structured Data */}
       <script type="application/ld+json">
         {`{
           "@context": "https://schema.org",
@@ -259,36 +210,6 @@ const Hero = () => {
             "target": "https://poddarmotors.com/?s={search_term_string}",
             "query-input": "required name=search_term_string"
           }
-        }`}
-      </script>
-
-      <script type="application/ld+json">
-        {`{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          "name": "Cars",
-          "brand": ${JSON.stringify([
-            'Audi',
-            'BMW',
-            'Fiat',
-            'Ford',
-            'Honda',
-            'Hyundai',
-            'Jeep',
-            'KIA',
-            'Mahindra',
-            'Mercedes',
-            'MG Motor',
-            'Nissan',
-            'Renault',
-            'Skoda',
-            'Tata',
-            'Toyota',
-            'Maruti',
-            'Maruti Suzuki',
-            'Volkswagen',
-            'Volvo',
-          ])}
         }`}
       </script>
     </section>

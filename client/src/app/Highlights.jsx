@@ -29,30 +29,33 @@ const Highlights = () => {
       </Head>
 
       {/* Video Section */}
-      <section className="py-16 bg-custom-platinum">
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-6 px-4">
-          <header>
-            <h2 className="text-4xl font-bold text-custom-black mb-5 pt-7">
-              Learn More from our YouTube Channel
+      <section className="py-20 bg-custom-black relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-custom-black via-custom-jet/20 to-custom-black pointer-events-none"></div>
+        
+        <div className="mx-auto max-w-7xl sm:px-6 lg:px-6 px-4 relative z-10">
+          <header className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+              Learn From Our <span className="text-custom-accent">YouTube Channel</span>
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-custom-platinum max-w-3xl mx-auto">
               Explore our YouTube channel where we share expert insights on{' '}
-              <strong>used cars</strong>, <strong>car maintenance</strong>,{' '}
-              <strong>auto financing</strong>, and much more. Stay updated with
+              <strong className="text-white">used cars</strong>, <strong className="text-white">car maintenance</strong>,{' '}
+              <strong className="text-white">auto financing</strong>, and much more. Stay updated with
               our latest tips and tutorials.
             </p>
           </header>
 
           {/* Video Grid */}
           <div
-            className="gap-2 md:gap-12 items-center py-10"
+            className="gap-6 md:gap-8 items-start"
             style={{
               maxWidth: '1200px',
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             }}
           >
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -63,13 +66,16 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Get top tips on buying used cars from our experts in this video.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Get top tips on buying used cars from our experts in this video.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -80,14 +86,17 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Learn essential car maintenance tips to keep your vehicle in top
-                shape.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Learn essential car maintenance tips to keep your vehicle in top
+                  shape.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -98,14 +107,17 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Understand the ins and outs of financing your car purchase in
-                this video.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Understand the ins and outs of financing your car purchase in
+                  this video.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -116,13 +128,16 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Watch our expert reviews of the latest car models in the market.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Watch our expert reviews of the latest car models in the market.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -133,14 +148,17 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Gain valuable insights into the used car market trends and
-                opportunities.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Gain valuable insights into the used car market trends and
+                  opportunities.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-5">
+            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
               <iframe
                 width="100%"
                 height="250"
@@ -151,11 +169,14 @@ const Highlights = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full"
               ></iframe>
-              <p className="text-sm mt-2">
-                Learn how to care for your car and maintain long-term
-                performance.
-              </p>
+              <div className="p-4">
+                <p className="text-custom-platinum text-sm">
+                  Learn how to care for your car and maintain long-term
+                  performance.
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -517,7 +517,7 @@ export default function Buy({ allListings }) {
   }, [searchParams])
 
   return (
-    <div className="bg-white buyCarsSection">
+    <div className="bg-custom-black buyCarsSection min-h-screen">
       <div className="mx-auto max-w-screen-xl">
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -547,14 +547,14 @@ export default function Buy({ allListings }) {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl pt-20">
+                <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-custom-jet py-4 pb-12 shadow-xl pt-20 border-l border-white/10">
                   <div className="flex items-center justify-between px-4">
-                    <h2 className="text-lg font-medium text-gray-900">
+                    <h2 className="text-lg font-medium text-white">
                       Filters
                     </h2>
                     <button
                       type="button"
-                      className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
+                      className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-custom-black/50 p-2 text-custom-platinum hover:text-white"
                       onClick={() => setMobileFiltersOpen(false)}
                     >
                       <span className="sr-only">Close menu</span>
@@ -563,19 +563,19 @@ export default function Buy({ allListings }) {
                   </div>
 
                   {/* Filters */}
-                  <form className="mt-4 border-t border-gray-200">
+                  <form className="mt-4 border-t border-white/10">
                     <h3 className="sr-only">Categories</h3>
                     {filters.map((section) => (
                       <Disclosure
                         as="div"
                         key={section.id}
-                        className="border-t border-gray-200 px-4 py-6"
+                        className="border-t border-white/10 px-4 py-6"
                       >
                         {({ open }) => (
                           <>
                             <h3 className="-mx-2 -my-3 flow-root">
-                              <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                <span className="font-medium text-gray-900">
+                              <Disclosure.Button className="flex w-full items-center justify-between bg-transparent px-2 py-3 text-custom-platinum hover:text-white">
+                                <span className="font-medium text-white">
                                   {section.name}
                                 </span>
                                 <span className="ml-6 flex items-center">
@@ -634,11 +634,11 @@ export default function Buy({ allListings }) {
                                             e.target.checked,
                                           )
                                         }
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        className="h-4 w-4 rounded border-custom-platinum bg-custom-black text-custom-accent focus:ring-custom-accent"
                                       />
                                       <label
                                         htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                        className="ml-3 min-w-0 flex-1 text-gray-500"
+                                        className="ml-3 min-w-0 flex-1 text-custom-platinum"
                                       >
                                         {option.label}
                                       </label>
@@ -654,7 +654,7 @@ export default function Buy({ allListings }) {
                   </form>
                   <Button
                     onClick={() => updateFilters()}
-                    className="w-[80%] mx-auto !bg-custom-yellow mt-4"
+                    className="w-[80%] mx-auto !bg-custom-accent hover:!bg-yellow-400 !text-custom-black mt-4 !font-bold"
                   >
                     Filter
                   </Button>
@@ -663,7 +663,7 @@ export default function Buy({ allListings }) {
                       setSearchQuery('')
                       clearFilters()
                     }}
-                    className="mt-4 w-[80%] mx-auto !bg-custom-seasalt "
+                    className="mt-4 w-[80%] mx-auto !bg-custom-jet hover:!bg-custom-black !text-white !border-white/10"
                   >
                     Clear Filters
                   </Button>
@@ -674,18 +674,18 @@ export default function Buy({ allListings }) {
         </Transition.Root>
 
         <main className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-12">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-              Explore all cars
+          <div className="flex items-baseline justify-between border-b border-white/10 pb-6 pt-12">
+            <h1 className="text-4xl font-display font-bold tracking-tight text-white">
+              Explore <span className="text-custom-accent">All Cars</span>
             </h1>
 
             <div className="flex items-center">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-custom-platinum hover:text-white">
                     Sort
                     <ChevronDownIcon
-                      className="-mr-5 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                      className="-mr-5 ml-1 h-5 w-5 flex-shrink-0 text-custom-platinum group-hover:text-white"
                       aria-hidden="true"
                     />
                   </Menu.Button>
@@ -700,7 +700,7 @@ export default function Buy({ allListings }) {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xl bg-custom-jet border border-white/10 shadow-2xl focus:outline-none">
                     <div className="py-1">
                       {sortOptions.map((option) => (
                         <Menu.Item key={option.name}>
@@ -709,10 +709,10 @@ export default function Buy({ allListings }) {
                               onClick={() => handleSort(option.param)}
                               className={classNames(
                                 option.current
-                                  ? 'font-medium text-gray-900'
-                                  : 'text-gray-500',
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm',
+                                  ? 'font-medium text-white'
+                                  : 'text-custom-platinum',
+                                active ? 'bg-custom-black/50 text-white' : '',
+                                'block px-4 py-2 text-sm cursor-pointer',
                               )}
                             >
                               {option.name}
@@ -726,7 +726,7 @@ export default function Buy({ allListings }) {
               </Menu>
               <button
                 type="button"
-                className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
+                className="-m-2 ml-4 p-2 text-custom-platinum hover:text-white sm:ml-6 lg:hidden"
                 onClick={() => setMobileFiltersOpen(true)}
               >
                 <span className="sr-only">Filters</span>
@@ -746,7 +746,7 @@ export default function Buy({ allListings }) {
             >
               {/* Filters */}
               <form
-                className="hidden lg:block max-h-[70vh] overflow-y-auto"
+                className="hidden lg:block max-h-[70vh] overflow-y-auto bg-custom-jet/30 p-4 rounded-2xl border border-white/10"
                 style={{
                   flexGrow: 3,
                   paddingRight: '14px',
@@ -757,13 +757,13 @@ export default function Buy({ allListings }) {
                   <Disclosure
                     as="div"
                     key={section.id}
-                    className="border-b border-gray-200 py-6"
+                    className="border-b border-white/10 py-6"
                   >
                     {({ open }) => (
                       <>
                         <h3 className="-my-3 flow-root">
-                          <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                            <span className="font-medium text-gray-900">
+                          <Disclosure.Button className="flex w-full items-center justify-between bg-transparent py-3 text-sm text-custom-platinum hover:text-white">
+                            <span className="font-medium text-white">
                               {section.name}
                             </span>
                             <span className="ml-6 flex items-center">
@@ -822,11 +822,11 @@ export default function Buy({ allListings }) {
                                         e.target.checked,
                                       )
                                     }
-                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    className="h-4 w-4 rounded border-custom-platinum bg-custom-black text-custom-accent focus:ring-custom-accent"
                                   />
                                   <label
                                     htmlFor={`filter-${section.id}-${optionIdx}`}
-                                    className="ml-3 text-sm text-gray-600"
+                                    className="ml-3 text-sm text-custom-platinum"
                                   >
                                     {option.label}
                                   </label>
@@ -841,13 +841,13 @@ export default function Buy({ allListings }) {
                 ))}
                 <Button
                   onClick={() => updateFilters()}
-                  className="w-[100%] !bg-custom-yellow mt-4 !hover:text-white"
+                  className="w-[100%] !bg-custom-accent hover:!bg-yellow-400 !text-custom-black mt-4 !font-bold"
                 >
                   Filter
                 </Button>
                 <Button
                   onClick={() => clearFilters()}
-                  className="w-[100%]  mt-4 !hover:text-white"
+                  className="w-[100%] !bg-custom-jet hover:!bg-custom-black !text-white !border-white/10 mt-4"
                 >
                   Clear Filters
                 </Button>
@@ -866,7 +866,7 @@ export default function Buy({ allListings }) {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search cars by brand/model..."
-                      className="border rounded-l-md p-2 w-[100%]"
+                      className="border border-white/10 bg-custom-jet/50 text-white placeholder-custom-platinum rounded-l-md p-3 w-[100%] focus:outline-none focus:border-custom-accent"
                     />
                     <button
                       type="submit"
@@ -874,13 +874,7 @@ export default function Buy({ allListings }) {
                         e.preventDefault()
                         updateFilters()
                       }}
-                      className="items-center 
-                justify-center
-                px-3 py-3  ml-2 text-base
-                 font-medium 
-                 text-center border 
-                 rounded-lg 
-                 text-custom-black hover:text-custom-jet focus:ring-4  !hover:border-custom-jet !bg-custom-yellow"
+                      className="items-center justify-center px-4 py-3 ml-2 text-base font-bold text-center rounded-lg text-custom-black hover:bg-yellow-400 bg-custom-accent transition-all"
                     >
                       <FaSearch />
                     </button>
@@ -890,7 +884,7 @@ export default function Buy({ allListings }) {
                         setSearchQuery('')
                         updateFilters(null, true)
                       }}
-                      className="bg-custom-platinum text-custom-jet  py-2 px-4 ml-2 rounded-md"
+                      className="bg-custom-jet hover:bg-custom-black text-white border border-white/10 py-3 px-4 ml-2 rounded-md transition-all"
                     >
                       Clear
                     </button>
@@ -899,10 +893,10 @@ export default function Buy({ allListings }) {
                 {loading ? (
                   <div className="flex items-center justify-center p-2 h-[60%]">
                     <Oval
-                      color="#fded03"
+                      color="#F59E0B"
                       height={50}
                       width={50}
-                      secondaryColor="#b45309"
+                      secondaryColor="#78350f"
                     />
                   </div>
                 ) : (
@@ -919,7 +913,7 @@ export default function Buy({ allListings }) {
                         <FeaturedCard key={car._id} car={car} />
                       ))
                     ) : (
-                      <div className="text-center font-semibold p-4 lg:col-span-4">
+                      <div className="text-center font-semibold p-4 lg:col-span-4 text-custom-platinum">
                         Sorry, no vehicles match the filters set...
                       </div>
                     )}
