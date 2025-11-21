@@ -8,6 +8,7 @@ const offersRoutes = require('./routes/offersRoutes')
 const featuresRoutes = require('./routes/featuresRoutes')
 const listingRoutes = require('./routes/listingRoutes')
 const sellRequestRoutes = require('./routes/sellRequestRoutes')
+const scrapRequestRoutes = require('./routes/scrapRequestRoutes')
 
 const cors = require('cors')
 
@@ -33,6 +34,7 @@ app.use('/api/offers', offersRoutes)
 app.use('/api/features', featuresRoutes)
 app.use('/api/listings', listingRoutes)
 app.use('/api/sellRequests', sellRequestRoutes)
+app.use('/api/scrapRequests', scrapRequestRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

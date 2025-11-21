@@ -69,6 +69,7 @@ const Navbar = () => {
           <div className="hidden md:flex justify-evenly items-center space-x-4 mx-auto lg:mx-0 flex-grow-1">
             <NavLink href="/buy" text="Buy" />
             <NavLink href="/sell" text="Sell" />
+            <NavLink href="/scrap" text="Scrap Car" />
             <NavLink href="/finance" text="Finance" />
             <NavLink href="/contact" text="Contact Us" />
             <NavLink href="/about" text="About Us" />
@@ -141,6 +142,14 @@ const Navbar = () => {
               onClick={onClose}
             >
               Sell Car
+            </a>
+          </Link>
+          <Link legacyBehavior href="/scrap">
+            <a
+              className="text-white font-bold focus:text-custom-yellow"
+              onClick={onClose}
+            >
+              Scrap Car
             </a>
           </Link>
           <Link legacyBehavior href="/finance">
