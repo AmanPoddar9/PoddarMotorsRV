@@ -15,7 +15,7 @@ const cors = require('cors')
 const compression = require("compression");
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 4000
 
 connectDB()
 app.use(cors())
@@ -35,6 +35,8 @@ app.use('/api/features', featuresRoutes)
 app.use('/api/listings', listingRoutes)
 app.use('/api/sellRequests', sellRequestRoutes)
 app.use('/api/scrapRequests', scrapRequestRoutes)
+const workshopBookingRoutes = require('./routes/workshopBookingRoutes')
+app.use('/api/workshop-bookings', workshopBookingRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

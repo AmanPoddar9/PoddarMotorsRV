@@ -27,6 +27,11 @@ module.exports = {
           accent: '#EAB308', // Yellow-500
           surface: '#0F172A', // Slate-900
         },
+        workshop: {
+          blue: '#0C3C8C',
+          red: '#E82020',
+          gray: '#F3F4F6',
+        },
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

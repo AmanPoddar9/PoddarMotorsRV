@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { IoMdClose, IoMdMenu } from 'react-icons/io'
 import Logo from '../../images/logo_text.png'
 
@@ -12,8 +13,11 @@ const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
 })
 
 const Navbar = () => {
+  const pathname = usePathname()
   const [visible, setVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const isWorkshop = pathname?.startsWith('/workshop')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +48,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="fixed top-0 z-50 w-full bg-custom-black/95 backdrop-blur-md border-b border-white/10 transition-all duration-300"
+        className={`fixed top-0 z-50 w-full bg-custom-black/95 backdrop-blur-md border-b border-white/10 transition-all duration-300 ${isWorkshop ? 'hidden' : ''}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -70,6 +74,12 @@ const Navbar = () => {
               <NavLink href="/finance" text="Finance" />
               <NavLink href="/videos" text="Videos" />
               <NavLink href="/about" text="About Us" />
+              <Link href="/workshop" className="relative group py-2">
+                <span className="text-custom-seasalt font-medium text-sm uppercase tracking-wider transition-colors duration-300 group-hover:text-custom-accent text-red-500 font-bold">
+                  Workshop
+                </span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-custom-accent transition-all duration-300 group-hover:w-full"></span>
+              </Link>
               <Link
                 href="/contact"
                 className="px-6 py-2 bg-custom-accent text-custom-black font-bold rounded-full hover:bg-yellow-400 transition-all duration-300 shadow-lg shadow-yellow-500/20"
@@ -120,6 +130,9 @@ const Navbar = () => {
             <MobileNavLink href="/finance" text="Finance" />
             <MobileNavLink href="/videos" text="Videos" />
             <MobileNavLink href="/about" text="About Us" />
+            <Link href="/workshop" onClick={onClose} className="text-2xl font-bold text-red-500 hover:text-custom-accent transition-colors duration-300">
+              Workshop
+            </Link>
             <MobileNavLink href="/contact" text="Contact Us" />
           </div>
           

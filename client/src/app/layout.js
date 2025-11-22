@@ -35,6 +35,24 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  // We need to handle client-side logic for pathname
+  // Since this is a Server Component, we can't use usePathname directly here.
+  // However, we can make the body class dynamic or wrap the content.
+  // Actually, RootLayout is a Server Component by default in Next.js 13+.
+  // We can't use usePathname here.
+  // Alternative: Move the body content to a Client Component or just accept that we might need a different layout for workshop.
+  // But Next.js 13 allows nested layouts.
+  // The issue is the global `pt-16` in `layout.js`.
+  // We should remove `pt-16` from here and add it to the Navbar component (as a spacer) or to the page wrappers.
+  // Or, we can make a Client Component wrapper for the body class.
+  
+  // Let's try a simpler approach: The Navbar is fixed, so it needs space.
+  // If we move `pt-16` to a div wrapping `{children}`, it might work, but Navbar is outside.
+  // Let's create a Client Component to handle the body class or just move the padding logic to the pages.
+  
+  // Actually, the easiest way is to make a client component that wraps the body content and handles the class.
+  // But for now, let's just remove `pt-16` from global layout and add it to the specific pages or a wrapper.
+  
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <head>
@@ -84,10 +102,12 @@ export default function RootLayout({ children }) {
           `}
         </Script>
       </head>
-      <body className="w-full overflow-x-hidden pt-16 bg-custom-black text-custom-seasalt font-sans antialiased selection:bg-custom-accent selection:text-custom-black">
+      <body className="w-full overflow-x-hidden bg-custom-black text-custom-seasalt font-sans antialiased selection:bg-custom-accent selection:text-custom-black">
         <AntdRegistry>
           <Navbar />
-          {children}
+          <div className="pt-16 has-[.workshop-layout]:pt-0">
+             {children}
+          </div>
         </AntdRegistry>
         <PhoneButton />
         <Footer />
