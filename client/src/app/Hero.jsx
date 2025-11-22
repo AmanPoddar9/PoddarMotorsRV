@@ -74,7 +74,46 @@ const Hero = () => {
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState([])
   const [brands, setBrands] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      window.location.href = `/buy?search=${encodeURIComponent(searchQuery)}`
+    }
+  }
+
+  const getSuggestions = () => {
+    if (!searchQuery) return []
+    const query = searchQuery.toLowerCase()
+    
+    // Extract brand names from the complex brand objects
+    const brandNames = brands.map(b => {
+        // If brand is an object with label as React element, we need the original string
+        // But looking at fetchAllBrands, 'b' in the map is the string name
+        // The state 'brands' stores objects with 'label' (JSX) and 'key'
+        // We need to store the raw brand names separately or extract them
+        // Let's modify fetchAllBrands to store raw names or just use the mapping keys
+        return Object.keys(brandsMapping).find(key => key.toLowerCase().includes(query))
+    }).filter(Boolean)
+
+    // Since brands state is complex, let's use the static brandsMapping keys for suggestions
+    // This is safer and faster
+    const brandSuggestions = Object.keys(brandsMapping).filter(brand => 
+      brand.toLowerCase().includes(query)
+    )
+
+    const typeSuggestions = types.map(t => t.label).filter(type => 
+      type.toLowerCase().includes(query)
+    )
+
+    const segmentSuggestions = segments.map(s => s.label).filter(segment =>
+      segment.toLowerCase().includes(query)
+    )
+
+    return [...new Set([...brandSuggestions, ...typeSuggestions, ...segmentSuggestions])].slice(0, 5)
+  }
 
   const fetchAllTypes = async () => {
     try {
@@ -175,26 +214,81 @@ const Hero = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="w-full max-w-2xl glass p-2 rounded-full flex items-center gap-3 animate-slide-up">
-          <input
-            type="text"
-            placeholder="Search for your dream car..."
-            className="flex-1 bg-transparent text-white placeholder-white/60 px-6 py-3 outline-none text-lg"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                window.location.href = '/buy';
-              }
-            }}
-          />
-          <Link
-            href="/buy"
-            className="px-8 py-3 bg-custom-accent text-custom-black font-bold rounded-full hover:bg-yellow-400 transition-all duration-300 flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            Search
-          </Link>
+        <div className="w-full max-w-2xl relative z-50">
+          <div className="glass p-2 rounded-full flex items-center gap-3 animate-slide-up relative z-50">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setShowSuggestions(true)
+              }}
+              placeholder="Search for your dream car..."
+              className="flex-1 bg-transparent text-white placeholder-white/60 px-6 py-3 outline-none text-lg"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+            />
+            <button
+              onClick={handleSearch}
+              className="px-8 py-3 bg-custom-accent text-custom-black font-bold rounded-full hover:bg-yellow-400 transition-all duration-300 flex items-center gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              Search
+            </button>
+          </div>
+
+          {/* Predictive Search Suggestions */}
+          {showSuggestions && searchQuery.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-custom-jet/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+              {getSuggestions().length > 0 ? (
+                getSuggestions().map((suggestion, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      setSearchQuery(suggestion)
+                      setShowSuggestions(false)
+                      window.location.href = `/buy?search=${suggestion}`
+                    }}
+                    className="px-6 py-3 text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none flex items-center gap-3"
+                  >
+                    <svg
+                      className="w-4 h-4 text-custom-accent"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    {suggestion}
+                  </div>
+                ))
+              ) : (
+                <div className="px-6 py-4 text-custom-platinum text-center">
+                  No suggestions found
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

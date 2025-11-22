@@ -44,7 +44,7 @@ const Videos = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-custom-black p-6">
       <Head>
         <title>Videos | Poddar Motors Real Value</title>
         <meta
@@ -56,19 +56,19 @@ const Videos = () => {
           content="car videos, used cars in Ranchi, Poddar Motors Real value, second hand bolero, second hand scorpio"
         />
       </Head>
-      <h1 className="text-4xl font-bold mb-6 text-center text-gray-900">
-        YouTube Section
+      <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 text-center text-white">
+        YouTube <span className="text-custom-accent">Videos</span>
       </h1>
-      <p className="mb-8 text-center text-gray-700">
+      <p className="mb-8 text-center text-custom-platinum max-w-3xl mx-auto">
         Welcome to our video gallery! Here, you can watch our latest car
         reviews, test drives, and much more. Stay updated with the latest in the
         automotive world and get insights into your favorite cars.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {videoData.map((video) => (
           <div
             key={video.id}
-            className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-xl duration-300"
+            className="bg-custom-jet/50 border border-white/10 shadow-lg rounded-2xl overflow-hidden transition-all transform hover:border-custom-accent/30 hover:-translate-y-2 hover:shadow-xl duration-300"
           >
             <iframe
               width="100%"
@@ -78,22 +78,22 @@ const Videos = () => {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="rounded-t-lg"
+              className="w-full"
             ></iframe>
             <div className="p-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-white">
                 {video.title}
               </h2>
-              <p className="text-gray-600 mt-2">{video.description}</p>
+              <p className="text-custom-platinum mt-2 text-sm">{video.description}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Embed Instagram Reel */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">
-          Featured Instagram Reel
+      <div className="mt-12 max-w-7xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-display font-bold mb-4 text-center text-white">
+          Featured <span className="text-custom-accent">Instagram Reel</span>
         </h2>
         <blockquote
           className="instagram-media"

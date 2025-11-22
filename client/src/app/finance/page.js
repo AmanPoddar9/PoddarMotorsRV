@@ -8,7 +8,7 @@ import FinanceHero from '../components/FinanceHero'
 
 export default function FinancePage() {
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div style={{ overflow: 'hidden' }} className="bg-custom-black min-h-screen">
       <FinanceHero />
       <EMICalculator />
       <Brands />

@@ -43,6 +43,8 @@ const sortOptions = [
 let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 // url = 'http://localhost:5000/'
 
+const carTypes = ['Hatchback', 'Sedan', 'SUV', 'MUV', 'Luxury']
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }

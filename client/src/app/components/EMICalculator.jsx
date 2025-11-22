@@ -66,7 +66,7 @@ const EMICalculator = ({ indiPrincipal }) => {
   }
 
   return (
-    <section className={`${indiPrincipal ? 'py-0' : 'py-16'}`}>
+    <section className={`${indiPrincipal ? 'py-0' : 'py-16 bg-custom-black'}`}>
       {/* Heading on the left */}
       <div
         className={`mx-auto max-w-7xl ${indiPrincipal ? 'py-0' : 'px-4 py-8 sm:px-6 lg:px-6'}`}
@@ -75,8 +75,10 @@ const EMICalculator = ({ indiPrincipal }) => {
           <></>
         ) : (
           <div className="mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-5 ">Finance</h2>
-            <span className="mb-8 lg:mb-16 text-xl tracking-tight leading-tight text-gray-500 md:text-2xl">
+            <h2 className="text-4xl font-display font-bold text-white mb-5">
+              <span className="text-custom-accent">Finance</span> Calculator
+            </h2>
+            <span className="mb-8 lg:mb-16 text-xl tracking-tight leading-tight text-custom-platinum md:text-2xl">
               Everything you need to know financially before buying/selling a
               car.
             </span>
@@ -85,15 +87,15 @@ const EMICalculator = ({ indiPrincipal }) => {
 
         <div className="flex lg:flex-row flex-col justify-start">
           <div className="py-4">
-            <div className="bg-white p-4 rounded-lg shadow-lg mb-4">
-              <div className="text-2xl font-bold mb-4">EMI Calculator</div>
+            <div className="bg-custom-jet/50 border border-white/10 p-6 rounded-2xl shadow-lg mb-4">
+              <div className="text-2xl font-bold mb-4 text-white">EMI Calculator</div>
               <div className="flex flex-col space-y-4">
                 <div
                   className={`flex flex-col space-x-0 lg:space-x-4 lg:flex-row items-center justify-start lg:justify-between`}
                 >
                   <label
                     htmlFor="principalAmount"
-                    className="flex-1 mb-2 w-full"
+                    className="flex-1 mb-2 w-full text-custom-platinum"
                   >
                     Principal Amt:
                   </label>
@@ -105,7 +107,7 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setPrincipalAmount(e.target.value)
                     }}
-                    className="border rounded px-2 py-1 w-full lg:w-1/2 mb-2"
+                    className="border border-white/10 bg-custom-black/50 text-white rounded px-3 py-2 w-full lg:w-1/2 mb-2 focus:outline-none focus:border-custom-accent"
                   />
                   <input
                     type="range"
@@ -116,14 +118,14 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setPrincipalAmount(e.target.value)
                     }}
-                    className="w-full lg:w-1/2 ml-5"
+                    className="w-full lg:w-1/2 ml-5 accent-custom-accent"
                   />
                 </div>
 
                 <div className="flex flex-col space-x-0 lg:space-x-4 lg:flex-row items-center justify-start lg:justify-between">
                   <label
                     htmlFor="rateOfInterest"
-                    className="flex-1 mb-2 w-full"
+                    className="flex-1 mb-2 w-full text-custom-platinum"
                   >
                     Interest Rate:
                   </label>
@@ -135,7 +137,7 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setRateOfInterest(e.target.value)
                     }}
-                    className="border rounded px-2 py-1 w-full lg:w-1/2 mb-2"
+                    className="border border-white/10 bg-custom-black/50 text-white rounded px-3 py-2 w-full lg:w-1/2 mb-2 focus:outline-none focus:border-custom-accent"
                   />
                   <input
                     type="range"
@@ -146,11 +148,11 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setRateOfInterest(e.target.value)
                     }}
-                    className="w-full lg:w-1/2 ml-5"
+                    className="w-full lg:w-1/2 ml-5 accent-custom-accent"
                   />
                 </div>
                 <div className="flex flex-col space-x-0 lg:space-x-4 lg:flex-row items-center justify-start lg:justify-between">
-                  <label htmlFor="tenure" className="flex-1 mb-2 w-full">
+                  <label htmlFor="tenure" className="flex-1 mb-2 w-full text-custom-platinum">
                     Tenure (in years):
                   </label>
                   <input
@@ -161,7 +163,7 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setTenure(e.target.value)
                     }}
-                    className="border rounded px-2 py-1 w-full lg:w-1/2 mb-2"
+                    className="border border-white/10 bg-custom-black/50 text-white rounded px-3 py-2 w-full lg:w-1/2 mb-2 focus:outline-none focus:border-custom-accent"
                   />
                   <input
                     type="range"
@@ -172,29 +174,29 @@ const EMICalculator = ({ indiPrincipal }) => {
                     onChange={(e) => {
                       setTenure(e.target.value)
                     }}
-                    className="w-full lg:w-1/2 ml-5"
+                    className="w-full lg:w-1/2 ml-5 accent-custom-accent"
                   />
                 </div>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <div className="text-xl font-bold mb-2">EMI Details:</div>
-              <div className="flex justify-between mb-2">
+            <div className="bg-custom-jet/50 border border-white/10 p-6 rounded-2xl shadow-lg">
+              <div className="text-xl font-bold mb-2 text-white">EMI Details:</div>
+              <div className="flex justify-between mb-2 text-custom-platinum">
                 <div>EMI:</div>
-                <div className="font-bold" style={{ fontSize: '20px' }}>
+                <div className="font-bold text-custom-accent" style={{ fontSize: '20px' }}>
                   ₹{AmountWithCommas(emi)}/month
                 </div>
               </div>
               {/* Add principal amount also */}
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-custom-platinum">
                 <div>Principal Amt:</div>
                 <div>₹{AmountWithCommas(principalAmount)}</div>
               </div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-custom-platinum">
                 <div>Total Interest:</div>
                 <div>₹{AmountWithCommas(totalInterest)}</div>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-custom-platinum">
                 <div>Total Payment:</div>
                 <div>₹{AmountWithCommas(totalPayment)}</div>
               </div>
@@ -204,8 +206,8 @@ const EMICalculator = ({ indiPrincipal }) => {
             <></>
           ) : (
             <div className="py-4 lg:mx-10">
-              <div className="bg-white p-4 rounded-lg shadow-lg">
-                <div className="text-xl font-bold mb-2">
+              <div className="bg-custom-jet/50 border border-white/10 p-6 rounded-2xl shadow-lg">
+                <div className="text-xl font-bold mb-2 text-white">
                   Interest vs Principal:
                 </div>
                 <div style={{ height: '27.8rem' }}>
