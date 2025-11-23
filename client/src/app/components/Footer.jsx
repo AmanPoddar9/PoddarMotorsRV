@@ -51,6 +51,12 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="/blog" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
+                  <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
+                  Blog
+                </a>
+              </li>
+              <li>
                 <a href="/about" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
                   About Us

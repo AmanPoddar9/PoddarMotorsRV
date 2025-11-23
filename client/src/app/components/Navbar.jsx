@@ -72,6 +72,7 @@ const Navbar = () => {
               <NavLink href="/sell" text="Sell" />
               <NavLink href="/scrap" text="Scrap Car" />
               <NavLink href="/finance" text="Finance" />
+              <NavLink href="/blog" text="Blog" />
               <NavLink href="/videos" text="Videos" />
               <NavLink href="/about" text="About Us" />
               <Link href="/workshop" className="relative group py-2">
@@ -128,6 +129,7 @@ const Navbar = () => {
             <MobileNavLink href="/sell" text="Sell Car" />
             <MobileNavLink href="/scrap" text="Scrap Car" />
             <MobileNavLink href="/finance" text="Finance" />
+            <MobileNavLink href="/blog" text="Blog" />
             <MobileNavLink href="/videos" text="Videos" />
             <MobileNavLink href="/about" text="About Us" />
             <Link href="/workshop" onClick={onClose} className="text-2xl font-bold text-red-500 hover:text-custom-accent transition-colors duration-300">

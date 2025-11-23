@@ -51,6 +51,13 @@ const adminSections = [
     icon: <FiFileText className="w-8 h-8" />,
     href: '/admin/sellRequests',
     color: 'bg-pink-500'
+  },
+  {
+    title: 'Blogs',
+    description: 'Manage blog posts and articles',
+    icon: <FiFileText className="w-8 h-8" />,
+    href: '/admin/blogs',
+    color: 'bg-teal-500'
   }
 ]
 

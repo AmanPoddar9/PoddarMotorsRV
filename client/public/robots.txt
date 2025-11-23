@@ -4,3 +4,6 @@ Disallow:
 # Allow access to JS and CSS files
 Allow: /*.js$
 Allow: /*.css$
+
+# Sitemap
+Sitemap: https://www.poddarmotors.com/sitemap.xml
