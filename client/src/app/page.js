@@ -1,5 +1,6 @@
 // import Image from 'next/image';
-import Hero from './Hero'
+// import Image from 'next/image';
+import LandingHero from './components/LandingHero'
 import FeaturedCars from './FeaturedCars'
 import Highlights from './Highlights'
 import Offers from './components/Offers'
@@ -41,7 +42,7 @@ export default async function Home() {
   return (
     <div style={{ overflow: 'hidden !important' }}>
 
-      <Hero />
+      <LandingHero />
       <FeaturedCars featuredCarData={data} />
       <ButtonRows />
       <Features />

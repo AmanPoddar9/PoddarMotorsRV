@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import scrapHeroImage from '@/images/scrap_hero.png'
+import scrapHeroImage from '../../images/scrap_hero.png'
 
 const ScrapHero = ({ onGetQuoteClick }) => {
   return (

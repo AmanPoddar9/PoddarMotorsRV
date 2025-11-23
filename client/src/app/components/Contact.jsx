@@ -2,7 +2,7 @@ import React from 'react'
 import { FaFacebook, FaInstagram, FaClock, FaCalendarAlt } from 'react-icons/fa'
 import { FiMapPin, FiMessageSquare, FiArrowRight } from 'react-icons/fi'
 // import { Link } from 'react-router-dom';
-import contactImage from '@/images/contact.jpg'
+import contact from '../../images/contact.jpg'
 
 import { FaWhatsapp } from 'react-icons/fa'
 import Image from 'next/image'

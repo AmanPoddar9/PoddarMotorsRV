@@ -1,32 +1,32 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import carImage2 from '../images/about4.jpeg'
+import carImage2 from '../../images/about4.jpeg'
 import Image from 'next/image'
-import ButtonCloud from './components/ButtonCloud'
+import ButtonCloud from './ButtonCloud'
 
-import audi from '@/images/brands/audi.png'
-import bmw from '@/images/brands/bmw.png'
-import fiat from '@/images/brands/fiat.png'
-import ford from '@/images/brands/ford.png'
-import honda from '@/images/brands/honda.png'
-import hyundai from '@/images/brands/hyundai.png'
-import jeep from '@/images/brands/jeep.png'
-import kia from '@/images/brands/kia.png'
-import land_rover from '@/images/brands/land_rover.png'
-import mahindra from '@/images/brands/mahindra.png'
-import mercedes from '@/images/brands/mercedes.png'
-import mg from '@/images/brands/mg.png'
-import nissan from '@/images/brands/nissan.png'
-import renault from '@/images/brands/renault.png'
-import skoda from '@/images/brands/skoda.png'
-import suzuki from '@/images/brands/suzuki.png'
-import tata from '@/images/brands/tata.png'
-import toyota from '@/images/brands/toyota.png'
-import volkswagen from '@/images/brands/volkswagen.png'
-import volvo from '@/images/brands/volvo.png'
+import audi from '../../images/brands/audi.png'
+import bmw from '../../images/brands/bmw.png'
+import fiat from '../../images/brands/fiat.png'
+import ford from '../../images/brands/ford.png'
+import honda from '../../images/brands/honda.png'
+import hyundai from '../../images/brands/hyundai.png'
+import jeep from '../../images/brands/jeep.png'
+import kia from '../../images/brands/kia.png'
+import land_rover from '../../images/brands/land_rover.png'
+import mahindra from '../../images/brands/mahindra.png'
+import mercedes from '../../images/brands/mercedes.png'
+import mg from '../../images/brands/mg.png'
+import nissan from '../../images/brands/nissan.png'
+import renault from '../../images/brands/renault.png'
+import skoda from '../../images/brands/skoda.png'
+import suzuki from '../../images/brands/suzuki.png'
+import tata from '../../images/brands/tata.png'
+import toyota from '../../images/brands/toyota.png'
+import volkswagen from '../../images/brands/volkswagen.png'
+import volvo from '../../images/brands/volvo.png'
 
 import axios from 'axios'
-import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
+import { TypewriterEffectSmooth } from './ui/typewriter-effect'
 import Link from 'next/link'
 
 const imageStyles = {
@@ -45,6 +45,7 @@ const brandsMapping = {
   Hyundai: hyundai,
   Jeep: jeep,
   KIA: kia,
+  'Land Rover': land_rover,
   Mahindra: mahindra,
   Mercedes: mercedes,
   'MG Motor': mg,
@@ -55,6 +56,8 @@ const brandsMapping = {
   Toyota: toyota,
   Maruti: suzuki,
   'Maruti Suzuki': suzuki,
+  Volkswagen: volkswagen,
+  Volvo: volvo,
 }
 
 const segments = [
@@ -70,7 +73,7 @@ const budgets = [
   { label: 'Above 8 Lakh', key: '3', range: '800000' },
 ]
 
-const Hero = () => {
+const LandingHero = () => {
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState([])
   const [brands, setBrands] = useState([])
@@ -139,11 +142,13 @@ const Hero = () => {
         const arr = response.data.map((b, index) => ({
           label: (
             <div className="flex items-center">
-              <Image
-                style={imageStyles}
-                src={brandsMapping[b]}
-                alt={`${b} car brand logo`}
-              />
+              {brandsMapping[b] && (
+                <Image
+                  style={imageStyles}
+                  src={brandsMapping[b]}
+                  alt={`${b} car brand logo`}
+                />
+              )}
               {b}
             </div>
           ),
@@ -310,4 +315,4 @@ const Hero = () => {
   )
 }
 
-export default Hero
+export default LandingHero

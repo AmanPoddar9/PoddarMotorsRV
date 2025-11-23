@@ -1,8 +1,8 @@
 import React from 'react'
-// import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
+// import { TypewriterEffectSmooth } from './ui/typewriter-effect'
 import Image from 'next/image'
-import carImage2 from '@/images/finance.png'
-import { TypewriterEffectSmooth } from '@/app/components/ui/typewriter-effect'
+import finance from '../../images/finance.png'
+import { TypewriterEffectSmooth } from './ui/typewriter-effect'
 
 const FinanceHero = () => {
   return (
@@ -23,7 +23,7 @@ const FinanceHero = () => {
           </h1>
         </div>
         <div className="mt-10 lg:mt-0 lg:col-span-5">
-          <Image src={carImage2} alt="Hero car image" priority width={500} />
+          <Image src={finance} alt="Hero car image" priority width={500} />
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
-import { AmountWithCommas } from '@/app/utils'
+import { AmountWithCommas } from '../../utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import {
   Autoplay,
@@ -22,19 +22,19 @@ import { FaBoltLightning } from 'react-icons/fa6'
 import { MdAirlineSeatReclineNormal } from 'react-icons/md'
 import { BsFuelPumpFill } from 'react-icons/bs'
 import { PiGearSixFill } from 'react-icons/pi'
-import mileage from '@/images/specs/mileage.png'
-import disp from '@/images/specs/disp.png'
-import trunk from '@/images/specs/trunk.png'
+import mileage from '../../../images/specs/mileage.png'
+import disp from '../../../images/specs/disp.png'
+import trunk from '../../../images/specs/trunk.png'
 
 // EMI Calculator
-import EMICalculator from '@/app/components/EMICalculator'
+import EMICalculator from '../../components/EMICalculator'
 
 import { Oval } from 'react-loader-spinner'
-import { toTitleCase, getOwnerShipSuffix, EMICalcLite } from '@/app/utils'
+import { toTitleCase, getOwnerShipSuffix, EMICalcLite } from '../../utils'
 
 // BookingCard imports
 import { Tabs, Modal } from 'antd'
-import BookingCard from '@/app/components/BookingCard'
+import BookingCard from '../../components/BookingCard'
 
 // import { BsFillFuelPumpFill } from "react-icons/bs";
 // import { CiCreditCard1 } from "react-icons/ci";

@@ -1,4 +1,4 @@
-import AdminNavbar from '@/app/components/AdminNavbar'
+import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
 import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool } from 'react-icons/fi'
 

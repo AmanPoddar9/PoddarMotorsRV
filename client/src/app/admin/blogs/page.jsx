@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminNavbar from '@/app/components/AdminNavbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import Link from 'next/link';
 import axios from 'axios';
 import { FiEdit, FiTrash2, FiEye, FiPlus } from 'react-icons/fi';

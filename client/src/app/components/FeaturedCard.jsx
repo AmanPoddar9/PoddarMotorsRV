@@ -1,8 +1,8 @@
 import React from 'react'
 import Image from 'next/image'
-import { formatAmount, AmountWithCommas, EMICalcLite } from '@/app/utils'
+import { formatAmount, AmountWithCommas, EMICalcLite } from '../utils'
 
-import { toTitleCase } from '@/app/utils'
+import { toTitleCase } from '../utils'
 
 const FeaturedCard = ({ car }) => {
   return (

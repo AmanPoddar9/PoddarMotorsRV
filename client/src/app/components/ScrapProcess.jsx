@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import step1 from '@/images/scrap_step1.png'
-import step2 from '@/images/scrap_step2.png'
-import step3 from '@/images/scrap_step3.png'
-import step4 from '@/images/scrap_step4.png'
+import step1 from '../../images/scrap_step1.png'
+import step2 from '../../images/scrap_step2.png'
+import step3 from '../../images/scrap_step3.png'
+import step4 from '../../images/scrap_step4.png'
 
 const ScrapProcess = () => {
   const steps = [

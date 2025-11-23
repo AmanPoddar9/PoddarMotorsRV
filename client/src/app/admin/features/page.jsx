@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '@/app/components/AdminNavbar'
+import AdminNavbar from '../../components/AdminNavbar'
 
 const Features = () => {
   const [features, setFeatures] = useState([])

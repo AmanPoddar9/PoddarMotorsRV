@@ -11,8 +11,8 @@ import {
 } from '@heroicons/react/20/solid'
 import axios from 'axios'
 import { Button, Slider } from 'antd'
-import { AmountWithCommas } from '@/app/utils'
-import FeaturedCard from '@/app/components/FeaturedCard'
+import { AmountWithCommas, toTitleCase } from '../utils'
+import FeaturedCard from '../components/FeaturedCard'
 import { FaSearch } from 'react-icons/fa'
 
 import { Oval } from 'react-loader-spinner'

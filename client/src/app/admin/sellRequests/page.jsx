@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '@/app/components/AdminNavbar'
+import AdminNavbar from '../../components/AdminNavbar'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
 

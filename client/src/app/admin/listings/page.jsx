@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
-import AdminNavbar from '@/app/components/AdminNavbar'
+import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
 import { Button, Input, Spin } from 'antd'
 
