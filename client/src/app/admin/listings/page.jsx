@@ -59,27 +59,28 @@ const Listings = () => {
     setFilteredListings(tempArr)
   }
   return (
-    <div>
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
 
-      <div className="container mx-auto mt-8 min-h-[70vh]">
-        <h1 className="text-3xl font-bold mb-4">Listings</h1>
+      <div className="container mx-auto mt-8 min-h-[70vh] px-4">
+        <h1 className="text-3xl font-bold mb-4 text-white">Listings</h1>
         <Link
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mb-4 rounded inline-block"
+          className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold py-2 px-4 mb-4 rounded inline-block transition-colors"
           href="/admin/create-listing"
         >
           Create New Listing
         </Link>
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap gap-4">
           <Input
             placeholder="Search by brand, model, reg. no."
-            style={{ width: '70%' }}
+            style={{ width: '70%', backgroundColor: '#1a1a1a', color: 'white', borderColor: 'rgba(255,255,255,0.1)' }}
             onChange={(e) => setFilterString(e.target.value)}
             value={filterString}
+            className="hover:border-custom-accent focus:border-custom-accent"
           />
           <button
             onClick={() => filterSearch()}
-            className="bg-blue-500 hover:bg-blue-700 mx-4 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
+            className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold py-2 px-4 rounded inline-block transition-colors"
           >
             Search
           </button>
@@ -88,54 +89,56 @@ const Listings = () => {
               setFilteredListings(listings)
               setFilterString('')
             }}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-block transition-colors"
           >
             Clear
           </button>
         </div>
-        <div className="my-4">Total Listings: {filteredListings.length}</div>
+        <div className="my-4 text-custom-platinum">Total Listings: {filteredListings.length}</div>
 
         {loading ? (
           <div className="flex items-center justify-center p-10">
             <Oval
-              color="#fded03"
+              color="#F59E0B"
               height={50}
               width={50}
-              secondaryColor="#b45309"
+              secondaryColor="#78350f"
             />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredListings.map((listing) => (
-              <div key={listing._id} className="bg-gray-100 p-4 rounded-lg">
+              <div key={listing._id} className="bg-custom-jet p-4 rounded-lg border border-white/10">
                 <img
                   src={listing.images[0]}
                   alt={listing.brand}
-                  className="w-full h-32 object-cover mb-4"
+                  className="w-full h-32 object-cover mb-4 rounded"
                 />
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold text-white">
                   {listing.brand} {listing.model}
                 </p>
-                <p className="text-gray-600">{listing.vehicleNumber}</p>
-                <button
-                  onClick={() => deleteListing(listing._id)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
-                >
-                  {deleting == listing._id ? (
-                    <>
-                      <Spin size="small" />
-                    </>
-                  ) : (
-                    'Delete'
-                  )}
-                </button>
+                <p className="text-custom-platinum">{listing.vehicleNumber}</p>
+                <div className="flex gap-4 mt-4">
+                  <button
+                    onClick={() => deleteListing(listing._id)}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-block transition-colors"
+                  >
+                    {deleting == listing._id ? (
+                      <>
+                        <Spin size="small" />
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
 
-                <button
-                  onClick={() => goToUpdate(listing._id)}
-                  className="bg-blue-500 hover:bg-blue-700 mx-4 text-white font-bold py-2 px-4 mt-4 rounded inline-block"
-                >
-                  Update
-                </button>
+                  <button
+                    onClick={() => goToUpdate(listing._id)}
+                    className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold py-2 px-4 rounded inline-block transition-colors"
+                  >
+                    Update
+                  </button>
+                </div>
               </div>
             ))}
           </div>

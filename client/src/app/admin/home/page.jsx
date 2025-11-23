@@ -63,13 +63,13 @@ const adminSections = [
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+        <h1 className="text-4xl font-bold text-white mb-2">
           Admin Dashboard
         </h1>
-        <p className="text-lg text-gray-600 mb-10">
+        <p className="text-lg text-custom-platinum mb-10">
           Manage your Poddar Motors website
         </p>
 
@@ -78,21 +78,21 @@ const Home = () => {
             <Link
               key={index}
               href={section.href}
-              className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
+              className="block bg-custom-jet rounded-lg shadow-md hover:shadow-xl hover:shadow-custom-accent/10 transition-all duration-300 overflow-hidden group border border-white/10"
             >
               <div className="p-6">
-                <div className={`${section.color} w-16 h-16 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`${section.color} w-16 h-16 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   {section.icon}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                <h2 className="text-xl font-bold text-white mb-2">
                   {section.title}
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-custom-platinum">
                   {section.description}
                 </p>
               </div>
-              <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+              <div className="bg-white/5 px-6 py-3 border-t border-white/10">
+                <span className="text-sm font-medium text-custom-accent group-hover:text-yellow-400 transition-colors">
                   View →
                 </span>
               </div>

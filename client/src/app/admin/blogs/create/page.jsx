@@ -92,18 +92,18 @@ const CreateBlog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Create New Blog</h1>
-          <p className="text-lg text-gray-600">Write and publish a new blog post</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Create New Blog</h1>
+          <p className="text-lg text-custom-platinum">Write and publish a new blog post</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-custom-jet rounded-lg shadow-md p-8 space-y-6 border border-white/10">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-custom-platinum mb-2">
               Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -112,7 +112,7 @@ const CreateBlog = () => {
               value={formData.title}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
               placeholder="Enter blog title"
             />
           </div>
@@ -120,12 +120,12 @@ const CreateBlog = () => {
           {/* Category & Author */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-custom-platinum mb-2">Category</label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white"
               >
                 <option value="Company">Company</option>
                 <option value="New Launches">New Launches</option>
@@ -134,36 +134,36 @@ const CreateBlog = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
+              <label className="block text-sm font-medium text-custom-platinum mb-2">Author</label>
               <input
                 type="text"
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white"
               />
             </div>
           </div>
 
           {/* Featured Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+            <label className="block text-sm font-medium text-custom-platinum mb-2">Featured Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
               disabled={uploading}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+              className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-custom-accent file:text-custom-black hover:file:bg-yellow-400 disabled:opacity-50"
             />
-            {uploading && <p className="text-sm text-blue-600 mt-2">Uploading image...</p>}
+            {uploading && <p className="text-sm text-custom-accent mt-2">Uploading image...</p>}
             {formData.featuredImage && (
-              <img src={formData.featuredImage} alt="Preview" className="mt-4 h-48 object-cover rounded-lg" />
+              <img src={formData.featuredImage} alt="Preview" className="mt-4 h-48 object-cover rounded-lg border border-white/10" />
             )}
           </div>
 
           {/* Excerpt */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-custom-platinum mb-2">
               Excerpt <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -173,7 +173,7 @@ const CreateBlog = () => {
               required
               maxLength={300}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
               placeholder="Short description for blog cards (max 300 characters)"
             />
             <p className="text-sm text-gray-500 mt-1">{formData.excerpt.length}/300 characters</p>
@@ -181,10 +181,10 @@ const CreateBlog = () => {
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-custom-platinum mb-2">
               Content <span className="text-red-500">*</span>
             </label>
-            <div className="bg-white">
+            <div className="bg-white rounded-lg overflow-hidden text-black">
               <ReactQuill
                 theme="snow"
                 value={formData.content}
@@ -196,42 +196,42 @@ const CreateBlog = () => {
           </div>
 
           {/* SEO Section */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Settings</h3>
+          <div className="border-t border-white/10 pt-6">
+            <h3 className="text-lg font-semibold text-white mb-4">SEO Settings</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+                <label className="block text-sm font-medium text-custom-platinum mb-2">Meta Title</label>
                 <input
                   type="text"
                   name="metaTitle"
                   value={formData.metaTitle}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
                   placeholder="SEO title (defaults to blog title)"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+                <label className="block text-sm font-medium text-custom-platinum mb-2">Meta Description</label>
                 <textarea
                   name="metaDescription"
                   value={formData.metaDescription}
                   onChange={handleChange}
                   rows={2}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
                   placeholder="SEO description for search engines"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Keywords</label>
+                <label className="block text-sm font-medium text-custom-platinum mb-2">Keywords</label>
                 <input
                   type="text"
                   name="metaKeywords"
                   value={formData.metaKeywords}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
                   placeholder="Comma-separated keywords"
                 />
               </div>
@@ -241,23 +241,23 @@ const CreateBlog = () => {
           {/* Read Time & Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Read Time</label>
+              <label className="block text-sm font-medium text-custom-platinum mb-2">Read Time</label>
               <input
                 type="text"
                 name="readTime"
                 value={formData.readTime}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white placeholder-gray-500"
                 placeholder="e.g., 5 min read"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-custom-platinum mb-2">Status</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-custom-black border border-white/10 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent text-white"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -266,18 +266,18 @@ const CreateBlog = () => {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-4 pt-6 border-t">
+          <div className="flex gap-4 pt-6 border-t border-white/10">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 bg-custom-accent hover:bg-yellow-400 text-custom-black px-6 py-3 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Creating...' : 'Create Blog'}
             </button>
             <button
               type="button"
               onClick={() => router.push('/admin/blogs')}
-              className="px-6 py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-white/10 rounded-lg font-semibold text-custom-platinum hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>

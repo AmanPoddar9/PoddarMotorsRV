@@ -93,43 +93,43 @@ const WorkshopBookings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
       <div className="container mx-auto px-4 py-8 min-h-[70vh]">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Workshop Bookings</h1>
+        <h1 className="text-3xl font-bold text-white mb-6">Workshop Bookings</h1>
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-custom-accent"></div>
           </div>
         ) : (
           <>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {bookings.length === 0 ? (
                 <div className="col-span-full text-center py-12">
-                  <p className="text-gray-500 text-lg">No workshop bookings found</p>
+                  <p className="text-custom-platinum text-lg">No workshop bookings found</p>
                 </div>
               ) : (
                 bookings.map((booking) => (
                   <div
                     key={booking._id}
-                    className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow"
+                    className="bg-custom-jet shadow-md rounded-lg p-6 hover:shadow-xl hover:shadow-custom-accent/10 transition-all border border-white/10"
                   >
                     <div className="mb-4">
-                      <p className="font-bold text-lg text-gray-900">{booking.name}</p>
-                      <p className="text-sm text-gray-600 mt-1">Mobile: {booking.mobileNumber}</p>
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-sm">
-                          <span className="font-semibold">Car:</span> {booking.carModel}
+                      <p className="font-bold text-lg text-white">{booking.name}</p>
+                      <p className="text-sm text-custom-platinum mt-1">Mobile: {booking.mobileNumber}</p>
+                      <div className="mt-3 pt-3 border-t border-white/10">
+                        <p className="text-sm text-custom-platinum">
+                          <span className="font-semibold text-white">Car:</span> {booking.carModel}
                         </p>
-                        <p className="text-sm mt-1">
-                          <span className="font-semibold">Service:</span> {booking.serviceType}
+                        <p className="text-sm mt-1 text-custom-platinum">
+                          <span className="font-semibold text-white">Service:</span> {booking.serviceType}
                         </p>
-                        <p className="text-sm mt-1">
-                          <span className="font-semibold">Date:</span> {booking.date}
+                        <p className="text-sm mt-1 text-custom-platinum">
+                          <span className="font-semibold text-white">Date:</span> {booking.date}
                         </p>
                         {booking.message && (
-                          <p className="text-sm mt-2 text-gray-600 italic">
+                          <p className="text-sm mt-2 text-custom-platinum italic">
                             "{booking.message}"
                           </p>
                         )}
@@ -138,13 +138,13 @@ const WorkshopBookings = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleArchive(booking._id)}
-                        className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-custom-accent text-custom-black px-4 py-2 rounded-md hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2 font-semibold"
                       >
                         <FiArchive /> Archive
                       </button>
                       <button
                         onClick={() => handleDelete(booking._id)}
-                        className="flex-1 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-semibold"
                       >
                         <FiTrash2 /> Delete
                       </button>
@@ -157,7 +157,7 @@ const WorkshopBookings = () => {
             <div className="my-6">
               <button
                 onClick={() => setShowArchive(!showArchive)}
-                className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                className="bg-custom-accent text-custom-black px-6 py-2 rounded-md hover:bg-yellow-400 transition-colors font-semibold"
               >
                 {showArchive ? 'Hide' : 'Show'} Archived Bookings
               </button>
@@ -167,29 +167,29 @@ const WorkshopBookings = () => {
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {archivedBookings.length === 0 ? (
                   <div className="col-span-full text-center py-12">
-                    <p className="text-gray-500 text-lg">No archived bookings</p>
+                    <p className="text-custom-platinum text-lg">No archived bookings</p>
                   </div>
                 ) : (
                   archivedBookings.map((booking) => (
                     <div
                       key={booking._id}
-                      className="bg-gray-50 shadow-md rounded-lg p-6 border-2 border-gray-300"
+                      className="bg-custom-jet/50 shadow-md rounded-lg p-6 border-2 border-white/20"
                     >
                       <div className="mb-4">
-                        <p className="font-bold text-lg text-gray-900">{booking.name}</p>
-                        <p className="text-sm text-gray-600 mt-1">Mobile: {booking.mobileNumber}</p>
-                        <div className="mt-3 pt-3 border-t border-gray-300">
-                          <p className="text-sm">
-                            <span className="font-semibold">Car:</span> {booking.carModel}
+                        <p className="font-bold text-lg text-white">{booking.name}</p>
+                        <p className="text-sm text-custom-platinum mt-1">Mobile: {booking.mobileNumber}</p>
+                        <div className="mt-3 pt-3 border-t border-white/10">
+                          <p className="text-sm text-custom-platinum">
+                            <span className="font-semibold text-white">Car:</span> {booking.carModel}
                           </p>
-                          <p className="text-sm mt-1">
-                            <span className="font-semibold">Service:</span> {booking.serviceType}
+                          <p className="text-sm mt-1 text-custom-platinum">
+                            <span className="font-semibold text-white">Service:</span> {booking.serviceType}
                           </p>
-                          <p className="text-sm mt-1">
-                            <span className="font-semibold">Date:</span> {booking.date}
+                          <p className="text-sm mt-1 text-custom-platinum">
+                            <span className="font-semibold text-white">Date:</span> {booking.date}
                           </p>
                           {booking.message && (
-                            <p className="text-sm mt-2 text-gray-600 italic">
+                            <p className="text-sm mt-2 text-custom-platinum italic">
                               "{booking.message}"
                             </p>
                           )}
@@ -198,13 +198,13 @@ const WorkshopBookings = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleUnarchive(booking._id)}
-                          className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                          className="flex-1 bg-custom-accent text-custom-black px-4 py-2 rounded-md hover:bg-yellow-400 transition-colors font-semibold"
                         >
                           Unarchive
                         </button>
                         <button
                           onClick={() => handleDelete(booking._id)}
-                          className="flex-1 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-semibold"
                         >
                           <FiTrash2 /> Delete
                         </button>

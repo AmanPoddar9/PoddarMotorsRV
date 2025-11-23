@@ -97,15 +97,15 @@ const BookingsPage = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
 
-      <div className="container mx-auto mb-8 min-h-[70vh]">
-        <h1 className="text-3xl font-semibold mb-6">Bookings</h1>
+      <div className="container mx-auto mb-8 min-h-[70vh] px-4">
+        <h1 className="text-3xl font-semibold mb-6 text-white pt-8">Bookings</h1>
         <div className="text-center my-4">
           <button
             onClick={() => downloadBookings()}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
           >
             Download Bookings
           </button>
@@ -114,10 +114,10 @@ const BookingsPage = () => {
           {bookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-white shadow-md rounded-md p-4"
+              className="bg-custom-jet shadow-md rounded-md p-4 border border-white/10"
             >
-              <div className="mb-4">
-              {booking.listingId &&  <p className="font-semibold">
+              <div className="mb-4 text-custom-platinum">
+              {booking.listingId &&  <p className="font-semibold text-white">
                   Listing: {booking.listingId?.brand} {booking.listingId?.model} -{' '}
                   {booking.listingId?.vehicleNumber}
                 </p>}
@@ -131,14 +131,14 @@ const BookingsPage = () => {
               </div>
               <button
                 onClick={() => archiveBooking(booking._id)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
               >
                 Archive
               </button>
 
               <button
                 onClick={() => deleteBooking(booking._id)}
-                className="bg-red-500 text-white mx-4 px-4 py-2 rounded-md"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold mx-4 px-4 py-2 rounded-md transition-colors"
               >
                 Delete
               </button>
@@ -149,14 +149,14 @@ const BookingsPage = () => {
           {showArchive ? (
             <button
               onClick={() => setShowArchive(false)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
             >
               Hide Archived Bookings
             </button>
           ) : (
             <button
               onClick={() => setShowArchive(true)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
             >
               Show Archived Bookings
             </button>
@@ -168,10 +168,10 @@ const BookingsPage = () => {
             {archivedBookings.map((booking) => (
               <div
                 key={booking._id}
-                className="bg-white shadow-md rounded-md p-4"
+                className="bg-custom-jet shadow-md rounded-md p-4 border border-white/10"
               >
-                <div className="mb-4">
-                  <p className="font-semibold">
+                <div className="mb-4 text-custom-platinum">
+                  <p className="font-semibold text-white">
                     Listing: {booking.listingId?.brand} {booking.listingId?.model}{' '}
                     - {booking.listingId?.vehicleNumber}
                   </p>
@@ -185,14 +185,14 @@ const BookingsPage = () => {
                 </div>
                 <button
                   onClick={() => unArchiveBooking(booking._id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
                 >
                   Unarchive
                 </button>
 
                 <button
                   onClick={() => deleteBooking(booking._id)}
-                  className="bg-red-500 text-white mx-4 px-4 py-2 rounded-md"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold mx-4 px-4 py-2 rounded-md transition-colors"
                 >
                   Delete
                 </button>

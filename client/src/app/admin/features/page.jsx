@@ -43,35 +43,35 @@ const Features = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
       <div className="max-w-3xl mx-auto py-8 px-4 min-h-[70vh]">
-        <h1 className="text-3xl font-bold mb-6">Manage Features</h1>
-        <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-6 text-white">Manage Features</h1>
+        <div className="mb-6 bg-custom-jet p-6 rounded-lg border border-white/10">
           <input
             type="text"
             value={newFeatureText}
             onChange={(e) => setNewFeatureText(e.target.value)}
-            className="w-full border border-gray-300 rounded-md py-2 px-4"
+            className="w-full border border-white/10 rounded-md py-2 px-4 bg-custom-black text-white placeholder-gray-500"
             placeholder="Enter new feature"
           />
           <button
             onClick={handleAddFeature}
-            className="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+            className="mt-2 bg-custom-accent hover:bg-yellow-400 text-custom-black font-semibold py-2 px-4 rounded-md transition-colors"
           >
             Add Feature
           </button>
         </div>
-        <ul>
+        <ul className="space-y-4">
           {features.map((feature) => (
             <li
               key={feature._id}
-              className="flex justify-between items-center border-b border-gray-300 py-2"
+              className="flex justify-between items-center border border-white/10 bg-custom-jet p-4 rounded-lg"
             >
-              <span>{feature.text}</span>
+              <span className="text-white">{feature.text}</span>
               <button
                 onClick={() => handleDeleteFeature(feature._id)}
-                className="text-red-500 hover:text-red-600"
+                className="text-red-500 hover:text-red-400 font-semibold transition-colors"
               >
                 Delete
               </button>

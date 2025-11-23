@@ -122,14 +122,14 @@ const SellRequestsPage = () => {
   }, [showArchived])
 
   return (
-    <div>
+    <div className="min-h-screen bg-custom-black">
       <AdminNavbar />
-      <div className="container mx-auto min-h-[70vh]">
-        <h1 className="text-2xl font-bold my-4">Sell Requests</h1>
+      <div className="container mx-auto min-h-[70vh] px-4">
+        <h1 className="text-2xl font-bold my-4 text-white pt-8">Sell Requests</h1>
         <div className="text-center my-4">
           <button
             onClick={() => downloadSellRequests()}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-md transition-colors"
           >
             Download Sell Requests
           </button>
@@ -138,44 +138,44 @@ const SellRequestsPage = () => {
           {sellRequests.map((request) => (
             <div
               key={request._id}
-              className="border border-gray-200 p-4 rounded-lg"
+              className="border border-white/10 bg-custom-jet p-4 rounded-lg"
             >
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-lg font-semibold text-white">
                 {request.brand} {request.model}
               </h2>
-              <p className="text-gray-500">Location: {request.location}</p>
-              <p className="text-gray-500">Status: {request.status}</p>
-              <p className="text-gray-500">Name: {request.name}</p>
-              <p className="text-gray-500">Mobile No: {request.phoneNumber}</p>
-              <p className="text-gray-500">
+              <p className="text-custom-platinum">Location: {request.location}</p>
+              <p className="text-custom-platinum">Status: {request.status}</p>
+              <p className="text-custom-platinum">Name: {request.name}</p>
+              <p className="text-custom-platinum">Mobile No: {request.phoneNumber}</p>
+              <p className="text-custom-platinum">
                 Email: {request.email ? request.email : 'N/A'}
               </p>
-              <p className="text-gray-500">Location: {request.location}</p>
-              <p className="text-gray-500">
+              <p className="text-custom-platinum">Location: {request.location}</p>
+              <p className="text-custom-platinum">
                 Reg. No.: {request.registrationNumber}
               </p>
-              <p className="text-gray-500">
+              <p className="text-custom-platinum">
                 Variant: {request.variant ? request.variant : 'N/A'}
               </p>
-              <p className="text-gray-500">Year: {request.manufactureYear}</p>
-              <p className="text-gray-500">
+              <p className="text-custom-platinum">Year: {request.manufactureYear}</p>
+              <p className="text-custom-platinum">
                 Expected Price: {request.price ? request.price : 'N/A'}
               </p>
 
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
+                className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-lg mt-2 transition-colors"
                 onClick={() => handleArchive(request._id, true)}
               >
                 Archive
               </button>
               <button
-                className="bg-red-500 text-white px-4 py-2 mx-4 rounded-lg mt-2"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 mx-4 rounded-lg mt-2 transition-colors"
                 onClick={() => deleteSellRequest(request._id)}
               >
                 Delete
               </button>
               <select
-                className="block appearance-none mt-2 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                className="block appearance-none mt-2 border border-white/10 bg-custom-black text-white py-3 px-4 rounded-lg leading-tight focus:outline-none focus:border-custom-accent"
                 onChange={(e) =>
                   handleStatusChange(request._id, e.target.value)
                 }
@@ -193,14 +193,14 @@ const SellRequestsPage = () => {
         <div className="my-8">
           {showArchived ? (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
+              className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-lg mt-2 transition-colors"
               onClick={() => setShowArchived(false)}
             >
               Hide Archived
             </button>
           ) : (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
+              className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-lg mt-2 transition-colors"
               onClick={() => setShowArchived(true)}
             >
               Show Archived
@@ -212,46 +212,46 @@ const SellRequestsPage = () => {
             {archivedSellRequests.map((request) => (
               <div
                 key={request._id}
-                className="border border-gray-200 p-4 rounded-lg"
+                className="border border-white/10 bg-custom-jet p-4 rounded-lg"
               >
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-lg font-semibold text-white">
                   {request.brand} {request.model}
                 </h2>
-                <p className="text-gray-500">Location: {request.location}</p>
-                <p className="text-gray-500">Status: {request.status}</p>
-                <p className="text-gray-500">Name: {request.name}</p>
-                <p className="text-gray-500">
+                <p className="text-custom-platinum">Location: {request.location}</p>
+                <p className="text-custom-platinum">Status: {request.status}</p>
+                <p className="text-custom-platinum">Name: {request.name}</p>
+                <p className="text-custom-platinum">
                   Mobile No: {request.phoneNumber}
                 </p>
-                <p className="text-gray-500">
+                <p className="text-custom-platinum">
                   Email: {request.email ? request.email : 'N/A'}
                 </p>
-                <p className="text-gray-500">Location: {request.location}</p>
-                <p className="text-gray-500">
+                <p className="text-custom-platinum">Location: {request.location}</p>
+                <p className="text-custom-platinum">
                   Reg. No.: {request.registrationNumber}
                 </p>
-                <p className="text-gray-500">
+                <p className="text-custom-platinum">
                   Variant: {request.variant ? request.variant : 'N/A'}
                 </p>
-                <p className="text-gray-500">Year: {request.manufactureYear}</p>
-                <p className="text-gray-500">
+                <p className="text-custom-platinum">Year: {request.manufactureYear}</p>
+                <p className="text-custom-platinum">
                   Expected Price: {request.price ? request.price : 'N/A'}
                 </p>
 
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2"
+                  className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold px-4 py-2 rounded-lg mt-2 transition-colors"
                   onClick={() => handleArchive(request._id, false)}
                 >
                   Unarchive
                 </button>
                 <button
-                  className="bg-red-500 text-white px-4 py-2 mx-4 rounded-lg mt-2"
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 mx-4 rounded-lg mt-2 transition-colors"
                   onClick={() => deleteSellRequest(request._id)}
                 >
                   Delete
                 </button>
                 <select
-                  className="block appearance-none mt-2 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="block appearance-none mt-2 border border-white/10 bg-custom-black text-white py-3 px-4 rounded-lg leading-tight focus:outline-none focus:border-custom-accent"
                   onChange={(e) =>
                     handleStatusChange(request._id, e.target.value)
                   }
