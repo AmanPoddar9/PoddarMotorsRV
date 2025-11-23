@@ -48,6 +48,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       Key: filename,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
+      ACL: 'public-read',
     };
 
     const command = new PutObjectCommand(params);

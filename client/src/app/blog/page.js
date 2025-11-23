@@ -1,6 +1,5 @@
 import BlogNews from '../components/BlogNews';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+
 
 export const metadata = {
   title: 'Blog & News | Poddar Motors - Automotive Insights & Updates',
@@ -16,11 +15,9 @@ export const metadata = {
 export default function BlogPage() {
   return (
     <main className="min-h-screen bg-white">
-      <Navbar />
-      <div className="pt-20">
+      <div className="pt-4">
         <BlogNews />
       </div>
-      <Footer />
     </main>
   );
 }

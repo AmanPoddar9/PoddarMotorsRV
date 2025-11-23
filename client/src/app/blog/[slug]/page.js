@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaArrowLeft, FaClock, FaCalendar, FaUser, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
@@ -43,11 +42,9 @@ const BlogPost = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
         <div className="pt-32 pb-20 flex items-center justify-center">
           <p className="text-gray-500 text-lg">Loading blog post...</p>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -55,21 +52,18 @@ const BlogPost = () => {
   if (!blog) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
         <div className="pt-32 pb-20 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog Not Found</h1>
           <Link href="/blog" className="text-[#171C8F] hover:underline">
             ← Back to Blog
           </Link>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
       
       {/* Breadcrumbs */}
       <div className="pt-24 pb-6 bg-gray-50">
@@ -230,7 +224,6 @@ const BlogPost = () => {
         </div>
       </article>
 
-      <Footer />
     </div>
   );
 };
