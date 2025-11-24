@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
+import API_URL from '../../../config/api';
 
 // Import ReactQuill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
@@ -62,7 +63,7 @@ const CreateBlog = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', file);
       
-      const response = await axios.post('http://localhost:4000/api/upload', uploadFormData, {
+      const response = await axios.post(`${API_URL}/api/upload`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       
@@ -80,7 +81,7 @@ const CreateBlog = () => {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:4000/api/blogs', formData);
+      await axios.post(`${API_URL}/api/blogs`, formData);
       alert('Blog created successfully!');
       router.push('/admin/blogs');
     } catch (error) {

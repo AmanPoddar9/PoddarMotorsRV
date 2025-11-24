@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
+import API_URL from '../../../../config/api';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -35,7 +36,7 @@ const EditBlog = () => {
 
   const fetchBlog = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/blogs/${params.id}`);
+      const response = await axios.get(`${API_URL}/api/blogs/${params.id}`);
       setFormData(response.data.data);
       setFetching(false);
     } catch (error) {
@@ -74,7 +75,7 @@ const EditBlog = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', file);
       
-      const response = await axios.post('http://localhost:4000/api/upload', uploadFormData, {
+      const response = await axios.post(`${API_URL}/api/upload`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       
@@ -92,7 +93,7 @@ const EditBlog = () => {
     setLoading(true);
 
     try {
-      await axios.put(`http://localhost:4000/api/blogs/${params.id}`, formData);
+      await axios.put(`${API_URL}/api/blogs/${params.id}`, formData);
       alert('Blog updated successfully!');
       router.push('/admin/blogs');
     } catch (error) {

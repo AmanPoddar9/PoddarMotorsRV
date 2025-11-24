@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaArrowRight, FaClock, FaCalendar, FaUser } from 'react-icons/fa';
 import axios from 'axios';
+import API_URL from '../config/api';
 
 const BlogNews = () => {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -20,7 +21,7 @@ const BlogNews = () => {
   const fetchBlogs = async () => {
     try {
       const params = activeFilter === 'All' ? {} : { category: activeFilter };
-      const response = await axios.get('http://localhost:4000/api/blogs', { params });
+      const response = await axios.get(`${API_URL}/api/blogs`, { params });
       setArticles(response.data.data);
       setLoading(false);
     } catch (error) {

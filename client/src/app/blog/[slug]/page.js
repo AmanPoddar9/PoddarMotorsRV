@@ -7,6 +7,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaArrowLeft, FaClock, FaCalendar, FaUser, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
+import API_URL from '../../config/api';
 
 const BlogPost = () => {
   const params = useParams();
@@ -22,11 +23,11 @@ const BlogPost = () => {
 
   const fetchBlog = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/blogs/slug/${params.slug}`);
+      const response = await axios.get(`${API_URL}/api/blogs/slug/${params.slug}`);
       setBlog(response.data.data);
       
       // Fetch related blogs from same category
-      const relatedResponse = await axios.get(`http://localhost:4000/api/blogs?category=${response.data.data.category}&limit=3`);
+      const relatedResponse = await axios.get(`${API_URL}/api/blogs?category=${response.data.data.category}&limit=3`);
       setRelatedBlogs(relatedResponse.data.data.filter(b => b._id !== response.data.data._id).slice(0, 3));
       
       setLoading(false);

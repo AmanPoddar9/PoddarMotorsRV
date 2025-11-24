@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import AdminNavbar from '../../components/AdminNavbar';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import API_URL from '../../config/api';
 import { FiEdit, FiTrash2, FiEye, FiPlus } from 'react-icons/fi';
 
 const BlogsAdmin = () => {
@@ -17,7 +19,7 @@ const BlogsAdmin = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/blogs/admin/all');
+      const response = await axios.get(`${API_URL}/api/blogs/admin/all`);
       setBlogs(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -29,7 +31,7 @@ const BlogsAdmin = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
-        await axios.delete(`http://localhost:4000/api/blogs/${id}`);
+        await axios.delete(`${API_URL}/api/blogs/${id}`);
         fetchBlogs();
       } catch (error) {
         console.error('Error deleting blog:', error);
