@@ -10,8 +10,8 @@ const WorkshopBookings = () => {
   const [showArchive, setShowArchive] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:4000/'
+  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  // const url = 'http://localhost:4000'
 
   useEffect(() => {
     fetchBookings()
