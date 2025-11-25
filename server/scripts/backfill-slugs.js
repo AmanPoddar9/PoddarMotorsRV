@@ -9,27 +9,18 @@ const backfillSlugs = async () => {
 
     console.log('Connected to MongoDB');
 
-    const listings = await Listing.find({
-      $or: [{ slug: { $exists: false } }, { slug: '' }, { slug: null }],
-    });
+    const listings = await Listing.find({});
 
-    console.log(`Found ${listings.length} listings with missing slugs.`);
+    console.log(`Found ${listings.length} listings. Updating all with robust slugs...`);
 
     for (const listing of listings) {
       const slugBase = `${listing.brand} ${listing.model} ${listing.variant} ${listing.year}`;
-      const slug = slugify(slugBase, { lower: true, strict: true });
+      const randomSuffix = Math.random().toString(36).substring(2, 6);
+      const slug = slugify(`${slugBase}-${randomSuffix}`, { lower: true, strict: true });
       
-      // Check for uniqueness (simple version, might need more robust handling if many duplicates)
-      let uniqueSlug = slug;
-      let counter = 1;
-      while (await Listing.findOne({ slug: uniqueSlug, _id: { $ne: listing._id } })) {
-        uniqueSlug = `${slug}-${counter}`;
-        counter++;
-      }
-
-      listing.slug = uniqueSlug;
+      listing.slug = slug;
       await listing.save();
-      console.log(`Updated listing ${listing._id} with slug: ${uniqueSlug}`);
+      console.log(`Updated listing ${listing._id} with slug: ${slug}`);
     }
 
     console.log('Backfill complete.');

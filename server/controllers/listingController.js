@@ -97,7 +97,9 @@ exports.deleteListingById = async (req, res) => {
 exports.createListing = async (req, res) => {
   try {
     const data = req.body;
-    data.slug = slugify(`${data.model}-${data.variant}`, { lower: true });
+    const slugBase = `${data.brand}-${data.model}-${data.variant}-${data.year}`;
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    data.slug = slugify(`${slugBase}-${randomSuffix}`, { lower: true, strict: true });
     const listing = new Listing(data);
     await listing.save();
     res.status(201).json({ message: "Listing created successfully", listing });
@@ -279,9 +281,21 @@ exports.getListingBySlug = async (req, res) => {
 exports.updateListingById = async (req, res) => {
   try {
     const { id } = req.params;
-    if (req.body.model || req.body.variant) {
-      req.body.slug = slugify(`${req.body.model || ''}-${req.body.variant || ''}`, { lower: true });
+    
+    const listing = await Listing.findById(id);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
     }
+
+    if (req.body.brand || req.body.model || req.body.variant || req.body.year) {
+      const brand = req.body.brand || listing.brand;
+      const model = req.body.model || listing.model;
+      const variant = req.body.variant || listing.variant;
+      const year = req.body.year || listing.year;
+      const randomSuffix = Math.random().toString(36).substring(2, 6);
+      req.body.slug = slugify(`${brand}-${model}-${variant}-${year}-${randomSuffix}`, { lower: true, strict: true });
+    }
+
     const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
       new: true,
     });
