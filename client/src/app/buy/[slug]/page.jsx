@@ -199,7 +199,7 @@ const page = ({ params: { slug } }) => {
           onSwiper={setMainSwiper}
           controller={{ control: thumbsSwiper }}
           //   thumbs={{ swiper: thumbsSwiper }}
-          pagination={isDesktop && { clickable: true }}
+          pagination={{ clickable: true }}
           autoplay={{ delay: 2000, disableOnInteraction: false }}
           navigation
           centeredSlides={false}
@@ -229,33 +229,7 @@ const page = ({ params: { slug } }) => {
               </SwiperSlide>
             ))}
         </Swiper>
-        {!isDesktop && (
-          <Swiper
-            onSwiper={setThumbsSwiper}
-            modules={[Navigation, Pagination, Controller]}
-            className="thumbsSwiperDown"
-            controller={{ control: mainSwiper }}
-            slidesPerView="auto"
-            spaceBetween={5}
-            pagination={{ clickable: true }}
-            loop={false}
-            slideToClickedSlide={isDesktop ? false : true}
-            centeredSlides={true}
-          >
-            {carData.images &&
-              carData.images.map((carImage, i) => (
-                <SwiperSlide key={i} style={{ paddingBottom: '40px' }}>
-                  <Image
-                    src={carImage}
-                    alt="second hand cars sale Poddar Motors Real Value Ranchi"
-                    width={600}
-                    height={400}
-                    style={{ borderRadius: '15px' }}
-                  />
-                </SwiperSlide>
-              ))}
-          </Swiper>
-        )}
+
 
         {/* <!-- Product info --> */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">

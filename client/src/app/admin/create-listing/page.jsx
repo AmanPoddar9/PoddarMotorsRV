@@ -284,7 +284,7 @@ const CreateListing = () => {
             <input
               type="file"
               onChange={handleImageChange}
-              className="border border-gray-300 rounded-md py-2 px-4 mb-2"
+              className="border border-gray-300 rounded-md py-2 px-4 mb-2 text-black"
             />
             {uploading && imagesLength && (
               <div>
@@ -303,7 +303,7 @@ const CreateListing = () => {
               name="brand"
               value={formData.brand}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -316,7 +316,7 @@ const CreateListing = () => {
               name="model"
               value={formData.model}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -332,7 +332,7 @@ const CreateListing = () => {
               name="variant"
               value={formData.variant}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -348,7 +348,7 @@ const CreateListing = () => {
               name="vehicleNumber"
               value={formData.vehicleNumber}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -363,7 +363,7 @@ const CreateListing = () => {
               name="fuelType"
               value={formData.fuelType}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             >
               <option value="">Select Fuel Type</option>
               <option value="Petrol">Petrol</option>
@@ -384,7 +384,7 @@ const CreateListing = () => {
               min={2000}
               value={formData.year}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -397,7 +397,7 @@ const CreateListing = () => {
               name="color"
               value={formData.color}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -414,7 +414,7 @@ const CreateListing = () => {
               min={1}
               value={formData.ownership}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -431,7 +431,7 @@ const CreateListing = () => {
               min={1}
               value={formData.kmDriven}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -445,7 +445,7 @@ const CreateListing = () => {
               min={1}
               value={formData.price}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -458,7 +458,7 @@ const CreateListing = () => {
               name="type"
               value={formData.type}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             >
               <option value="">Select Type</option>
               {carTypes.map((type, i) => (
@@ -480,7 +480,7 @@ const CreateListing = () => {
               name="transmissionType"
               value={formData.transmissionType}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             >
               <option value="">Select Transmission Type</option>
               {transmissionTypes.map((type, i) => (
@@ -501,7 +501,7 @@ const CreateListing = () => {
               min={1}
               value={formData.seats}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -518,7 +518,7 @@ const CreateListing = () => {
               min={1}
               value={formData.displacement}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -535,7 +535,7 @@ const CreateListing = () => {
               min={1}
               value={formData.cylinders}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -552,7 +552,7 @@ const CreateListing = () => {
               min={1}
               value={formData.maxPower}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -569,7 +569,7 @@ const CreateListing = () => {
               min={1}
               value={formData.bootspace}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -586,7 +586,7 @@ const CreateListing = () => {
               min={1}
               value={formData.fuelTank}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -600,7 +600,7 @@ const CreateListing = () => {
               min={1}
               value={formData.gears}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -617,7 +617,7 @@ const CreateListing = () => {
               min={1}
               value={formData.mileage}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
@@ -633,7 +633,7 @@ const CreateListing = () => {
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md"
+              className="mt-1 p-2 w-full border rounded-md text-black"
             />
           </div>
           <div>
