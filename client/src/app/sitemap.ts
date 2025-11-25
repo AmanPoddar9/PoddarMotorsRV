@@ -26,7 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all published blogs
   let blogPages: MetadataRoute.Sitemap = [];
   try {
-    const response = await axios.get('http://localhost:4000/api/blogs');
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const response = await axios.get(`${apiUrl}/api/blogs`);
     const blogs = response.data.data;
     
     blogPages = blogs.map((blog: any) => ({
