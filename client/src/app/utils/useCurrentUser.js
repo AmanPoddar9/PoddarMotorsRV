@@ -11,8 +11,9 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
     // `credentials: 'include'` sends the httpOnly auth cookie
-    fetch('/api/auth/me', { credentials: 'include' })
+    fetch(`${apiUrl}/api/auth/me`, { credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error('Unauthenticated');
         return res.json();

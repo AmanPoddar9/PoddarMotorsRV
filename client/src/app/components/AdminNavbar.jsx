@@ -6,7 +6,8 @@ const AdminNavbar = () => {
   const { user, loading } = useCurrentUser()
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+    await fetch(`${apiUrl}/api/auth/logout`, { method: 'POST', credentials: 'include' })
     window.location.href = '/admin/login'
   }
 
