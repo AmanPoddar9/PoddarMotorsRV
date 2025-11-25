@@ -1,114 +1,106 @@
 'use client'
 import { useState } from 'react'
-import axios from 'axios'
-import jwt_decode from 'jwt-decode'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-const Login = () => {
-  const [username, setUsername] = useState('')
+export default function AdminLogin() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [success, setSuccess] = useState(null)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-      // url = 'http://localhost:5000/'
+    setError('')
+    setLoading(true)
 
-      const response = await axios.post(url + 'api/user/login', {
-        username: username.trim(),
-        password,
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
       })
-      const token = response.data.token
-      localStorage.setItem('jwt_token', token)
-      if (response.status == 200) {
-        setSuccess(true)
-        setTimeout(() => {
-          window.location.href = './home'
-        }, 1000)
-      } else {
-        setSuccess(false)
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.message || 'Login failed')
       }
 
-      // Optionally, you can redirect the user to another page after successful login
-    } catch (error) {
-      setSuccess(false)
-      console.error('Error:', error)
+      // Login successful - redirect to admin home
+      router.push('/admin/home')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-custom-black flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Login
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            Poddar Motors Admin
           </h2>
+          <p className="mt-2 text-center text-sm text-custom-platinum">
+            Sign in to access the admin panel
+          </p>
         </div>
-        {success == true ? (
-          <h3 className="mt-6 text-center text-green-500 text-lg font-extrabold">
-            Logged in successfully
-          </h3>
-        ) : success == false ? (
-          <h3 className="mt-6 text-center text-red-500 text-lg font-extrabold">
-            Error Logging in
-          </h3>
-        ) : (
-          <></>
-        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
-            <label htmlFor="username" className="sr-only">
-              Username
-            </label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
-              required
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-
-            <label htmlFor="password" className="sr-only">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-custom-accent focus:border-custom-accent focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-700 bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-custom-accent focus:border-custom-accent focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
+
+          {error && (
+            <div className="rounded-md bg-red-900/50 border border-red-700 p-4">
+              <p className="text-sm text-red-200">{error}</p>
+            </div>
+          )}
+
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-custom-black bg-custom-accent hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Login
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
-        {/* <div className="text-center">
-          <p>Don't have an account?</p>
-          <Link
-            className="text-indigo-600 hover:text-indigo-700"
-            href="/admin/signup"
-          >
-            Sign up
-          </Link>
-        </div> */}
       </div>
     </div>
   )
 }
 
-export default Login

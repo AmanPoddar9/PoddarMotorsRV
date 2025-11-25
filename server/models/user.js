@@ -1,35 +1,20 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  access_level: {
-    type: String,
-    required: true,
-  },
-})
+  email: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+  role: { type: String, enum: ['admin', 'blogEditor', 'bookingManager'], default: 'admin' },
+});
 
-userSchema.pre('save', async function (next) {
-  try {
-    if (!this.isModified('password')) {
-      return next()
-    }
-    const salt = await bcrypt.genSalt(10)
-    this.password = await bcrypt.hash(this.password, salt)
-    next()
-  } catch (error) {
-    next(error)
-  }
-})
+// Set password (hash)
+userSchema.methods.setPassword = async function (plain) {
+  this.passwordHash = await bcrypt.hash(plain, 12);
+};
 
-const User = mongoose.model('User', userSchema)
+// Validate password
+userSchema.methods.validatePassword = async function (plain) {
+  return bcrypt.compare(plain, this.passwordHash);
+};
 
-module.exports = User
+module.exports = mongoose.model('User', userSchema);
