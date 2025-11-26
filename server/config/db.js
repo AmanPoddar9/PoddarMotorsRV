@@ -3,9 +3,7 @@ const mongoose = require('mongoose')
 const connectDB = async () => {
   try {
     
-    // Temporarily hardcoding URI to debug Vercel env var issue
-    const uri = 'mongodb+srv://amanpoddar9:poddarmotorsrv@cluster0.9tbfrft.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0';
-    await mongoose.connect(uri)
+    await mongoose.connect(process.env.MONGO_URI)
     console.log('MongoDB Connected')
   } catch (error) {
     console.error(error.message)
