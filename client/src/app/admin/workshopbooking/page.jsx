@@ -22,7 +22,7 @@ const WorkshopBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch(url + 'api/workshop-bookings', { credentials: 'include' })
+      const response = await fetch(url + '/api/workshop-bookings', { credentials: 'include' })
       const data = await response.json()
       setBookings(data)
       setLoading(false)
@@ -34,7 +34,7 @@ const WorkshopBookings = () => {
 
   const fetchArchivedBookings = async () => {
     try {
-      const response = await fetch(url + 'api/workshop-bookings/archived', { credentials: 'include' })
+      const response = await fetch(url + '/api/workshop-bookings/archived', { credentials: 'include' })
       const data = await response.json()
       setArchivedBookings(data)
     } catch (error) {
@@ -46,7 +46,7 @@ const WorkshopBookings = () => {
     if (!confirm('Are you sure you want to archive this booking?')) return
 
     try {
-      const response = await fetch(`${url}api/workshop-bookings/${id}/archive`, {
+      const response = await fetch(`${url}/api/workshop-bookings/${id}/archive`, {
         method: 'PUT',
         credentials: 'include',
       })
@@ -61,7 +61,7 @@ const WorkshopBookings = () => {
 
   const handleUnarchive = async (id) => {
     try {
-      const response = await fetch(`${url}api/workshop-bookings/${id}/archive`, {
+      const response = await fetch(`${url}/api/workshop-bookings/${id}/archive`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const WorkshopBookings = () => {
     if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) return
 
     try {
-      const response = await fetch(`${url}api/workshop-bookings/${id}`, {
+      const response = await fetch(`${url}/api/workshop-bookings/${id}`, {
         method: 'DELETE',
         credentials: 'include',
       })
