@@ -2,19 +2,21 @@ const express = require('express')
 const router = express.Router()
 const workshopBookingController = require('../controllers/workshopBookingController')
 
-// Create a booking
+const { requireAuth, requireRole } = require('../middleware/auth')
+
+// Create a booking (Public)
 router.post('/', workshopBookingController.createWorkshopBooking)
 
-// Get all bookings
-router.get('/', workshopBookingController.getAllWorkshopBookings)
+// Get all bookings (Admin)
+router.get('/', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.getAllWorkshopBookings)
 
-// Get archived bookings
-router.get('/archived', workshopBookingController.getArchivedWorkshopBookings)
+// Get archived bookings (Admin)
+router.get('/archived', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.getArchivedWorkshopBookings)
 
-// Archive a booking (using PUT or PATCH usually, but reusing logic)
-router.put('/:id/archive', workshopBookingController.archiveWorkshopBooking)
+// Archive a booking (Admin)
+router.put('/:id/archive', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.archiveWorkshopBooking)
 
-// Delete a booking
-router.delete('/:id', workshopBookingController.deleteWorkshopBooking)
+// Delete a booking (Admin)
+router.delete('/:id', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.deleteWorkshopBooking)
 
 module.exports = router

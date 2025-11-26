@@ -10,15 +10,17 @@ const {
   getBlogById,
 } = require('../controllers/blogController');
 
+const { requireAuth, requireRole } = require('../middleware/auth');
+
 // Public routes
 router.get('/', getAllBlogs);
 router.get('/slug/:slug', getBlogBySlug);
 
-// Admin routes (TODO: Add authentication middleware)
-router.post('/', createBlog);
-router.get('/admin/all', getAllBlogsAdmin);
-router.get('/:id', getBlogById);
-router.put('/:id', updateBlog);
-router.delete('/:id', deleteBlog);
+// Admin routes
+router.post('/', requireAuth, requireRole('admin', 'blogEditor'), createBlog);
+router.get('/admin/all', requireAuth, requireRole('admin', 'blogEditor'), getAllBlogsAdmin);
+router.get('/:id', requireAuth, requireRole('admin', 'blogEditor'), getBlogById);
+router.put('/:id', requireAuth, requireRole('admin', 'blogEditor'), updateBlog);
+router.delete('/:id', requireAuth, requireRole('admin', 'blogEditor'), deleteBlog);
 
 module.exports = router;

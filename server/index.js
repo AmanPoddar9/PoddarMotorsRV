@@ -47,8 +47,8 @@ app.use('/api/features', featuresRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/sellRequests', sellRequestRoutes);
 app.use('/api/scrapRequests', scrapRequestRoutes);
-app.use('/api/workshop-bookings', requireAuth, requireRole('admin','bookingManager'), workshopBookingRoutes);
-app.use('/api/blogs', requireAuth, requireRole('admin','blogEditor'), blogRoutes);
+app.use('/api/workshop-bookings', workshopBookingRoutes);
+app.use('/api/blogs', blogRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/twilio', twilioRoutes);
 
