@@ -10,10 +10,17 @@ const whatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER; // Format: whatsapp:+
 // Initialize Twilio client
 let twilioClient = null;
 
-if (accountSid && authToken) {
-  twilioClient = twilio(accountSid, authToken);
+if (accountSid && authToken && 
+    accountSid !== 'your_account_sid_here' && 
+    authToken !== 'your_auth_token_here' &&
+    !accountSid.includes('placeholder')) {
+  try {
+    twilioClient = twilio(accountSid, authToken);
+  } catch (error) {
+    console.warn('⚠️  Failed to initialize Twilio client:', error.message);
+  }
 } else {
-  console.warn('⚠️  Twilio credentials not configured. Add TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN to .env file');
+  console.warn('⚠️  Twilio credentials not configured or are placeholders. Twilio features will be disabled.');
 }
 
 // Configuration object

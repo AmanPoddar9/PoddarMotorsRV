@@ -72,6 +72,12 @@ const AdminNavbar = () => {
                     Offers
                   </Link>
                   <Link
+                    href="/admin/customer-offers"
+                    className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Customer Offers
+                  </Link>
+                  <Link
                     href="/admin/features"
                     className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >

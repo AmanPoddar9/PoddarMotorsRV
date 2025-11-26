@@ -16,6 +16,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const twilioRoutes = require('./routes/twilioRoutes');
 const authRoutes = require('./routes/authRoutes');
 const workshopBookingRoutes = require('./routes/workshopBookingRoutes');
+const customerOfferRoutes = require('./routes/customerOfferRoutes');
 
 const { requireAuth, requireRole } = require('./middleware/auth');
 
@@ -76,6 +77,7 @@ app.use('/api/workshop-bookings', workshopBookingRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/twilio', twilioRoutes);
+app.use('/api/customer-offers', customerOfferRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

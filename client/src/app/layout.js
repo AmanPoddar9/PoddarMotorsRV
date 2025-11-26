@@ -4,6 +4,7 @@ import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import PhoneButton from './components/PhoneButton'
+import WhatsAppWidget from './components/WhatsAppWidget'
 import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -110,6 +111,7 @@ export default function RootLayout({ children }) {
           </div>
         </AntdRegistry>
         <PhoneButton />
+        <WhatsAppWidget />
         <Footer />
       </body>
     </html>

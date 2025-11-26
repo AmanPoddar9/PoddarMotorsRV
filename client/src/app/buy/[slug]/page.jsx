@@ -43,6 +43,7 @@ const page = ({ params: { slug } }) => {
   // API call to this route: 662bed523ec1ae8416673630
   const [loading, setLoading] = useState(true)
   const [carData, setCarData] = useState(null)
+  const [similarCars, setSimilarCars] = useState([])
   const [open, setOpen] = useState(false)
   const [error, setError] = useState(null)
   const [isDesktop, setDesktop] = useState(false)
@@ -53,6 +54,44 @@ const page = ({ params: { slug } }) => {
   const bookingPOSTURL = 'https://poddar-motors-rv-hkxu.vercel.app/api/bookings'
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+  // Make Offer State
+  const [offerOpen, setOfferOpen] = useState(false)
+  const [offerPrice, setOfferPrice] = useState('')
+  const [offerSuccess, setOfferSuccess] = useState(false)
+  const [viewers, setViewers] = useState(0)
+  const [debugStats, setDebugStats] = useState(null)
+
+  // Urgency Effect
+  useEffect(() => {
+    // Random number between 2 and 8
+    setViewers(Math.floor(Math.random() * 7) + 2)
+  }, [])
+
+  const handleOfferSubmit = async (data) => {
+    setConfirmLoading(true)
+    
+    try {
+        const apiUrl = 'https://poddar-motors-rv-hkxu.vercel.app'
+        await axios.post(`${apiUrl}/api/customer-offers`, {
+            name: data.name,
+            mobile: data.mobile,
+            email: data.email || '',
+            offerPrice: data.offerPrice,
+            listingId: carData._id,
+        })
+        setOfferSuccess(true)
+        setTimeout(() => {
+            setOfferOpen(false)
+            setOfferSuccess(false)
+        }, 3000)
+    } catch (err) {
+        console.log(err)
+        setError(err)
+    } finally {
+        setConfirmLoading(false)
+    }
+  }
 
   //   Booking Modal
   const showModal = () => {
@@ -122,6 +161,32 @@ const page = ({ params: { slug } }) => {
         setLoading(false)
       })
   }, [])
+
+  // Similar Cars Effect
+  useEffect(() => {
+    if (carData) {
+        axios.get('https://poddar-motors-rv-hkxu.vercel.app/api/listings')
+            .then(res => {
+                const filtered = res.data.filter(car => 
+                    car._id !== carData._id && 
+                    (
+                        (car.price >= carData.price * 0.7 && car.price <= carData.price * 1.3) || 
+                        car.brand === carData.brand
+                    )
+                ).slice(0, 4)
+                setSimilarCars(filtered)
+                setDebugStats({
+                    allListings: res.data.length,
+                    similarCars: filtered.length,
+                    matchPrice: carData.price
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                setDebugStats({ error: err.message })
+            })
+    }
+  }, [carData])
 
   if (loading) {
     return (
@@ -276,6 +341,12 @@ const page = ({ params: { slug } }) => {
                 ₹{AmountWithCommas(carData.price)}
               </span>
             </p>
+            
+            {/* Urgency Notification */}
+            <div className="mt-2 flex items-center text-red-500 font-medium animate-pulse">
+                <span className="mr-2">🔥</span>
+                {viewers} people are viewing this car right now
+            </div>
 
             <div className="flex justify-between text-base mt-8">
               <p className="text-lg font-bold text-white">
@@ -301,6 +372,74 @@ const page = ({ params: { slug } }) => {
             >
               Book Test Drive
             </button>
+            
+            <button
+              className="mt-4 flex w-full items-center justify-center md:rounded-md border border-white/20 text-white bg-custom-jet/50 px-8 py-3 text-base font-bold hover:bg-custom-jet hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 md:static rounded-none mb-16 md:mb-0"
+              onClick={() => setOfferOpen(true)}
+            >
+              Make an Offer
+            </button>
+
+            {/* Make Offer Modal */}
+            <Modal
+              title="Make an Offer"
+              open={offerOpen}
+              confirmLoading={confirmLoading}
+              onCancel={() => setOfferOpen(false)}
+              footer={null}
+            >
+               {confirmLoading ? (
+                <div className="p-10 flex flex-col items-center justify-center">
+                  <Oval color="#F59E0B" height={50} width={50} secondaryColor="#78350f" />
+                  <p className="mt-4 text-gray-500">Submitting your offer...</p>
+                </div>
+              ) : offerSuccess ? (
+                <div className="text-center p-10">
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">Offer Sent!</h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    We've received your offer. Our team will review it and get back to you shortly!
+                  </p>
+                </div>
+              ) : (
+                  <form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        const formData = new FormData(e.target)
+                        handleOfferSubmit({
+                            name: formData.get('name'),
+                            mobile: formData.get('mobile'),
+                            offerPrice: formData.get('offerPrice')
+                        })
+                    }}
+                    className="space-y-4 pt-4"
+                  >
+                    <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" name="name" id="offer-name" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent sm:text-sm p-2 border" />
+                    </div>
+                    <div>
+                        <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+                        <input type="tel" name="mobile" id="offer-mobile" required pattern="[0-9]{10}" title="10 digit mobile number" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent sm:text-sm p-2 border" />
+                    </div>
+                    <div>
+                        <label htmlFor="offerPrice" className="block text-sm font-medium text-gray-700">Your Offer (₹)</label>
+                        <input type="number" name="offerPrice" id="offer-price" required min="10000" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-accent focus:ring-custom-accent sm:text-sm p-2 border" placeholder="e.g. 450000" />
+                    </div>
+                    <button
+                        type="submit"
+                        id="offer-submit-btn"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-custom-black bg-custom-accent hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-accent"
+                    >
+                        Submit Offer
+                    </button>
+                  </form>
+              )}
+            </Modal>
 
             <Modal
               title="Book Test Drive"
@@ -553,7 +692,56 @@ const page = ({ params: { slug } }) => {
             </div>
           </div>
         </div>
+
+        {/* Similar Cars Section */}
+        {similarCars.length > 0 && (
+            <div className="mx-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 border-t border-white/10 pt-10">
+                <h2 className="text-2xl font-bold tracking-tight text-white mb-6">Similar Cars You Might Like</h2>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                    {similarCars.map((car) => (
+                         // Reusing FeaturedCard logic but simplified or importing it if possible.
+                         // Since FeaturedCard is in components, let's try to import it at the top.
+                         // Oh wait, I need to import FeaturedCard first.
+                         // Let's assume I'll add the import in a separate chunk.
+                         // Actually, I can just inline a simple card or use FeaturedCard if I import it.
+                         // I will add the import in another chunk to be safe.
+                         <div key={car._id} className="group relative">
+                            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                                {car.images && car.images[0] ? (
+                                    <img
+                                        src={car.images[0]}
+                                        alt={car.model}
+                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                                    />
+                                ) : (
+                                    <div className="h-full w-full flex items-center justify-center bg-gray-800 text-gray-500">
+                                        No Image
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-4 flex justify-between">
+                                <div>
+                                    <h3 className="text-sm text-white">
+                                        <a href={`/buy/${car.slug || car._id}`}>
+                                            <span aria-hidden="true" className="absolute inset-0" />
+                                            {car.brand} {car.model}
+                                        </a>
+                                    </h3>
+                                    <p className="mt-1 text-sm text-gray-400">{car.variant}</p>
+                                </div>
+                                <p className="text-sm font-medium text-custom-accent">₹{AmountWithCommas(car.price)}</p>
+                            </div>
+                         </div>
+                    ))}
+                </div>
+            </div>
+        )}
       </div>
+      {debugStats && (
+        <div className="fixed bottom-0 left-0 bg-black text-white p-2 text-xs z-50 opacity-90 border border-red-500">
+            Debug: All: {debugStats.allListings}, Similar: {debugStats.similarCars}, Err: {debugStats.error}
+        </div>
+      )}
     </div>
   )
 }
