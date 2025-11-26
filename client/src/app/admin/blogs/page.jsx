@@ -19,7 +19,7 @@ const BlogsAdmin = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/blogs/admin/all`);
+      const response = await axios.get(`${API_URL}/api/blogs/admin/all`, { withCredentials: true });
       setBlogs(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -31,7 +31,7 @@ const BlogsAdmin = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
-        await axios.delete(`${API_URL}/api/blogs/${id}`);
+        await axios.delete(`${API_URL}/api/blogs/${id}`, { withCredentials: true });
         fetchBlogs();
       } catch (error) {
         console.error('Error deleting blog:', error);

@@ -22,7 +22,7 @@ const WorkshopBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch(url + 'api/workshop-bookings')
+      const response = await fetch(url + 'api/workshop-bookings', { credentials: 'include' })
       const data = await response.json()
       setBookings(data)
       setLoading(false)
@@ -34,7 +34,7 @@ const WorkshopBookings = () => {
 
   const fetchArchivedBookings = async () => {
     try {
-      const response = await fetch(url + 'api/workshop-bookings/archived')
+      const response = await fetch(url + 'api/workshop-bookings/archived', { credentials: 'include' })
       const data = await response.json()
       setArchivedBookings(data)
     } catch (error) {
@@ -48,6 +48,7 @@ const WorkshopBookings = () => {
     try {
       const response = await fetch(`${url}api/workshop-bookings/${id}/archive`, {
         method: 'PUT',
+        credentials: 'include',
       })
       if (response.ok) {
         fetchBookings()
@@ -66,6 +67,7 @@ const WorkshopBookings = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ archived: false }),
+        credentials: 'include',
       })
       if (response.ok) {
         fetchBookings()
@@ -82,6 +84,7 @@ const WorkshopBookings = () => {
     try {
       const response = await fetch(`${url}api/workshop-bookings/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       })
       if (response.ok) {
         fetchBookings()

@@ -36,7 +36,7 @@ const EditBlog = () => {
 
   const fetchBlog = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/blogs/${params.id}`);
+      const response = await axios.get(`${API_URL}/api/blogs/${params.id}`, { withCredentials: true });
       setFormData(response.data.data);
       setFetching(false);
     } catch (error) {
@@ -77,6 +77,7 @@ const EditBlog = () => {
       
       const response = await axios.post(`${API_URL}/api/upload`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       });
       
       setFormData(prev => ({ ...prev, featuredImage: response.data.url }));
@@ -93,7 +94,7 @@ const EditBlog = () => {
     setLoading(true);
 
     try {
-      await axios.put(`${API_URL}/api/blogs/${params.id}`, formData);
+      await axios.put(`${API_URL}/api/blogs/${params.id}`, formData, { withCredentials: true });
       alert('Blog updated successfully!');
       router.push('/admin/blogs');
     } catch (error) {

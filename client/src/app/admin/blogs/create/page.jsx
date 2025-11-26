@@ -65,6 +65,7 @@ const CreateBlog = () => {
       
       const response = await axios.post(`${API_URL}/api/upload`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       });
       
       setFormData(prev => ({ ...prev, featuredImage: response.data.url }));
@@ -81,7 +82,7 @@ const CreateBlog = () => {
     setLoading(true);
 
     try {
-      await axios.post(`${API_URL}/api/blogs`, formData);
+      await axios.post(`${API_URL}/api/blogs`, formData, { withCredentials: true });
       alert('Blog created successfully!');
       router.push('/admin/blogs');
     } catch (error) {
