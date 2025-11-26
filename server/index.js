@@ -27,7 +27,12 @@ const PORT = process.env.PORT || 4000;
 
 connectDB();
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    'https://www.poddarmotors.com',
+    'https://poddarmotors.com',
+    'http://localhost:3000',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true,
 }));
 app.use(cookieParser());
