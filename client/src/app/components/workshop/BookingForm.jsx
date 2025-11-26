@@ -43,7 +43,7 @@ const BookingForm = () => {
       const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
       // const url = 'http://localhost:4000'
 
-      const response = await fetch(url + 'api/workshop-bookings', {
+      const response = await fetch(url + '/api/workshop-bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
