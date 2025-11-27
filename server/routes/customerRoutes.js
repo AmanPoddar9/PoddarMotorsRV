@@ -46,4 +46,10 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
 router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 
+// Requirements Routes
+const requirementController = require('../controllers/customerRequirementController');
+router.post('/requirements', requireCustomerAuth, requirementController.createRequirement);
+router.get('/requirements', requireCustomerAuth, requirementController.getRequirements);
+router.delete('/requirements/:id', requireCustomerAuth, requirementController.deleteRequirement);
+
 module.exports = router;

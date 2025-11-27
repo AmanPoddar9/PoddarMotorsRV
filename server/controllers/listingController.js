@@ -102,6 +102,37 @@ exports.createListing = async (req, res) => {
     data.slug = slugify(`${slugBase}-${randomSuffix}`, { lower: true, strict: true });
     const listing = new Listing(data);
     await listing.save();
+
+    // Check for matching requirements and send emails
+    try {
+      const CarRequirement = require('../models/CarRequirement');
+      const { sendRequirementMatchEmail } = require('../utils/email');
+      const Customer = require('../models/Customer');
+
+      // Find requirements that match:
+      // 1. Same Brand (case insensitive)
+      // 2. Budget overlaps with price
+      // 3. Year is within range (yearMin <= listing.year)
+      const matches = await CarRequirement.find({
+        isActive: true,
+        brand: { $regex: new RegExp(`^${data.brand}$`, 'i') },
+        budgetMax: { $gte: data.price },
+        budgetMin: { $lte: data.price },
+        yearMin: { $lte: data.year }
+      }).populate('customer');
+
+      console.log(`Found ${matches.length} matching requirements for new listing: ${data.brand} ${data.model}`);
+
+      for (const match of matches) {
+        if (match.customer && match.customer.email) {
+          await sendRequirementMatchEmail(match.customer.email, match.customer.name, listing);
+        }
+      }
+    } catch (emailError) {
+      console.error('Error sending requirement emails:', emailError);
+      // Don't fail the request if email sending fails
+    }
+
     res.status(201).json({ message: "Listing created successfully", listing });
   } catch (error) {
     res.status(400).json({ error: error.message });
