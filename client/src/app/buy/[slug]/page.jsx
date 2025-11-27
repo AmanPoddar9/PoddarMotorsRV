@@ -37,6 +37,8 @@ import { Tabs, Modal } from 'antd'
 import BookingCard from '../../components/BookingCard'
 
 // import { BsFillFuelPumpFill } from "react-icons/bs";
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { useCustomer } from '../../utils/customerContext'
 // import { CiCreditCard1 } from "react-icons/ci";
 import API_URL from '../../config/api'
 
@@ -62,6 +64,41 @@ const page = ({ params: { slug } }) => {
   const [offerSuccess, setOfferSuccess] = useState(false)
   const [viewers, setViewers] = useState(0)
   const [debugStats, setDebugStats] = useState(null)
+
+  const { customer, fetchProfile } = useCustomer()
+  const [inWishlist, setInWishlist] = useState(false)
+  const [wishlistLoading, setWishlistLoading] = useState(false)
+
+  useEffect(() => {
+    if (customer && customer.wishlist && carData) {
+      const isWishlisted = customer.wishlist.some(item => 
+        (item._id === carData._id) || (item === carData._id)
+      )
+      setInWishlist(isWishlisted)
+    }
+  }, [customer, carData])
+
+  const toggleWishlist = async (e) => {
+    e.stopPropagation()
+    if (!customer) {
+      alert('Please login to add to wishlist')
+      return
+    }
+
+    try {
+      setWishlistLoading(true)
+      await axios.post(`${API_URL}/api/customer/wishlist`, 
+        { listingId: carData._id },
+        { withCredentials: true }
+      )
+      setInWishlist(!inWishlist)
+      fetchProfile()
+    } catch (error) {
+      console.error('Error toggling wishlist:', error)
+    } finally {
+      setWishlistLoading(false)
+    }
+  }
 
   // Urgency Effect
   useEffect(() => {
@@ -300,12 +337,25 @@ const page = ({ params: { slug } }) => {
         {/* <!-- Product info --> */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
           <div className="lg:col-span-2 lg:border-r lg:border-white/10 lg:pr-8">
-            <h1 className="text-2xl font-display font-bold tracking-tight text-white sm:text-3xl mb-5">
-              {`${carData.year}
-                ${carData.brand} 
-                ${carData.model}
-                ${carData.variant}`}
-            </h1>
+            <div className="flex justify-between items-start">
+              <h1 className="text-2xl font-display font-bold tracking-tight text-white sm:text-3xl mb-5">
+                {`${carData.year}
+                  ${carData.brand} 
+                  ${carData.model}
+                  ${carData.variant}`}
+              </h1>
+              <button
+                onClick={toggleWishlist}
+                disabled={wishlistLoading}
+                className="p-3 rounded-full bg-custom-jet border border-white/10 hover:bg-white/5 transition"
+              >
+                {inWishlist ? (
+                  <FaHeart className="text-red-500 text-2xl" />
+                ) : (
+                  <FaRegHeart className="text-white text-2xl hover:text-red-500" />
+                )}
+              </button>
+            </div>
             <div
               className="mt-2"
               style={{
