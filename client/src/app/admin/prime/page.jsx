@@ -316,6 +316,5 @@ export default function PrimeMembershipsPage() {
       )}
       </div>
     </div>
-    </div>
   )
 }
