@@ -187,3 +187,58 @@ exports.toggleWishlist = async (req, res) => {
     res.status(500).json({ message: 'Error updating wishlist' });
   }
 };
+
+// ADMIN: Get All Customers (with optional Prime filter)
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const { primeStatus } = req.query; // 'active', 'inactive', or undefined (all)
+    
+    let filter = {};
+    if (primeStatus === 'active') {
+      filter['primeStatus.isActive'] = true;
+    } else if (primeStatus === 'inactive') {
+      filter['primeStatus.isActive'] = false;
+    }
+
+    const customers = await Customer.find(filter)
+      .select('-passwordHash') // Exclude password
+      .sort({ createdAt: -1 });
+
+    res.json({ customers });
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    res.status(500).json({ message: 'Error fetching customers' });
+  }
+};
+
+// ADMIN: Update Prime Status
+exports.updatePrimeStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isActive, tier, expiryDate, benefits } = req.body;
+
+    const customer = await Customer.findById(id);
+    if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+    // Update Prime status
+    customer.primeStatus.isActive = isActive;
+    customer.primeStatus.tier = tier || (isActive ? 'Gold' : null);
+    customer.primeStatus.expiryDate = expiryDate || null;
+    customer.primeStatus.benefits = benefits || [];
+
+    await customer.save();
+
+    res.json({ 
+      message: 'Prime status updated successfully',
+      customer: {
+        id: customer._id,
+        name: customer.name,
+        primeStatus: customer.primeStatus
+      }
+    });
+  } catch (error) {
+    console.error('Error updating Prime status:', error);
+    res.status(500).json({ message: 'Error updating Prime status' });
+  }
+};
+

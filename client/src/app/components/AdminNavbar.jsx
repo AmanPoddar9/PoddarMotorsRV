@@ -95,6 +95,12 @@ const AdminNavbar = () => {
                   >
                     Call Automation
                   </Link>
+                  <Link
+                    href="/admin/prime"
+                    className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Prime Memberships
+                  </Link>
                 </>
               )}
               {canAccessWorkshop && (

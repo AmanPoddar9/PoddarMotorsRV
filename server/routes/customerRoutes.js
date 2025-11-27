@@ -6,7 +6,9 @@ const {
   logout, 
   getDashboard, 
   updatePreferences, 
-  toggleWishlist 
+  toggleWishlist,
+  getAllCustomers,
+  updatePrimeStatus
 } = require('../controllers/customerAuthController.js');
 const jwt = require('jsonwebtoken');
 
@@ -38,5 +40,10 @@ router.post('/wishlist', requireCustomerAuth, toggleWishlist);
 router.get('/me', requireCustomerAuth, (req, res) => {
   res.json({ user: req.user });
 });
+
+// ADMIN Routes (require admin authentication)
+const { requireAuth, requireRole } = require('../middleware/auth');
+router.get('/all', requireAuth, requireRole(['admin']), getAllCustomers);
+router.put('/:id/prime', requireAuth, requireRole(['admin']), updatePrimeStatus);
 
 module.exports = router;
