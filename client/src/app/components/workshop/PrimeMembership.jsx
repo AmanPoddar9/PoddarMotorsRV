@@ -40,7 +40,7 @@ const benefits = [
 ]
 
 const PrimeMembership = () => {
-  const whatsappNumber = '918888888888' // Replace with actual number
+  const whatsappNumber = '918873002700'
   const message = encodeURIComponent('Hi! I am interested in joining Poddar Prime Membership. Please share more details.')
 
   return (
