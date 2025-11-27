@@ -43,11 +43,10 @@ exports.signup = async (req, res) => {
     const token = createToken(customer);
 
     // Set cookie
-    // Always use None/Secure to support cross-site (Vercel -> Render) and Localhost
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 
@@ -82,11 +81,10 @@ exports.login = async (req, res) => {
 
     const token = createToken(customer);
 
-    // Always use None/Secure to support cross-site (Vercel -> Render) and Localhost
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
@@ -111,8 +109,8 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   res.clearCookie('customer_auth', {
     httpOnly: true,
-    sameSite: 'none',
-    secure: true
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production'
   });
   res.json({ message: 'Logged out successfully' });
 };

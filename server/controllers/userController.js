@@ -26,9 +26,19 @@ exports.login = async (req, res) => {
     }
     const token = jwt.sign(
       { userId: user._id, access_level: user.access_level },
-      'RealValueSecretKey'
+      process.env.JWT_SECRET || 'RealValueSecretKey',
+      { expiresIn: '7d' }
     )
-    res.json({ message: 'Login successful', token, success: true })
+    
+    // Set httpOnly cookie
+    res.cookie('auth', token, {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    })
+    
+    res.json({ message: 'Login successful', success: true })
   } catch (error) {
     res.status(401).json({ error: error.message })
   }
