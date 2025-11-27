@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { FaCrown, FaSearch, FaTimes } from 'react-icons/fa'
 import API_URL from '../../config/api'
+import AdminNavbar from '../../components/AdminNavbar'
 
 export default function PrimeMembershipsPage() {
   const [customers, setCustomers] = useState([])
