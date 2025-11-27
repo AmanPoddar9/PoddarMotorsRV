@@ -1,0 +1,71 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
+const customerSchema = new mongoose.Schema({
+  // Identity
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  mobile: { type: String, required: true, unique: true, index: true },
+  passwordHash: { type: String, required: true },
+  
+  // Prime Membership
+  primeStatus: {
+    isActive: { type: Boolean, default: false },
+    tier: { type: String, enum: ['Gold', 'Platinum'], default: 'Gold' },
+    expiryDate: { type: Date },
+    joinedAt: { type: Date },
+    benefits: [{ type: String }] // e.g., 'Free Car Wash', 'Priority Service'
+  },
+
+  // E-commerce Ready
+  cart: [{
+    productId: { type: mongoose.Schema.Types.ObjectId }, // Generic ref for now
+    productType: { type: String }, // 'Accessory', 'Service', etc.
+    quantity: { type: Number, default: 1 },
+    addedAt: { type: Date, default: Date.now }
+  }],
+  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }], // Future ref
+  addresses: [{
+    label: { type: String }, // 'Home', 'Office'
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String },
+    isDefault: { type: Boolean, default: false }
+  }],
+
+  // Lead Generation & Preferences
+  preferences: {
+    brands: [{ type: String }],
+    budgetRange: {
+      min: { type: Number },
+      max: { type: Number }
+    },
+    bodyTypes: [{ type: String }], // SUV, Sedan, etc.
+    transmission: { type: String }, // Manual, Automatic
+    fuelType: { type: String }
+  },
+  
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Listing' }],
+
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+// Set password (hash)
+customerSchema.methods.setPassword = async function (plain) {
+  this.passwordHash = await bcrypt.hash(plain, 12);
+};
+
+// Validate password
+customerSchema.methods.validatePassword = async function (plain) {
+  return bcrypt.compare(plain, this.passwordHash);
+};
+
+// Update timestamp on save
+customerSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+module.exports = mongoose.model('Customer', customerSchema);

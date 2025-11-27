@@ -6,6 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { IoMdClose, IoMdMenu } from 'react-icons/io'
+import { FaUser, FaCrown } from 'react-icons/fa'
+import { useCustomer } from '../utils/customerContext'
 import Logo from '../../images/logo_text.png'
 
 const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
@@ -14,8 +16,10 @@ const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
 
 const Navbar = () => {
   const pathname = usePathname()
+  const { customer, logout } = useCustomer()
   const [visible, setVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
 
   const isWorkshop = pathname?.startsWith('/workshop')
 
@@ -87,6 +91,50 @@ const Navbar = () => {
               >
                 Contact Us
               </Link>
+              
+              {/* Customer Auth */}
+              {customer ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                  >
+                    <FaUser className="text-custom-accent" />
+                    <span className="text-white font-medium">{customer.name}</span>
+                    {customer.primeStatus?.isActive && (
+                      <FaCrown className="text-yellow-400" />
+                    )}
+                  </button>
+                  
+                  {showDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-custom-jet border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                      <Link
+                        href="/profile"
+                        onClick={() => setShowDropdown(false)}
+                        className="block px-4 py-3 text-white hover:bg-white/10 transition-colors"
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout()
+                          setShowDropdown(false)
+                        }}
+                        className="w-full text-left px-4 py-3 text-red-400 hover:bg-white/10 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-6 py-2 bg-white/10 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300"
+                >
+                  Login
+                </Link>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
