@@ -21,6 +21,7 @@ export default function PrimeMembershipsPage() {
     benefits: ''
   })
   const [saveLoading, setSaveLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     fetchCustomers()
@@ -33,10 +34,12 @@ export default function PrimeMembershipsPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true)
+      setError(null)
       const res = await axios.get(`${API_URL}/api/customer/all`, { withCredentials: true })
       setCustomers(res.data.customers)
     } catch (error) {
       console.error('Error fetching customers:', error)
+      setError(error.response?.data?.message || 'Failed to load customers. Please ensure you are logged in as admin.')
     } finally {
       setLoading(false)
     }
@@ -146,6 +149,13 @@ export default function PrimeMembershipsPage() {
             </div>
           </div>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/50 text-red-400 rounded-xl p-4 mb-6">
+            <p className="font-medium">⚠️ {error}</p>
+          </div>
+        )}
 
         {/* Table */}
         {loading ? (

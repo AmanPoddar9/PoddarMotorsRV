@@ -22,7 +22,11 @@ router.post('/login', async (req, res) => {
 
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
-  res.clearCookie('auth');
+  res.clearCookie('auth', {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true
+  });
   res.json({ message: 'Logged out' });
 });
 
