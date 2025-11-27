@@ -14,6 +14,7 @@ import { Button, Slider } from 'antd'
 import { AmountWithCommas, toTitleCase } from '../utils'
 import FeaturedCard from '../components/FeaturedCard'
 import { FaSearch } from 'react-icons/fa'
+import API_URL from '../config/api'
 
 import { Oval } from 'react-loader-spinner'
 
@@ -40,7 +41,7 @@ const sortOptions = [
   { name: 'Year: Low to High', href: '#', current: false, param: 'year_asc' },
   { name: 'Year: High to Low', href: '#', current: false, param: 'year_desc' },
 ]
-let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+let url = API_URL.endsWith('/') ? API_URL : API_URL + '/'
 // url = 'http://localhost:5000/'
 
 const carTypes = ['Hatchback', 'Sedan', 'SUV', 'MUV', 'Luxury']

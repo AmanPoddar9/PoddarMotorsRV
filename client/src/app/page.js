@@ -10,6 +10,7 @@ import Faq from './components/Faq'
 import Contact from './components/Contact'
 import { homeFAQ } from './data/homeFAQs'
 import ButtonRows from './components/ButtonRows'
+import API_URL from './config/api'
 
 
 export const metadata = {
@@ -31,7 +32,7 @@ export default async function Home() {
   let data
   try {
     data = await fetch(
-      `https://poddar-motors-rv-hkxu.vercel.app/api/listings/featured`,
+      `${API_URL}/api/listings/featured`,
       { cache: 'no-store' },
     ).then((res) => res.json())
   } catch (e) {
