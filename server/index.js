@@ -38,26 +38,14 @@ try {
 
 connectDB();
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    const allowedDomains = [
-      'poddarmotors.com',
-      'www.poddarmotors.com',
-      'localhost',
-      'poddar-motors-rv-hkxu.vercel.app'
-    ];
-
-    const isAllowed = allowedDomains.some(domain => origin.includes(domain));
-    
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin); // Log blocked origins for debugging
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'https://www.poddarmotors.com',
+    'https://poddarmotors.com',
+    'http://localhost:3000',
+    'https://poddar-motors-rv-hkxu.vercel.app',
+    /poddarmotors\.com$/,
+    /vercel\.app$/
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
@@ -65,6 +53,9 @@ app.use(cors({
   preflightContinue: false,
   optionsSuccessStatus: 204
 }));
+
+// Enable pre-flight requests for all routes
+app.options('*', cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(compression());
