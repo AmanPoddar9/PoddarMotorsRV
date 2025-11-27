@@ -37,19 +37,101 @@ try {
 }
 
 connectDB();
+const defaultAllowedOrigins = [
+  'https://www.poddarmotors.com',
+  'https://poddarmotors.com',
+  'http://localhost:3000',
+  'https://poddar-motors-rv-hkxu.vercel.app'
+];
+
+const defaultAllowedHeaders = [
+  'Content-Type',
+  'Authorization',
+  'X-Requested-With',
+  'Accept',
+  'Origin',
+  'Cache-Control',
+  'Pragma'
+];
+
+const envAllowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const normalizeOrigin = (origin) => {
+  if (!origin) return null;
+
+  // Strip trailing slashes early to simplify parsing
+  const sanitizedOrigin = origin.replace(/\/+$/, '');
+
+  try {
+    const { protocol, hostname, port } = new URL(sanitizedOrigin);
+    const isDefaultPort =
+      (protocol === 'https:' && (port === '443' || port === '')) ||
+      (protocol === 'http:' && (port === '80' || port === ''));
+
+    return `${protocol}//${hostname}${isDefaultPort ? '' : `:${port}`}`;
+  } catch {
+    // Fallback: remove default ports and trailing slashes if URL parsing fails
+    return sanitizedOrigin.replace(/:(80|443)$/, '');
+  }
+};
+
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
+const normalizedAllowedOrigins = allowedOrigins
+  .map(normalizeOrigin)
+  .filter(Boolean);
+const allowedOriginPatterns = [/poddarmotors\.com$/, /vercel\.app$/];
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true; // Same-origin requests
+
+  const normalizedOrigin = normalizeOrigin(origin);
+  if (!normalizedOrigin) return false;
+
+  let hostname;
+  try {
+    hostname = new URL(normalizedOrigin).hostname;
+  } catch {
+    hostname = null;
+  }
+
+  return (
+    normalizedAllowedOrigins.includes(normalizedOrigin) ||
+    (hostname && allowedOriginPatterns.some((pattern) => pattern.test(hostname)))
+  );
+};
+
 const corsOptions = {
-  origin: [
-    'https://www.poddarmotors.com',
-    'https://poddarmotors.com',
-    'http://localhost:3000',
-    'https://poddar-motors-rv-hkxu.vercel.app',
-    /poddarmotors\.com$/,
-    /vercel\.app$/
-  ],
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+
+    console.warn(`Blocked CORS origin: ${origin}`);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  // Use browser-requested headers plus a stable default allowlist so OPTIONS requests
+  // never omit common headers like Authorization or Content-Type.
+  allowedHeaders: (req, callback) => {
+    const requestHeaders = req.header('Access-Control-Request-Headers');
+    const mergedHeaders = new Set(defaultAllowedHeaders);
+
+    if (requestHeaders) {
+      requestHeaders
+        .split(',')
+        .map((header) => header.trim())
+        .filter(Boolean)
+        .forEach((header) => mergedHeaders.add(header));
+    }
+
+    callback(null, Array.from(mergedHeaders));
+  },
   exposedHeaders: ['Set-Cookie'],
+  maxAge: 86400,
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
