@@ -42,10 +42,11 @@ exports.signup = async (req, res) => {
     const token = createToken(customer);
 
     // Set cookie
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 
@@ -80,10 +81,11 @@ exports.login = async (req, res) => {
 
     const token = createToken(customer);
 
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
@@ -106,10 +108,11 @@ exports.login = async (req, res) => {
 
 // Logout
 exports.logout = (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('customer_auth', {
     httpOnly: true,
-    sameSite: 'none',
-    secure: true
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction
   });
   res.json({ message: 'Logged out successfully' });
 };
