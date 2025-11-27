@@ -43,7 +43,7 @@ router.get('/me', requireCustomerAuth, (req, res) => {
 
 // ADMIN Routes (require admin authentication)
 const { requireAuth, requireRole } = require('../middleware/auth');
-router.get('/all', requireAuth, requireRole(['admin']), getAllCustomers);
-router.put('/:id/prime', requireAuth, requireRole(['admin']), updatePrimeStatus);
+router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
+router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 
 module.exports = router;
