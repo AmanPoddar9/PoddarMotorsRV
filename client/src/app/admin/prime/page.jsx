@@ -110,7 +110,9 @@ export default function PrimeMembershipsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-custom-black text-white p-8">
+    <div className="min-h-screen bg-custom-black text-white">
+      <AdminNavbar />
+      <div className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -312,6 +314,8 @@ export default function PrimeMembershipsPage() {
           </div>
         </div>
       )}
+      </div>
+    </div>
     </div>
   )
 }

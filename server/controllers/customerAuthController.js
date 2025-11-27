@@ -128,7 +128,7 @@ exports.getDashboard = async (req, res) => {
 
     const [workshopBookings, testDrives, offers] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
-      Booking.find({ mobile }).sort({ createdAt: -1 }).populate('listing'),
+      Booking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
       CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing')
     ]);
 

@@ -100,7 +100,7 @@ const Navbar = () => {
                     className="flex items-center space-x-2 px-4 py-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
                   >
                     <FaUser className="text-custom-accent" />
-                    <span className="text-white font-medium">{customer.name}</span>
+                    <span className="text-white font-medium truncate max-w-[100px] md:max-w-[150px]">{customer.name}</span>
                     {customer.primeStatus?.isActive && (
                       <FaCrown className="text-yellow-400" />
                     )}
