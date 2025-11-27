@@ -37,7 +37,7 @@ try {
 }
 
 connectDB();
-app.use(cors({
+const corsOptions = {
   origin: [
     'https://www.poddarmotors.com',
     'https://poddarmotors.com',
@@ -52,10 +52,12 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie'],
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
 
-// Enable pre-flight requests for all routes
-app.options('*', cors());
+app.use(cors(corsOptions));
+
+// Enable pre-flight requests for all routes with the same options
+app.options('*', cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(compression());
