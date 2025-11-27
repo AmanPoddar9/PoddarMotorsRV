@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const WorkshopBooking = require('../models/workshopBooking');
 const Booking = require('../models/booking'); // Test drives
 const CustomerOffer = require('../models/CustomerOffer');
+const Listing = require('../models/Listing');
 
 // Helper to create JWT
 const createToken = (customer) => {
@@ -42,11 +43,11 @@ exports.signup = async (req, res) => {
     const token = createToken(customer);
 
     // Set cookie
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Always use None/Secure to support cross-site (Vercel -> Render) and Localhost
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
+      sameSite: 'none',
+      secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 
@@ -81,11 +82,11 @@ exports.login = async (req, res) => {
 
     const token = createToken(customer);
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    // Always use None/Secure to support cross-site (Vercel -> Render) and Localhost
     res.cookie('customer_auth', token, {
       httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
+      sameSite: 'none',
+      secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
@@ -108,11 +109,10 @@ exports.login = async (req, res) => {
 
 // Logout
 exports.logout = (req, res) => {
-  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('customer_auth', {
     httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',
-    secure: isProduction
+    sameSite: 'none',
+    secure: true
   });
   res.json({ message: 'Logged out successfully' });
 };

@@ -262,7 +262,7 @@ export default function ProfilePage() {
                 <h2 className="text-2xl font-bold text-white mb-6">My Wishlist</h2>
                 {customer.wishlist?.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {customer.wishlist.map((car, idx) => (
+                    {customer.wishlist.filter(item => item && item.brand).map((car, idx) => (
                       <div key={idx} className="bg-custom-jet p-4 rounded-xl border border-white/10">
                         {car.images?.[0] && (
                           <img 
