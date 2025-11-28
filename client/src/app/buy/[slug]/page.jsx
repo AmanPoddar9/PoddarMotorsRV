@@ -15,6 +15,7 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/thumbs'
 import Image from 'next/image'
+import Link from 'next/link'
 
 // Icons
 import { BiCylinder } from 'react-icons/bi'
@@ -181,8 +182,8 @@ const page = ({ params: { slug } }) => {
 
   const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug)
   const getListingURL = isObjectId
-    ? `https://poddar-motors-rv-hkxu.vercel.app/api/listings/${slug}`
-    : `https://poddar-motors-rv-hkxu.vercel.app/api/listings/slug/${slug}`
+    ? `${API_URL}/api/listings/${slug}`
+    : `${API_URL}/api/listings/slug/${slug}`
 
   useEffect(() => {
     axios
@@ -203,7 +204,7 @@ const page = ({ params: { slug } }) => {
   // Similar Cars Effect
   useEffect(() => {
     if (carData) {
-        axios.get('https://poddar-motors-rv-hkxu.vercel.app/api/listings')
+        axios.get(`${API_URL}/api/listings`)
             .then(res => {
                 const filtered = res.data.filter(car => 
                     car._id !== carData._id && 
@@ -248,9 +249,9 @@ const page = ({ params: { slug } }) => {
           >
             <li>
               <div className="flex items-center">
-                <a href="/" className="mr-2 text-sm font-medium text-custom-platinum hover:text-white">
+                <Link href="/" className="mr-2 text-sm font-medium text-custom-platinum hover:text-white">
                   Cars
-                </a>
+                </Link>
                 <svg
                   width="16"
                   height="20"
@@ -265,12 +266,12 @@ const page = ({ params: { slug } }) => {
             </li>
             <li>
               <div className="flex items-center">
-                <a
+                <Link
                   href="/buy"
                   className="mr-2 text-sm font-medium text-custom-platinum hover:text-white"
                 >
                   Buy
-                </a>
+                </Link>
                 <svg
                   width="16"
                   height="20"
@@ -773,10 +774,10 @@ const page = ({ params: { slug } }) => {
                             <div className="mt-4 flex justify-between">
                                 <div>
                                     <h3 className="text-sm text-white">
-                                        <a href={`/buy/${car.slug || car._id}`}>
+                                        <Link href={`/buy/${car.slug || car._id}`}>
                                             <span aria-hidden="true" className="absolute inset-0" />
                                             {car.brand} {car.model}
-                                        </a>
+                                        </Link>
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-400">{car.variant}</p>
                                 </div>

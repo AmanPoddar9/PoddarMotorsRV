@@ -6,7 +6,8 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import { useCustomer } from '../utils/customerContext'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import Link from 'next/link'
+import API_URL from '../config/api'
 
 const FeaturedCard = ({ car }) => {
   const { customer, fetchProfile } = useCustomer()
@@ -49,7 +50,7 @@ const FeaturedCard = ({ car }) => {
 
   return (
     <div className="relative group">
-      <a href={car.slug ? `/buy/${car.slug}` : `/buy/${car._id}`}>
+      <Link href={car.slug ? `/buy/${car.slug}` : `/buy/${car._id}`}>
         <div className="max-w-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 bg-custom-jet border border-white/10">
           <div className="relative overflow-hidden h-[20rem]">
             {car.images[0] ? (
@@ -114,7 +115,7 @@ const FeaturedCard = ({ car }) => {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
       
       {/* Wishlist Button */}
       <button
