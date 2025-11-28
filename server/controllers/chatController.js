@@ -5,60 +5,139 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Tool Definition
+const tools = [
+  {
+    type: "function",
+    function: {
+      name: "search_inventory",
+      description: "Search for cars in the inventory based on criteria like brand, model, price, etc.",
+      parameters: {
+        type: "object",
+        properties: {
+          brand: { type: "string", description: "Car brand (e.g., Maruti, Hyundai, Honda)" },
+          model: { type: "string", description: "Car model (e.g., Swift, Creta, City)" },
+          minPrice: { type: "number", description: "Minimum price in INR" },
+          maxPrice: { type: "number", description: "Maximum price in INR" },
+          year: { type: "number", description: "Minimum manufacturing year" },
+          fuelType: { type: "string", enum: ["Petrol", "Diesel", "CNG", "Electric"] },
+          transmission: { type: "string", enum: ["Manual", "Automatic"] },
+          type: { type: "string", enum: ["Hatchback", "Sedan", "SUV", "MUV", "Luxury"] }
+        },
+        required: []
+      }
+    }
+  }
+];
+
+// Helper to execute the search
+async function executeInventorySearch(args) {
+  try {
+    const query = { status: 'Active' };
+
+    if (args.brand) query.brand = { $regex: args.brand, $options: 'i' };
+    if (args.model) query.model = { $regex: args.model, $options: 'i' };
+    if (args.fuelType) query.fuelType = { $regex: args.fuelType, $options: 'i' };
+    if (args.transmission) query.transmission = { $regex: args.transmission, $options: 'i' };
+    if (args.type) query.type = { $regex: args.type, $options: 'i' };
+    if (args.year) query.year = { $gte: args.year };
+    
+    if (args.minPrice || args.maxPrice) {
+      query.price = {};
+      if (args.minPrice) query.price.$gte = args.minPrice;
+      if (args.maxPrice) query.price.$lte = args.maxPrice;
+    }
+
+    const listings = await Listing.find(query)
+      .select('brand model variant year price fuelType transmission kmDriven color images')
+      .limit(5); // Limit to 5 best matches
+
+    if (listings.length === 0) {
+      return "No cars found matching these criteria. Suggest checking other similar options.";
+    }
+
+    return JSON.stringify(listings);
+  } catch (error) {
+    console.error("Search Error:", error);
+    return "Error searching inventory.";
+  }
+}
+
 exports.chat = async (req, res) => {
   try {
     const { messages } = req.body;
 
-    // 1. Fetch available inventory (limit to key fields to save tokens)
-    const listings = await Listing.find({ status: 'Active' })
-      .select('brand model year price fuelType transmission kmDriven')
-      .limit(20); // Limit to 20 for now to manage context window
-
-    // 2. Format inventory for the AI
-    const inventoryText = listings.map(car => 
-      `- ${car.year} ${car.brand} ${car.model} (${car.fuelType}, ${car.transmission}): ₹${car.price.toLocaleString('en-IN')}, ${car.kmDriven}km`
-    ).join('\n');
-
-    // 3. System Prompt
     const systemPrompt = `
-      You are "Poddar AI", the smart sales assistant for Poddar Motors Real Value in Ranchi, Jharkhand.
+      You are "Poddar AI", the smart sales assistant for Poddar Motors Real Value in Ranchi.
       
-      YOUR GOAL: Help customers find the perfect used car, answer questions about finance/workshop, and encourage them to book a test drive or visit.
+      YOUR GOAL: Help customers find the perfect used car from our REAL inventory.
       
-      KEY INFORMATION:
-      - Location: Ranchi, Jharkhand.
-      - Services: Used Car Sales, Buying Cars, Finance (Loans), Insurance, Workshop/Service Center.
-      - Finance: We offer loans up to 90% value, minimal documentation.
-      - Workshop: Full service center available for all brands.
+      CAPABILITIES:
+      - You have a tool 'search_inventory' to check our live database.
+      - ALWAYS use this tool when a user asks about available cars, prices, or specific models.
+      - Do NOT guess. If the tool returns no results, say so politely.
       
-      CURRENT INVENTORY (Use this to answer "what cars do you have?"):
-      ${inventoryText}
-      
-      GUIDELINES:
-      - Be polite, professional, and concise.
-      - If a user asks for a car NOT in the list, say we don't have it right now but can arrange it.
-      - Always mention prices in Lakhs/Crores or Indian Rupees.
-      - If the user seems interested, ask for their name/number to schedule a visit.
-      - Do not invent cars that are not in the list.
+      RESPONSE GUIDELINES:
+      - When showing cars, mention: Year, Brand, Model, Variant, and Price (in Lakhs/Crores).
+      - Be concise and professional.
+      - If a user shows interest, ask for their name/number to schedule a test drive.
+      - We offer up to 90% finance and have a full service workshop.
     `;
 
-    // 4. Call OpenAI
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Cost-effective and fast
+    // 1. First Call: Check if AI wants to use a tool
+    const runner = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: systemPrompt },
         ...messages
       ],
-      temperature: 0.7,
+      tools: tools,
+      tool_choice: "auto",
     });
 
+    const responseMessage = runner.choices[0].message;
+
+    // 2. If tool call requested
+    if (responseMessage.tool_calls) {
+      const toolCall = responseMessage.tool_calls[0];
+      const functionName = toolCall.function.name;
+      const functionArgs = JSON.parse(toolCall.function.arguments);
+
+      if (functionName === "search_inventory") {
+        // Execute the search
+        const searchResults = await executeInventorySearch(functionArgs);
+
+        // 3. Second Call: Send results back to AI for final answer
+        const finalResponse = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+            responseMessage, // The tool call request
+            {
+              role: "tool",
+              tool_call_id: toolCall.id,
+              name: functionName,
+              content: searchResults,
+            },
+          ],
+        });
+
+        return res.json({
+          message: finalResponse.choices[0].message.content,
+          role: 'assistant'
+        });
+      }
+    }
+
+    // If no tool call, just return the text response
     res.json({ 
-      message: completion.choices[0].message.content,
+      message: responseMessage.content,
       role: 'assistant' 
     });
 
   } catch (error) {
     console.error('Chat API Error:', error);
-    res.status(500).json({ message: 'Sorry, I am having trouble thinking right now.' });
+    res.status(500).json({ message: "I'm having a little trouble connecting right now." });
   }
 };
