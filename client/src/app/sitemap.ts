@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     
     carPages = cars.map((car: any) => ({
       url: `${baseUrl}/buy/${car.slug || car._id}`,
-      lastModified: new Date(car.updatedAt || car.createdAt),
+      lastModified: new Date(), // Car listings don't have updatedAt/createdAt, use current date
       changeFrequency: 'daily' as const,
       priority: 0.9,
     }));
