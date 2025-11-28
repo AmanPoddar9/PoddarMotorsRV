@@ -267,8 +267,21 @@ exports.updatePrimeStatus = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error updating Prime status:', error);
     res.status(500).json({ message: 'Error updating Prime status' });
+  }
+};
+
+// Get Current User (Lightweight)
+exports.getMe = async (req, res) => {
+  try {
+    const customer = await Customer.findById(req.user.id).select('-passwordHash');
+    if (!customer) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ user: customer });
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
