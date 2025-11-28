@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const WorkshopBooking = require('../models/workshopBooking');
 const Booking = require('../models/booking'); // Test drives
 const CustomerOffer = require('../models/CustomerOffer');
-const Listing = require('../models/Listing');
+const Listing = require('../models/listing');
 
 // Helper to create JWT
 const createToken = (customer) => {
