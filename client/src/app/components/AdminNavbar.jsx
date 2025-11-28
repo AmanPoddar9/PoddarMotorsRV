@@ -90,6 +90,12 @@ const AdminNavbar = () => {
                     Sell Requests
                   </Link>
                   <Link
+                    href="/admin/testimonials/add"
+                    className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Success Stories
+                  </Link>
+                  <Link
                     href="/admin/call-automation"
                     className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >

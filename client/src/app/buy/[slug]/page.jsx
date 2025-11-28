@@ -45,12 +45,14 @@ import { useCustomer } from '../../utils/customerContext'
 import API_URL from '../../config/api'
 import { ViewCounter } from '../../components/SocialProof'
 import PriceAlerts from '../../components/PriceAlerts'
+import TestimonialCard from '../../components/TestimonialCard'
 
 const page = ({ params: { slug } }) => {
   // API call to this route: 662bed523ec1ae8416673630
   const [loading, setLoading] = useState(true)
   const [carData, setCarData] = useState(null)
   const [similarCars, setSimilarCars] = useState([])
+  const [testimonials, setTestimonials] = useState([])
   const [open, setOpen] = useState(false)
   const [error, setError] = useState(null)
   const [isDesktop, setDesktop] = useState(false)
@@ -240,24 +242,55 @@ const page = ({ params: { slug } }) => {
             .then(res => {
                 const filtered = res.data.filter(car => 
                     car._id !== carData._id && 
-                    (
-                        (car.price >= carData.price * 0.7 && car.price <= carData.price * 1.3) || 
-                        car.brand === carData.brand
-                    )
-                ).slice(0, 4)
-                setSimilarCars(filtered)
-                setDebugStats({
-                    allListings: res.data.length,
-                    similarCars: filtered.length,
-                    matchPrice: carData.price
-                })
-            })
-            .catch(err => {
-                console.log(err)
-                setDebugStats({ error: err.message })
-            })
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(getListingURL)
+        // Filter out null images
+        if (response.data.images) {
+          response.data.images = response.data.images.filter((img) => img != null)
+        }
+        setCarData(response.data)
+        
+        // Fetch similar cars
+        try {
+          const similarResponse = await axios.get(
+            `${API_URL}/api/listings?type=${response.data.type}&limit=4`
+          )
+          if (similarResponse.data && similarResponse.data.listings) {
+            setSimilarCars(
+              similarResponse.data.listings.filter(
+                (car) => car._id !== response.data._id
+              )
+            )
+          }
+        } catch (err) {
+          console.error('Error fetching similar cars:', err)
+        }
+
+        // Fetch relevant testimonials
+        try {
+          // Fuzzy match by model name (e.g. "Swift", "Creta")
+          if (response.data.model) {
+            const modelName = response.data.model.split(' ')[0]
+            const testimonialsRes = await axios.get(
+              `${API_URL}/api/testimonials?carModel=${modelName}&limit=3`
+            )
+            setTestimonials(testimonialsRes.data.data)
+          }
+        } catch (err) {
+          console.error('Error fetching testimonials:', err)
+        }
+
+      } catch (err) {
+        console.log(err)
+        setError(err)
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [carData])
+
+    fetchData()
+  }, [getListingURL])
 
   // Facebook Pixel ViewContent
   useEffect(() => {
@@ -893,6 +926,36 @@ const page = ({ params: { slug } }) => {
             </div>
           </div>
         </div>
+
+      {/* Happy Customers Section */}
+      {testimonials.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 border-t border-white/10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-display font-bold text-white">
+                Happy {carData.brand} {carData.model} Owners
+              </h2>
+              <p className="text-custom-platinum mt-2">
+                See what others are saying about their experience
+              </p>
+            </div>
+            <Link 
+              href="/testimonials"
+              className="text-custom-accent hover:text-yellow-400 font-medium flex items-center gap-2"
+            >
+              View All Stories <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.slice(0, 3).map(testimonial => (
+              <div key={testimonial._id} className="h-full">
+                <TestimonialCard testimonial={testimonial} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
         {/* Similar Cars Section */}
         {similarCars.length > 0 && (
