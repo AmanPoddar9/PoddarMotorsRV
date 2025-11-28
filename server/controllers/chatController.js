@@ -35,17 +35,27 @@ async function executeInventorySearch(args) {
   try {
     console.log("🔍 AI Search Args:", JSON.stringify(args, null, 2));
     
-    // Note: 'status' field is not in the schema, so removing it for now to avoid filtering out all cars
-    // If you add a status field later, uncomment the next line
-    // const query = { status: 'Active' };
     const query = {};
 
     if (args.brand) query.brand = { $regex: args.brand, $options: 'i' };
     if (args.model) query.model = { $regex: args.model, $options: 'i' };
     if (args.fuelType) query.fuelType = { $regex: args.fuelType, $options: 'i' };
     
-    // FIX: Schema uses 'transmissionType', not 'transmission'
-    if (args.transmission) query.transmissionType = { $regex: args.transmission, $options: 'i' };
+    // SMART MAPPING: Map user terms to DB values
+    // DB uses: "MT" (Manual), "AMT" (Automatic), "CVT" (Automatic), "IMT" (Manual-ish)
+    if (args.transmission) {
+      const trans = args.transmission.toLowerCase();
+      if (trans.includes('auto')) {
+        // Match AMT, CVT, Automatic, AT
+        query.transmissionType = { $regex: 'AMT|CVT|Auto|AT', $options: 'i' };
+      } else if (trans.includes('manual')) {
+        // Match MT, Manual, IMT
+        query.transmissionType = { $regex: 'MT|Manual|IMT', $options: 'i' };
+      } else {
+        // Fallback for exact matches
+        query.transmissionType = { $regex: args.transmission, $options: 'i' };
+      }
+    }
     
     if (args.type) query.type = { $regex: args.type, $options: 'i' };
     if (args.year) query.year = { $gte: args.year };
@@ -72,7 +82,8 @@ async function executeInventorySearch(args) {
            $or: [
              { model: { $regex: args.model, $options: 'i' } },
              { brand: { $regex: args.model, $options: 'i' } },
-             { variant: { $regex: args.model, $options: 'i' } }
+             { variant: { $regex: args.model, $options: 'i' } },
+             { title: { $regex: args.model, $options: 'i' } } // Also check title if it exists
            ]
          };
          const broadListings = await Listing.find(broadQuery).select('brand model variant year price').limit(3);
