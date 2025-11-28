@@ -2,15 +2,9 @@ const OpenAI = require('openai');
 const Listing = require('../models/listing');
 
 // Initialize OpenAI only if API key is provided
-let openai = null;
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-} else {
-  console.warn('⚠️  OpenAI API key not configured. Chatbot will return a fallback message.');
-}
-
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // Tool Definition
 const tools = [
@@ -49,17 +43,13 @@ async function executeInventorySearch(args) {
     if (args.fuelType) query.fuelType = { $regex: args.fuelType, $options: 'i' };
     
     // SMART MAPPING: Map user terms to DB values
-    // DB uses: "MT" (Manual), "AMT" (Automatic), "CVT" (Automatic), "IMT" (Manual-ish)
     if (args.transmission) {
       const trans = args.transmission.toLowerCase();
       if (trans.includes('auto')) {
-        // Match AMT, CVT, Automatic, AT
         query.transmissionType = { $regex: 'AMT|CVT|Auto|AT', $options: 'i' };
       } else if (trans.includes('manual')) {
-        // Match MT, Manual, IMT
         query.transmissionType = { $regex: 'MT|Manual|IMT', $options: 'i' };
       } else {
-        // Fallback for exact matches
         query.transmissionType = { $regex: args.transmission, $options: 'i' };
       }
     }
@@ -76,30 +66,27 @@ async function executeInventorySearch(args) {
     console.log("🔍 MongoDB Query:", JSON.stringify(query, null, 2));
 
     const listings = await Listing.find(query)
-      .select('brand model variant year price fuelType transmissionType kmDriven color images')
-      .limit(5);
+      // COST OPTIMIZATION: Return MINIMAL fields only
+      .select('brand model variant year price transmissionType')
+      .limit(3); // Reduced from 5 to 3
 
     console.log(`✅ Found ${listings.length} cars`);
 
     if (listings.length === 0) {
-      // Fallback: If specific search fails, try a broader search
-      if (args.model) {
-         console.log("⚠️ No exact match, trying broader search for model:", args.model);
-         const broadQuery = { 
-           $or: [
-             { model: { $regex: args.model, $options: 'i' } },
-             { brand: { $regex: args.model, $options: 'i' } },
-             { variant: { $regex: args.model, $options: 'i' } },
-             { title: { $regex: args.model, $options: 'i' } } // Also check title if it exists
-           ]
-         };
-         const broadListings = await Listing.find(broadQuery).select('brand model variant year price').limit(3);
-         if (broadListings.length > 0) return JSON.stringify(broadListings);
-      }
-      return "No cars found matching these criteria. Suggest checking other similar options.";
+      return "No cars found matching these criteria.";
     }
 
-    return JSON.stringify(listings);
+    // COST OPTIMIZATION: Return compact format
+    const compactResults = listings.map(car => ({
+      brand: car.brand,
+      model: car.model,
+      variant: car.variant,
+      year: car.year,
+      price: car.price,
+      transmission: car.transmissionType
+    }));
+
+    return JSON.stringify(compactResults);
   } catch (error) {
     console.error("❌ Search Error:", error);
     return "Error searching inventory.";
@@ -110,32 +97,32 @@ exports.chat = async (req, res) => {
   try {
     const { messages } = req.body;
 
-    const systemPrompt = `
-      You are "Poddar AI", the smart sales assistant for Poddar Motors Real Value in Ranchi.
-      
-      YOUR GOAL: Help customers find the perfect used car from our REAL inventory.
-      
-      CAPABILITIES:
-      - You have a tool 'search_inventory' to check our live database.
-      - ALWAYS use this tool when a user asks about available cars, prices, or specific models.
-      - Do NOT guess. If the tool returns no results, say so politely.
-      
-      RESPONSE GUIDELINES:
-      - When showing cars, mention: Year, Brand, Model, Variant, and Price (in Lakhs/Crores).
-      - Be concise and professional.
-      - If a user shows interest, ask for their name/number to schedule a test drive.
-      - We offer up to 90% finance and have a full service workshop.
-    `;
+    // COST OPTIMIZATION: Limit context to last 4 messages (down from 10)
+    const limitedMessages = messages.slice(-4);
+
+    // COST OPTIMIZATION: Simplified system prompt
+    const systemPrompt = `You are Poddar AI for Poddar Motors in Ranchi. Help customers find used cars.
+
+TOOLS: Use 'search_inventory' to check real inventory.
+
+RULES:
+- Be brief and friendly
+- When user asks about cars, search the database
+- Show: Brand, Model, Year, Price (in Lakhs)
+- If interested, ask for contact details
+- We offer 90% finance and have a workshop`;
 
     // 1. First Call: Check if AI wants to use a tool
+    // COST OPTIMIZATION: Using gpt-4o-mini (10x cheaper than gpt-3.5-turbo)
     const runner = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini", // Switched from gpt-3.5-turbo
       messages: [
         { role: "system", content: systemPrompt },
-        ...messages
+        ...limitedMessages
       ],
       tools: tools,
       tool_choice: "auto",
+      max_tokens: 200, // Limit response length
     });
 
     const responseMessage = runner.choices[0].message;
@@ -152,10 +139,10 @@ exports.chat = async (req, res) => {
 
         // 3. Second Call: Send results back to AI for final answer
         const finalResponse = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
             { role: "system", content: systemPrompt },
-            ...messages,
+            ...limitedMessages,
             responseMessage, // The tool call request
             {
               role: "tool",
@@ -164,6 +151,7 @@ exports.chat = async (req, res) => {
               content: searchResults,
             },
           ],
+          max_tokens: 200,
         });
 
         return res.json({
