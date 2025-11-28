@@ -8,7 +8,7 @@ const Listing = require('../models/listing');
 // Helper to create JWT
 const createToken = (customer) => {
   return jwt.sign(
-    { id: customer._id, role: 'customer', mobile: customer.mobile },
+    { id: customer._id, role: 'customer', mobile: customer.mobile, name: customer.name },
     process.env.JWT_SECRET,
     { expiresIn: '30d' }
   );

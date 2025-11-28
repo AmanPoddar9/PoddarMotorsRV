@@ -23,15 +23,24 @@ export const CustomerProvider = ({ children }) => {
       const res = await axios.get(`${API_URL}/api/customer/me`, {
         withCredentials: true
       })
+      
       if (res.data.user) {
-        // Fetch full profile if token is valid
-        await fetchProfile()
+        // Optimistically set customer with basic info from token
+        setCustomer(res.data.user)
+        
+        // Fetch full profile in background - if it fails, we still have basic auth
+        try {
+          await fetchProfile()
+        } catch (err) {
+          console.error('Background profile fetch failed:', err)
+          // Do NOT logout user here - they are still authenticated
+        }
       } else {
         setCustomer(null)
-        setLoading(false)
       }
     } catch (error) {
       setCustomer(null)
+    } finally {
       setLoading(false)
     }
   }
