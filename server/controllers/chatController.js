@@ -33,12 +33,20 @@ const tools = [
 // Helper to execute the search
 async function executeInventorySearch(args) {
   try {
-    const query = { status: 'Active' };
+    console.log("🔍 AI Search Args:", JSON.stringify(args, null, 2));
+    
+    // Note: 'status' field is not in the schema, so removing it for now to avoid filtering out all cars
+    // If you add a status field later, uncomment the next line
+    // const query = { status: 'Active' };
+    const query = {};
 
     if (args.brand) query.brand = { $regex: args.brand, $options: 'i' };
     if (args.model) query.model = { $regex: args.model, $options: 'i' };
     if (args.fuelType) query.fuelType = { $regex: args.fuelType, $options: 'i' };
-    if (args.transmission) query.transmission = { $regex: args.transmission, $options: 'i' };
+    
+    // FIX: Schema uses 'transmissionType', not 'transmission'
+    if (args.transmission) query.transmissionType = { $regex: args.transmission, $options: 'i' };
+    
     if (args.type) query.type = { $regex: args.type, $options: 'i' };
     if (args.year) query.year = { $gte: args.year };
     
@@ -48,17 +56,34 @@ async function executeInventorySearch(args) {
       if (args.maxPrice) query.price.$lte = args.maxPrice;
     }
 
+    console.log("🔍 MongoDB Query:", JSON.stringify(query, null, 2));
+
     const listings = await Listing.find(query)
-      .select('brand model variant year price fuelType transmission kmDriven color images')
-      .limit(5); // Limit to 5 best matches
+      .select('brand model variant year price fuelType transmissionType kmDriven color images')
+      .limit(5);
+
+    console.log(`✅ Found ${listings.length} cars`);
 
     if (listings.length === 0) {
+      // Fallback: If specific search fails, try a broader search
+      if (args.model) {
+         console.log("⚠️ No exact match, trying broader search for model:", args.model);
+         const broadQuery = { 
+           $or: [
+             { model: { $regex: args.model, $options: 'i' } },
+             { brand: { $regex: args.model, $options: 'i' } },
+             { variant: { $regex: args.model, $options: 'i' } }
+           ]
+         };
+         const broadListings = await Listing.find(broadQuery).select('brand model variant year price').limit(3);
+         if (broadListings.length > 0) return JSON.stringify(broadListings);
+      }
       return "No cars found matching these criteria. Suggest checking other similar options.";
     }
 
     return JSON.stringify(listings);
   } catch (error) {
-    console.error("Search Error:", error);
+    console.error("❌ Search Error:", error);
     return "Error searching inventory.";
   }
 }
