@@ -123,6 +123,7 @@ const Navbar = () => {
                 
                 {showMoreDropdown && (
                   <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-custom-jet border border-white/10 rounded-xl shadow-2xl overflow-hidden py-2 animate-fadeIn">
+                    <Link href="/find-my-car" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Find My Car</Link>
                     <Link href="/buying-guide" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Buying Guide</Link>
                     <Link href="/finance" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Finance</Link>
                     <Link href="/scrap" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Scrap Car</Link>
@@ -239,6 +240,7 @@ const Navbar = () => {
             
             <div className="w-16 h-px bg-white/10 my-2"></div>
             
+            <MobileNavLink href="/find-my-car" text="Find My Car" />
             <MobileNavLink href="/buying-guide" text="Buying Guide" />
             <MobileNavLink href="/finance" text="Finance" />
             <MobileNavLink href="/scrap" text="Scrap Car" />
