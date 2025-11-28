@@ -40,6 +40,10 @@ const CreateListing = () => {
     location: '',
     featured: false,
     selectedFeatures: [],
+    isFeaturedDeal: false,
+    dealEndDate: '',
+    originalPrice: '',
+    emiStarting: '',
   })
   let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
@@ -69,6 +73,10 @@ const CreateListing = () => {
         location: currListing.location,
         featured: currListing.featured,
         selectedFeatures: currListing.features,
+        isFeaturedDeal: currListing.isFeaturedDeal || false,
+        dealEndDate: currListing.dealEndDate ? new Date(currListing.dealEndDate).toISOString().slice(0, 16) : '',
+        originalPrice: currListing.originalPrice || '',
+        emiStarting: currListing.emiStarting || '',
       })
     }
   }, [currListing])
@@ -680,6 +688,81 @@ const CreateListing = () => {
               />
               <span className="text-gray-700">Featured</span>
             </label>
+          </div>
+          
+          {/* Deal of the Day Section */}
+          <div className="border-t border-gray-300 pt-6 mt-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Deal of the Day Settings</h2>
+            
+            <div className="mb-4">
+              <label htmlFor="isFeaturedDeal" className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isFeaturedDeal"
+                  name="isFeaturedDeal"
+                  checked={formData.isFeaturedDeal}
+                  onChange={() =>
+                    setFormData({ ...formData, isFeaturedDeal: !formData.isFeaturedDeal })
+                  }
+                  className="mr-2"
+                />
+                <span className="text-gray-700 font-medium">Mark as Deal of the Day</span>
+              </label>
+              <p className="text-sm text-gray-500 ml-6">This car will appear in the "Deals of the Day" section</p>
+            </div>
+            
+            {formData.isFeaturedDeal && (
+              <div className="space-y-4 ml-6 p-4 bg-yellow-50 rounded-md">
+                <div>
+                  <label htmlFor="dealEndDate" className="block font-medium text-gray-700">
+                    Deal End Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    id="dealEndDate"
+                    name="dealEndDate"
+                    value={formData.dealEndDate}
+                    onChange={handleInputChange}
+                    className="mt-1 p-2 w-full border rounded-md text-black"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">Leave empty for 24-hour countdown</p>
+                </div>
+                
+                <div>
+                  <label htmlFor="originalPrice" className="block font-medium text-gray-700">
+                    Original Price (for discount calculation)
+                  </label>
+                  <input
+                    type="number"
+                    id="originalPrice"
+                    name="originalPrice"
+                    min="0"
+                    value={formData.originalPrice}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 550000"
+                    className="mt-1 p-2 w-full border rounded-md text-black"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">Used to show discount percentage (leave empty to hide)</p>
+                </div>
+                
+                <div>
+                  <label htmlFor="emiStarting" className="block font-medium text-gray-700">
+                    EMI Starting From
+                  </label>
+                  <input
+                    type="number"
+                    id="emiStarting"
+                    name="emiStarting"
+                    min="0"
+                    value={formData.emiStarting}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 12000"
+                    className="mt-1 p-2 w-full border rounded-md text-black"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">Monthly EMI amount (optional)</p>
+                </div>
+              </div>
+            )}
           </div>
           {formData && (
             <div>
