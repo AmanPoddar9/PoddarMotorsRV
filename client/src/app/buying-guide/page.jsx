@@ -313,14 +313,25 @@ export default function BuyingGuidePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             {/* Steps */}
-            <div className="relative">
+            <div className="relative md:pl-32">
               {/* Vertical Line - Desktop */}
-              <div className="hidden md:block absolute left-12 top-0 bottom-0 w-0.5 bg-gradient-to-b from-custom-accent via-custom-accent/50 to-transparent"></div>
+              <div className="hidden md:block absolute left-20 top-0 bottom-0 w-0.5 bg-gradient-to-b from-custom-accent via-custom-accent/50 to-transparent"></div>
 
               {buyingSteps.map((step, index) => (
                 <div key={step.number} className="relative mb-8 md:mb-12">
+                  {/* Icon Circle - Desktop - Positioned on the left side */}
+                  <div className="hidden md:block absolute -left-28 top-6">
+                    <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all duration-300 ${
+                      expandedStep === step.number
+                        ? 'bg-custom-accent shadow-lg shadow-custom-accent/50 scale-110'
+                        : 'bg-custom-jet border-2 border-white/20'
+                    }`}>
+                      {step.icon}
+                    </div>
+                  </div>
+
                   {/* Step Card */}
-                  <div className="md:ml-28">
+                  <div className="md:ml-0">
                     <div
                       className={`glass-dark border rounded-2xl overflow-hidden transition-all duration-300 ${
                         expandedStep === step.number
@@ -334,17 +345,6 @@ export default function BuyingGuidePage() {
                         className="w-full p-6 text-left"
                       >
                         <div className="flex items-start gap-4">
-                          {/* Icon Circle - Desktop */}
-                          <div className="hidden md:flex absolute left-0 w-24 h-24 items-center justify-center">
-                            <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all duration-300 ${
-                              expandedStep === step.number
-                                ? 'bg-custom-accent shadow-lg shadow-custom-accent/50 scale-110'
-                                : 'bg-custom-jet border-2 border-white/20'
-                            }`}>
-                              {step.icon}
-                            </div>
-                          </div>
-
                           {/* Mobile Icon */}
                           <div className="md:hidden flex-shrink-0">
                             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl ${
