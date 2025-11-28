@@ -3,8 +3,8 @@ import { AntdRegistry } from '@ant-design/nextjs-registry'
 import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import PhoneButton from './components/PhoneButton'
 import WhatsAppWidget from './components/WhatsAppWidget'
+import ChatBot from './components/ChatBot'
 import { CustomerProvider } from './utils/customerContext'
 import Script from 'next/script'
 
@@ -111,8 +111,8 @@ export default function RootLayout({ children }) {
             <div className="pt-16 has-[.workshop-layout]:pt-0">
                {children}
             </div>
-            <PhoneButton />
             <WhatsAppWidget />
+            <ChatBot />
             <Footer />
           </CustomerProvider>
         </AntdRegistry>
