@@ -51,13 +51,27 @@ const Contact = () => {
         </div>
 
         <div className="mt-8 flex space-x-4">
-          <a href="https://www.google.com/maps/dir//REAL+VALUE+ranchi+google+business+page/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x39f4e17d184b0973:0xbc6d6be675cca0f0?sa=X&ved=1t:3061&ictx=111">
+          <a 
+            href="https://www.google.com/maps/dir//REAL+VALUE+ranchi+google+business+page/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x39f4e17d184b0973:0xbc6d6be675cca0f0?sa=X&ved=1t:3061&ictx=111"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.fbq) {
+                window.fbq('track', 'Contact', { content_name: 'Get Directions' })
+              }
+            }}
+          >
             <button className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
               <FiMapPin className="text-xl mr-2" />
               Get Directions
             </button>
           </a>
-          <a href="https://wa.me/+918873002702?text=Hi there looking forward to connecting with you.">
+          <a 
+            href="https://wa.me/+918873002702?text=Hi there looking forward to connecting with you."
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.fbq) {
+                window.fbq('track', 'Contact', { content_name: 'WhatsApp Chat' })
+              }
+            }}
+          >
             <button className="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
               <FaWhatsapp className="text-xl mr-2" />
               Chat with us

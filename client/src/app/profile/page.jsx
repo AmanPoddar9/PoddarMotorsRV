@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser } from 'react-icons/fa'
 import axios from 'axios'
 import ProfileRequirements from '../components/profile/ProfileRequirements'
+import Image from 'next/image'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
@@ -200,9 +201,11 @@ export default function ProfilePage() {
                         <div key={idx} className="bg-custom-jet p-6 rounded-xl border border-white/10">
                           <div className="flex items-start gap-4">
                             {booking.listing?.images?.[0] && (
-                              <img 
+                              <Image 
                                 src={booking.listing.images[0]} 
                                 alt="Car" 
+                                width={96}
+                                height={96}
                                 className="w-24 h-24 object-cover rounded-lg"
                               />
                             )}
@@ -265,11 +268,15 @@ export default function ProfilePage() {
                     {customer.wishlist.filter(item => item && item.brand).map((car, idx) => (
                       <div key={idx} className="bg-custom-jet p-4 rounded-xl border border-white/10">
                         {car.images?.[0] && (
-                          <img 
-                            src={car.images[0]} 
-                            alt="Car" 
-                            className="w-full h-48 object-cover rounded-lg mb-4"
-                          />
+                          <div className="relative w-full h-48 mb-4">
+                            <Image 
+                              src={car.images[0]} 
+                              alt="Car" 
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              className="object-cover rounded-lg"
+                            />
+                          </div>
                         )}
                         <h3 className="text-lg font-bold text-white">{car.brand} {car.model}</h3>
                         <p className="text-custom-accent font-bold mt-2">₹{car.price?.toLocaleString()}</p>

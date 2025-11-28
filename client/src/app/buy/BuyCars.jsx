@@ -241,6 +241,14 @@ export default function Buy({ allListings }) {
     try {
       const response = await axios.post(url + 'api/listings/filtered', obj)
       setListings(response.data)
+      
+      // Facebook Pixel: Search event
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'Search', {
+          search_string: searchQuery || 'filtered',
+          content_category: 'Cars',
+        })
+      }
     } catch (e) {
       console.log(e.message)
     }

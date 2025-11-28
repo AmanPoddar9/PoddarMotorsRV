@@ -85,6 +85,15 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
           carType: '',
           preferredPickupDate: '',
         })
+        
+        if (typeof window !== 'undefined' && window.fbq) {
+            window.fbq('track', 'Lead', {
+                content_name: 'Scrap Request',
+                content_category: 'Scrap',
+                value: 0,
+                currency: 'INR'
+            })
+        }
       } else {
         throw new Error('Submission failed')
       }

@@ -16,6 +16,7 @@ import 'swiper/css/pagination'
 import 'swiper/css/thumbs'
 import Image from 'next/image'
 import Link from 'next/link'
+import Head from 'next/head'
 
 // Icons
 import { BiCylinder } from 'react-icons/bi'
@@ -96,6 +97,17 @@ const page = ({ params: { slug } }) => {
       )
       setInWishlist(!inWishlist)
       fetchProfile()
+      
+      // Facebook Pixel: AddToWishlist event
+      if (!inWishlist && typeof window !== 'undefined' && window.fbq && carData) {
+        window.fbq('track', 'AddToWishlist', {
+          content_name: `${carData.brand} ${carData.model}`,
+          content_ids: [carData._id],
+          content_type: 'product',
+          value: carData.price,
+          currency: 'INR',
+        })
+      }
     } catch (error) {
       console.error('Error toggling wishlist:', error)
     } finally {
@@ -126,6 +138,15 @@ const page = ({ params: { slug } }) => {
             setOfferOpen(false)
             setOfferSuccess(false)
         }, 3000)
+        
+        if (typeof window !== 'undefined' && window.fbq) {
+            window.fbq('track', 'Lead', {
+                content_name: 'Make Offer',
+                content_category: 'Offer',
+                value: data.offerPrice,
+                currency: 'INR'
+            })
+        }
     } catch (err) {
         console.log(err)
         setError(err)
@@ -175,6 +196,15 @@ const page = ({ params: { slug } }) => {
         setTimeout(() => {
           setOpen(false)
         }, 2500)
+        
+        if (typeof window !== 'undefined' && window.fbq) {
+            window.fbq('track', 'Lead', {
+                content_name: 'Test Drive Booking',
+                content_category: 'Test Drive',
+                value: 0,
+                currency: 'INR'
+            })
+        }
       })
       .catch((err) => {
         console.log(err)
@@ -229,6 +259,19 @@ const page = ({ params: { slug } }) => {
     }
   }, [carData])
 
+  // Facebook Pixel ViewContent
+  useEffect(() => {
+    if (carData && typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'ViewContent', {
+        content_name: `${carData.brand} ${carData.model} ${carData.variant}`,
+        content_ids: [carData._id],
+        content_type: 'product',
+        value: carData.price,
+        currency: 'INR',
+      })
+    }
+  }, [carData])
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-10 h-[100vh] bg-custom-black">
@@ -243,6 +286,102 @@ const page = ({ params: { slug } }) => {
 
   return (
     <div className="bg-custom-black overflow-x-hidden individual-buy-section min-h-screen">
+      {carData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Vehicle',
+              name: `${carData.year} ${carData.brand} ${carData.model} ${carData.variant}`,
+              image: carData.images,
+              description: `Buy used ${carData.year} ${carData.brand} ${carData.model} in Ranchi. ${carData.fuelType}, ${carData.kmDriven}km driven.`,
+              brand: {
+                '@type': 'Brand',
+                name: carData.brand,
+              },
+              model: carData.model,
+              vehicleConfiguration: carData.variant,
+              productionDate: carData.year,
+              fuelType: carData.fuelType,
+              mileageFromOdometer: {
+                '@type': 'QuantitativeValue',
+                value: carData.kmDriven,
+                unitCode: 'KMT',
+              },
+              offers: {
+                '@type': 'Offer',
+                url: `https://poddarmotors.com/buy/${slug}`,
+                priceCurrency: 'INR',
+                price: carData.price,
+                itemCondition: 'https://schema.org/UsedCondition',
+                availability: 'https://schema.org/InStock',
+                seller: {
+                  '@type': 'AutoDealer',
+                  name: 'Poddar Motors Real Value',
+                },
+              },
+            }),
+          }}
+        />
+      )}
+      
+      {/* Enhanced Meta Tags & Breadcrumb Schema */}
+      {carData && (
+        <Head>
+          <title>{`${carData.year} ${carData.brand} ${carData.model} ${carData.variant} - ₹${AmountWithCommas(carData.price)} | Poddar Motors`}</title>
+          <meta name="description" content={`Buy ${carData.year} ${carData.brand} ${carData.model} in Ranchi. ${carData.fuelType}, ${carData.transmissionType}, ${carData.kmDriven}km driven. Best price guaranteed!`} />
+          <link rel="canonical" href={`https://poddarmotors.com/buy/${slug}`} />
+          
+          {/* Open Graph */}
+          <meta property="og:type" content="product" />
+          <meta property="og:url" content={`https://poddarmotors.com/buy/${slug}`} />
+          <meta property="og:title" content={`${carData.year} ${carData.brand} ${carData.model} - ₹${AmountWithCommas(carData.price)}`} />
+          <meta property="og:description" content={`Buy ${carData.year} ${carData.brand} ${carData.model} in Ranchi. ${carData.fuelType}, ${carData.kmDriven}km. Book test drive now!`} />
+          <meta property="og:image" content={carData.images?.[0] || 'https://poddarmotors.com/logo.png'} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="product:price:amount" content={carData.price} />
+          <meta property="product:price:currency" content="INR" />
+          
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${carData.year} ${carData.brand} ${carData.model} - ₹${AmountWithCommas(carData.price)}`} />
+          <meta name="twitter:description" content={`Buy ${carData.year} ${carData.brand} ${carData.model} in Ranchi. Book test drive!`} />
+          <meta name="twitter:image" content={carData.images?.[0] || 'https://poddarmotors.com/logo.png'} />
+          
+          {/* Breadcrumb Schema */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://poddarmotors.com',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Buy Cars',
+                    item: 'https://poddarmotors.com/buy',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: `${carData.brand} ${carData.model}`,
+                    item: `https://poddarmotors.com/buy/${slug}`,
+                  },
+                ],
+              }),
+            }}
+          />
+        </Head>
+      )}
       <div className="pt-6 mx-auto max-w-screen-xl">
         <nav aria-label="Breadcrumb" className="mb-5">
           <ol
@@ -770,10 +909,12 @@ const page = ({ params: { slug } }) => {
                          <div key={car._id} className="group relative">
                             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                                 {car.images && car.images[0] ? (
-                                    <img
+                                    <Image
                                         src={car.images[0]}
                                         alt={car.model}
-                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                        className="object-cover object-center"
                                     />
                                 ) : (
                                     <div className="h-full w-full flex items-center justify-center bg-gray-800 text-gray-500">

@@ -1,0 +1,26 @@
+{
+  "name": "Poddar Motors Real Value",
+  "short_name": "Poddar Motors",
+  "description": "Trusted used car dealer in Ranchi, Jharkhand",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#F59E0B",
+  "icons": [
+    {
+      "src": "/icon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

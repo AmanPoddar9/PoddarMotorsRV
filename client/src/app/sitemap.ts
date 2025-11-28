@@ -40,5 +40,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching blogs for sitemap:', error);
   }
 
-  return [...staticPages, ...blogPages];
+  // Fetch all car listings
+  let carPages: MetadataRoute.Sitemap = [];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const response = await axios.get(`${apiUrl}/api/listings`);
+    const cars = response.data;
+    
+    carPages = cars.map((car: any) => ({
+      url: `${baseUrl}/buy/${car.slug || car._id}`,
+      lastModified: new Date(car.updatedAt || car.createdAt),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    }));
+  } catch (error) {
+    console.error('Error fetching car listings for sitemap:', error);
+  }
+
+  return [...staticPages, ...blogPages, ...carPages];
 }
