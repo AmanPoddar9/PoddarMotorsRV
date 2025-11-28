@@ -149,7 +149,7 @@ const Navbar = () => {
                     <div className="w-8 h-8 rounded-full bg-custom-accent/20 flex items-center justify-center text-custom-accent group-hover:bg-custom-accent group-hover:text-custom-black transition-colors">
                       <FaUser size={14} />
                     </div>
-                    <span className="text-white font-medium text-sm truncate max-w-[100px]">{customer.name.split(' ')[0]}</span>
+                    <span className="text-white font-medium text-sm truncate max-w-[100px]">{customer.name?.split(' ')[0] || 'User'}</span>
                     {customer.primeStatus?.isActive && (
                       <FaCrown className="text-yellow-400 text-xs" />
                     )}

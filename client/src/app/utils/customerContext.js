@@ -26,7 +26,9 @@ export const CustomerProvider = ({ children }) => {
       
       if (res.data.user) {
         // Optimistically set customer with basic info from token
-        setCustomer(res.data.user)
+        // Fallback for old tokens that don't have name
+        const user = { ...res.data.user, name: res.data.user.name || 'Valued Customer' }
+        setCustomer(user)
         
         // Fetch full profile in background - if it fails, we still have basic auth
         try {
