@@ -215,6 +215,23 @@ exports.getFeaturedListings = async (req, res) => {
   }
 };
 
+exports.getDealListings = async (req, res) => {
+  try {
+    const now = new Date();
+    const listings = await Listing.find({
+      isFeaturedDeal: true,
+      $or: [
+        { dealEndDate: { $gt: now } },
+        { dealEndDate: null }
+      ]
+    }).limit(6);
+    res.json(listings);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
 exports.getFilteredListings = async (req, res) => {
   try {
     const filters = req.body;

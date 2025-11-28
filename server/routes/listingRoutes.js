@@ -19,6 +19,9 @@ router.get('/', listingController.getAllListings)
 
 router.get('/featured', listingController.getFeaturedListings)
 
+router.get('/deals', listingController.getDealListings)
+
+
 router.get('/brands', listingController.getAllBrands)
 router.get('/types', listingController.getAllTypes)
 router.get('/fuel', listingController.getAllFuelTypes)

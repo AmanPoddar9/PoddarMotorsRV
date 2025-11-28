@@ -29,6 +29,11 @@ const listingSchema = new mongoose.Schema({
   fuelTank: { type: Number, required: false },
   gears: { type: Number, required: false },
   mileage: { type: Number, required: false },
+  // Deal-related fields
+  isFeaturedDeal: { type: Boolean, default: false },
+  dealEndDate: { type: Date, required: false },
+  originalPrice: { type: Number, required: false },
+  emiStarting: { type: Number, required: false },
 })
 
 const Listing = mongoose.model('Listing', listingSchema)

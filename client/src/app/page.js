@@ -10,6 +10,8 @@ import Faq from './components/Faq'
 import Contact from './components/Contact'
 import { homeFAQ } from './data/homeFAQs'
 import ButtonRows from './components/ButtonRows'
+import DealsOfTheDay from './components/DealsOfTheDay'
+import SocialProof from './components/SocialProof'
 import API_URL from './config/api'
 
 
@@ -45,6 +47,7 @@ export default async function Home() {
 
       <LandingHero />
       <FeaturedCars featuredCarData={data} />
+      <DealsOfTheDay />
       <ButtonRows />
       <Features />
       <Offers />
@@ -52,6 +55,7 @@ export default async function Home() {
       <Testimonials />
       <Faq FAQs={homeFAQ} title="FAQs while buying a used car" />
       {/* <Contact /> */}
+      <SocialProof />
     </div>
   )
 }

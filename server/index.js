@@ -91,6 +91,9 @@ app.use('/api/twilio', twilioRoutes);
 app.use('/api/customer-offers', customerOfferRoutes);
 app.use('/api/customer', require('./routes/customerRoutes')); // Customer Ecosystem
 app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/price-alerts', require('./routes/priceAlerts'));
+app.use('/api/activities', require('./routes/activities'));
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

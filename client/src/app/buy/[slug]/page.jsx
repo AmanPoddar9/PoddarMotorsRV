@@ -42,6 +42,8 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import { useCustomer } from '../../utils/customerContext'
 // import { CiCreditCard1 } from "react-icons/ci";
 import API_URL from '../../config/api'
+import { ViewCounter } from '../../components/SocialProof'
+import PriceAlerts from '../../components/PriceAlerts'
 
 const page = ({ params: { slug } }) => {
   // API call to this route: 662bed523ec1ae8416673630
@@ -394,10 +396,9 @@ const page = ({ params: { slug } }) => {
               </span>
             </p>
             
-            {/* Urgency Notification */}
-            <div className="mt-2 flex items-center text-red-500 font-medium animate-pulse">
-                <span className="mr-2">🔥</span>
-                {viewers} people are viewing this car right now
+            {/* Real-time View Counter */}
+            <div className="mt-4">
+              <ViewCounter listingId={carData._id} initialCount={carData.viewCount || 0} />
             </div>
 
             <div className="flex justify-between text-base mt-8">
@@ -426,11 +427,20 @@ const page = ({ params: { slug } }) => {
             </button>
             
             <button
-              className="mt-4 flex w-full items-center justify-center md:rounded-md border border-white/20 text-white bg-custom-jet/50 px-8 py-3 text-base font-bold hover:bg-custom-jet hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 md:static rounded-none mb-16 md:mb-0"
+              className="mt-4 flex w-full items-center gap-2 justify-center md:rounded-md border border-white/20 text-white bg-custom-jet/50 px-8 py-3 text-base font-bold hover:bg-custom-jet hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 md:static rounded-none"
               onClick={() => setOfferOpen(true)}
             >
               Make an Offer
             </button>
+
+            {/* Price Alerts */}
+            <div className="mt-4">
+              <PriceAlerts 
+                listingId={carData._id} 
+                currentPrice={carData.price}
+                carName={`${carData.brand} ${carData.model} ${carData.variant}`}
+              />
+            </div>
 
             {/* Make Offer Modal */}
             <Modal
