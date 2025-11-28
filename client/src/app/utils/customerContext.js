@@ -25,7 +25,10 @@ export const CustomerProvider = ({ children }) => {
       })
       if (res.data.user) {
         // Fetch full profile if token is valid
-        fetchProfile()
+        await fetchProfile()
+      } else {
+        setCustomer(null)
+        setLoading(false)
       }
     } catch (error) {
       setCustomer(null)

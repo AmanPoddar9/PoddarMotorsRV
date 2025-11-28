@@ -1,9 +1,16 @@
 const OpenAI = require('openai');
 const Listing = require('../models/listing');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI only if API key is provided
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+} else {
+  console.warn('⚠️  OpenAI API key not configured. Chatbot will return a fallback message.');
+}
+
 
 // Tool Definition
 const tools = [
