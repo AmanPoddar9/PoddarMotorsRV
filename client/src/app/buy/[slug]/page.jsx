@@ -219,29 +219,7 @@ const page = ({ params: { slug } }) => {
     ? `${API_URL}/api/listings/${slug}`
     : `${API_URL}/api/listings/slug/${slug}`
 
-  useEffect(() => {
-    axios
-      .get(getListingURL)
-      .then((res) => {
-        res.data.images = res.data.images.filter((img) => img != null)
-        setCarData(res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-        setLoading(false)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  // Similar Cars Effect
-  useEffect(() => {
-    if (carData) {
-        axios.get(`${API_URL}/api/listings`)
-            .then(res => {
-                const filtered = res.data.filter(car => 
-                    car._id !== carData._id && 
+  useEffect(() => { 
     const fetchData = async () => {
       try {
         const response = await axios.get(getListingURL)
