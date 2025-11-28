@@ -42,13 +42,22 @@ exports.signup = async (req, res) => {
     // Create token
     const token = createToken(customer);
 
-    // Set cookie
-    res.cookie('customer_auth', token, {
+    // Set cookie with proper domain configuration
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    });
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/'
+    };
+    
+    // Only set domain in production to allow cross-subdomain access
+    if (isProduction) {
+      cookieOptions.domain = '.poddarmotors.com';
+    }
+    
+    res.cookie('customer_auth', token, cookieOptions);
 
     res.status(201).json({
       message: 'Account created successfully',
@@ -81,12 +90,20 @@ exports.login = async (req, res) => {
 
     const token = createToken(customer);
 
-    res.cookie('customer_auth', token, {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 30 * 24 * 60 * 60 * 1000
-    });
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/'
+    };
+    
+    if (isProduction) {
+      cookieOptions.domain = '.poddarmotors.com';
+    }
+    
+    res.cookie('customer_auth', token, cookieOptions);
 
     res.json({
       message: 'Logged in successfully',
@@ -107,11 +124,19 @@ exports.login = async (req, res) => {
 
 // Logout
 exports.logout = (req, res) => {
-  res.clearCookie('customer_auth', {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cookieOptions = {
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    secure: process.env.NODE_ENV === 'production'
-  });
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
+    path: '/'
+  };
+  
+  if (isProduction) {
+    cookieOptions.domain = '.poddarmotors.com';
+  }
+  
+  res.clearCookie('customer_auth', cookieOptions);
   res.json({ message: 'Logged out successfully' });
 };
 
