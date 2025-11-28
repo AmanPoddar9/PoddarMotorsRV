@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
-import API_URL from '../../../../config/api'
+import API_URL from '../../../config/api'
 import { useRouter } from 'next/navigation'
 import { FaCloudUploadAlt, FaStar } from 'react-icons/fa'
 
