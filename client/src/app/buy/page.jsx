@@ -2,8 +2,9 @@ import React from 'react'
 import BuyCars from './BuyCars'
 
 export default async function Buy() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   const data = await fetch(
-    `https://poddar-motors-rv-hkxu.vercel.app/api/listings/`,
+    `${apiUrl}/api/listings/`,
     { cache: 'no-store' },
   ).then((res) => res.json())
 
