@@ -1,202 +1,156 @@
-import Head from 'next/head'
+'use client'
 import React from 'react'
+import { motion } from 'framer-motion'
+import CountUp from 'react-countup'
+import { FaCertificate, FaCar, FaUsers, FaStar, FaShieldAlt, FaHandshake, FaYoutube } from 'react-icons/fa'
 
 const Highlights = () => {
+  const stats = [
+    { icon: FaCar, label: 'Cars Sold', value: 5000, suffix: '+', color: 'from-custom-accent to-yellow-400' },
+    { icon: FaUsers, label: 'Happy Customers', value: 4500, suffix: '+', color: 'from-blue-400 to-cyan-400' },
+    { icon: FaStar, label: 'Customer Rating', value: 4.8, decimals: 1, suffix: '/5', color: 'from-orange-400 to-red-400' },
+    { icon: FaCertificate, label: 'Years in Business', value: 15, suffix: '+', color: 'from-purple-400 to-pink-400' }
+  ]
+
+  const highlights = [
+    {
+      icon: FaShieldAlt,
+      title: '242-Point Quality Check',
+      description: 'Every car undergoes rigorous inspection',
+      gradient: 'from-emerald-500 to-teal-500'
+    },
+    {
+      icon: FaHandshake,
+      title: 'Transparent Pricing',
+      description: 'No hidden costs, fair market value',
+      gradient: 'from-blue-500 to-cyan-500'
+    },
+    {
+      icon: FaCertificate,
+      title: 'Certified Pre-Owned',
+      description: 'Verified documentation & history',
+      gradient: 'from-purple-500 to-pink-500'
+    }
+  ]
+
   return (
-    <>
-      {/* SEO-optimized head section */}
-      <Head>
-        <title>Learn More from our YouTube Channel | Poddar Motors</title>
-        <meta
-          name="description"
-          content="Explore our YouTube channel for expert insights on used cars, maintenance, and auto financing. Learn tips and tricks to make informed decisions."
-        />
-        <meta property="og:type" content="video" />
-        <meta
-          property="og:title"
-          content="Learn More from our YouTube Channel"
-        />
-        <meta
-          property="og:description"
-          content="Expert insights on used cars, car maintenance, auto financing, and more."
-        />
-        <meta
-          property="og:image"
-          content="https://img.youtube.com/vi/JcqdIqcY-Jw/maxresdefault.jpg"
-        />
-        <meta property="og:url" content="https://www.poddarmotors.com" />
-        <meta name="robots" content="index, follow" />
-      </Head>
+    <section className="py-20 bg-gradient-to-b from-custom-black via-custom-jet to-custom-black relative overflow-hidden">
+      {/* Animated Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-custom-accent/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
 
-      {/* Video Section */}
-      <section className="py-20 bg-custom-black relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-custom-black via-custom-jet/20 to-custom-black pointer-events-none"></div>
-        
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-6 px-4 relative z-10">
-          <header className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-              Learn From Our <span className="text-custom-accent">YouTube Channel</span>
-            </h2>
-            <p className="text-lg text-custom-platinum max-w-3xl mx-auto">
-              Explore our YouTube channel where we share expert insights on{' '}
-              <strong className="text-white">used cars</strong>, <strong className="text-white">car maintenance</strong>,{' '}
-              <strong className="text-white">auto financing</strong>, and much more. Stay updated with
-              our latest tips and tutorials.
-            </p>
-          </header>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+            Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-custom-accent to-yellow-200">Poddar Motors?</span>
+          </h2>
+          <p className="text-lg text-custom-platinum max-w-2xl mx-auto">
+            Jharkhand's most trusted name in pre-owned cars. Quality, transparency, and customer satisfaction guaranteed.
+          </p>
+        </motion.div>
 
-          {/* Video Grid */}
-          <div
-            className="gap-6 md:gap-8 items-start"
-            style={{
-              maxWidth: '1200px',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            }}
-          >
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/JcqdIqcY-Jw?enablejsapi=1"
-                title="Used Cars Buying Tips"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Get top tips on buying used cars from our experts in this video.
-                </p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              whileHover={{ y: -5 }}
+              className="relative group"
+            >
+              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-custom-accent/30 transition-all">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 mb-4 group-hover:scale-110 transition-transform`}>
+                  <stat.icon className="w-full h-full text-white" />
+                </div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                  <CountUp end={stat.value} decimals={stat.decimals || 0} duration={2.5} suffix={stat.suffix} />
+                </div>
+                <p className="text-custom-platinum text-sm font-medium">{stat.label}</p>
               </div>
-            </div>
-
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/SoUEdK_yIqI?enablejsapi=1"
-                title="Car Maintenance Tips"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Learn essential car maintenance tips to keep your vehicle in top
-                  shape.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/bpGkFT4VUko?enablejsapi=1"
-                title="Auto Financing Explained"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Understand the ins and outs of financing your car purchase in
-                  this video.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/3kIJQBe0UPs?si=qUDDIZRAdlCb09G1"
-                title="Car Reviews - Latest Models"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Watch our expert reviews of the latest car models in the market.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/3itLjzY3EV4?si=C8zXOEkEOXoUh8y6"
-                title="Used Cars Market Insights"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Gain valuable insights into the used car market trends and
-                  opportunities.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-custom-jet/50 rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/30 transition-all duration-300 group">
-              <iframe
-                width="100%"
-                height="250"
-                src="https://www.youtube.com/embed/UKZyllAkv_w?si=6B8qDMdEzwJiFiPM"
-                title="Car Care Tips for Long-Term Performance"
-                loading="lazy"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full"
-              ></iframe>
-              <div className="p-4">
-                <p className="text-custom-platinum text-sm">
-                  Learn how to care for your car and maintain long-term
-                  performance.
-                </p>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Structured Data for SEO */}
-        <script type="application/ld+json">
-          {`{
-            "@context": "https://schema.org",
-            "@type": "VideoObject",
-            "name": "Learn More from our YouTube Channel",
-            "description": "Explore our YouTube channel for expert insights on used cars, maintenance, and auto financing.",
-            "thumbnailUrl": "https://img.youtube.com/vi/JcqdIqcY-Jw/maxresdefault.jpg",
-            "uploadDate": "2023-10-10",
-            "duration": "PT2M30S",
-            "contentUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw",
-            "embedUrl": "https://www.youtube.com/embed/JcqdIqcY-Jw"
-          }`}
-        </script>
-      </section>
-    </>
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {highlights.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15, duration: 0.5 }}
+              whileHover={{ y: -8 }}
+              className="relative group"
+            >
+              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-custom-accent/30 transition-all h-full">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} p-3.5 mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all`}>
+                  <item.icon className="w-full h-full text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-custom-accent transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-custom-platinum leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* YouTube CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative"
+        >
+          <div className="bg-gradient-to-r from-red-600/10 via-red-500/10 to-pink-600/10 backdrop-blur-sm border border-red-500/20 rounded-3xl p-8 md:p-12 text-center overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-0 left-0 w-full h-full" style={{
+                backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                backgroundSize: '30px 30px'
+              }}></div>
+            </div>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-red-600 to-pink-600 mb-6 shadow-lg shadow-red-600/30">
+                <FaYoutube className="text-4xl text-white" />
+              </div>
+              <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+                Learn More on <span className="text-red-500">YouTube</span>
+              </h3>
+              <p className="text-custom-platinum text-lg max-w-2xl mx-auto mb-8">
+                Watch expert tips on buying used cars, maintenance guides, and real customer stories on our YouTube channel.
+              </p>
+              <a
+                href="https://youtube.com/@poddarmotors"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold px-8 py-4 rounded-full hover:from-red-700 hover:to-pink-700 transition-all shadow-lg shadow-red-600/30 hover:shadow-red-600/50 hover:scale-105"
+              >
+                <FaYoutube className="text-2xl" />
+                <span>Subscribe Now</span>
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   )
 }
 
