@@ -17,9 +17,11 @@ const Testimonials = () => {
   const fetchTestimonials = async () => {
     try {
       const response = await axios.get(url + 'api/testimonials')
-      setTestimonials(response.data)
+      // API returns { success: true, data: [...] }
+      setTestimonials(response.data.data || [])
     } catch (error) {
       console.error('Error fetching testimonials:', error)
+      setTestimonials([]) // Set empty array on error
     }
   }
 
