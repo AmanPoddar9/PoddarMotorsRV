@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import API_URL from '../../../config/api'
+import API_URL from '../../config/api'
 import Link from 'next/link'
 import { FaPlus, FaTrash, FaYoutube, FaInstagram, FaExternalLinkAlt } from 'react-icons/fa'
 

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import API_URL from '../../../../config/api'
+import API_URL from '../../../config/api'
 import { useRouter } from 'next/navigation'
 import { FaYoutube, FaInstagram, FaLink } from 'react-icons/fa'
 

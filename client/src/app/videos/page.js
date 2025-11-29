@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import API_URL from '../../config/api'
+import API_URL from '../config/api'
 import VideoCard from '../components/VideoCard'
 import { FaYoutube, FaInstagram, FaPlayCircle } from 'react-icons/fa'
 import { motion } from 'framer-motion'
