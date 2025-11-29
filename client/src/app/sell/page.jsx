@@ -1,23 +1,22 @@
 'use client'
 import { useState, useEffect } from 'react'
-import styles from '../styles/Sell.module.css'
 import axios from 'axios'
 import Head from 'next/head'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import FaqCard from '../components/FaqCard'
+import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   FaCheckCircle,
-  FaPhone,
-  FaMapMarkerAlt,
-  FaCarSide,
-  FaFileAlt,
-  FaHandshake,
+  FaCar,
+  FaMoneyBillWave,
+  FaFileContract,
+  FaChevronDown,
+  FaChevronUp,
+  FaPlus,
+  FaMinus
 } from 'react-icons/fa'
-import { FaCoins, FaClipboardCheck, FaMoneyCheckAlt } from 'react-icons/fa'
-import FeaturedCars from '../FeaturedCars'
 import { sellFAQData } from '../data/sellFAQs'
-import Faq from '../components/Faq'
+
+// Images
 import landing from '../../images/sell/landing.jpeg'
 import steps1 from '../../images/sell/steps1.jpeg'
 import steps2 from '../../images/sell/steps2.jpeg'
@@ -26,13 +25,11 @@ import steps4 from '../../images/sell/steps4.jpeg'
 import why1 from '../../images/sell/why1.jpeg'
 import why2 from '../../images/sell/why2.jpeg'
 import why3 from '../../images/sell/why3.jpeg'
-import Image from 'next/image'
 
 const SellRequestForm = () => {
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = "http://localhost:5000/";
-  const [showForm, setShowForm] = useState(false)
-  const [showModal, setShowModal] = useState(false)
+  const url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+  // const url = "http://localhost:5000/";
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -47,17 +44,13 @@ const SellRequestForm = () => {
     price: '',
   })
 
-  useEffect(() => {
-    if (showForm) {
-      document.body.classList.add('no-scroll')
-    } else {
-      document.body.classList.remove('no-scroll')
-    }
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [openFaqIndex, setOpenFaqIndex] = useState(null)
 
-    return () => {
-      document.body.classList.remove('no-scroll')
-    }
-  }, [showForm])
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index)
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -65,6 +58,7 @@ const SellRequestForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsSubmitting(true)
 
     // Check for compulsory fields
     const compulsoryFields = [
@@ -81,17 +75,13 @@ const SellRequestForm = () => {
 
     if (missingFields.length > 0) {
       alert(`Please fill in the following fields: ${missingFields.join(', ')}`)
+      setIsSubmitting(false)
       return
     }
 
     try {
       await axios.post(url + 'api/sellRequests', formData)
-      // Clear form after submission
-      setShowForm(false)
-      setShowModal(true)
-      setTimeout(() => {
-        setShowModal(false)
-      }, 2000)
+      setSubmitSuccess(true)
       setFormData({
         name: '',
         phoneNumber: '',
@@ -105,381 +95,355 @@ const SellRequestForm = () => {
         kilometers: '',
         price: '',
       })
+      // Reset success message after 5 seconds
+      setTimeout(() => setSubmitSuccess(false), 5000)
     } catch (error) {
       console.error('Error submitting sell request:', error)
       alert('Error submitting sell request. Please try again later.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const stepsToSell = [
     {
       title: 'Digital Verification',
-      subTitle: 'Submit the above form',
+      subTitle: 'Submit details',
       image: steps1,
-      description: 'Step 1: Submit the above form.',
+      description: 'Fill out the form to get started instantly.',
     },
     {
-      title: 'Call Our Purchase Expert',
-      subTitle: 'Get valuation instantly',
+      title: 'Expert Valuation',
+      subTitle: 'Get a quote',
       image: steps2,
-      description: 'Step 2: Our Purchase team will call you',
+      description: 'Our experts will call you with a fair estimate.',
     },
     {
-      title: 'Physical Inspection',
-      subTitle: '',
+      title: 'Inspection',
+      subTitle: 'Physical check',
       image: steps3,
-      description: 'Step 3: Bring your car for physical inspection',
+      description: 'Quick inspection at your doorstep or our hub.',
     },
     {
-      title: 'Car Pickup and Payment',
-      subTitle: '',
+      title: 'Instant Payment',
+      subTitle: 'Seal the deal',
       image: steps4,
-      description: 'Step 4: Instant payment and Paperwork.',
+      description: 'Receive payment instantly and we handle the paperwork.',
     },
   ]
 
   const whySellToUs = [
     {
-      title: 'Best Price',
-      image: why1,
-      description: 'Get the maximum price for your car GUARANTEED',
+      title: 'Best Price Guarantee',
+      icon: <FaMoneyBillWave className="text-4xl text-custom-yellow mb-4" />,
+      description: 'We ensure you get the highest market value for your car.',
     },
     {
-      title: 'Hassle Free',
-      image: why2,
-      description:
-        'All paperwork and transfer regulations will be taken care of by us',
+      title: 'Hassle-Free Process',
+      icon: <FaFileContract className="text-4xl text-custom-yellow mb-4" />,
+      description: 'We handle all RC transfers and paperwork for you.',
     },
     {
       title: 'Instant Payment',
-      image: why3,
-      description:
-        'No hidden charges and complete payment will be made upfront and instantly',
+      icon: <FaCheckCircle className="text-4xl text-custom-yellow mb-4" />,
+      description: 'Get paid immediately once the deal is finalized.',
     },
   ]
 
   return (
     <>
       <Head>
-        <title>
-          Sell Your Car Fast | Get the Best Price Instantly | Real Value
-        </title>
+        <title>Sell Your Car | Best Price & Instant Payment | Poddar Motors</title>
         <meta
           name="description"
-          content="Quickly sell your car with Poddar Motors. Get the best price and enjoy a hassle-free process. Submit your details for an instant valuation!"
-        />
-
-        <meta
-          name="keywords"
-          content="sell used car, car valuation, fast car sale, best car price, instant payment for cars, hassle-free car selling , sell car in ranchi, get car valuation, car for sale, sell my car, get car valuation, car dealerships in ranchi, sell car in Ranchi, sell car in Bokaro, Sell car in Jamshedpur, car sales"
-        />
-
-        <meta
-          property="og:title"
-          content="Sell Your Car | Best Price & Instant Payment | Poddar Motors Real Value"
-        />
-        <meta
-          property="og:description"
-          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment."
-        />
-        <meta property="og:image" content="/path-to-your-image.jpg" />
-        <meta
-          property="og:url"
-          content="https://poddar-motors-rv-hkxu.vercel.app/sell"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Sell Your Car | Best Price & Instant Payment | Real Value"
-        />
-        <meta
-          name="twitter:description"
-          content="Sell your car quickly and easily with Real Value. Get the best price, hassle-free process, and instant payment."
-        />
-        <meta name="twitter:image" content="/path-to-your-image.jpg" />
-        <link
-          rel="canonical"
-          href="https://poddar-motors-rv-hkxu.vercel.app/sell"
+          content="Sell your car fast with Poddar Motors. Best price guaranteed, instant payment, and hassle-free paperwork."
         />
       </Head>
-      <div className="text-left md:px-6 bg-custom-black text-custom-seasalt overflow-x-hidden py-16 pt-8">
-        <div className="flex flex-col md:flex-row max-w-screen-xl mx-auto md:space-x-8">
-          {/* Left Section - Heading */}
-          <div className="md:w-1/2 mb-8 md:mb-0">
-            <h1 className="text-left mb-4 pt-4 text-4xl font-bold text-custom-white md:text-5xl">
-              Want to sell your car?
-            </h1>
-            <p>
-              Get the best value for your car by following the four steps given
-              below!
-            </p>
+
+      <div className="bg-custom-black min-h-screen text-custom-seasalt font-sans overflow-x-hidden">
+        {/* Hero Section */}
+        <div className="relative min-h-[90vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={landing}
+              alt="Sell your car background"
+              layout="fill"
+              objectFit="cover"
+              className="opacity-20 blur-sm"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-custom-black/80 via-custom-black/60 to-custom-black" />
           </div>
 
-          {/* Right Section - Image and Button */}
-          <div className="md:w-1/2 flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center border-2 border-opacity-30 border-custom-seasalt rounded-md relative w-full">
-              <Image
-                src={landing}
-                alt="Landing image for selling cars"
-                className="md:h-[60vh] md:w-auto w-[90vw] h-auto"
-              />
+          <div className="relative z-10 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center lg:text-left"
+            >
+              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Sell Your Car <br />
+                <span className="text-custom-yellow">In Minutes</span>
+              </h1>
+              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+                Get the best market price, instant payment, and free RC transfer. 
+                Experience the easiest way to sell your car today.
+              </p>
+              
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-8">
+                {['Best Price', 'Instant Payment', 'Free RC Transfer'].map((item, index) => (
+                  <div key={index} className="flex items-center bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                    <FaCheckCircle className="text-custom-yellow mr-2" />
+                    <span className="text-sm font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
 
-              <button
-                onClick={() => setShowForm(!showForm)}
-                className="bg-custom-yellow text-custom-black hover:bg-custom-black hover:text-white text-xl 
-  border border-transparent md:px-16 md:py-4 px-10 py-2 rounded transition duration-300"
-              >
-                Get Valuation!
-              </button>
+            {/* Right Form - Glassmorphism */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 md:p-8 shadow-2xl"
+            >
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">Get Instant Valuation</h2>
+                <p className="text-gray-400 text-sm">Fill in the details to get started</p>
+              </div>
+
+              {submitSuccess ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-green-500/20 border border-green-500/50 rounded-xl p-8 text-center"
+                >
+                  <FaCheckCircle className="text-5xl text-green-400 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-white mb-2">Request Submitted!</h3>
+                  <p className="text-gray-200">
+                    Thank you for choosing us. Our purchase expert will contact you shortly with the best offer.
+                  </p>
+                  <button 
+                    onClick={() => setSubmitSuccess(false)}
+                    className="mt-6 text-sm text-green-400 hover:text-green-300 underline"
+                  >
+                    Submit another request
+                  </button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your Name *"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                    <input
+                      type="tel"
+                      name="phoneNumber"
+                      placeholder="Phone Number *"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                      pattern="^(?:\+?91\s?)?0?[0-9]{10}$"
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      name="brand"
+                      placeholder="Car Brand (e.g. Maruti) *"
+                      value={formData.brand}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                    <input
+                      type="text"
+                      name="model"
+                      placeholder="Car Model (e.g. Swift) *"
+                      value={formData.model}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="number"
+                      name="manufactureYear"
+                      placeholder="Year (e.g. 2018) *"
+                      value={formData.manufactureYear}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                    <input
+                      type="text"
+                      name="registrationNumber"
+                      placeholder="Reg. Number (e.g. JH01...) *"
+                      value={formData.registrationNumber}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <input
+                      type="text"
+                      name="location"
+                      placeholder="Location *"
+                      value={formData.location}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                     <input
+                      type="number"
+                      name="kilometers"
+                      placeholder="Kilometers Driven *"
+                      value={formData.kilometers}
+                      onChange={handleChange}
+                      className="w-full bg-custom-black/50 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-custom-yellow transition-colors"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-custom-yellow text-custom-black font-bold text-lg py-4 rounded-lg hover:bg-yellow-400 transform hover:scale-[1.02] transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Get Valuation Now'}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        </div>
+
+        {/* How It Works Section */}
+        <div className="py-20 bg-custom-seasalt text-custom-black">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Selling your car has never been easier. Follow these simple steps to get the best deal.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {stepsToSell.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                >
+                  <div className="h-48 relative">
+                    <Image
+                      src={step.image}
+                      alt={step.title}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="text-custom-yellow font-bold text-xl mb-2">0{index + 1}</div>
+                    <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                    <p className="text-gray-600 text-sm">{step.description}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Modal Form */}
-        {showForm && (
-          <div className="modal">
-            <form
-              className="grid grid-cols-1 gap-4 p-4 bg-custom-gray rounded-lg shadow-lg"
-              onSubmit={handleSubmit}
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-2xl text-custom-seasalt">
-                  Valuation Form
-                </h3>
-                <button onClick={() => setShowForm(false)}>
-                  <XMarkIcon
-                    className="h-6 w-6 text-custom-seasalt"
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
-              <div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="p-2 border border-custom-jet rounded text-black w-full"
-                    required
-                  />
-                </div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Phone Number *</label>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    pattern="^(?:\+?91\s?)?0?[0-9]{10}$"
-                    title="8709119090"
-                    required
-                  />
-                </div>
-              </div>
+        {/* Why Sell To Us Section */}
+        <div className="py-20 bg-custom-black text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Sell To Poddar Motors?</h2>
+              <div className="w-20 h-1 bg-custom-yellow mx-auto rounded-full"></div>
+            </div>
 
-              <div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                  />
-                </div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Location *</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">
-                    Registration Number *
-                  </label>
-                  <input
-                    type="text"
-                    name="registrationNumber"
-                    value={formData.registrationNumber}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                    maxLength={10}
-                  />
-                </div>
-
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Brand *</label>
-                  <input
-                    type="text"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Model *</label>
-                  <input
-                    type="text"
-                    name="model"
-                    value={formData.model}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                  />
-                </div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Variant</label>
-                  <input
-                    type="text"
-                    name="variant"
-                    value={formData.variant}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">
-                    Manufacture Year *
-                  </label>
-                  <input
-                    type="number"
-                    name="manufactureYear"
-                    value={formData.manufactureYear}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                  />
-                </div>
-                <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
-                  <label className="font-normal text-sm">Kilometers *</label>
-                  <input
-                    type="number"
-                    name="kilometers"
-                    value={formData.kilometers}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-custom-jet rounded text-black"
-                    required
-                  />
-                </div>
-              </div>
-
-              <label className="font-normal text-sm">Expected Price</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full p-2 border border-custom-jet rounded text-black"
-              />
-              <button
-                type="submit"
-                className="bg-custom-jet text-custom-seasalt hover:bg-custom-yellow hover:text-custom-jet  px-6 py-2 rounded"
-              >
-                Get Valuation
-              </button>
-            </form>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {whySellToUs.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white/5 border border-white/10 rounded-xl p-8 text-center hover:bg-white/10 transition-colors duration-300"
+                >
+                  <div className="flex justify-center">{item.icon}</div>
+                  <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                  <p className="text-gray-400">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      <div className="text-left md:px-6 bg-custom-seasalt text-custom-black overflow-x-hidden pb-16 pt-0">
-        <div className="max-w-screen-xl mx-auto">
-          <div className="font-semibold text-3xl my-8  mt-20 md:px-0 px-4">
-            Steps To Sell Your Car
-          </div>
-          <div className="">
-            {stepsToSell.map((step, index) => (
-              <div
-                key={index}
-                className="
-              md:inline-block 
-              block w-[17rem] bg-custom-seasalt p-4 rounded-lg 
-              shadow-md align-top mr-8 md:my-2 my-4 hover:scale-105  
-              hover:shadow-xl  transition-transform duration-200
-              md:ml-0 md:translate-x-0 
-              ml-[50%] -translate-x-[50%]
-              "
-              >
-                <div className="">
-                  <Image
-                    src={step.image}
-                    alt="Car selling process, how to sell car?"
-                  />
-                  <p className="mt-2 text-center text-sm text-custom-black">
-                    {step.description}{' '}
-                    {/* This is where the description goes */}
-                  </p>
+        {/* FAQ Section */}
+        <div className="py-20 bg-custom-seasalt">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-custom-black mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-4">
+              {sellFAQData.map((faq, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                >
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
+                  >
+                    <span className="text-lg font-semibold text-custom-black">
+                      {faq.question}
+                    </span>
+                    {openFaqIndex === index ? (
+                      <FaMinus className="text-custom-yellow" />
+                    ) : (
+                      <FaPlus className="text-custom-yellow" />
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {openFaqIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="px-6 pb-6 text-gray-600">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="text-left md:px-6 bg-white text-custom-black overflow-x-hidden pb-16 pt-0">
-        <div className="mt-20 max-w-screen-xl mx-auto">
-          <div className="font-semibold text-3xl my-8 md:px-0 px-4">
-            Why Sell Your Car To Us
-          </div>
-          <div className="">
-            {whySellToUs.map((step, index) => (
-              <div
-                key={index}
-                className="
-              md:inline-block block  w-[20rem]
-              bg-custom-seasalt p-4 rounded-lg shadow-md 
-              align-top mr-8 md:my-2 my-4 
-              hover:scale-105  hover:shadow-xl  transition-transform duration-200 
-              md:ml-0 md:translate-x-0 
-              ml-[50%] -translate-x-[50%]
-              "
-              >
-                <Image src={step.image} />
-                <p className="mt-2 text-center text-sm text-custom-black">
-                  {step.description} {/* This is where the description goes */}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <Faq FAQs={sellFAQData} title="Sell related" />
-
-      {(showForm || showModal) && (
-        <div className="fixed inset-0 text-lg bg-custom-black bg-opacity-50 z-10"></div>
-      )}
-      {showModal && (
-        <>
-          <div className="fixed top-1/4 left-1/2 transform text-black -translate-x-1/2 bg-custom-seasalt z-20 p-8 rounded text-center">
-            <h4 className="font-semibold">
-              Thank You for submitting your car details!
-            </h4>
-            <p className="text-sm">Our executive will reach out to you soon!</p>
-          </div>
-        </>
-      )}
     </>
   )
 }
