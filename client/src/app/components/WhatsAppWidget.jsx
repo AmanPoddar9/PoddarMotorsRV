@@ -2,10 +2,15 @@
 import React from 'react'
 import { FaWhatsapp } from 'react-icons/fa'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const WhatsAppWidget = () => {
+  const pathname = usePathname()
   const phoneNumber = '918709119090' // Added country code
   const message = "Hi, I'm interested in buying a car from Poddar Motors."
+
+  // Don't show on sell page as it has its own specific button
+  if (pathname === '/sell') return null
 
   return (
     <Link
