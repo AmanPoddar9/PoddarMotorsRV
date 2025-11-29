@@ -44,7 +44,8 @@ export default function AddTestimonialPage() {
 
     try {
       const res = await axios.post(`${API_URL}/api/upload`, uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true
       })
       
       setFormData(prev => ({
@@ -53,7 +54,8 @@ export default function AddTestimonialPage() {
       }))
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('File upload failed. Please try again.')
+      const errorMessage = error.response?.data?.error || 'File upload failed. Please try again.'
+      alert(errorMessage)
     } finally {
       setUploading(false)
     }
@@ -64,7 +66,9 @@ export default function AddTestimonialPage() {
     setLoading(true)
 
     try {
-      await axios.post(`${API_URL}/api/testimonials`, formData)
+      await axios.post(`${API_URL}/api/testimonials`, formData, {
+        withCredentials: true
+      })
       alert('Success Story added successfully! 🎉')
       router.push('/admin/testimonials') // Assuming we'll make a list page later, or just redirect to add again
       // For now, let's just reset form or redirect to home
@@ -81,7 +85,8 @@ export default function AddTestimonialPage() {
       })
     } catch (error) {
       console.error('Error adding testimonial:', error)
-      alert('Failed to add story. Please try again.')
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Failed to add story. Please try again.'
+      alert(errorMessage)
     } finally {
       setLoading(false)
     }
