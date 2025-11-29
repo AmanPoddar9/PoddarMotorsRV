@@ -1,5 +1,4 @@
 const Testimonial = require('../models/testimonial');
-const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 // Create a new testimonial
 exports.createTestimonial = async (req, res) => {

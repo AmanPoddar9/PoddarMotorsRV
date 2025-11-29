@@ -26,6 +26,16 @@ const compression = require('compression');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// FIX: Force DNS to use Google's Public DNS to resolve MongoDB SRV records
+// This fixes the 'querySrv ENOTFOUND' error on some local networks
+const dns = require('dns');
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+  console.log('✅ DNS servers set to Google Public DNS');
+} catch (error) {
+  console.error('⚠️ Could not set custom DNS servers:', error);
+}
+
 connectDB();
 app.use(cors({
   origin: function(origin, callback) {
