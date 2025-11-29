@@ -36,7 +36,7 @@ export default function AddTestimonialPage() {
 
     setUploading(true)
     const uploadData = new FormData()
-    uploadData.append('file', file)
+    uploadData.append('image', file)
     
     // Determine if video or image
     const isVideo = file.type.startsWith('video/')
