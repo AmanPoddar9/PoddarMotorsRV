@@ -1,13 +1,17 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
-import { FaPlay, FaShoppingBag } from 'react-icons/fa'
+import { FaShoppingBag, FaExternalLinkAlt } from 'react-icons/fa'
+import { motion } from 'framer-motion'
 
 export default function VideoCard({ video }) {
   const { platform, videoId, title, linkedListing } = video
 
   return (
-    <div className="bg-custom-jet rounded-2xl overflow-hidden border border-white/10 hover:border-custom-accent/50 transition-all group h-full flex flex-col">
+    <motion.div 
+      whileHover={{ y: -5 }}
+      className="bg-custom-jet/50 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/5 hover:border-custom-accent/30 transition-all group shadow-xl hover:shadow-custom-accent/10"
+    >
       {/* Video Container */}
       <div className="relative aspect-[9/16] bg-black">
         {platform === 'youtube' ? (
@@ -30,44 +34,51 @@ export default function VideoCard({ video }) {
             Unsupported Platform
           </div>
         )}
+        
+        {/* Overlay Gradient (Subtle) */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
       </div>
 
       {/* Content */}
-      <div className="p-4 flex-1 flex flex-col">
-        <h3 className="font-bold text-white text-lg mb-2 line-clamp-2">{title}</h3>
+      <div className="p-5 relative">
+        <h3 className="font-bold text-white text-lg mb-3 line-clamp-2 leading-snug group-hover:text-custom-accent transition-colors">
+          {title}
+        </h3>
         
         {linkedListing ? (
-          <div className="mt-auto pt-4 border-t border-white/10">
-            <div className="flex items-center gap-3 mb-3">
-              <img 
-                src={linkedListing.images?.[0]} 
-                alt={linkedListing.model}
-                className="w-12 h-12 rounded-lg object-cover border border-white/20"
-              />
-              <div>
-                <p className="text-white font-bold text-sm">{linkedListing.year} {linkedListing.model}</p>
+          <div className="mt-2 pt-4 border-t border-white/10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/20 flex-shrink-0">
+                <img 
+                  src={linkedListing.images?.[0]} 
+                  alt={linkedListing.model}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-bold text-sm truncate">{linkedListing.year} {linkedListing.model}</p>
                 <p className="text-custom-accent text-xs font-bold">₹{linkedListing.price.toLocaleString()}</p>
               </div>
             </div>
             
             <Link 
               href={`/buy/${linkedListing.slug || linkedListing._id}`}
-              className="w-full py-3 bg-custom-accent text-custom-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-yellow-400 transition-all shadow-lg shadow-custom-accent/20"
+              className="w-full py-3 bg-custom-accent text-custom-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-yellow-400 transition-all shadow-lg shadow-custom-accent/20 group-hover:scale-[1.02]"
             >
               <FaShoppingBag /> Shop This Car
             </Link>
           </div>
         ) : (
-          <div className="mt-auto pt-4">
+          <div className="mt-2 pt-4 border-t border-white/10">
              <Link 
               href="/buy"
-              className="w-full py-3 bg-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-all"
+              className="w-full py-3 bg-white/5 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all border border-white/10"
             >
-              Browse All Cars
+              <FaExternalLinkAlt size={12} /> Browse Inventory
             </Link>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
