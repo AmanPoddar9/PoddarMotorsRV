@@ -1,16 +1,4 @@
 import Head from 'next/head'
-import React from 'react'
-
-const Videos = () => {
-  const videoData = [
-    {
-      id: 'JcqdIqcY-Jw', // Replace with actual video IDs
-      title: 'Sell Your Car in 30 minutes',
-      description: 'Sell your car in 30 minutes in Ranchi and Jharkhand.',
-    },
-    {
-      id: 'nt6Zsosgv-A', // Replace with actual video ID
-      title: 'Second hand sedans',
       description: 'Second hand Sedans for sale in Ranchi.',
     },
     {

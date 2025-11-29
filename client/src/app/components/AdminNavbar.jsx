@@ -60,6 +60,12 @@ const AdminNavbar = () => {
                     Bookings
                   </Link>
                   <Link
+                    href="/admin/videos"
+                    className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Videos
+                  </Link>
+                  <Link
                     href="/admin/testimonials"
                     className="text-custom-platinum hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >

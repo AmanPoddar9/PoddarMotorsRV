@@ -17,6 +17,7 @@ const twilioRoutes = require('./routes/twilioRoutes');
 const authRoutes = require('./routes/authRoutes');
 const workshopBookingRoutes = require('./routes/workshopBookingRoutes');
 const customerOfferRoutes = require('./routes/customerOfferRoutes');
+const videoRoutes = require('./routes/videoRoutes');
 
 const { requireAuth, requireRole } = require('./middleware/auth');
 
@@ -93,6 +94,7 @@ app.use('/api/customer', require('./routes/customerRoutes')); // Customer Ecosys
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/price-alerts', require('./routes/priceAlerts'));
 app.use('/api/activities', require('./routes/activities'));
+app.use('/api/videos', videoRoutes);
 
 
 app.listen(PORT, () => {
