@@ -46,6 +46,8 @@ import API_URL from '../../config/api'
 import { ViewCounter } from '../../components/SocialProof'
 import PriceAlerts from '../../components/PriceAlerts'
 import TestimonialCard from '../../components/TestimonialCard'
+import CertifiedBadge from '../../components/CertifiedBadge'
+import PriceBreakdown from '../../components/PriceBreakdown'
 
 const page = ({ params: { slug } }) => {
   // API call to this route: 662bed523ec1ae8416673630
@@ -539,12 +541,18 @@ const page = ({ params: { slug } }) => {
           </div>
 
           <div className="mt-8 lg:row-span-3 lg:mt-0">
+            {/* Certified Badge */}
+            <CertifiedBadge />
+            
             <p className="text-3xl tracking-tight text-white">
               <span className="font-light">Price: </span>
               <span className="font-semibold">
                 ₹{AmountWithCommas(carData.price)}
               </span>
             </p>
+            
+            {/* Price Breakdown */}
+            <PriceBreakdown basePrice={carData.price} />
             
             {/* Real-time View Counter */}
             <div className="mt-4">
