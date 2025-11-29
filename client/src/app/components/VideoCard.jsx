@@ -10,7 +10,7 @@ export default function VideoCard({ video }) {
   return (
     <motion.div 
       whileHover={{ y: -5 }}
-      className="bg-custom-jet/50 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/5 hover:border-custom-accent/30 transition-all group shadow-xl hover:shadow-custom-accent/10"
+      className="bg-custom-jet/50 backdrop-blur-sm rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 hover:border-custom-accent/30 transition-all group shadow-xl hover:shadow-custom-accent/10"
     >
       {/* Video Container */}
       <div className="relative aspect-[9/16] bg-black">
@@ -40,15 +40,15 @@ export default function VideoCard({ video }) {
       </div>
 
       {/* Content */}
-      <div className="p-5 relative">
-        <h3 className="font-bold text-white text-lg mb-3 line-clamp-2 leading-snug group-hover:text-custom-accent transition-colors">
+      <div className="p-4 md:p-5 relative">
+        <h3 className="font-bold text-white text-base md:text-lg mb-2 md:mb-3 line-clamp-2 leading-snug group-hover:text-custom-accent transition-colors">
           {title}
         </h3>
         
         {linkedListing ? (
-          <div className="mt-2 pt-4 border-t border-white/10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/20 flex-shrink-0">
+          <div className="mt-2 pt-3 md:pt-4 border-t border-white/10">
+            <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl overflow-hidden border border-white/20 flex-shrink-0">
                 <img 
                   src={linkedListing.images?.[0]} 
                   alt={linkedListing.model}
@@ -63,16 +63,16 @@ export default function VideoCard({ video }) {
             
             <Link 
               href={`/buy/${linkedListing.slug || linkedListing._id}`}
-              className="w-full py-3 bg-custom-accent text-custom-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-yellow-400 transition-all shadow-lg shadow-custom-accent/20 group-hover:scale-[1.02]"
+              className="w-full py-3 md:py-3 bg-custom-accent text-custom-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-yellow-400 transition-all shadow-lg shadow-custom-accent/20 group-hover:scale-[1.02] text-sm md:text-base"
             >
               <FaShoppingBag /> Shop This Car
             </Link>
           </div>
         ) : (
-          <div className="mt-2 pt-4 border-t border-white/10">
+          <div className="mt-2 pt-3 md:pt-4 border-t border-white/10">
              <Link 
               href="/buy"
-              className="w-full py-3 bg-white/5 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all border border-white/10"
+              className="w-full py-3 bg-white/5 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all border border-white/10 text-sm md:text-base"
             >
               <FaExternalLinkAlt size={12} /> Browse Inventory
             </Link>

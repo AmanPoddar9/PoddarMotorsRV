@@ -90,8 +90,8 @@ export default function VideosPage() {
         </div>
       </section>
 
-      {/* Video Feed - Masonry Layout */}
-      <section className="pb-20 px-4">
+      {/* Video Feed - Masonry Layout (Mobile Optimized) */}
+      <section className="pb-16 md:pb-20 px-4">
         <div className="container mx-auto">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -103,7 +103,7 @@ export default function VideosPage() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
+              className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6 space-y-4 md:space-y-6"
             >
               {videos.map(video => (
                 <motion.div key={video._id} variants={itemVariants} className="break-inside-avoid">

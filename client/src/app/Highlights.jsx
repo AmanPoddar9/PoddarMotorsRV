@@ -58,8 +58,8 @@ const Highlights = () => {
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16">
+        {/* Stats Grid - Optimized for Mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-12 md:mb-16">
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -70,21 +70,21 @@ const Highlights = () => {
               whileHover={{ y: -5 }}
               className="relative group"
             >
-              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-custom-accent/30 transition-all">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 mb-4 group-hover:scale-110 transition-transform`}>
+              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6 hover:border-custom-accent/30 transition-all">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br ${stat.color} p-2.5 md:p-3 mb-3 md:mb-4 group-hover:scale-110 transition-transform`}>
                   <stat.icon className="w-full h-full text-white" />
                 </div>
-                <div className="text-3xl md:text-4xl font-bold text-white mb-1">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">
                   <CountUp end={stat.value} decimals={stat.decimals || 0} duration={2.5} suffix={stat.suffix} />
                 </div>
-                <p className="text-custom-platinum text-sm font-medium">{stat.label}</p>
+                <p className="text-custom-platinum text-xs md:text-sm font-medium">{stat.label}</p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Bento Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        {/* Bento Grid Layout - Mobile Optimized */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
           {highlights.map((item, index) => (
             <motion.div
               key={index}
@@ -95,14 +95,14 @@ const Highlights = () => {
               whileHover={{ y: -8 }}
               className="relative group"
             >
-              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-custom-accent/30 transition-all h-full">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} p-3.5 mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all`}>
+              <div className="bg-custom-jet/50 backdrop-blur-sm border border-white/10 rounded-3xl p-6 md:p-8 hover:border-custom-accent/30 transition-all h-full">
+                <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${item.gradient} p-3 md:p-3.5 mb-4 md:mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all`}>
                   <item.icon className="w-full h-full text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-custom-accent transition-colors">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-2 md:mb-3 group-hover:text-custom-accent transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-custom-platinum leading-relaxed">
+                <p className="text-custom-platinum leading-relaxed text-sm md:text-base">
                   {item.description}
                 </p>
               </div>
