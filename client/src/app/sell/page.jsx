@@ -12,9 +12,17 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaPlus,
-  FaMinus
+  FaMinus,
+  FaWhatsapp,
+  FaCheck,
+  FaTimes,
+  FaIdCard,
+  FaFileAlt,
+  FaKey,
+  FaShieldAlt
 } from 'react-icons/fa'
 import { sellFAQData } from '../data/sellFAQs'
+import SellTestimonials from '../components/SellTestimonials'
 
 // Images
 import landing from '../../images/sell/landing.jpeg'
@@ -343,7 +351,7 @@ const SellRequestForm = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
               {stepsToSell.map((step, index) => (
                 <motion.div
                   key={index}
@@ -369,6 +377,31 @@ const SellRequestForm = () => {
                 </motion.div>
               ))}
             </div>
+
+            {/* Documents Required Section */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+              <div className="text-center mb-12">
+                <h3 className="text-2xl md:text-3xl font-bold mb-4">Documents Required</h3>
+                <p className="text-gray-600">Keep these documents handy for a smooth selling experience.</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                {[
+                  { icon: <FaIdCard />, title: 'RC Book', desc: 'Original Registration Certificate' },
+                  { icon: <FaShieldAlt />, title: 'Insurance', desc: 'Valid Insurance Policy' },
+                  { icon: <FaIdCard />, title: 'ID Proof', desc: 'Aadhar Card / PAN Card' },
+                  { icon: <FaKey />, title: 'Keys', desc: 'Both sets of keys (if available)' },
+                  { icon: <FaFileAlt />, title: 'Service History', desc: 'Service Record (Optional)' },
+                ].map((doc, idx) => (
+                  <div key={idx} className="flex flex-col items-center text-center">
+                    <div className="w-16 h-16 bg-custom-gray rounded-full flex items-center justify-center text-custom-yellow text-2xl mb-4">
+                      {doc.icon}
+                    </div>
+                    <h4 className="font-bold text-lg mb-1">{doc.title}</h4>
+                    <p className="text-sm text-gray-500">{doc.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -380,7 +413,7 @@ const SellRequestForm = () => {
               <div className="w-20 h-1 bg-custom-yellow mx-auto rounded-full"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
               {whySellToUs.map((item, index) => (
                 <motion.div
                   key={index}
@@ -396,8 +429,73 @@ const SellRequestForm = () => {
                 </motion.div>
               ))}
             </div>
+
+            {/* Comparison Table */}
+            <div className="max-w-5xl mx-auto bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+              <div className="p-6 md:p-8">
+                <h3 className="text-2xl font-bold text-center mb-8">Why We Are Better</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-white/10 text-gray-400 text-sm uppercase tracking-wider">
+                        <th className="py-4 px-4">Feature</th>
+                        <th className="py-4 px-4 text-custom-yellow font-bold text-lg">Poddar Motors</th>
+                        <th className="py-4 px-4">Local Dealer</th>
+                        <th className="py-4 px-4">Private Sale</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-300">
+                      {[
+                        { feature: 'Best Price Guarantee', us: true, dealer: false, private: true },
+                        { feature: 'Instant Payment', us: true, dealer: false, private: false },
+                        { feature: 'Free RC Transfer', us: true, dealer: false, private: false },
+                        { feature: 'Doorstep Inspection', us: true, dealer: false, private: false },
+                        { feature: 'Zero Commission', us: true, dealer: false, private: true },
+                        { feature: 'Hassle-Free Paperwork', us: true, dealer: false, private: false },
+                      ].map((row, idx) => (
+                        <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                          <td className="py-4 px-4 font-medium">{row.feature}</td>
+                          <td className="py-4 px-4">
+                            {row.us ? <FaCheck className="text-green-500 text-xl" /> : <FaTimes className="text-red-500" />}
+                          </td>
+                          <td className="py-4 px-4">
+                            {row.dealer ? <FaCheck className="text-green-500" /> : <FaTimes className="text-red-500" />}
+                          </td>
+                          <td className="py-4 px-4">
+                            {row.private ? <FaCheck className="text-green-500" /> : <FaTimes className="text-red-500" />}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Video Walkthrough Section */}
+        <div className="py-20 bg-custom-seasalt">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-custom-black mb-4">See How Easy It Is</h2>
+            <p className="text-gray-600 mb-12">Watch our step-by-step guide on how to sell your car.</p>
+            
+            <div className="relative pt-[56.25%] rounded-2xl overflow-hidden shadow-2xl bg-black">
+              {/* Placeholder for YouTube Video - Replace 'VIDEO_ID' with actual ID */}
+              <iframe 
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=adk123" 
+                title="How to Sell Your Car"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials Section */}
+        <SellTestimonials />
 
         {/* FAQ Section */}
         <div className="py-20 bg-custom-seasalt">
@@ -444,6 +542,19 @@ const SellRequestForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/918709119090?text=Hi,%20I%20want%20to%20sell%20my%20car.%20Please%20give%20me%20a%20valuation."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 z-50 flex items-center gap-2 group"
+      >
+        <FaWhatsapp className="text-3xl" />
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-bold">
+          Get Valuation
+        </span>
+      </a>
     </>
   )
 }
