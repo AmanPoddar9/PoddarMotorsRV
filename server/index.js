@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
-const testimonialsRoutes = require('./routes/testimonialsRoutes');
+// const testimonialsRoutes = require('./routes/testimonialsRoutes'); // Removed unused/duplicate
 const offersRoutes = require('./routes/offersRoutes');
 const featuresRoutes = require('./routes/featuresRoutes');
 const listingRoutes = require('./routes/listingRoutes');
@@ -25,16 +25,6 @@ const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
-// FIX: Force DNS to use Google's Public DNS to resolve MongoDB SRV records
-// This fixes the 'querySrv ENOTFOUND' error on some local networks
-const dns = require('dns');
-try {
-  dns.setServers(['8.8.8.8', '8.8.4.4']);
-  console.log('✅ DNS servers set to Google Public DNS');
-} catch (error) {
-  console.error('⚠️ Could not set custom DNS servers:', error);
-}
 
 connectDB();
 app.use(cors({
