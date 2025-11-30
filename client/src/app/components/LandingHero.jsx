@@ -73,7 +73,7 @@ const budgets = [
   { label: 'Above 8 Lakh', key: '3', range: '800000' },
 ]
 
-import { useLanguage } from './contexts/LanguageContext'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const LandingHero = () => {
   const { t } = useLanguage()
