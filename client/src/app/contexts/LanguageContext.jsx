@@ -1,19 +1,26 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { translations } from '../translations'
 
 const LanguageContext = createContext()
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState('en')
   const [mounted, setMounted] = useState(false)
+  const [translations, setTranslations] = useState(null)
 
   useEffect(() => {
+    // Only load translations on client side after mount
+    import('../translations').then((module) => {
+      setTranslations(module.translations)
+    })
+    
     setMounted(true)
     // Check localStorage for saved preference
-    const savedLang = localStorage.getItem('language')
-    if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
-      setLanguage(savedLang)
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('language')
+      if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
+        setLanguage(savedLang)
+      }
     }
   }, [])
 
@@ -27,6 +34,11 @@ export function LanguageProvider({ children }) {
 
   // Translation helper function
   const t = (path) => {
+    // Return empty string if not mounted or translations not loaded
+    if (!mounted || !translations) {
+      return ''
+    }
+
     // Safely access translations
     if (!path || typeof path !== 'string') {
       return ''
@@ -42,13 +54,13 @@ export function LanguageProvider({ children }) {
           let fallback = translations['en']
           for (const k of keys) {
             if (fallback === undefined || fallback[k] === undefined) {
-              return path
+              return ''
             }
             fallback = fallback[k]
           }
           return fallback
         }
-        return path
+        return ''
       }
       current = current[key]
     }
