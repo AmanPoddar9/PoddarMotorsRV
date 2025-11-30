@@ -13,8 +13,8 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
   res.cookie('auth', token, { 
     httpOnly: true, 
-    sameSite: 'none',
-    secure: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 2 * 60 * 60 * 1000 // 2 hours
   });
   res.json({ message: 'Logged in' });
