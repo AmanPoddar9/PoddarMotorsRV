@@ -41,7 +41,7 @@ const AboutUs = () => {
       icon: FaHeart,
       title: 'Customer First',
       description: 'Your satisfaction is our top priority, always',
-      color: 'from-pink-500 to-red-500'
+      color: 'from-orange-500 to-yellow-500'
     },
     {
       icon: FaCheckCircle,
@@ -53,7 +53,7 @@ const AboutUs = () => {
       icon: FaRocket,
       title: 'Innovation',
       description: 'Leveraging technology to deliver the best car buying experience',
-      color: 'from-purple-500 to-pink-500'
+      color: 'from-cyan-500 to-blue-500'
     }
   ]
 
@@ -73,9 +73,8 @@ const AboutUs = () => {
 
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-40 w-96 h-96 bg-custom-accent/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 -right-40 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-0 -left-40 w-96 h-96 bg-custom-accent/3 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 -right-40 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       <div className="relative z-10">
@@ -143,7 +142,7 @@ const AboutUs = () => {
                   transition={{ delay: stat.delay, duration: 0.6 }}
                   className="group relative"
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-r ${index === 0 ? 'from-yellow-500 to-orange-500' : index === 1 ? 'from-blue-500 to-cyan-500' : index === 2 ? 'from-green-500 to-emerald-500' : 'from-purple-500 to-pink-500'} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
+                  <div className={`absolute inset-0 bg-gradient-to-r ${index === 0 ? 'from-yellow-500 to-orange-500' : index === 1 ? 'from-blue-500 to-cyan-500' : index === 2 ? 'from-green-500 to-emerald-500' : 'from-indigo-500 to-blue-500'} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
                   <div className="relative bg-custom-jet/50 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all duration-300 text-center">
                     <stat.icon className="text-4xl text-custom-accent mx-auto mb-4 group-hover:scale-110 transition-transform" />
                     <div className="text-4xl md:text-5xl font-bold text-white mb-2">
