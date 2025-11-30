@@ -1,5 +1,6 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { translations } from '../translations'
 
 const LanguageContext = createContext()
 
@@ -11,7 +12,9 @@ export function LanguageProvider({ children }) {
     setMounted(true)
     if (typeof window !== 'undefined') {
       const savedLang = localStorage.getItem('language')
-      if (savedLang) setLanguage(savedLang)
+      if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
+        setLanguage(savedLang)
+      }
     }
   }, [])
 
@@ -23,9 +26,35 @@ export function LanguageProvider({ children }) {
     }
   }
 
-  // Simplified t function for debugging
+  // Translation helper function
   const t = (path) => {
-    return path
+    // Safely access translations
+    if (!path || typeof path !== 'string') {
+      return ''
+    }
+
+    const keys = path.split('.')
+    let current = translations[language]
+    
+    for (const key of keys) {
+      if (current === undefined || current[key] === undefined) {
+        // Fallback to English if Hindi translation is missing
+        if (language === 'hi') {
+          let fallback = translations['en']
+          for (const k of keys) {
+            if (fallback === undefined || fallback[k] === undefined) {
+              return path
+            }
+            fallback = fallback[k]
+          }
+          return fallback
+        }
+        return path
+      }
+      current = current[key]
+    }
+    
+    return current
   }
 
   const value = {
