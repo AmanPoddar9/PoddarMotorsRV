@@ -73,7 +73,7 @@ const page = ({ params: { slug } }) => {
   const [viewers, setViewers] = useState(0)
   const [debugStats, setDebugStats] = useState(null)
 
-  const { customer, fetchProfile } = useCustomer()
+  const { customer, fetchProfile, updateWishlist } = useCustomer()
   const [inWishlist, setInWishlist] = useState(false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
 
@@ -95,11 +95,13 @@ const page = ({ params: { slug } }) => {
 
     try {
       setWishlistLoading(true)
-      await axios.post(`${API_URL}/api/customer/wishlist`, 
+      const res = await axios.post(`${API_URL}/api/customer/wishlist`,
         { listingId: carData._id },
         { withCredentials: true }
       )
-      setInWishlist(!inWishlist)
+      const updatedWishlist = res.data?.wishlist || []
+      setInWishlist(updatedWishlist.some(item => (item?._id === carData._id) || (item === carData._id)))
+      updateWishlist(updatedWishlist)
       fetchProfile()
       
       // Facebook Pixel: AddToWishlist event

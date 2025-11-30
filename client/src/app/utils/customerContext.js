@@ -12,8 +12,28 @@ export const CustomerProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
+  const persistCustomer = (data) => {
+    setCustomer(data)
+
+    if (typeof window === 'undefined') return
+
+    if (data) {
+      localStorage.setItem('customer', JSON.stringify(data))
+    } else {
+      localStorage.removeItem('customer')
+    }
+  }
+
   // Check auth status on mount
   useEffect(() => {
+    // Seed initial state from persisted profile to avoid flicker on reloads
+    if (typeof window !== 'undefined') {
+      const storedCustomer = localStorage.getItem('customer')
+      if (storedCustomer) {
+        setCustomer(JSON.parse(storedCustomer))
+      }
+    }
+
     checkAuth()
   }, [])
 
@@ -22,11 +42,11 @@ export const CustomerProvider = ({ children }) => {
       const res = await axios.get(`${API_URL}/api/customer/me`, {
         withCredentials: true
       })
-      
+
       if (res.data.user) {
         // Optimistically set customer with fresh data from DB
-        setCustomer(res.data.user)
-        
+        persistCustomer(res.data.user)
+
         // Fetch full profile in background - if it fails, we still have basic auth
         try {
           await fetchProfile()
@@ -35,10 +55,16 @@ export const CustomerProvider = ({ children }) => {
           // Do NOT logout user here - they are still authenticated
         }
       } else {
-        setCustomer(null)
+        persistCustomer(null)
       }
     } catch (error) {
-      setCustomer(null)
+      if (error.response?.status === 401) {
+        persistCustomer(null)
+      } else {
+        // Network/server errors should not immediately log the user out
+        // Keep any cached profile so the UI remains stable
+        console.error('Auth check failed, using cached profile if available:', error)
+      }
     } finally {
       setLoading(false)
     }
@@ -49,7 +75,7 @@ export const CustomerProvider = ({ children }) => {
       const res = await axios.get(`${API_URL}/api/customer/dashboard`, {
         withCredentials: true
       })
-      setCustomer(res.data.profile)
+      persistCustomer(res.data.profile)
     } catch (error) {
       console.error('Error fetching profile:', error)
     } finally {
@@ -63,7 +89,7 @@ export const CustomerProvider = ({ children }) => {
         { email, password },
         { withCredentials: true }
       )
-      setCustomer(res.data.customer)
+      persistCustomer(res.data.customer)
       router.push('/profile')
       return { success: true }
     } catch (error) {
@@ -80,7 +106,7 @@ export const CustomerProvider = ({ children }) => {
         data,
         { withCredentials: true }
       )
-      setCustomer(res.data.customer)
+      persistCustomer(res.data.customer)
       router.push('/profile')
       return { success: true }
     } catch (error) {
@@ -96,15 +122,25 @@ export const CustomerProvider = ({ children }) => {
       await axios.post(`${API_URL}/api/customer/logout`, {}, {
         withCredentials: true
       })
-      setCustomer(null)
+      persistCustomer(null)
       router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
     }
   }
 
+  const updateWishlist = (wishlist) => {
+    setCustomer(prev => {
+      const updated = prev ? { ...prev, wishlist } : prev
+      if (updated) {
+        persistCustomer(updated)
+      }
+      return updated
+    })
+  }
+
   return (
-    <CustomerContext.Provider value={{ customer, loading, login, signup, logout, fetchProfile }}>
+    <CustomerContext.Provider value={{ customer, loading, login, signup, logout, fetchProfile, updateWishlist }}>
       {children}
     </CustomerContext.Provider>
   )
