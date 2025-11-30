@@ -12,7 +12,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 
 const FeaturedCard = ({ car }) => {
   const { t } = useLanguage()
-  const { customer, fetchProfile } = useCustomer()
+  const { customer, fetchProfile, updateWishlist } = useCustomer()
   const [inWishlist, setInWishlist] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -37,11 +37,13 @@ const FeaturedCard = ({ car }) => {
 
     try {
       setLoading(true)
-      await axios.post(`${API_URL}/api/customer/wishlist`, 
+      const res = await axios.post(`${API_URL}/api/customer/wishlist`,
         { listingId: car._id },
         { withCredentials: true }
       )
-      setInWishlist(!inWishlist)
+      const updatedWishlist = res.data?.wishlist || []
+      setInWishlist(updatedWishlist.some(item => (item?._id === car._id) || (item === car._id)))
+      updateWishlist(updatedWishlist)
       fetchProfile() // Refresh profile to update global state
     } catch (error) {
       console.error('Error toggling wishlist:', error)

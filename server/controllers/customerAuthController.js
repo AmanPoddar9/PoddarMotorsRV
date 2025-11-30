@@ -204,7 +204,11 @@ exports.toggleWishlist = async (req, res) => {
     const { listingId } = req.body;
     const customer = await Customer.findById(req.user.id);
     
-    const index = customer.wishlist.indexOf(listingId);
+    // Handle both ObjectId instances and string values when searching
+    const index = customer.wishlist.findIndex(
+      (item) => item.toString() === listingId.toString()
+    );
+
     if (index > -1) {
       customer.wishlist.splice(index, 1); // Remove
     } else {
@@ -212,6 +216,10 @@ exports.toggleWishlist = async (req, res) => {
     }
     
     await customer.save();
+
+    // Return fully populated wishlist so the client can sync state immediately
+    await customer.populate('wishlist');
+
     res.json({ message: 'Wishlist updated', wishlist: customer.wishlist });
   } catch (error) {
     res.status(500).json({ message: 'Error updating wishlist' });
