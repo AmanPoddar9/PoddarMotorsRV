@@ -395,7 +395,7 @@ const page = ({ params: { slug } }) => {
           />
         </Head>
       )}
-      <div className="pt-6 mx-auto max-w-screen-xl">
+      <div className="pt-24 mx-auto max-w-screen-xl">
         <nav aria-label="Breadcrumb" className="mb-5">
           <ol
             role="list"

@@ -707,7 +707,7 @@ export default function Buy({ allListings }) {
           </Dialog>
         </Transition.Root>
 
-        <main className="pb-24">
+        <main className="pb-24 pt-24">
           <div className="flex items-baseline justify-between border-b border-white/10 pb-6 pt-12">
             <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-white">
               {t('buy.title')}
