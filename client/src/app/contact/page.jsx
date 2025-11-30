@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaWhatsapp, FaUsers, FaInstagram, FaFacebook } from 'react-icons/fa'
+import { FaWhatsapp, FaUsers, FaInstagram, FaFacebook, FaPhoneAlt, FaEnvelope } from 'react-icons/fa'
 import { TbDeviceLandlinePhone } from 'react-icons/tb'
 
 import Link from 'next/link'
