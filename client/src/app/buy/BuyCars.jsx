@@ -547,12 +547,12 @@ export default function Buy({ allListings }) {
   }, [searchParams])
 
   return (
-    <div className="bg-custom-black buyCarsSection min-h-screen">
-      <div className="mx-auto max-w-screen-xl">
+    <div className="bg-custom-black min-h-screen">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog
-            className="relative z-40 lg:hidden"
+            className="relative z-50 lg:hidden"
             onClose={setMobileFiltersOpen}
           >
             <Transition.Child
@@ -564,10 +564,10 @@ export default function Buy({ allListings }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
+              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
             </Transition.Child>
 
-            <div className="fixed inset-0 z-40 flex">
+            <div className="fixed inset-0 z-50 flex">
               <Transition.Child
                 as={Fragment}
                 enter="transition ease-in-out duration-300 transform"
@@ -577,14 +577,14 @@ export default function Buy({ allListings }) {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-custom-jet py-4 pb-12 shadow-xl pt-20 border-l border-white/10">
-                  <div className="flex items-center justify-between px-4">
-                    <h2 className="text-lg font-medium text-white">
+                <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-custom-jet shadow-xl py-4 pb-6 border-l border-white/10">
+                  <div className="flex items-center justify-between px-4 pb-4 border-b border-white/10">
+                    <h2 className="text-lg font-display font-bold text-white">
                       {t('buy.filters.title')}
                     </h2>
                     <button
                       type="button"
-                      className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-custom-black/50 p-2 text-custom-platinum hover:text-white"
+                      className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white/5 p-2 text-custom-platinum hover:text-white hover:bg-white/10 transition-colors"
                       onClick={() => setMobileFiltersOpen(false)}
                     >
                       <span className="sr-only">Close menu</span>
@@ -593,30 +593,29 @@ export default function Buy({ allListings }) {
                   </div>
 
                   {/* Filters */}
-                  <form className="mt-4 border-t border-white/10">
-                    <h3 className="sr-only">Categories</h3>
+                  <form className="mt-4 flex-1 px-4">
                     {filters.map((section) => (
                       <Disclosure
                         as="div"
                         key={section.id}
-                        className="border-t border-white/10 px-4 py-6"
+                        className="border-b border-white/10 py-6 last:border-none"
                       >
                         {({ open }) => (
                           <>
-                            <h3 className="-mx-2 -my-3 flow-root">
-                              <Disclosure.Button className="flex w-full items-center justify-between bg-transparent px-2 py-3 text-custom-platinum hover:text-white">
-                                <span className="font-medium text-white">
+                            <h3 className="-my-3 flow-root">
+                              <Disclosure.Button className="flex w-full items-center justify-between bg-transparent py-3 text-sm text-custom-platinum hover:text-white transition-colors">
+                                <span className="font-medium text-white text-base">
                                   {section.name}
                                 </span>
                                 <span className="ml-6 flex items-center">
                                   {open ? (
                                     <MinusIcon
-                                      className="h-5 w-5"
+                                      className="h-5 w-5 text-custom-accent"
                                       aria-hidden="true"
                                     />
                                   ) : (
                                     <PlusIcon
-                                      className="h-5 w-5"
+                                      className="h-5 w-5 text-custom-platinum"
                                       aria-hidden="true"
                                     />
                                   )}
@@ -624,33 +623,35 @@ export default function Buy({ allListings }) {
                               </Disclosure.Button>
                             </h3>
                             <Disclosure.Panel className="pt-6">
-                              {section.type == 'slider' ? (
-                                <div className="space-y-6 w-[90%] ml-[5%]">
-                                  <Slider
-                                    range
-                                    defaultValue={section.config.value}
-                                    min={section.config.min}
-                                    max={section.config.max}
-                                    step={section.config.step}
-                                    tooltip={{
-                                      placement: 'bottom',
-                                      // open: true,
-                                      formatter:
-                                        section.id != 'modelYear' &&
-                                        sliderFormatter,
-                                    }}
-                                    onChange={(val) =>
-                                      handleSliderChange(section.id, val)
-                                    }
-                                  />
-                                </div>
-                              ) : (
-                                <div className="space-y-6">
-                                  {section.options.map((option, optionIdx) => (
-                                    <div
-                                      key={option.value}
-                                      className="flex items-center"
-                                    >
+                              <div className="space-y-4">
+                                {section.type == 'slider' ? (
+                                  <div className="px-2">
+                                    <Slider
+                                      range
+                                      defaultValue={section.config.value}
+                                      min={section.config.min}
+                                      max={section.config.max}
+                                      step={section.config.step}
+                                      trackStyle={[{ backgroundColor: '#EAB308' }]}
+                                      handleStyle={[
+                                        { borderColor: '#EAB308', backgroundColor: '#EAB308' },
+                                        { borderColor: '#EAB308', backgroundColor: '#EAB308' }
+                                      ]}
+                                      railStyle={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                      tooltip={{
+                                        placement: 'bottom',
+                                        formatter: section.id != 'modelYear' && sliderFormatter,
+                                      }}
+                                      onChange={(val) => handleSliderChange(section.id, val)}
+                                    />
+                                    <div className="flex justify-between text-xs text-custom-platinum mt-2">
+                                      <span>{section.id === 'modelYear' ? section.config.min : AmountWithCommas(section.config.min)}</span>
+                                      <span>{section.id === 'modelYear' ? section.config.max : AmountWithCommas(section.config.max)}</span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  section.options.map((option, optionIdx) => (
+                                    <div key={option.value} className="flex items-center group">
                                       <input
                                         id={`filter-mobile-${section.id}-${optionIdx}`}
                                         name={`${section.id}[]`}
@@ -664,58 +665,61 @@ export default function Buy({ allListings }) {
                                             e.target.checked,
                                           )
                                         }
-                                        className="h-4 w-4 rounded border-custom-platinum bg-custom-black text-custom-accent focus:ring-custom-accent"
+                                        className="h-5 w-5 rounded border-custom-platinum/30 bg-custom-black text-custom-accent focus:ring-custom-accent focus:ring-offset-custom-black cursor-pointer"
                                       />
                                       <label
                                         htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                        className="ml-3 min-w-0 flex-1 text-custom-platinum"
+                                        className="ml-3 min-w-0 flex-1 text-custom-platinum group-hover:text-white transition-colors cursor-pointer"
                                       >
                                         {option.label}
                                       </label>
                                     </div>
-                                  ))}
-                                </div>
-                              )}
+                                  ))
+                                )}
+                              </div>
                             </Disclosure.Panel>
                           </>
                         )}
                       </Disclosure>
                     ))}
                   </form>
-                  <Button
-                    onClick={() => updateFilters()}
-                    className="w-[80%] mx-auto !bg-custom-accent hover:!bg-yellow-400 !text-custom-black mt-4 !font-bold"
-                  >
-                    {t('buy.filters.apply')}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setSearchQuery('')
-                      clearFilters()
-                    }}
-                    className="mt-4 w-[80%] mx-auto !bg-custom-jet hover:!bg-custom-black !text-white !border-white/10"
-                  >
-                    {t('buy.filters.clear')}
-                  </Button>
+                  
+                  <div className="sticky bottom-0 bg-custom-jet border-t border-white/10 p-4 space-y-3">
+                    <Button
+                      onClick={() => updateFilters()}
+                      className="w-full !bg-custom-accent hover:!bg-yellow-400 !text-custom-black !font-bold !h-12 !rounded-xl !text-base shadow-lg shadow-custom-accent/20"
+                    >
+                      {t('buy.filters.apply')}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSearchQuery('')
+                        clearFilters()
+                      }}
+                      className="w-full !bg-white/5 hover:!bg-white/10 !text-white !border-white/10 !h-12 !rounded-xl !text-base"
+                    >
+                      {t('buy.filters.clear')}
+                    </Button>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
           </Dialog>
         </Transition.Root>
 
-        <main className="px-4 sm:px-6 lg:px-8">
+        <main className="pb-24">
           <div className="flex items-baseline justify-between border-b border-white/10 pb-6 pt-12">
-            <h1 className="text-4xl font-display font-bold tracking-tight text-white">
+            <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-white">
               {t('buy.title')}
             </h1>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-custom-platinum hover:text-white">
+                  <Menu.Button className="group inline-flex justify-center items-center text-sm font-medium text-custom-platinum hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10">
                     {t('buy.sort.label')}
                     <ChevronDownIcon
-                      className="-mr-5 ml-1 h-5 w-5 flex-shrink-0 text-custom-platinum group-hover:text-white"
+                      className="-mr-1 ml-2 h-5 w-5 flex-shrink-0 text-custom-platinum group-hover:text-white"
                       aria-hidden="true"
                     />
                   </Menu.Button>
@@ -730,7 +734,7 @@ export default function Buy({ allListings }) {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xl bg-custom-jet border border-white/10 shadow-2xl focus:outline-none">
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xl bg-custom-jet border border-white/10 shadow-2xl focus:outline-none overflow-hidden">
                     <div className="py-1">
                       {sortOptions.map((option) => (
                         <Menu.Item key={option.name}>
@@ -739,10 +743,10 @@ export default function Buy({ allListings }) {
                               onClick={() => handleSort(option.param)}
                               className={classNames(
                                 option.current
-                                  ? 'font-medium text-white'
+                                  ? 'font-medium text-white bg-white/10'
                                   : 'text-custom-platinum',
-                                active ? 'bg-custom-black/50 text-white' : '',
-                                'block px-4 py-2 text-sm cursor-pointer',
+                                active ? 'bg-white/5 text-white' : '',
+                                'block px-4 py-3 text-sm cursor-pointer transition-colors'
                               )}
                             >
                               {option.name}
@@ -754,9 +758,10 @@ export default function Buy({ allListings }) {
                   </Menu.Items>
                 </Transition>
               </Menu>
+              
               <button
                 type="button"
-                className="-m-2 ml-4 p-2 text-custom-platinum hover:text-white sm:ml-6 lg:hidden"
+                className="-m-2 ml-2 p-2 text-custom-platinum hover:text-white lg:hidden bg-white/5 rounded-lg border border-white/10"
                 onClick={() => setMobileFiltersOpen(true)}
               >
                 <span className="sr-only">Filters</span>
@@ -770,43 +775,37 @@ export default function Buy({ allListings }) {
               Products
             </h2>
 
-            <div
-              className="flex flex-col md:flex-row lg:gap-x-12 justify-center relative"
-              style={{ alignSelf: 'center' }}
-            >
-              {/* Filters */}
-              <form
-                className="hidden lg:block max-h-[70vh] overflow-y-auto bg-custom-jet/30 p-4 rounded-2xl border border-white/10"
-                style={{
-                  flexGrow: 3,
-                  paddingRight: '14px',
-                }}
-              >
-                <h3 className="sr-only">Categories</h3>
-                {filters.map((section) => (
-                  <Disclosure
-                    as="div"
-                    key={section.id}
-                    className="border-b border-white/10 py-6"
+            <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
+              {/* Filters (Desktop) */}
+              <form className="hidden lg:block sticky top-24 h-fit space-y-6 bg-custom-jet/30 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-white">Filters</h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('')
+                      clearFilters()
+                    }}
+                    className="text-xs text-custom-accent hover:text-yellow-400 font-medium transition-colors"
                   >
+                    Reset All
+                  </button>
+                </div>
+                
+                {filters.map((section) => (
+                  <Disclosure as="div" key={section.id} className="border-b border-white/10 py-6 last:border-none last:pb-0">
                     {({ open }) => (
                       <>
                         <h3 className="-my-3 flow-root">
-                          <Disclosure.Button className="flex w-full items-center justify-between bg-transparent py-3 text-sm text-custom-platinum hover:text-white">
+                          <Disclosure.Button className="flex w-full items-center justify-between bg-transparent py-3 text-sm text-custom-platinum hover:text-white transition-colors">
                             <span className="font-medium text-white">
                               {section.name}
                             </span>
                             <span className="ml-6 flex items-center">
                               {open ? (
-                                <MinusIcon
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
+                                <MinusIcon className="h-5 w-5 text-custom-accent" aria-hidden="true" />
                               ) : (
-                                <PlusIcon
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
+                                <PlusIcon className="h-5 w-5 text-custom-platinum" aria-hidden="true" />
                               )}
                             </span>
                           </Disclosure.Button>
@@ -814,31 +813,33 @@ export default function Buy({ allListings }) {
                         <Disclosure.Panel className="pt-6">
                           <div className="space-y-4">
                             {section.type == 'slider' ? (
-                              <div className="space-y-6 w-[90%] ml-[5%]">
+                              <div className="px-2">
                                 <Slider
                                   range
                                   defaultValue={section.config.value}
                                   min={section.config.min}
                                   max={section.config.max}
                                   step={section.config.step}
+                                  trackStyle={[{ backgroundColor: '#EAB308' }]}
+                                  handleStyle={[
+                                    { borderColor: '#EAB308', backgroundColor: '#EAB308' },
+                                    { borderColor: '#EAB308', backgroundColor: '#EAB308' }
+                                  ]}
+                                  railStyle={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                                   tooltip={{
                                     placement: 'bottom',
-                                    // open: true,
-                                    formatter:
-                                      section.id != 'modelYear' &&
-                                      sliderFormatter,
+                                    formatter: section.id != 'modelYear' && sliderFormatter,
                                   }}
-                                  onChange={(val) =>
-                                    handleSliderChange(section.id, val)
-                                  }
+                                  onChange={(val) => handleSliderChange(section.id, val)}
                                 />
+                                <div className="flex justify-between text-xs text-custom-platinum mt-2">
+                                  <span>{section.id === 'modelYear' ? section.config.min : AmountWithCommas(section.config.min)}</span>
+                                  <span>{section.id === 'modelYear' ? section.config.max : AmountWithCommas(section.config.max)}</span>
+                                </div>
                               </div>
                             ) : (
                               section.options.map((option, optionIdx) => (
-                                <div
-                                  key={option.value}
-                                  className="flex items-center"
-                                >
+                                <div key={option.value} className="flex items-center group">
                                   <input
                                     id={`filter-${section.id}-${optionIdx}`}
                                     name={`${section.id}[]`}
@@ -852,11 +853,11 @@ export default function Buy({ allListings }) {
                                         e.target.checked,
                                       )
                                     }
-                                    className="h-4 w-4 rounded border-custom-platinum bg-custom-black text-custom-accent focus:ring-custom-accent"
+                                    className="h-4 w-4 rounded border-custom-platinum/30 bg-custom-black text-custom-accent focus:ring-custom-accent focus:ring-offset-custom-black cursor-pointer"
                                   />
                                   <label
                                     htmlFor={`filter-${section.id}-${optionIdx}`}
-                                    className="ml-3 text-sm text-custom-platinum"
+                                    className="ml-3 text-sm text-custom-platinum group-hover:text-white transition-colors cursor-pointer"
                                   >
                                     {option.label}
                                   </label>
@@ -869,59 +870,64 @@ export default function Buy({ allListings }) {
                     )}
                   </Disclosure>
                 ))}
+                
                 <Button
                   onClick={() => updateFilters()}
-                  className="w-[100%] !bg-custom-accent hover:!bg-yellow-400 !text-custom-black mt-4 !font-bold"
+                  className="w-full !bg-custom-accent hover:!bg-yellow-400 !text-custom-black !font-bold !h-10 !rounded-lg mt-4 shadow-lg shadow-custom-accent/20"
                 >
-                  Filter
-                </Button>
-                <Button
-                  onClick={() => clearFilters()}
-                  className="w-[100%] !bg-custom-jet hover:!bg-custom-black !text-white !border-white/10 mt-4"
-                >
-                  Clear Filters
+                  {t('buy.filters.apply')}
                 </Button>
               </form>
 
-              <div className="lg:w-[75%] w-[100%] ">
+              {/* Product grid */}
+              <div className="lg:col-span-3">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
                     updateFilters()
                   }}
+                  className="mb-8"
                 >
-                  <div className="flex justify-center items-center py-4 px-2 md:px-10">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search cars by brand/model..."
-                      className="border border-white/10 bg-custom-jet/50 text-white placeholder-custom-platinum rounded-l-md p-3 w-[100%] focus:outline-none focus:border-custom-accent"
-                    />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaSearch className="text-custom-platinum" />
+                      </div>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search cars by brand, model, or variant..."
+                        className="block w-full pl-11 pr-4 py-3 bg-custom-jet/50 border border-white/10 rounded-xl text-white placeholder-custom-platinum focus:outline-none focus:border-custom-accent focus:ring-1 focus:ring-custom-accent transition-all"
+                      />
+                    </div>
                     <button
                       type="submit"
                       onClick={(e) => {
                         e.preventDefault()
                         updateFilters()
                       }}
-                      className="items-center justify-center px-4 py-3 ml-2 text-base font-bold text-center rounded-lg text-custom-black hover:bg-yellow-400 bg-custom-accent transition-all"
+                      className="px-6 py-3 bg-custom-accent text-custom-black font-bold rounded-xl hover:bg-yellow-400 transition-all shadow-lg shadow-custom-accent/20"
                     >
-                      <FaSearch />
+                      Search
                     </button>
-
-                    <button
-                      onClick={() => {
-                        setSearchQuery('')
-                        updateFilters(null, true)
-                      }}
-                      className="bg-custom-jet hover:bg-custom-black text-white border border-white/10 py-3 px-4 ml-2 rounded-md transition-all"
-                    >
-                      Clear
-                    </button>
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery('')
+                          updateFilters(null, true)
+                        }}
+                        className="px-4 py-3 bg-white/5 text-white border border-white/10 rounded-xl hover:bg-white/10 transition-all"
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
                 </form>
+
                 {loading ? (
-                  <div className="flex items-center justify-center p-2 h-[60%]">
+                  <div className="flex items-center justify-center h-64">
                     <Oval
                       color="#F59E0B"
                       height={50}
@@ -930,26 +936,33 @@ export default function Buy({ allListings }) {
                     />
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(300px, 1fr))',
-                    }}
-                    className="py-10 px-2 md:px-10 lg:gap-x-4 gap-y-10 w-[100%]  max-h-[70vh] overflow-y-auto"
-                  >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {listings.length ? (
                       listings.map((car) => (
                         <FeaturedCard key={car._id} car={car} />
                       ))
                     ) : (
-                      <div className="text-center font-semibold p-4 lg:col-span-4 text-custom-platinum">
-                        Sorry, no vehicles match the filters set...
+                      <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-custom-jet/20 rounded-3xl border border-white/5">
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                          <FaSearch className="text-2xl text-custom-platinum" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">No vehicles found</h3>
+                        <p className="text-custom-platinum max-w-md">
+                          Try adjusting your filters or search query to find what you're looking for.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSearchQuery('')
+                            clearFilters()
+                          }}
+                          className="mt-6 text-custom-accent hover:text-yellow-400 font-medium underline underline-offset-4"
+                        >
+                          Clear all filters
+                        </button>
                       </div>
                     )}
                   </div>
                 )}
-                {/* Product grid */}
               </div>
             </div>
           </section>
