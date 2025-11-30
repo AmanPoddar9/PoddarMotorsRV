@@ -3,7 +3,9 @@ import axios from 'axios';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.poddarmotors.com';
-  
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiClient = axios.create({ baseURL: apiUrl, timeout: 5000 });
+
   // Static pages
   const staticPages = [
     '',
@@ -26,8 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all published blogs
   let blogPages: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const response = await axios.get(`${apiUrl}/api/blogs`);
+    const response = await apiClient.get('/api/blogs');
     const blogs = response.data.data;
     
     blogPages = blogs.map((blog: any) => ({
@@ -43,8 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all car listings
   let carPages: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const response = await axios.get(`${apiUrl}/api/listings`);
+    const response = await apiClient.get('/api/listings');
     const cars = response.data;
     
     carPages = cars.map((car: any) => ({

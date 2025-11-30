@@ -1,3 +1,6 @@
+// This component uses the language context hook, so it must be a client component
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import logo from '../../images/logo_new.png'
