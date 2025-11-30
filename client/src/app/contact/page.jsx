@@ -1,192 +1,460 @@
-import React from 'react'
-import { FaWhatsapp, FaUsers, FaInstagram, FaFacebook, FaPhoneAlt, FaEnvelope } from 'react-icons/fa'
-import { TbDeviceLandlinePhone } from 'react-icons/tb'
-
-import Link from 'next/link'
+'use client'
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  FaWhatsapp, 
+  FaInstagram, 
+  FaFacebook, 
+  FaPhoneAlt, 
+  FaEnvelope, 
+  FaMapMarkerAlt,
+  FaCopy,
+  FaCheck,
+  FaPaperPlane
+} from 'react-icons/fa'
 
 const ContactUsPage = () => {
+  const [copiedEmail, setCopiedEmail] = useState(false)
+  const [copiedPhone, setCopiedPhone] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  })
+  const [formStatus, setFormStatus] = useState({ type: '', message: '' })
+
+  const copyToClipboard = (text, type) => {
+    navigator.clipboard.writeText(text)
+    if (type === 'email') {
+      setCopiedEmail(true)
+      setTimeout(() => setCopiedEmail(false), 2000)
+    } else {
+      setCopiedPhone(true)
+      setTimeout(() => setCopiedPhone(false), 2000)
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setFormStatus({ type: 'loading', message: 'Sending...' })
+    
+    // Simulate form submission
+    setTimeout(() => {
+      setFormStatus({ type: 'success', message: 'Message sent successfully!' })
+      setFormData({ name: '', email: '', phone: '', message: '' })
+      setTimeout(() => setFormStatus({ type: '', message: '' }), 3000)
+    }, 1500)
+  }
+
+  const contactMethods = [
+    {
+      icon: FaPhoneAlt,
+      title: 'Call Us',
+      value: '8709119090',
+      link: 'tel:8709119090',
+      description: 'Mon-Sun: 9:30 AM - 7:00 PM',
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-500/10',
+      action: () => copyToClipboard('8709119090', 'phone')
+    },
+    {
+      icon: FaEnvelope,
+      title: 'Email Us',
+      value: 'poddarranchi@gmail.com',
+      link: 'mailto:poddarranchi@gmail.com',
+      description: 'We reply within 24 hours',
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'bg-purple-500/10',
+      action: () => copyToClipboard('poddarranchi@gmail.com', 'email')
+    },
+    {
+      icon: FaWhatsapp,
+      title: 'WhatsApp',
+      value: '8709119090',
+      link: 'https://wa.me/918709119090?text=Hi there looking forward to connecting with you.',
+      description: 'Chat with us instantly',
+      color: 'from-green-500 to-emerald-500',
+      bgColor: 'bg-green-500/10'
+    }
+  ]
+
+  const showrooms = [
+    {
+      name: 'Real Value - Kokar',
+      address: 'Poddar Automart, Kokar Industrial Area, Ranchi - 834001',
+      landmark: 'Near Electricity Sub Station',
+      mapLink: 'https://maps.google.com/?q=Real+Value+Kokar+Ranchi'
+    },
+    {
+      name: 'Poddar Motors',
+      address: 'Poddar Motors Pvt. Ltd., Kokar Industrial Area, Ranchi - 834001',
+      landmark: 'Beside Moreish Bread',
+      mapLink: 'https://maps.google.com/?q=Poddar+Motors+Kokar+Ranchi'
+    },
+    {
+      name: 'Real Value - Kokar Chowk',
+      address: 'Tirupati Engicon, Kokar Chowk, Ranchi - 834001',
+      landmark: 'Kokar Chowk - Kantatoli Road',
+      mapLink: 'https://maps.google.com/?q=Real+Value+Kokar+Chowk+Ranchi'
+    },
+    {
+      name: 'Real Value - Mesra',
+      address: 'Hazaribagh Road, Mesra, Ranchi - 834001',
+      landmark: 'Near BIT Mesra Campus',
+      mapLink: 'https://maps.google.com/?q=Real+Value+Mesra+Ranchi'
+    }
+  ]
+
   return (
-    <section className="bg-custom-black">
-      <div className="container px-4 py-8 lg:px-6 max-w-screen-xl mx-auto">
-        <div>
-          <h1 className="mt-2 text-3xl font-semibold  md:text-4xl text-custom-seasalt">
-            Get in touch
-          </h1>
-
-          <p className="mt-3 text-lg  text-custom-platinum">
-            We would love to hear from you.
-          </p>
-        </div>
-
-        <div
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
-          }}
-          className="lg:grid flex gap-x-0 flex-col mt-12"
-        >
-          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-1">
-            <div>
-              <span className="inline-block p-3 text-custom-yellow rounded-full bg-custom-jet">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                  />
-                </svg>
-              </span>
-
-              <h2 className="mt-4 text-xl font-medium  text-custom-seasalt">Email</h2>
-              <p className="mt-2 text-base  text-custom-platinum">
-                Drop a mail for any queries.
-              </p>
-              <div className="space-y-2">
-                <p className="mt-2 text-base text-custom-seasalt hover:text-custom-yellow">
-                 <a href='mailto:poddarranchi@gmail.com'>poddarranchi@gmail.com</a> 
-                </p>
-                <p className="mt-2 text-base text-custom-seasalt hover:text-custom-yellow">
-                <a href='mailto:info@poddarmotors.com'>info@poddarmotors.com</a>
-                </p>
-                <p className="mt-2 text-base text-custom-seasalt hover:text-custom-yellow">
-                <a href='mailto:contact@poddarmotors.com'>contact@poddarmotors.com</a>
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <span className="inline-block p-3 text-custom-yellow rounded-full bg-custom-jet">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
-                  />
-                </svg>
-              </span>
-              <h2 className="mt-4 text-xl font-medium  text-custom-seasalt">Phone</h2>
-              <p className="mt-2 text-base  text-custom-platinum">
-                Everyday from 9:30am to 7pm.
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
-                    <FaPhoneAlt className="text-blue-600 text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Phone</p>
-                    <a className="text-custom-seasalt hover:text-custom-yellow" href={`tel:8709119090`}>8709119090</a>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
-                    <FaEnvelope className="text-blue-600 text-xl" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">Email</p>
-                    <p className="text-custom-seasalt font-semibold">poddarranchi@gmail.com</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <p className="text-sm text-gray-500 font-medium mb-4">Connect with us</p>
-                <div className="flex space-x-4">
-                  <a
-                    href="https://www.facebook.com/RealValueRanchi"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all duration-300"
-                  >
-                    <FaFacebook className="text-xl" />
-                  </a>
-                  <a
-                    href="https://www.instagram.com/pmplrealvalue/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-all duration-300"
-                  >
-                    <FaInstagram className="text-xl" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="md:mt-0 mt-12">
-            <span className="inline-block p-3 text-custom-yellow rounded-full bg-custom-jet">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-                />
-              </svg>
-            </span>
-
-            <h2 className="mt-4 text-xl font-medium  text-custom-seasalt">Showrooms</h2>
-            <p className="mt-2 text-base  text-custom-platinum">
-              Browse our exquisite collection of cars.
-            </p>
-            <div className="space-y-2">
-              <p className="mt-2 mb-4 text-base text-custom-seasalt hover:text-custom-yellow">
-                1. (Poddar Automart) Real Value, Kokar Industrial Area, Kokar,
-                Ranchi - 834001 Landmark: Electricity Sub Station
-              </p>
-              <p className="mt-2 mb-4 text-base text-custom-seasalt hover:text-custom-yellow">
-                2. (Poddar Motors) Poddar Motors Pvt. Ltd. , Kokar Industrial
-                Area, Kokar , Ranchi -834001 Landmark: Beside moreish bread
-              </p>
-              <p className="mt-2 mb-4 text-base text-custom-seasalt hover:text-custom-yellow">
-                3. (Tirupati Engicon) Real Value, Kokar Chowk, Kokar, Ranchi -
-                834001 Landmark: Kokar Chowk - Kantatoli road
-              </p>
-              <p className="mt-2 mb-4 text-base text-custom-seasalt hover:text-custom-yellow">
-                4. Real Value, Hazaribagh Road ,Mesra , Ranchi - 834001
-                Landmark: Near BIT Mesra campus
-              </p>
-            </div>
-            <div className="overflow-hidden rounded-lg h-80 lg:h-50 mt-12">
-              <iframe
-                width="100%"
-                height="100%"
-                title="map"
-                style={{ border: 0, marginLeft: 'auto', marginRight: 'auto' }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3662.466933990794!2d85.3504478093273!3d23.371319578842947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f4e17d184b0973%3A0xbc6d6be675cca0f0!2sREAL%20VALUE!5e0!3m2!1sen!2sin!4v1714636151144!5m2!1sen!2sin"
-              ></iframe>
-            </div>
-          </div>
-        </div>
+    <div className="bg-custom-black min-h-screen overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 -left-40 w-96 h-96 bg-custom-accent/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
-    </section>
+
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8"
+        >
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+            >
+              <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-6">
+                Let's <span className="bg-gradient-to-r from-custom-accent to-yellow-400 bg-clip-text text-transparent">Connect</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-custom-platinum max-w-3xl mx-auto mb-12">
+                We're here to help you find your perfect car. Reach out to us anytime!
+              </p>
+            </motion.div>
+
+            {/* Quick Action Buttons */}
+            <motion.div 
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="flex flex-wrap justify-center gap-4 mb-16"
+            >
+              <a
+                href="tel:8709119090"
+                className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-full font-bold hover:scale-105 transition-all shadow-lg shadow-blue-600/30"
+              >
+                <FaPhoneAlt className="text-xl group-hover:rotate-12 transition-transform" />
+                Call Now
+              </a>
+              <a
+                href="https://wa.me/918709119090"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full font-bold hover:scale-105 transition-all shadow-lg shadow-green-600/30"
+              >
+                <FaWhatsapp className="text-xl group-hover:scale-110 transition-transform" />
+                WhatsApp
+              </a>
+              <a
+                href="mailto:poddarranchi@gmail.com"
+                className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold hover:scale-105 transition-all shadow-lg shadow-purple-600/30"
+              >
+                <FaEnvelope className="text-xl group-hover:rotate-12 transition-transform" />
+                Email Us
+              </a>
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Contact Methods */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            >
+              {contactMethods.map((method, index) => (
+                <motion.div
+                  key={method.title}
+                  initial={{ y: 50, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  className="group relative"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-r ${method.color} opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500`}></div>
+                  <div className="relative bg-custom-jet/50 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all duration-300">
+                    <div className={`w-16 h-16 ${method.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <method.icon className={`text-3xl bg-gradient-to-r ${method.color} bg-clip-text text-transparent`} />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-white mb-2">{method.title}</h3>
+                    <p className="text-custom-platinum text-sm mb-4">{method.description}</p>
+                    
+                    <div className="flex items-center gap-2 mb-4">
+                      <a 
+                        href={method.link}
+                        className="text-white font-medium hover:text-custom-accent transition-colors flex-1"
+                        target={method.title === 'WhatsApp' ? '_blank' : undefined}
+                        rel={method.title === 'WhatsApp' ? 'noopener noreferrer' : undefined}
+                      >
+                        {method.value}
+                      </a>
+                      {method.action && (
+                        <button
+                          onClick={method.action}
+                          className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                          title="Copy to clipboard"
+                        >
+                          {(method.title === 'Email Us' && copiedEmail) || (method.title === 'Call Us' && copiedPhone) ? (
+                            <FaCheck className="text-green-500" />
+                          ) : (
+                            <FaCopy className="text-custom-platinum" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Contact Form & Map Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* Contact Form */}
+              <motion.div
+                initial={{ x: -50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="bg-custom-jet/30 backdrop-blur-md border border-white/10 rounded-3xl p-8">
+                  <h2 className="text-3xl font-bold text-white mb-2">Send us a Message</h2>
+                  <p className="text-custom-platinum mb-8">We'll get back to you within 24 hours</p>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        required
+                        className="peer w-full bg-custom-black/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-transparent focus:border-custom-accent focus:outline-none focus:ring-2 focus:ring-custom-accent/20 transition-all"
+                        placeholder="Your Name"
+                      />
+                      <label className="absolute left-4 -top-2.5 bg-custom-jet px-2 text-sm text-custom-platinum peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-custom-accent peer-focus:bg-custom-jet transition-all">
+                        Your Name
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        required
+                        className="peer w-full bg-custom-black/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-transparent focus:border-custom-accent focus:outline-none focus:ring-2 focus:ring-custom-accent/20 transition-all"
+                        placeholder="Email Address"
+                      />
+                      <label className="absolute left-4 -top-2.5 bg-custom-jet px-2 text-sm text-custom-platinum peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-custom-accent peer-focus:bg-custom-jet transition-all">
+                        Email Address
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        required
+                        className="peer w-full bg-custom-black/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-transparent focus:border-custom-accent focus:outline-none focus:ring-2 focus:ring-custom-accent/20 transition-all"
+                        placeholder="Phone Number"
+                      />
+                      <label className="absolute left-4 -top-2.5 bg-custom-jet px-2 text-sm text-custom-platinum peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-custom-accent peer-focus:bg-custom-jet transition-all">
+                        Phone Number
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <textarea
+                        value={formData.message}
+                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        required
+                        rows={4}
+                        className="peer w-full bg-custom-black/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-transparent focus:border-custom-accent focus:outline-none focus:ring-2 focus:ring-custom-accent/20 transition-all resize-none"
+                        placeholder="Your Message"
+                      />
+                      <label className="absolute left-4 -top-2.5 bg-custom-jet px-2 text-sm text-custom-platinum peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-custom-accent peer-focus:bg-custom-jet transition-all">
+                        Your Message
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={formStatus.type === 'loading'}
+                      className="group w-full bg-gradient-to-r from-custom-accent to-yellow-400 text-custom-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-all shadow-lg shadow-custom-accent/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    >
+                      {formStatus.type === 'loading' ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-custom-black/30 border-t-custom-black rounded-full animate-spin"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <FaPaperPlane className="group-hover:translate-x-1 transition-transform" />
+                          Send Message
+                        </>
+                      )}
+                    </button>
+
+                    {formStatus.message && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`p-4 rounded-xl ${
+                          formStatus.type === 'success' 
+                            ? 'bg-green-500/20 border border-green-500/50 text-green-400' 
+                            : 'bg-red-500/20 border border-red-500/50 text-red-400'
+                        }`}
+                      >
+                        {formStatus.message}
+                      </motion.div>
+                    )}
+                  </form>
+                </div>
+              </motion.div>
+
+              {/* Social Links */}
+              <motion.div
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="space-y-8"
+              >
+                <div className="bg-custom-jet/30 backdrop-blur-md border border-white/10 rounded-3xl p-8">
+                  <h2 className="text-3xl font-bold text-white mb-6">Follow Us</h2>
+                  <p className="text-custom-platinum mb-8">Stay updated with our latest inventory and offers</p>
+                  
+                  <div className="space-y-4">
+                    <a
+                      href="https://www.facebook.com/RealValueRanchi"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-4 p-4 bg-custom-black/50 border border-white/10 rounded-xl hover:border-blue-500/50 hover:bg-blue-500/10 transition-all"
+                    >
+                      <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FaFacebook className="text-2xl text-blue-500" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white font-bold">Facebook</h3>
+                        <p className="text-custom-platinum text-sm">@RealValueRanchi</p>
+                      </div>
+                      <div className="text-custom-platinum group-hover:translate-x-1 transition-transform">→</div>
+                    </a>
+
+                    <a
+                      href="https://www.instagram.com/pmplrealvalue/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-4 p-4 bg-custom-black/50 border border-white/10 rounded-xl hover:border-pink-500/50 hover:bg-pink-500/10 transition-all"
+                    >
+                      <div className="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FaInstagram className="text-2xl text-pink-500" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white font-bold">Instagram</h3>
+                        <p className="text-custom-platinum text-sm">@pmplrealvalue</p>
+                      </div>
+                      <div className="text-custom-platinum group-hover:translate-x-1 transition-transform">→</div>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Map */}
+                <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2, duration: 0.8 }}
+                  className="bg-custom-jet/30 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden"
+                >
+                  <iframe
+                    width="100%"
+                    height="300"
+                    title="map"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3662.466933990794!2d85.3504478093273!3d23.371319578842947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f4e17d184b0973%3A0xbc6d6be675cca0f0!2sREAL%20VALUE!5e0!3m2!1sen!2sin!4v1714636151144!5m2!1sen!2sin"
+                  ></iframe>
+                </motion.div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Showrooms Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">Visit Our Showrooms</h2>
+              <p className="text-xl text-custom-platinum">Experience our collection in person</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {showrooms.map((showroom, index) => (
+                <motion.div
+                  key={showroom.name}
+                  initial={{ y: 50, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  className="group relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-custom-accent/20 to-yellow-400/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"></div>
+                  <div className="relative bg-custom-jet/30 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:border-custom-accent/50 transition-all duration-300">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-custom-accent/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <FaMapMarkerAlt className="text-2xl text-custom-accent" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-white mb-2">{showroom.name}</h3>
+                        <p className="text-custom-platinum text-sm mb-1">{showroom.address}</p>
+                        <p className="text-custom-accent text-xs mb-4">Landmark: {showroom.landmark}</p>
+                        <a
+                          href={showroom.mapLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-white bg-white/5 hover:bg-custom-accent hover:text-custom-black px-4 py-2 rounded-lg transition-all text-sm font-medium"
+                        >
+                          <FaMapMarkerAlt />
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
   )
 }
 
