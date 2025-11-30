@@ -177,7 +177,7 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
             <WhatsAppWidget />
-            <ChatBot />
+            {/* <ChatBot /> */}
           </Providers>
         </AntdRegistry>
       </body>

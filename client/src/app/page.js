@@ -42,7 +42,7 @@ export default async function Home() {
   return (
     <div style={{ overflow: 'hidden !important' }}>
 
-      {/* <LandingHero /> */}
+      <LandingHero />
       <FeaturedCars featuredCarData={data} />
       <DealsOfTheDay />
       <ButtonRows />
