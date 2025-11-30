@@ -24,7 +24,7 @@ export function LanguageProvider({ children }) {
   }
 
   // Translation helper function
-  // Usage: t('nav.home') -> "Home" or "होम"
+  // Usage: t('path.to.key') -> "Value" or "मान"
   const t = (path) => {
     const keys = path.split('.')
     let current = translations[language]
@@ -40,12 +40,15 @@ export function LanguageProvider({ children }) {
     return current
   }
 
-  if (!mounted) {
-    return <>{children}</> // Prevent hydration mismatch
+  // Provide default context even before mount to prevent SSR errors
+  const value = {
+    language: mounted ? language : 'en',
+    toggleLanguage: mounted ? toggleLanguage : () => {},
+    t: mounted ? t : (path) => path // Fallback to key during SSR
   }
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   )
