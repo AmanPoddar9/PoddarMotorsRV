@@ -118,7 +118,7 @@ const BookingForm = () => {
             </div>
             <div className="mt-10">
               <p className="text-sm text-blue-200">Need immediate assistance?</p>
-              <p className="text-xl font-bold mt-1">+91 8873002702</p>
+              <p className="text-xl font-bold mt-1">+91 8709119090</p>
             </div>
           </div>
 

@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import logo from '../../images/logo_new.png'
@@ -16,7 +18,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 const Footer = () => {
   const { t } = useLanguage()
   return (
-    <footer className="bg-custom-jet border-t border-white/10 text-custom-seasalt py-12 px-4">
+    <footer className="bg-custom-black border-t border-white/10 text-custom-seasalt py-12 px-4">
       <div className="container mx-auto max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Logo and Address */}
@@ -75,7 +77,7 @@ const Footer = () => {
                 href="https://www.google.com/maps/dir//REAL+VALUE+ranchi+google+business+page/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x39f4e17d184b0973:0xbc6d6be675cca0f0?sa=X&ved=1t:3061&ictx=111"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-custom-black/50 flex items-center justify-center hover:bg-blue-500 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="w-10 h-10 rounded-full bg-custom-jet flex items-center justify-center hover:bg-blue-500 transition-all duration-300 hover:scale-110 border border-white/10"
                 aria-label="Google Maps"
               >
                 <FiMapPin className="text-lg" />
@@ -84,25 +86,25 @@ const Footer = () => {
                 href="mailto:poddarranchi@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-custom-black/50 flex items-center justify-center hover:bg-red-500 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="w-10 h-10 rounded-full bg-custom-jet flex items-center justify-center hover:bg-red-500 transition-all duration-300 hover:scale-110 border border-white/10"
                 aria-label="Email"
               >
                 <SiGmail className="text-lg" />
               </a>
               <a
-                href="https://wa.me/+918873002702?text=Hi there looking forward to connecting with you."
+                href="https://wa.me/+918709119090?text=Hi there looking forward to connecting with you."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-custom-black/50 flex items-center justify-center hover:bg-green-500 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="w-10 h-10 rounded-full bg-custom-jet flex items-center justify-center hover:bg-green-500 transition-all duration-300 hover:scale-110 border border-white/10"
                 aria-label="WhatsApp"
               >
                 <FaWhatsapp className="text-lg" />
               </a>
               <a
-                href="https://www.facebook.com/RealValueRanchi/"
+                href="https://www.facebook.com/RealValueRanchi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-custom-black/50 flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="w-10 h-10 rounded-full bg-custom-jet flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110 border border-white/10"
                 aria-label="Facebook"
               >
                 <FaFacebook className="text-lg" />
@@ -111,15 +113,15 @@ const Footer = () => {
                 href="https://www.instagram.com/pmplrealvalue/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-custom-black/50 flex items-center justify-center hover:bg-pink-500 transition-all duration-300 hover:scale-110 border border-white/10"
+                className="w-10 h-10 rounded-full bg-custom-jet flex items-center justify-center hover:bg-pink-500 transition-all duration-300 hover:scale-110 border border-white/10"
                 aria-label="Instagram"
               >
                 <FaInstagram className="text-lg" />
               </a>
             </div>
             <p className="text-custom-platinum text-sm">
-              <a href="tel:8873002702" className="hover:text-custom-accent transition-colors">
-                +91 8873002702
+              <a href="tel:8709119090" className="hover:text-custom-accent transition-colors">
+                +91 8709119090
               </a>
             </p>
           </div>

@@ -29,7 +29,7 @@ const AddressMap = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg mb-1">Phone</h4>
-                  <p className="text-gray-600">+91 8873002702</p>
+                  <p className="text-gray-600">+91 8709119090</p>
                 </div>
               </div>
 

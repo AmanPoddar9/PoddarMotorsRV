@@ -1,10 +1,12 @@
 import { Inter, Outfit } from 'next/font/google'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import './globals.css'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-import WhatsAppWidget from './components/WhatsAppWidget'
-import ChatBot from './components/ChatBot'
+import dynamicImport from 'next/dynamic'
+
+const Navbar = dynamicImport(() => import('./components/Navbar'), { ssr: false })
+const Footer = dynamicImport(() => import('./components/Footer'), { ssr: false })
+const WhatsAppWidget = dynamicImport(() => import('./components/WhatsAppWidget'), { ssr: false })
+const ChatBot = dynamicImport(() => import('./components/ChatBot'), { ssr: false })
 import { Providers } from './providers'
 import Script from 'next/script'
 
@@ -45,7 +47,7 @@ export const viewport = {
 }
 
 // Force dynamic rendering to avoid SSR/SSG issues with client-side context
-export const dynamic = 'force-dynamic'
+// export const dynamic = 'force-dynamic'
 
 export default function RootLayout({ children }) {
   return (
@@ -122,7 +124,7 @@ export default function RootLayout({ children }) {
               "name": "Poddar Motors Real Value",
               "description": "Trusted used car dealer in Ranchi, Jharkhand. Best prices for second hand cars.",
               "url": "https://poddarmotors.com",
-              "telephone": "+918873002702",
+              "telephone": "+918709119090",
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "Near Oxford School, Pragati Path, Upper Chutia",
@@ -151,7 +153,7 @@ export default function RootLayout({ children }) {
                 "closes": "19:00"
               },
               "sameAs": [
-                "https://www.facebook.com/RealValueRanchi/",
+                "https://www.facebook.com/RealValueRanchi",
                 "https://www.instagram.com/pmplrealvalue/"
               ],
               "priceRange": "₹₹"
@@ -177,7 +179,7 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
             <WhatsAppWidget />
-            {/* <ChatBot /> */}
+            <ChatBot />
           </Providers>
         </AntdRegistry>
       </body>

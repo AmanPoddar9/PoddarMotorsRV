@@ -76,13 +76,12 @@ export default function VideosPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <a href="https://youtube.com/@poddarmotors" target="_blank" className="group flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-red-600 hover:border-red-600 transition-all duration-300">
-              <FaYoutube className="text-xl text-red-500 group-hover:text-white transition-colors" /> 
-              <span className="font-semibold">Subscribe</span>
+           className="flex flex-wrap justify-center gap-4 mb-12">
+            <a href="https://www.youtube.com/@RealValueRanchi" target="_blank" className="group flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-red-600 hover:border-red-600 transition-all duration-300">
+              <FaYoutube className="text-2xl group-hover:scale-110 transition-transform" />
+              <span className="font-medium">Subscribe on YouTube</span>
             </a>
-            <a href="https://instagram.com/poddarmotors" target="_blank" className="group flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-pink-600 hover:border-pink-600 transition-all duration-300">
+            <a href="https://www.instagram.com/poddar.motors" target="_blank" className="group flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full hover:bg-pink-600 hover:border-pink-600 transition-all duration-300">
               <FaInstagram className="text-xl text-pink-500 group-hover:text-white transition-colors" /> 
               <span className="font-semibold">Follow</span>
             </a>

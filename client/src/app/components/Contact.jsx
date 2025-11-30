@@ -22,7 +22,7 @@ const Contact = () => {
             <div className="flex items-center space-x-2">
               <FaFacebook className="text-blue-500 text-2xl" />
               <a
-                href="https://www.facebook.com/RealValueRanchi/"
+                href="https://www.facebook.com/RealValueRanchi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-900 hover:underline"
@@ -68,7 +68,7 @@ const Contact = () => {
             </button>
           </a>
           <a 
-            href="https://wa.me/+918873002702?text=Hi there looking forward to connecting with you."
+            href="https://wa.me/+918709119090?text=Hi there looking forward to connecting with you."
             onClick={() => {
               if (typeof window !== 'undefined' && window.fbq) {
                 window.fbq('track', 'Contact', { content_name: 'WhatsApp Chat' })

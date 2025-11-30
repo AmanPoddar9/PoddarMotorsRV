@@ -77,55 +77,52 @@ const ContactUsPage = () => {
                   />
                 </svg>
               </span>
-
               <h2 className="mt-4 text-xl font-medium  text-custom-seasalt">Phone</h2>
               <p className="mt-2 text-base  text-custom-platinum">
                 Everyday from 9:30am to 7pm.
               </p>
               <div className="space-y-2">
-                <div className="mt-2 flex items-center justify-start">
-                  <FaWhatsapp
-                    className="text-green-500 text-2xl mr-2"
-                    size={20}
-                  />
-                  <p className="text-base text-custom-seasalt hover:text-custom-yellow">
-                    <a  href={`https://wa.me/+918102856301`}> +91 8102856301</a>
-                  </p>
+                <div className="flex items-center space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <FaPhoneAlt className="text-blue-600 text-xl" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">Phone</p>
+                    <a className="text-custom-seasalt hover:text-custom-yellow" href={`tel:8709119090`}>8709119090</a>
+                  </div>
                 </div>
-                <div className="mt-2 flex items-center justify-start">
-                  <TbDeviceLandlinePhone
-                    className="text-cyan-600 text-2xl mr-2"
-                    size={20}
-                  />
-                  <p className="text-base text-custom-seasalt hover:text-custom-yellow">
-                  <a  href={`tel:8102856301`}>8873002702</a>
-                  </p>
+
+                <div className="flex items-center space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <FaEnvelope className="text-blue-600 text-xl" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">Email</p>
+                    <p className="text-custom-seasalt font-semibold">poddarranchi@gmail.com</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <span className="inline-block p-3 text-custom-yellow rounded-full bg-custom-jet mx-auto">
-                <FaUsers className="text-custom-yellow text-2xl" size={20} />
-              </span>
-
-              <h2 className="mt-4 text-xl font-medium  text-custom-seasalt">Socials</h2>
-              <p className="mt-2 text-base  text-custom-platinum">Follow us!</p>
-              <div className="flex items-center justify-start space-x-6 mt-3">
-                <Link
-                  href="https://www.facebook.com/RealValueRanchi/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <FaInstagram className="text-pink-500 text-2xl" size={20} />
-                </Link>
-                <Link
-                  href="https://www.instagram.com/pmplrealvalue/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <FaFacebook className="text-blue-500 text-2xl" size={20} />
-                </Link>
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <p className="text-sm text-gray-500 font-medium mb-4">Connect with us</p>
+                <div className="flex space-x-4">
+                  <a
+                    href="https://www.facebook.com/RealValueRanchi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all duration-300"
+                  >
+                    <FaFacebook className="text-xl" />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/pmplrealvalue/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition-all duration-300"
+                  >
+                    <FaInstagram className="text-xl" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

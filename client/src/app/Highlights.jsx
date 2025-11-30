@@ -138,7 +138,7 @@ const Highlights = () => {
                 Watch expert tips on buying used cars, maintenance guides, and real customer stories on our YouTube channel.
               </p>
               <a
-                href="https://youtube.com/@poddarmotors"
+                href="https://www.youtube.com/@RealValueRanchi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold px-8 py-4 rounded-full hover:from-red-700 hover:to-pink-700 transition-all shadow-lg shadow-red-600/30 hover:shadow-red-600/50 hover:scale-105"
