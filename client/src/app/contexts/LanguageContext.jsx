@@ -1,14 +1,19 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { translations } from '../translations'
 
 const LanguageContext = createContext()
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState('en')
   const [mounted, setMounted] = useState(false)
+  const [translations, setTranslations] = useState(null)
 
   useEffect(() => {
+    // Load translations only on client side
+    import('../translations').then((module) => {
+      setTranslations(module.translations)
+    })
+    
     // Check localStorage for saved preference
     const savedLang = localStorage.getItem('language')
     if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
@@ -20,17 +25,23 @@ export function LanguageProvider({ children }) {
   const toggleLanguage = () => {
     const newLang = language === 'en' ? 'hi' : 'en'
     setLanguage(newLang)
-    localStorage.setItem('language', newLang)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', newLang)
+    }
   }
 
   // Translation helper function
-  // Usage: t('path.to.key') -> "Value" or "मान"
   const t = (path) => {
+    // If translations not loaded yet or not mounted, return the path as fallback
+    if (!mounted || !translations) {
+      return path
+    }
+
     const keys = path.split('.')
     let current = translations[language]
     
     for (const key of keys) {
-      if (current[key] === undefined) {
+      if (current === undefined || current[key] === undefined) {
         console.warn(`Translation missing for key: ${path} in language: ${language}`)
         return path // Fallback to key if translation missing
       }
@@ -40,11 +51,11 @@ export function LanguageProvider({ children }) {
     return current
   }
 
-  // Provide default context even before mount to prevent SSR errors
+  // Provide safe context even before mount
   const value = {
-    language: mounted ? language : 'en',
-    toggleLanguage: mounted ? toggleLanguage : () => {},
-    t: mounted ? t : (path) => path // Fallback to key during SSR
+    language,
+    toggleLanguage,
+    t
   }
 
   return (
