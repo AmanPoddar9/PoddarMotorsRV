@@ -1,25 +1,20 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { translations } from '../translations'
 
 const LanguageContext = createContext()
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState('en')
   const [mounted, setMounted] = useState(false)
-  const [translations, setTranslations] = useState(null)
 
   useEffect(() => {
-    // Load translations only on client side
-    import('../translations').then((module) => {
-      setTranslations(module.translations)
-    })
-    
+    setMounted(true)
     // Check localStorage for saved preference
     const savedLang = localStorage.getItem('language')
     if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
       setLanguage(savedLang)
     }
-    setMounted(true)
   }, [])
 
   const toggleLanguage = () => {
@@ -32,9 +27,9 @@ export function LanguageProvider({ children }) {
 
   // Translation helper function
   const t = (path) => {
-    // If translations not loaded yet or not mounted, return the path as fallback
-    if (!mounted || !translations) {
-      return path
+    // Safely access translations
+    if (!path || typeof path !== 'string') {
+      return ''
     }
 
     const keys = path.split('.')
@@ -42,8 +37,18 @@ export function LanguageProvider({ children }) {
     
     for (const key of keys) {
       if (current === undefined || current[key] === undefined) {
-        console.warn(`Translation missing for key: ${path} in language: ${language}`)
-        return path // Fallback to key if translation missing
+        // Fallback to English if Hindi translation is missing
+        if (language === 'hi') {
+          let fallback = translations['en']
+          for (const k of keys) {
+            if (fallback === undefined || fallback[k] === undefined) {
+              return path
+            }
+            fallback = fallback[k]
+          }
+          return fallback
+        }
+        return path
       }
       current = current[key]
     }
@@ -51,11 +56,11 @@ export function LanguageProvider({ children }) {
     return current
   }
 
-  // Provide safe context even before mount
   const value = {
     language,
     toggleLanguage,
-    t
+    t,
+    mounted
   }
 
   return (

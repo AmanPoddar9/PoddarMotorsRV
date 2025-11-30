@@ -45,6 +45,9 @@ export const viewport = {
   maximumScale: 1,
 }
 
+// Force dynamic rendering to avoid SSR/SSG issues with client-side context
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({ children }) {
   // We need to handle client-side logic for pathname
   // Since this is a Server Component, we can't use usePathname directly here.
