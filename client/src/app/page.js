@@ -3,7 +3,6 @@
 import LandingHero from './components/LandingHero'
 import FeaturedCars from './FeaturedCars'
 import Highlights from './Highlights'
-import Features from './Features'
 import Faq from './components/Faq'
 import Contact from './components/Contact'
 import { homeFAQ } from './data/homeFAQs'
@@ -47,7 +46,6 @@ export default async function Home() {
       <FeaturedCars featuredCarData={data} />
       <DealsOfTheDay />
       <ButtonRows />
-      <Features />
       <Highlights />
       <Faq FAQs={homeFAQ} title="FAQs while buying a used car" />
       {/* <Contact /> */}

@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation'
 import { IoMdClose, IoMdMenu, IoMdArrowDropdown } from 'react-icons/io'
 import { FaUser, FaCrown } from 'react-icons/fa'
 import { useCustomer } from '../utils/customerContext'
+import { useLanguage } from '../contexts/LanguageContext'
+import LanguageToggle from './LanguageToggle'
 import Logo from '../../images/logo_text.png'
 
 const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
@@ -17,6 +19,7 @@ const Drawer = dynamic(() => import('antd').then((mod) => mod.Drawer), {
 const Navbar = () => {
   const pathname = usePathname()
   const { customer, logout } = useCustomer()
+  const { t } = useLanguage()
   const [visible, setVisible] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -100,13 +103,13 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-8">
-              <NavLink href="/buy" text="Buy" isActive={pathname === '/buy'} />
-              <NavLink href="/sell" text="Sell" isActive={pathname === '/sell'} />
+            <div className="hidden lg:flex items-center space-x-6">
+              <NavLink href="/buy" text={t('nav.buy')} isActive={pathname === '/buy'} />
+              <NavLink href="/sell" text={t('nav.sell')} isActive={pathname === '/sell'} />
               
               <Link href="/workshop" className="relative group py-2">
                 <span className="text-sm font-bold uppercase tracking-wider text-red-500 transition-colors duration-300 group-hover:text-red-400">
-                  Workshop
+                  {t('nav.workshop')}
                 </span>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-500 transition-all duration-300 group-hover:w-full"></span>
               </Link>
@@ -126,20 +129,22 @@ const Navbar = () => {
                     <Link href="/find-my-car" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Find My Car</Link>
                     <Link href="/testimonials" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Success Stories</Link>
                     <Link href="/buying-guide" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Buying Guide</Link>
-                    <Link href="/finance" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Finance</Link>
-                    <Link href="/scrap" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Scrap Car</Link>
-                    <Link href="/blog" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Blog</Link>
-                    <Link href="/videos" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Videos</Link>
-                    <Link href="/about" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">About Us</Link>
+                    <Link href="/finance" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.finance')}</Link>
+                    <Link href="/scrap" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.scrap')}</Link>
+                    <Link href="/blog" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.blog')}</Link>
+                    <Link href="/videos" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.videos')}</Link>
+                    <Link href="/about" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.about')}</Link>
                   </div>
                 )}
               </div>
+
+              <LanguageToggle />
 
               <Link
                 href="/contact"
                 className="px-6 py-2 bg-custom-accent text-custom-black font-bold rounded-full hover:bg-yellow-400 transition-all duration-300 shadow-lg shadow-yellow-500/20 text-sm uppercase tracking-wide transform hover:scale-105"
               >
-                Contact Us
+                {t('nav.contact')}
               </Link>
               
               {/* Customer Auth */}
@@ -169,7 +174,7 @@ const Navbar = () => {
                         onClick={() => setShowUserDropdown(false)}
                         className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                       >
-                        My Profile
+                        {t('nav.profile')}
                       </Link>
                       <button
                         onClick={() => {
@@ -178,7 +183,7 @@ const Navbar = () => {
                         }}
                         className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                       >
-                        Logout
+                        {t('nav.logout')}
                       </button>
                     </div>
                   )}
@@ -188,13 +193,14 @@ const Navbar = () => {
                   href="/login"
                   className="px-6 py-2 bg-white/10 text-white font-bold rounded-full hover:bg-white/20 transition-all duration-300 text-sm uppercase tracking-wide border border-white/10"
                 >
-                  Login
+                  {t('nav.login')}
                 </Link>
               )}
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="lg:hidden">
+            <div className="lg:hidden flex items-center gap-4">
+              <LanguageToggle />
               <button
                 onClick={showDrawer}
                 className="text-white hover:text-custom-accent transition-colors p-2 bg-white/5 rounded-lg border border-white/10"
@@ -232,11 +238,12 @@ const Navbar = () => {
           </div>
           
           <div className="flex flex-col space-y-4 items-center justify-center flex-grow relative z-10 overflow-y-auto">
-            <MobileNavLink href="/" text="Home" />
-            <MobileNavLink href="/buy" text="Buy Car" />
-            <MobileNavLink href="/sell" text="Sell Car" />
+            <LanguageToggle /> {/* Added LanguageToggle here */}
+            <MobileNavLink href="/" text={t('nav.home')} />
+            <MobileNavLink href="/buy" text={t('nav.buy')} />
+            <MobileNavLink href="/sell" text={t('nav.sell')} />
             <Link href="/workshop" onClick={onClose} className="text-xl font-bold text-red-500 hover:text-red-400 transition-colors duration-300 w-full text-center py-2">
-              Workshop
+              {t('nav.workshop')}
             </Link>
             
             <div className="w-16 h-px bg-white/10 my-2"></div>
@@ -244,12 +251,12 @@ const Navbar = () => {
             <MobileNavLink href="/find-my-car" text="Find My Car" />
             <MobileNavLink href="/testimonials" text="Success Stories" />
             <MobileNavLink href="/buying-guide" text="Buying Guide" />
-            <MobileNavLink href="/finance" text="Finance" />
-            <MobileNavLink href="/scrap" text="Scrap Car" />
-            <MobileNavLink href="/blog" text="Blog" />
-            <MobileNavLink href="/videos" text="Videos" />
-            <MobileNavLink href="/about" text="About Us" />
-            <MobileNavLink href="/contact" text="Contact Us" />
+            <MobileNavLink href="/finance" text={t('nav.finance')} />
+            <MobileNavLink href="/scrap" text={t('nav.scrap')} />
+            <MobileNavLink href="/blog" text={t('nav.blog')} />
+            <MobileNavLink href="/videos" text={t('nav.videos')} />
+            <MobileNavLink href="/about" text={t('nav.about')} />
+            <MobileNavLink href="/contact" text={t('nav.contact')} />
           </div>
           
           <div className="mt-auto pt-8 relative z-10">
@@ -269,7 +276,7 @@ const Navbar = () => {
                   onClick={onClose}
                   className="w-full py-3 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all text-center border border-white/10"
                 >
-                  My Profile
+                  {t('nav.profile')}
                 </Link>
                 <button 
                   onClick={() => {
@@ -278,7 +285,7 @@ const Navbar = () => {
                   }}
                   className="w-full py-3 bg-red-500/10 text-red-400 font-bold rounded-xl hover:bg-red-500/20 transition-all text-center border border-red-500/20"
                 >
-                  Logout
+                  {t('nav.logout')}
                 </button>
               </div>
             ) : (
@@ -287,7 +294,7 @@ const Navbar = () => {
                 onClick={onClose}
                 className="block w-full py-4 bg-custom-accent text-custom-black font-bold text-xl rounded-xl hover:bg-yellow-400 transition-all text-center shadow-lg shadow-yellow-500/20"
               >
-                Login / Sign Up
+                {t('nav.login')}
               </Link>
             )}
             

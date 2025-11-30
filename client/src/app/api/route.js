@@ -10,16 +10,16 @@ import {
 export async function POST(req) {
   try {
     const s3Client = new S3Client({
-      region: 'ap-south-1',
+      region: process.env.AWS_REGION || 'ap-south-1',
       credentials: {
-        accessKeyId: 'AKIAZQ3DNQ6CJUV7YGIH',
-        secretAccessKey: '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',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       },
     })
 
     const imagesArray = await req.json()
 
-    const bucketName = 'realvaluestorage'
+    const bucketName = process.env.AWS_S3_BUCKET || 'realvaluestorage'
     const uploadedURLS = []
 
     for (let i = 0; i < imagesArray.length; i++) {

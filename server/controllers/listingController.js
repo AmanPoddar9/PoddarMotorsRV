@@ -9,12 +9,12 @@ const axios = require("axios");
 const CryptoJS = require("crypto-js");
 
 const s3Client = new S3Client({
-  region: 'ap-south-1',
+  region: process.env.AWS_REGION || 'ap-south-1',
   credentials: {
-    accessKeyId: 'AKIAZQ3DNQ6CJUV7YGIH',
-    secretAccessKey: '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',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-})
+});
 
 // Delete one listing by ID
 exports.deleteListingByIdCloudinary = async (req, res) => {
@@ -366,9 +366,9 @@ const extractPublicId = (url) => {
   return publicId;
 };
 const deleteSingleImage = async (publicId) => {
-  const CLOUD_NAME = "djyvxi14o";
-  const API_KEY = "969818645141645";
-  const API_SECRET = "6zE7tZ-h5zzcqAKksmyFJL3-Lzg";
+  const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "djyvxi14o";
+  const API_KEY = process.env.CLOUDINARY_API_KEY || "969818645141645";
+  const API_SECRET = process.env.CLOUDINARY_API_SECRET || "6zE7tZ-h5zzcqAKksmyFJL3-Lzg";
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = CryptoJS.SHA1(
     `public_id=${publicId}&timestamp=${timestamp}${API_SECRET}`

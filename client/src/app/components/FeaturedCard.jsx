@@ -8,8 +8,10 @@ import axios from 'axios'
 
 import Link from 'next/link'
 import API_URL from '../config/api'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const FeaturedCard = ({ car }) => {
+  const { t } = useLanguage()
   const { customer, fetchProfile } = useCustomer()
   const [inWishlist, setInWishlist] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -88,13 +90,13 @@ const FeaturedCard = ({ car }) => {
 
             <div className="flex flex-wrap gap-2 mb-6">
               <span className="bg-custom-black/50 text-custom-platinum px-3 py-1 rounded-full text-xs font-medium border border-white/5">
-                {car.kmDriven} km
+                {car.kmDriven} {t('buy.card.km')}
               </span>
               <span className="bg-custom-black/50 text-custom-platinum px-3 py-1 rounded-full text-xs font-medium border border-white/5">
-                {car.fuelType}
+                {t(`buy.card.${car.fuelType.toLowerCase()}`) || car.fuelType}
               </span>
               <span className="bg-custom-black/50 text-custom-platinum px-3 py-1 rounded-full text-xs font-medium border border-white/5">
-                {car.transmissionType}
+                {t(`buy.card.${car.transmissionType.toLowerCase()}`) || car.transmissionType}
               </span>
             </div>
 

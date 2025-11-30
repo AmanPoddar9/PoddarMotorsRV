@@ -73,7 +73,10 @@ const budgets = [
   { label: 'Above 8 Lakh', key: '3', range: '800000' },
 ]
 
+import { useLanguage } from './contexts/LanguageContext'
+
 const LandingHero = () => {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [types, setTypes] = useState([])
   const [brands, setBrands] = useState([])
@@ -184,7 +187,7 @@ const LandingHero = () => {
 
       <div className="relative z-10 max-w-5xl px-4 sm:px-6 lg:px-8 flex flex-col items-center">
         <h1 className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-tight">
-          Experience the <span className="text-custom-accent">Real Value</span>
+          {t('home.hero.title')}
         </h1>
         
         <div className="mb-8">
@@ -200,7 +203,7 @@ const LandingHero = () => {
         </div>
 
         <p className="max-w-2xl mb-10 text-lg md:text-xl text-white font-normal">
-          Your trusted partner for buying, selling, and financing pre-owned vehicles in Ranchi.
+          {t('home.hero.subtitle')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-16">
@@ -208,13 +211,13 @@ const LandingHero = () => {
             href="/buy"
             className="px-8 py-4 bg-custom-accent text-custom-black font-bold text-lg rounded-full hover:bg-yellow-400 transition-all duration-300 shadow-lg shadow-yellow-500/20 transform hover:-translate-y-1"
           >
-            Find Your Car
+            {t('home.hero.cta_buy')}
           </Link>
           <Link
             href="/sell"
             className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold text-lg rounded-full hover:bg-white hover:text-custom-black transition-all duration-300 transform hover:-translate-y-1"
           >
-            Sell Your Car
+            {t('home.hero.cta_sell')}
           </Link>
         </div>
 

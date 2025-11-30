@@ -172,16 +172,17 @@ const ButtonRows = () => {
   }, [])
 
   return (
-    <section className="pt-12 pb-24 bg-custom-black text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+    <section className="py-20 bg-gradient-to-b from-custom-black via-custom-jet to-custom-black relative overflow-hidden">
+      {/* Animated Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-custom-accent/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
       
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-6 relative z-10">
         <div className="mb-10 text-center">
           <h2 className="text-4xl md:text-5xl font-display font-bold mb-3 text-white">
-            <a href="/buy" className="hover:text-custom-accent transition-colors">Find Your <span className="text-custom-accent">Dream Car</span></a>
+            <a href="/buy" className="hover:text-custom-accent transition-colors">Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-custom-accent to-yellow-200">Dream Car</span></a>
           </h2>
           <p className="text-custom-platinum text-lg">Browse by brand, type, or budget</p>
         </div>

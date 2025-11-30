@@ -7,12 +7,15 @@ import contact from '../../images/contact.jpg'
 import { FaWhatsapp } from 'react-icons/fa'
 import Image from 'next/image'
 
+import { useLanguage } from '../contexts/LanguageContext'
+
 const Contact = () => {
+  const { t } = useLanguage()
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="px-4 py-8 sm:px-6 lg:px-8 lg:ml-16 ml-4 mx-auto max-w-screen-xl">
         <h2 className="text-4xl font-bold text-gray-900 mb-5 mt-12">
-          Contact Us
+          {t('contact.title')}
         </h2>
         <div>
           <div className="flex justify-start items-center space-x-4">
@@ -46,7 +49,7 @@ const Contact = () => {
               className="inline ml-2 text-lg mr-0.5 ml-4"
               style={{ transform: 'translateY(-0.05rem)' }}
             />{' '}
-            9:30am - 7pm
+            {t('contact.hours')}: 9:30am - 7pm
           </p>
         </div>
 

@@ -8,13 +8,16 @@ import {
 } from 'react-icons/fa'
 import { BiHappyBeaming } from 'react-icons/bi'
 
+import { useLanguage } from './contexts/LanguageContext'
+
 const Features = () => {
+  const { t } = useLanguage()
   return (
     <section className="bg-custom-black mx-auto">
       <div className="pb-14 pt-20 px-4 mx-auto max-w-screen-xl lg:px-6">
         <div className="max-w-screen-md mb-16 lg:mb-16">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-custom-seasalt">
-            Our Highlights
+            {t('home.features.title')}
           </h2>
         </div>
         <div className="md:space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:text-left text-center items-center">
@@ -26,7 +29,7 @@ const Features = () => {
               <FaAward  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Quality Selection
+              {t('home.features.quality')}
             </h3>
           </div>
           <div className="flex flex-col md:block justify-center items-center pb-10">
@@ -34,7 +37,7 @@ const Features = () => {
               <FaRupeeSign  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Competitive Pricing
+              {t('home.features.quality_desc')}
             </h3>
           </div>
           <div className="flex flex-col md:block justify-center items-center pb-10">
@@ -42,7 +45,7 @@ const Features = () => {
               <FaCar  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Certified Pre-owned Program
+              {t('home.features.warranty')}
             </h3>
           </div>
           <div className="flex flex-col md:block justify-center items-center pb-10">
@@ -50,7 +53,7 @@ const Features = () => {
               <FaHandshake  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Easy Financing Options
+              {t('home.features.finance')}
             </h3>
           </div>
           <div className="flex flex-col md:block justify-center items-center pb-10">
@@ -58,7 +61,7 @@ const Features = () => {
               <BiHappyBeaming  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Customer Satisfaction
+              {t('home.features.exchange')}
             </h3>
           </div>
           <div className="flex flex-col md:block justify-center items-center pb-10">
@@ -66,7 +69,7 @@ const Features = () => {
               <FaRecycle  className='text-custom-seasalt' size={50} />
             </div>
             <h3 className="mb-2 text-lg font-bold text-custom-seasalt">
-              Refurbished to the best
+              {t('home.features.exchange_desc')}
             </h3>
           </div>
         </div>

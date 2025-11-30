@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+import { useLanguage } from '../contexts/LanguageContext'
+
 const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -113,7 +116,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
       >
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-2xl text-custom-seasalt">
-            Get Free Scrap Quote
+            {t('sell.form.title')}
           </h3>
           <button type="button" onClick={() => setShowForm(false)}>
             <XMarkIcon
@@ -127,7 +130,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
         <div>
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Name *
+              {t('contact.form.name')} *
             </label>
             <input
               type="text"
@@ -140,7 +143,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
           </div>
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Phone Number *
+              {t('contact.form.phone')} *
             </label>
             <input
               type="text"
@@ -158,7 +161,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
         <div>
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Email
+              {t('contact.form.email')}
             </label>
             <input
               type="email"
@@ -202,7 +205,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
 
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Brand *
+              {t('buy.filters.brand')} *
             </label>
             <input
               type="text"
@@ -231,7 +234,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
           </div>
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Manufacture Year *
+              {t('buy.filters.year')} *
             </label>
             <input
               type="number"
@@ -284,7 +287,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
         <div>
           <div className="md:inline-block md:w-[50%] md:px-2 md:py-0 py-3">
             <label className="font-normal text-sm text-custom-seasalt">
-              Kilometers Driven
+              {t('buy.filters.km')}
             </label>
             <input
               type="number"
@@ -313,7 +316,7 @@ const ScrapFormModal = ({ showForm, setShowForm, setShowModal }) => {
           type="submit"
           className="bg-custom-yellow text-custom-black font-bold hover:bg-custom-black hover:text-custom-yellow border-2 border-custom-yellow px-6 py-3 rounded transition duration-300"
         >
-          Submit Request
+          {t('common.submit')}
         </button>
       </form>
     </div>

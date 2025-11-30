@@ -51,8 +51,10 @@ function classNames(...classes) {
 }
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function Buy({ allListings }) {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -69,17 +71,17 @@ export default function Buy({ allListings }) {
   const [filters, setFilters] = useState([
     {
       id: 'brand',
-      name: 'Brand',
+      name: t('buy.filters.brand'),
       options: [],
     },
     {
       id: 'type',
-      name: 'Segment',
+      name: t('buy.filters.body'),
       options: [],
     },
     {
       id: 'budget',
-      name: 'Budget',
+      name: t('buy.filters.price'),
       options: [
         { value: '0-400000', label: 'Under 4 Lakhs', checked: false },
         { value: '400000-800000', label: '4-8 Lakhs', checked: false },
@@ -89,7 +91,7 @@ export default function Buy({ allListings }) {
     },
     {
       id: 'modelYear',
-      name: 'Year',
+      name: t('buy.filters.year'),
       type: 'slider',
       config: {
         min: 2000,
@@ -100,17 +102,17 @@ export default function Buy({ allListings }) {
     },
     {
       id: 'fuelType',
-      name: 'Fuel Type',
+      name: t('buy.filters.fuel'),
       options: [],
     },
     {
       id: 'transmissionType',
-      name: 'Transmission',
+      name: t('buy.filters.transmission'),
       options: [],
     },
     {
       id: 'ownership',
-      name: 'Owners',
+      name: t('buy.card.owner'),
       options: [
         { value: 1, label: '1', checked: false },
         { value: 2, label: '2', checked: false },
@@ -120,7 +122,7 @@ export default function Buy({ allListings }) {
     },
     {
       id: 'kmDriven',
-      name: 'KM Driven',
+      name: t('buy.filters.km'),
       options: [
         { value: '0-10000', label: 'Under 10 Thousand', checked: false },
         { value: '10000-20000', label: '10-20 Thousand', checked: false },
@@ -134,6 +136,23 @@ export default function Buy({ allListings }) {
       options: [],
     },
   ])
+
+  // Update filter names when language changes
+  useEffect(() => {
+    setFilters(prev => prev.map(f => {
+      switch(f.id) {
+        case 'brand': return { ...f, name: t('buy.filters.brand') }
+        case 'type': return { ...f, name: t('buy.filters.body') }
+        case 'budget': return { ...f, name: t('buy.filters.price') }
+        case 'modelYear': return { ...f, name: t('buy.filters.year') }
+        case 'fuelType': return { ...f, name: t('buy.filters.fuel') }
+        case 'transmissionType': return { ...f, name: t('buy.filters.transmission') }
+        case 'ownership': return { ...f, name: t('buy.card.owner') }
+        case 'kmDriven': return { ...f, name: t('buy.filters.km') }
+        default: return f
+      }
+    }))
+  }, [t])
 
   const sortListings = (key, order) => {
     const tempListings = [...listings]
@@ -561,7 +580,7 @@ export default function Buy({ allListings }) {
                 <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-custom-jet py-4 pb-12 shadow-xl pt-20 border-l border-white/10">
                   <div className="flex items-center justify-between px-4">
                     <h2 className="text-lg font-medium text-white">
-                      Filters
+                      {t('buy.filters.title')}
                     </h2>
                     <button
                       type="button"
@@ -667,7 +686,7 @@ export default function Buy({ allListings }) {
                     onClick={() => updateFilters()}
                     className="w-[80%] mx-auto !bg-custom-accent hover:!bg-yellow-400 !text-custom-black mt-4 !font-bold"
                   >
-                    Filter
+                    {t('buy.filters.apply')}
                   </Button>
                   <Button
                     onClick={() => {
@@ -676,7 +695,7 @@ export default function Buy({ allListings }) {
                     }}
                     className="mt-4 w-[80%] mx-auto !bg-custom-jet hover:!bg-custom-black !text-white !border-white/10"
                   >
-                    Clear Filters
+                    {t('buy.filters.clear')}
                   </Button>
                 </Dialog.Panel>
               </Transition.Child>
@@ -687,14 +706,14 @@ export default function Buy({ allListings }) {
         <main className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-baseline justify-between border-b border-white/10 pb-6 pt-12">
             <h1 className="text-4xl font-display font-bold tracking-tight text-white">
-              Explore <span className="text-custom-accent">All Cars</span>
+              {t('buy.title')}
             </h1>
 
             <div className="flex items-center">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button className="group inline-flex justify-center text-sm font-medium text-custom-platinum hover:text-white">
-                    Sort
+                    {t('buy.sort.label')}
                     <ChevronDownIcon
                       className="-mr-5 ml-1 h-5 w-5 flex-shrink-0 text-custom-platinum group-hover:text-white"
                       aria-hidden="true"

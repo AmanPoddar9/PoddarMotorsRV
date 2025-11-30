@@ -11,8 +11,10 @@ import {
 } from 'react-icons/fa'
 import { SiGmail } from 'react-icons/si'
 import { FiMapPin, FiMessageSquare, FiArrowRight } from 'react-icons/fi'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const Footer = () => {
+  const { t } = useLanguage()
   return (
     <footer className="bg-custom-jet border-t border-white/10 text-custom-seasalt py-12 px-4">
       <div className="container mx-auto max-w-7xl">
@@ -35,31 +37,31 @@ const Footer = () => {
               <li>
                 <a href="/buy" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-                  Buy Cars
+                  {t('nav.buy')}
                 </a>
               </li>
               <li>
                 <a href="/sell" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-                  Sell Your Car
+                  {t('nav.sell')}
                 </a>
               </li>
               <li>
                 <a href="/finance" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-                  Finance
+                  {t('nav.finance')}
                 </a>
               </li>
               <li>
                 <a href="/blog" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-                  Blog
+                  {t('nav.blog')}
                 </a>
               </li>
               <li>
                 <a href="/about" className="text-custom-platinum hover:text-custom-accent transition-colors flex items-center justify-center md:justify-start gap-2 group">
                   <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-                  About Us
+                  {t('nav.about')}
                 </a>
               </li>
             </ul>

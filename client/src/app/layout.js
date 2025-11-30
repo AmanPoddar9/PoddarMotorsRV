@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import WhatsAppWidget from './components/WhatsAppWidget'
 import ChatBot from './components/ChatBot'
 import { CustomerProvider } from './utils/customerContext'
+import { LanguageProvider } from './contexts/LanguageContext'
 import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -198,15 +199,15 @@ export default function RootLayout({ children }) {
       </head>
       <body className="w-full overflow-x-hidden bg-custom-black text-custom-seasalt font-sans antialiased selection:bg-custom-accent selection:text-custom-black">
         <AntdRegistry>
-          <CustomerProvider>
-            <Navbar />
-            <div className="pt-16 has-[.workshop-layout]:pt-0">
-               {children}
-            </div>
-            <WhatsAppWidget />
-            <ChatBot />
-            <Footer />
-          </CustomerProvider>
+          <LanguageProvider>
+            <CustomerProvider>
+              <Navbar />
+              {children}
+              <Footer />
+              <WhatsAppWidget />
+              <ChatBot />
+            </CustomerProvider>
+          </LanguageProvider>
         </AntdRegistry>
       </body>
     </html>
