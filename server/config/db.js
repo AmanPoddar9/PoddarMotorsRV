@@ -14,12 +14,17 @@ const connectDB = async () => {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true, // Allow buffering to prevent errors during initial connection
+      serverSelectionTimeoutMS: 5000, // Fail fast if no connection
     };
 
     cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
       console.log('MongoDB Connected (New)');
       return mongoose;
+    }).catch((err) => {
+      console.error('MongoDB Connection Error:', err);
+      cached.promise = null; // Reset promise on failure
+      throw err;
     });
   }
   
