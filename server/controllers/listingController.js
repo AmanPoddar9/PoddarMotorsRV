@@ -97,11 +97,18 @@ exports.deleteListingById = async (req, res) => {
 exports.createListing = async (req, res) => {
   try {
     const data = req.body;
+    console.log('📝 Creating listing with data:', JSON.stringify(data, null, 2));
+    
     const slugBase = `${data.brand}-${data.model}-${data.variant}-${data.year}`;
     const randomSuffix = Math.random().toString(36).substring(2, 6);
     data.slug = slugify(`${slugBase}-${randomSuffix}`, { lower: true, strict: true });
+    
+    console.log('🔗 Generated slug:', data.slug);
+    
     const listing = new Listing(data);
     await listing.save();
+
+    console.log('✅ Listing saved successfully:', listing._id);
 
     // Check for matching requirements and send emails
     try {
@@ -135,6 +142,12 @@ exports.createListing = async (req, res) => {
 
     res.status(201).json({ message: "Listing created successfully", listing });
   } catch (error) {
+    console.error('❌ Error creating listing:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    if (error.errors) {
+      console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+    }
     res.status(400).json({ error: error.message });
   }
 };
