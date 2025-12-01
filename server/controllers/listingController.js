@@ -366,9 +366,9 @@ const extractPublicId = (url) => {
   return publicId;
 };
 const deleteSingleImage = async (publicId) => {
-  const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "djyvxi14o";
-  const API_KEY = process.env.CLOUDINARY_API_KEY || "969818645141645";
-  const API_SECRET = process.env.CLOUDINARY_API_SECRET || "6zE7tZ-h5zzcqAKksmyFJL3-Lzg";
+  const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+  const API_KEY = process.env.CLOUDINARY_API_KEY;
+  const API_SECRET = process.env.CLOUDINARY_API_SECRET;
   const timestamp = Math.floor(Date.now() / 1000);
   const signature = CryptoJS.SHA1(
     `public_id=${publicId}&timestamp=${timestamp}${API_SECRET}`

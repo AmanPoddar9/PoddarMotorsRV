@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import API_URL from '../../config/api';
 import CarListingClient from './CarListingClient';
-import { generateCarMetadata, generateCarStructuredData } from '../../utils/metadata';
+import { generateCarMetadata } from '../../utils/metadata';
+import { generateProductSchema, generateBreadcrumbSchema } from '../../utils/schema';
 
 // Force dynamic rendering since we have dynamic routes and want fresh data
 export const dynamic = 'force-dynamic';
@@ -101,21 +102,26 @@ export default async function CarPage({ params }) {
     getTestimonials(carData.model)
   ]);
 
-  let structuredData = null;
-  try {
-    structuredData = generateCarStructuredData(carData, params.slug);
-  } catch (error) {
-    console.error('Error generating structured data:', error);
-  }
+  // Generate Structured Data
+  const productSchema = generateProductSchema(carData);
+  
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Buy Used Cars', url: '/buy' },
+    { name: `${carData.year} ${carData.brand || carData.make} ${carData.model}`, url: `/buy/${params.slug}` }
+  ]);
 
   return (
     <>
-      {structuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       <CarListingClient 
         carData={carData} 
         similarCars={similarCars} 

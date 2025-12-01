@@ -9,6 +9,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import API_URL from '../config/api'
 import { useLanguage } from '../contexts/LanguageContext'
+import { trackCarView } from '../utils/analytics'
 
 const FeaturedCard = ({ car }) => {
   const { t } = useLanguage()
@@ -52,7 +53,10 @@ const FeaturedCard = ({ car }) => {
 
   return (
     <div className="relative group">
-      <Link href={car.slug ? `/buy/${car.slug}` : `/buy/${car._id}`}>
+      <Link 
+        href={car.slug ? `/buy/${car.slug}` : `/buy/${car._id}`}
+        onClick={() => trackCarView(car)}
+      >
         <div className="w-full rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 bg-custom-jet border border-white/10">
           <div className="relative overflow-hidden h-[20rem]">
             {car.images[0] ? (

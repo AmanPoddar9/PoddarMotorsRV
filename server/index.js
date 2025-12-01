@@ -2,10 +2,12 @@ const express = require('express');
 const connectDB = require('./config/db');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+const { setupSecurity } = require('./middleware/security');
+const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
-// const testimonialsRoutes = require('./routes/testimonialsRoutes'); // Removed unused/duplicate
 const offersRoutes = require('./routes/offersRoutes');
 const featuresRoutes = require('./routes/featuresRoutes');
 const listingRoutes = require('./routes/listingRoutes');
@@ -38,6 +40,13 @@ try {
 }
 
 connectDB();
+
+// Request logging
+app.use(morgan('dev'));
+
+// Security Middleware (Helmet, Rate Limiting, Sanitization)
+setupSecurity(app);
+
 app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
@@ -73,7 +82,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running' });
+  res.status(200).json({ 
+    status: 'ok', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -96,9 +110,18 @@ app.use('/api/price-alerts', require('./routes/priceAlerts'));
 app.use('/api/activities', require('./routes/activities'));
 app.use('/api/videos', videoRoutes);
 
+// Global Error Handler (Must be last)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
 });
 
 module.exports = app;

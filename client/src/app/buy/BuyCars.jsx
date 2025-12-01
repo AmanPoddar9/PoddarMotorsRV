@@ -15,6 +15,7 @@ import { AmountWithCommas, toTitleCase } from '../utils'
 import FeaturedCard from '../components/FeaturedCard'
 import { FaSearch } from 'react-icons/fa'
 import API_URL from '../config/api'
+import { trackSearch, trackFilterUse } from '../utils/analytics'
 
 import { Oval } from 'react-loader-spinner'
 
@@ -260,6 +261,27 @@ export default function Buy({ allListings }) {
     try {
       const response = await axios.post(url + 'api/listings/filtered', obj)
       setListings(response.data)
+      
+      // Analytics: Track search
+      if (searchQuery) {
+        trackSearch(searchQuery)
+      }
+      
+      // Analytics: Track filter usage
+      filters.forEach((filter) => {
+        if (filter.type === 'slider') {
+          const val = filter.config.value
+          if (val[0] !== filter.config.min || val[1] !== filter.config.max) {
+            trackFilterUse(filter.name, `${val[0]}-${val[1]}`)
+          }
+        } else {
+          filter.options.forEach((opt) => {
+            if (opt.checked) {
+              trackFilterUse(filter.name, opt.label)
+            }
+          })
+        }
+      })
       
       // Facebook Pixel: Search event
       if (typeof window !== 'undefined' && window.fbq) {
