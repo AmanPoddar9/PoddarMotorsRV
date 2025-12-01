@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import API_URL from '../config/api';
 
 /**
  * Hook that fetches the current user (id & role) from /api/auth/me.
@@ -11,7 +12,9 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+    // const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+    // Use config API_URL
+    const apiUrl = API_URL
     // `credentials: 'include'` sends the httpOnly auth cookie
     fetch(`${apiUrl}/api/auth/me`, { credentials: 'include' })
       .then(res => {

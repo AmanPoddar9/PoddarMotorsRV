@@ -8,7 +8,7 @@ import axios from 'axios'
 import ProfileRequirements from '../components/profile/ProfileRequirements'
 import Image from 'next/image'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../config/api'
 
 export default function ProfilePage() {
   const { customer, loading } = useCustomer()

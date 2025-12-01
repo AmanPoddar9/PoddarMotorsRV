@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import axios from 'axios';
+import API_URL from './config/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.poddarmotors.com';
@@ -28,8 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all published blogs
   let blogPages: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const response = await axios.get(`${apiUrl}/api/blogs`);
+    const response = await axios.get(`${API_URL}/api/blogs`);
     const blogs = response.data.data;
     
     blogPages = blogs.map((blog: any) => ({
@@ -45,8 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all car listings
   let carPages: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-    const response = await axios.get(`${apiUrl}/api/listings`);
+    const response = await axios.get(`${API_URL}/api/listings`);
     const cars = response.data;
     
     carPages = cars.map((car: any) => ({

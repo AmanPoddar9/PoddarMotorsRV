@@ -17,10 +17,11 @@ export const metadata = {
 }
 
 
+import API_URL from '../config/api';
+
 export default async function Buy() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   const data = await fetch(
-    `${apiUrl}/api/listings/`,
+    `${API_URL}/api/listings/`,
     { cache: 'no-store' },
   ).then((res) => res.json())
 
