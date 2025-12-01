@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import API_URL from '../../config/api'
 import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
 
@@ -9,7 +10,8 @@ const CustomerOffers = () => {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(null)
   
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  // const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  const apiUrl = API_URL
 
   useEffect(() => {
     fetchOffers()

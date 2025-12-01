@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import API_URL from '../../config/api'
 import AdminNavbar from '../../components/AdminNavbar'
 import { 
   PhoneIcon, 
@@ -20,7 +21,7 @@ const CallAutomationPage = () => {
   const [loading, setLoading] = useState(false)
   const [period, setPeriod] = useState('today')
   
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  // const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
   // Fetch call logs
   const fetchCallLogs = async () => {

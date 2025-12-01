@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
+import API_URL from '../../config/api'
 import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
 import { Button, Input, Spin } from 'antd'
@@ -13,7 +14,7 @@ const Listings = () => {
   const [filterString, setFilterString] = useState([])
   const [deleting, setDeleting] = useState(null)
 
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+  // let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
   // url = 'http://localhost:5000/'
   useEffect(() => {
     fetchListings()
@@ -22,7 +23,7 @@ const Listings = () => {
   const fetchListings = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(url + 'api/listings')
+      const response = await axios.get(`${API_URL}/api/listings`)
       setListings(response.data)
       setFilteredListings(response.data)
       setLoading(false)
@@ -34,7 +35,7 @@ const Listings = () => {
   const deleteListing = async (id) => {
     try {
       setDeleting(id)
-      await axios.delete(url + `api/listings/${id}`)
+      await axios.delete(`${API_URL}/api/listings/${id}`)
       fetchListings()
     } catch (error) {
       console.error('Error deleting listing:', error)

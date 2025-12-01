@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import API_URL from '../../config/api'
 import AdminNavbar from '../../components/AdminNavbar'
 import JSZip, { file } from 'jszip'
 import { Spin } from 'antd'
@@ -14,7 +15,7 @@ const CreateListing = () => {
   const [imagesLength, setImagesLength] = useState(null)
   const [imagesDone, setImagesDone] = useState(0)
   const [error, setError] = useState(null)
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+  // let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
   const [formData, setFormData] = useState({
     brand: '',
@@ -186,7 +187,7 @@ const CreateListing = () => {
 
   const fetchFeatures = async () => {
     try {
-      const response = await axios.get(url + 'api/features')
+      const response = await axios.get(`${API_URL}/api/features`)
       setFeatures(response.data)
     } catch (error) {
       console.error('Error fetching features:', error)
@@ -226,7 +227,7 @@ const CreateListing = () => {
       tempData['images'] = images
       console.log(tempData['images'])
       setImages([])
-      await axios.post(url + 'api/listings', tempData)
+      await axios.post(`${API_URL}/api/listings`, tempData)
       setFormData({
         brand: '',
         model: '',

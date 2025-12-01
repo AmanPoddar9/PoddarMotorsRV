@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import AdminNavbar from '../../components/AdminNavbar'
+import API_URL from '../../config/api'
 import { FiTrash2, FiArchive } from 'react-icons/fi'
 
 const WorkshopBookings = () => {
@@ -10,8 +11,8 @@ const WorkshopBookings = () => {
   const [showArchive, setShowArchive] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-  // const url = 'http://localhost:4000'
+  // const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  const url = API_URL
 
   useEffect(() => {
     fetchBookings()
