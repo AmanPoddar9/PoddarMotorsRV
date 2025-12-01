@@ -4,17 +4,17 @@ import Link from 'next/link'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
-import { Button, Input, Spin } from 'antd'
+import { Input, Spin } from 'antd'
+import API_URL from '../../config/api'
 
 const Listings = () => {
   const [listings, setListings] = useState([])
   const [filteredListings, setFilteredListings] = useState([])
   const [loading, setLoading] = useState(false)
-  const [filterString, setFilterString] = useState([])
+  const [filterString, setFilterString] = useState('')
   const [deleting, setDeleting] = useState(null)
 
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
+  const url = API_URL.endsWith('/') ? API_URL : `${API_URL}/`
   useEffect(() => {
     fetchListings()
   }, [])
@@ -36,7 +36,8 @@ const Listings = () => {
     try {
       setDeleting(id)
       await axios.delete(url + `api/listings/${id}`)
-      fetchListings()
+      setListings((prev) => prev.filter((listing) => listing._id !== id))
+      setFilteredListings((prev) => prev.filter((listing) => listing._id !== id))
     } catch (error) {
       console.error('Error deleting listing:', error)
     } finally {
