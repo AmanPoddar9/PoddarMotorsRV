@@ -1,5 +1,9 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /api
+Disallow: /login
+Disallow: /signup
+Disallow: /profile
 
 # Allow access to JS and CSS files
 Allow: /*.js$
