@@ -62,6 +62,7 @@ exports.deleteListingById = async (req, res) => {
     const urls = listing.images;
 
     const bucketName = 'realvaluestorage';
+    const deletionErrors = [];
 
     for (let url of urls) {
       // Extract the key from the URL
@@ -73,7 +74,12 @@ exports.deleteListingById = async (req, res) => {
         };
 
         const command = new DeleteObjectCommand(params);
-        await s3Client.send(command);
+        try {
+          await s3Client.send(command);
+        } catch (err) {
+          console.error('Error deleting S3 object for listing', id, err?.message || err);
+          deletionErrors.push(key);
+        }
 
       }
     }
@@ -85,7 +91,10 @@ exports.deleteListingById = async (req, res) => {
     }
 
     res.json({
-      message: "Listing deleted successfully",
+      message: deletionErrors.length
+        ? "Listing deleted but some images could not be removed"
+        : "Listing deleted successfully",
+      skippedImages: deletionErrors,
       listing: deletedListing,
     });
   } catch (err) {

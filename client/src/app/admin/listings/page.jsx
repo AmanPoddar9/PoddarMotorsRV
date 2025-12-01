@@ -35,11 +35,15 @@ const Listings = () => {
   const deleteListing = async (id) => {
     try {
       setDeleting(id)
-      await axios.delete(url + `api/listings/${id}`)
-      setListings((prev) => prev.filter((listing) => listing._id !== id))
-      setFilteredListings((prev) => prev.filter((listing) => listing._id !== id))
+      const response = await axios.delete(url + `api/listings/${id}`)
+
+      // Handle soft-deletion responses
+      if (response?.data?.listing?._id || response?.status === 200) {
+        setListings((prev) => prev.filter((listing) => listing._id !== id))
+        setFilteredListings((prev) => prev.filter((listing) => listing._id !== id))
+      }
     } catch (error) {
-      console.error('Error deleting listing:', error)
+      console.error('Error deleting listing:', error?.response?.data || error)
     } finally {
       setDeleting(null)
     }
