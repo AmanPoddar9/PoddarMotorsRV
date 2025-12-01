@@ -28,6 +28,7 @@ const Listings = () => {
       setLoading(false)
     } catch (error) {
       console.error('Error fetching listings:', error)
+      setLoading(false)
     }
   }
 
@@ -38,6 +39,8 @@ const Listings = () => {
       fetchListings()
     } catch (error) {
       console.error('Error deleting listing:', error)
+    } finally {
+      setDeleting(null)
     }
   }
   const goToUpdate = (id) => {
