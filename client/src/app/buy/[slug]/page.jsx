@@ -101,14 +101,21 @@ export default async function CarPage({ params }) {
     getTestimonials(carData.model)
   ]);
 
-  const structuredData = generateCarStructuredData(carData, params.slug);
+  let structuredData = null;
+  try {
+    structuredData = generateCarStructuredData(carData, params.slug);
+  } catch (error) {
+    console.error('Error generating structured data:', error);
+  }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      {structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      )}
       <CarListingClient 
         carData={carData} 
         similarCars={similarCars} 

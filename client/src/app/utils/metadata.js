@@ -33,7 +33,8 @@ export function generateBaseMetadata({ title, description, keywords, canonical }
  * Generates metadata for car listing pages
  */
 export function generateCarMetadata(car) {
-  const title = `${car.year} ${car.brand} ${car.model} ${car.variant} - ₹${car.price.toLocaleString('en-IN')} | Poddar Motors`;
+  const price = car.price ? `₹${car.price.toLocaleString('en-IN')}` : 'Price On Request';
+  const title = `${car.year || ''} ${car.brand || ''} ${car.model || ''} ${car.variant || ''} - ${price} | Poddar Motors`;
   const description = `Buy ${car.year} ${car.brand} ${car.model} in Ranchi. ${car.fuelType}, ${car.transmissionType}, ${car.kmDriven}km driven. Best price guaranteed! Book test drive now.`;
   const url = `https://www.poddarmotors.com/buy/${car.slug || car._id}`;
   
