@@ -51,7 +51,7 @@ export function generateCarMetadata(car) {
       url,
       siteName: 'Poddar Motors Real Value',
       locale: 'en_US',
-      type: 'product',
+      type: 'website',
       images: car.images && car.images.length > 0 ? [
         {
           url: car.images[0],
