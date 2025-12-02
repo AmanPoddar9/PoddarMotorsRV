@@ -68,7 +68,8 @@ export const hi = {
       manual: "मैनुअल",
       automatic: "ऑटोमैटिक",
       view_details: "विवरण देखें",
-      book_test_drive: "टेस्ट ड्राइव बुक करें"
+      book_test_drive: "टेस्ट ड्राइव बुक करें",
+      mt: "MT"
     },
     no_results: "आपकी खोज से मेल खाने वाली कोई कार नहीं मिली।"
   },

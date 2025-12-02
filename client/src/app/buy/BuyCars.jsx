@@ -799,7 +799,7 @@ export default function Buy({ allListings }) {
 
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
               {/* Filters (Desktop) */}
-              <form className="hidden lg:block sticky top-24 h-fit space-y-6 bg-custom-jet/30 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+              <form className="hidden lg:block sticky top-24 h-fit max-h-[85vh] overflow-y-auto custom-scrollbar space-y-6 bg-custom-jet/30 backdrop-blur-md p-6 rounded-2xl border border-white/10">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-white">Filters</h3>
                   <button

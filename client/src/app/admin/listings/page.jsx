@@ -5,10 +5,11 @@ import axios from 'axios'
 import API_URL from '../../config/api'
 import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
-import { Button, Input, Spin, Select, Slider } from 'antd'
+import { Button, Input, Spin, Select, Slider, Modal } from 'antd'
 import { FiFilter, FiX } from 'react-icons/fi'
 
 const { Option } = Select
+const { confirm } = Modal
 
 const Listings = () => {
   const [listings, setListings] = useState([])
@@ -145,11 +146,25 @@ const Listings = () => {
     setBodyType('all')
   }
 
+  const showDeleteConfirm = (id) => {
+    confirm({
+      title: 'Are you sure you want to delete this listing?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk() {
+        deleteListing(id)
+      },
+    })
+  }
+
   const deleteListing = async (id) => {
     try {
       setDeleting(id)
       await axios.delete(`${API_URL}/api/listings/${id}`)
       fetchListings()
+      setDeleting(null)
     } catch (error) {
       console.error('Error deleting listing:', error)
       setDeleting(null)
@@ -394,7 +409,7 @@ const Listings = () => {
                             Update
                           </button>
                           <button
-                            onClick={() => deleteListing(listing._id)}
+                            onClick={() => showDeleteConfirm(listing._id)}
                             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
                             disabled={deleting === listing._id}
                           >

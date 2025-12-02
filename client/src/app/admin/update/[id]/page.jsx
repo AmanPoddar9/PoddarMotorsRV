@@ -314,16 +314,16 @@ const CreateListing = () => {
   ]
 
   return (
-    <div>
+    <div className="min-h-screen bg-custom-black text-white">
       <AdminNavbar />
       <div className="max-w-3xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Update Listing</h1>
+        <h1 className="text-3xl font-bold mb-6 text-white">Update Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="mb-6">
             <input
               type="file"
               onChange={handleImageChange}
-              className="border border-gray-300 rounded-md py-2 px-4 mb-2 text-black"
+              className="border border-white/10 rounded-md py-2 px-4 mb-2 bg-custom-jet text-white"
             />
             {uploading && imagesLength && (
               <div>
@@ -341,7 +341,7 @@ const CreateListing = () => {
               name="brand"
               value={formData.brand}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -354,13 +354,13 @@ const CreateListing = () => {
               name="model"
               value={formData.model}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="variant"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Variant
             </label>
@@ -370,13 +370,13 @@ const CreateListing = () => {
               name="variant"
               value={formData.variant}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="vehicleNumber"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Vehicle Number
             </label>
@@ -386,13 +386,13 @@ const CreateListing = () => {
               name="vehicleNumber"
               value={formData.vehicleNumber}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="fuelType"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Fuel Type
             </label>
@@ -401,7 +401,7 @@ const CreateListing = () => {
               name="fuelType"
               value={formData.fuelType}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             >
               <option value="">Select Fuel Type</option>
               <option value="Petrol">Petrol</option>
@@ -422,7 +422,7 @@ const CreateListing = () => {
               min={2000}
               value={formData.year}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -435,13 +435,13 @@ const CreateListing = () => {
               name="color"
               value={formData.color}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="ownership"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Ownership
             </label>
@@ -452,13 +452,13 @@ const CreateListing = () => {
               min={1}
               value={formData.ownership}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="kmDriven"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Kilometers Driven
             </label>
@@ -469,7 +469,7 @@ const CreateListing = () => {
               min={1}
               value={formData.kmDriven}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -483,7 +483,7 @@ const CreateListing = () => {
               min={1}
               value={formData.price}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -495,7 +495,7 @@ const CreateListing = () => {
               name="type"
               value={formData.type}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             >
               <option value="">Select Type</option>
               {carTypes.map((type, i) => (
@@ -508,7 +508,7 @@ const CreateListing = () => {
           <div>
             <label
               htmlFor="transmissionType"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Transmission Type
             </label>
@@ -517,7 +517,7 @@ const CreateListing = () => {
               name="transmissionType"
               value={formData.transmissionType}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             >
               <option value="">Select Transmission Type</option>
               {transmissionTypes.map((type, i) => (
@@ -538,13 +538,13 @@ const CreateListing = () => {
               min={1}
               value={formData.seats}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="displacement"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Displacement (CC):
             </label>
@@ -555,13 +555,13 @@ const CreateListing = () => {
               min={1}
               value={formData.displacement}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="cylinders"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               No. of Cylinders:
             </label>
@@ -572,13 +572,13 @@ const CreateListing = () => {
               min={1}
               value={formData.cylinders}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="maxPower"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Max Power (BHP):
             </label>
@@ -589,13 +589,13 @@ const CreateListing = () => {
               min={1}
               value={formData.maxPower}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="bootspace"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Bootspace (Litres):
             </label>
@@ -606,13 +606,13 @@ const CreateListing = () => {
               min={1}
               value={formData.bootspace}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="fuelTank"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Fuel Tank (Litres):
             </label>
@@ -623,7 +623,7 @@ const CreateListing = () => {
               min={1}
               value={formData.fuelTank}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -637,13 +637,13 @@ const CreateListing = () => {
               min={1}
               value={formData.gears}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="mileage"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Mileage (KMPL):
             </label>
@@ -655,13 +655,13 @@ const CreateListing = () => {
               step={0.1}
               value={formData.mileage}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
             <label
               htmlFor="location"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-custom-platinum"
             >
               Location
             </label>
@@ -671,7 +671,7 @@ const CreateListing = () => {
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md text-black"
+              className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
             />
           </div>
           <div>
@@ -686,13 +686,13 @@ const CreateListing = () => {
                 }
                 className="mr-2"
               />
-              <span className="text-gray-700">Featured</span>
+              <span className="text-custom-platinum">Featured</span>
             </label>
           </div>
           
           {/* Deal of the Day Section */}
-          <div className="border-t border-gray-300 pt-6 mt-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Deal of the Day Settings</h2>
+          <div className="border-t border-white/10 pt-6 mt-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Deal of the Day Settings</h2>
             
             <div className="mb-4">
               <label htmlFor="isFeaturedDeal" className="flex items-center">
@@ -706,13 +706,13 @@ const CreateListing = () => {
                   }
                   className="mr-2"
                 />
-                <span className="text-gray-700 font-medium">Mark as Deal of the Day</span>
+                <span className="text-custom-platinum font-medium">Mark as Deal of the Day</span>
               </label>
-              <p className="text-sm text-gray-500 ml-6">This car will appear in the "Deals of the Day" section</p>
+              <p className="text-sm text-custom-platinum/70 ml-6">This car will appear in the "Deals of the Day" section</p>
             </div>
             
             {formData.isFeaturedDeal && (
-              <div className="space-y-4 ml-6 p-4 bg-yellow-50 rounded-md">
+              <div className="space-y-4 ml-6 p-4 bg-custom-accent/10 rounded-md border border-custom-accent/20">
                 <div>
                   <label htmlFor="dealEndDate" className="block font-medium text-gray-700">
                     Deal End Date & Time
@@ -723,9 +723,9 @@ const CreateListing = () => {
                     name="dealEndDate"
                     value={formData.dealEndDate}
                     onChange={handleInputChange}
-                    className="mt-1 p-2 w-full border rounded-md text-black"
+                    className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
                   />
-                  <p className="text-sm text-gray-500 mt-1">Leave empty for 24-hour countdown</p>
+                  <p className="text-sm text-custom-platinum/70 mt-1">Leave empty for 24-hour countdown</p>
                 </div>
                 
                 <div>
@@ -740,9 +740,9 @@ const CreateListing = () => {
                     value={formData.originalPrice}
                     onChange={handleInputChange}
                     placeholder="e.g., 550000"
-                    className="mt-1 p-2 w-full border rounded-md text-black"
+                    className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
                   />
-                  <p className="text-sm text-gray-500 mt-1">Used to show discount percentage (leave empty to hide)</p>
+                  <p className="text-sm text-custom-platinum/70 mt-1">Used to show discount percentage (leave empty to hide)</p>
                 </div>
                 
                 <div>
@@ -757,9 +757,9 @@ const CreateListing = () => {
                     value={formData.emiStarting}
                     onChange={handleInputChange}
                     placeholder="e.g., 12000"
-                    className="mt-1 p-2 w-full border rounded-md text-black"
+                    className="mt-1 p-2 w-full border border-white/10 rounded-md bg-custom-jet text-white focus:ring-custom-accent focus:border-custom-accent"
                   />
-                  <p className="text-sm text-gray-500 mt-1">Monthly EMI amount (optional)</p>
+                  <p className="text-sm text-custom-platinum/70 mt-1">Monthly EMI amount (optional)</p>
                 </div>
               </div>
             )}
@@ -780,7 +780,7 @@ const CreateListing = () => {
                     onChange={handleCheckboxChange}
                     className="mr-2"
                   />
-                  <label htmlFor={feature._id} className="text-gray-700">
+                  <label htmlFor={feature._id} className="text-custom-platinum">
                     {feature.text}
                   </label>
                 </div>
@@ -790,7 +790,7 @@ const CreateListing = () => {
           <button
             type="submit"
             disabled={loading || uploading}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+            className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold py-2 px-4 rounded-md transition-colors"
           >
             {loading ? 'Updating...' : 'Update Listing'}
           </button>

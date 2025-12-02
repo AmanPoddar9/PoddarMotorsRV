@@ -68,7 +68,8 @@ export const en = {
       manual: "Manual",
       automatic: "Automatic",
       view_details: "View Details",
-      book_test_drive: "Book Test Drive"
+      book_test_drive: "Book Test Drive",
+      mt: "MT"
     },
     no_results: "No cars found matching your criteria."
   },

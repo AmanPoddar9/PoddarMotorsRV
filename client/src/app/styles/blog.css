@@ -1,11 +1,11 @@
 /* Blog content styles */
 .prose {
-  color: #374151;
+  color: #E5E7EB;
   line-height: 1.75;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
-  color: #111827;
+  color: #F9FAFB;
   font-weight: 700;
   margin-top: 2em;
   margin-bottom: 1em;
@@ -28,12 +28,12 @@
 }
 
 .prose a {
-  color: #171C8F;
+  color: #EAB308;
   text-decoration: underline;
 }
 
 .prose a:hover {
-  color: #ED1C24;
+  color: #FACC15;
 }
 
 .prose ul, .prose ol {
@@ -47,7 +47,7 @@
 
 .prose strong {
   font-weight: 600;
-  color: #111827;
+  color: #F9FAFB;
 }
 
 .prose img {
@@ -56,18 +56,19 @@
 }
 
 .prose blockquote {
-  border-left: 4px solid #171C8F;
+  border-left: 4px solid #EAB308;
   padding-left: 1em;
   font-style: italic;
-  color: #6B7280;
+  color: #9CA3AF;
   margin: 1.5em 0;
 }
 
 .prose code {
-  background-color: #F3F4F6;
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
   font-size: 0.875em;
+  color: #EAB308;
 }
 
 .prose pre {
@@ -77,6 +78,7 @@
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1.5em 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .prose pre code {
