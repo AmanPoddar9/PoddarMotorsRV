@@ -2,9 +2,14 @@ const OpenAI = require('openai');
 const Listing = require('../models/listing');
 
 // Initialize OpenAI only if API key is provided
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai = null;
+if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key') {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+} else {
+  console.warn('⚠️  OpenAI API key not configured. Chat features will be disabled.');
+}
 
 // Tool Definition
 const tools = [
@@ -95,6 +100,13 @@ async function executeInventorySearch(args) {
 
 exports.chat = async (req, res) => {
   try {
+    if (!openai) {
+      return res.status(503).json({ 
+        message: "Chat service is currently unavailable. Please contact us directly.",
+        error: "OpenAI not configured"
+      });
+    }
+    
     const { messages } = req.body;
 
     // COST OPTIMIZATION: Limit context to last 4 messages (down from 10)
