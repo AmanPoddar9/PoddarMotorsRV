@@ -4,8 +4,10 @@ const workshopBookingController = require('../controllers/workshopBookingControl
 
 const { requireAuth, requireRole } = require('../middleware/auth')
 
+const { workshopBookingValidation } = require('../middleware/validators');
+
 // Create a booking (Public)
-router.post('/', workshopBookingController.createWorkshopBooking)
+router.post('/', workshopBookingValidation, workshopBookingController.createWorkshopBooking)
 
 // Get all bookings (Admin)
 router.get('/', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.getAllWorkshopBookings)

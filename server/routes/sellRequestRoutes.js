@@ -2,8 +2,10 @@ const express = require('express')
 const router = express.Router()
 const sellRequestController = require('../controllers/sellRequestController')
 
+const { sellRequestValidation } = require('../middleware/validators');
+
 // Create a new sell request
-router.post('/', sellRequestController.createSellRequest)
+router.post('/', sellRequestValidation, sellRequestController.createSellRequest)
 
 // Read all sell requests
 router.get('/', sellRequestController.getAllSellRequests)

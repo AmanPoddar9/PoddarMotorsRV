@@ -7,8 +7,10 @@ const multer = require('multer')
 const storage = multer.memoryStorage() // Store files in memory as buffers
 const upload = multer({ storage })
 
+const { listingValidation } = require('../middleware/validators');
+
 // Create a listing
-router.post('/', upload.single('image'), listingController.createListing)
+router.post('/', upload.single('image'), listingValidation, listingController.createListing)
 
 router.post('/filtered', listingController.getFilteredListings)
 
@@ -35,7 +37,7 @@ router.get('/slug/:slug', listingController.getListingBySlug)
 router.get('/:id', listingController.getListingById)
 
 // Update one listing by ID
-router.put('/:id', listingController.updateListingById)
+router.put('/:id', listingValidation, listingController.updateListingById)
 
 // Delete one listing by ID
 router.delete('/:id', listingController.deleteListingById)

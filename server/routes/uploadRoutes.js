@@ -28,6 +28,8 @@ const s3Client = new S3Client({
 
 const bucketName = process.env.AWS_S3_BUCKET || 'realvaluestorage';
 
+const { validateFile, sanitizeFilename } = require('../utils/fileValidation');
+
 // Upload image endpoint
 router.post('/', upload.single('image'), async (req, res) => {
   try {
@@ -38,16 +40,29 @@ router.post('/', upload.single('image'), async (req, res) => {
       });
     }
 
+    // Validate file (type, size, content)
+    const validation = await validateFile(req.file);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid file',
+        errors: validation.errors
+      });
+    }
+
+    // Sanitize filename
+    const safeFilename = sanitizeFilename(req.file.originalname);
+    
     // Generate unique filename
     const timestamp = Date.now();
-    const filename = `blog-images/${timestamp}-${req.file.originalname.replace(/\s+/g, '-')}`;
+    const filename = `blog-images/${timestamp}-${safeFilename}`;
 
     // Upload to S3
     const params = {
       Bucket: bucketName,
       Key: filename,
       Body: req.file.buffer,
-      ContentType: req.file.mimetype,
+      ContentType: validation.mime, // Use validated MIME type
       ACL: 'public-read',
     };
 

@@ -2,8 +2,10 @@ const express = require('express')
 const router = express.Router()
 const bookingController = require('../controllers/bookingController')
 
+const { bookingValidation } = require('../middleware/validators');
+
 // Create a booking
-router.post('/', bookingController.createBooking)
+router.post('/', bookingValidation, bookingController.createBooking)
 
 // Read all bookings
 router.get('/', bookingController.getAllBookings)

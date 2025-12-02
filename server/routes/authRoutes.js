@@ -3,8 +3,10 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+const { loginValidation } = require('../middleware/validators');
+
 // Login – returns JWT in httpOnly cookie
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidation, async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user || !(await user.validatePassword(password))) {
