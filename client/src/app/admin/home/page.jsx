@@ -1,6 +1,6 @@
 import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
-import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool } from 'react-icons/fi'
+import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers } from 'react-icons/fi'
 
 const adminSections = [
   {
@@ -58,6 +58,34 @@ const adminSections = [
     icon: <FiFileText className="w-8 h-8" />,
     href: '/admin/blogs',
     color: 'bg-teal-500'
+  },
+  {
+    title: 'Videos',
+    description: 'Manage video content',
+    icon: <FiVideo className="w-8 h-8" />,
+    href: '/admin/videos',
+    color: 'bg-orange-500'
+  },
+  {
+    title: 'Customer Offers',
+    description: 'Manage customer offers',
+    icon: <FiUsers className="w-8 h-8" />,
+    href: '/admin/customer-offers',
+    color: 'bg-cyan-500'
+  },
+  {
+    title: 'Call Automation',
+    description: 'Manage call automation settings',
+    icon: <FiPhone className="w-8 h-8" />,
+    href: '/admin/call-automation',
+    color: 'bg-lime-500'
+  },
+  {
+    title: 'Prime Memberships',
+    description: 'Manage prime memberships',
+    icon: <FiAward className="w-8 h-8" />,
+    href: '/admin/prime',
+    color: 'bg-rose-500'
   }
 ]
 

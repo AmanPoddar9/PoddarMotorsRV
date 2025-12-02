@@ -93,13 +93,13 @@ const LandingHero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-32">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20 md:py-32">
         {/* Main Heading */}
         <motion.h1
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-6 leading-tight"
+          className="font-display font-bold text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-4 md:mb-6 leading-tight"
         >
           Find Your Perfect{' '}
           <span className="bg-gradient-to-r from-custom-accent to-yellow-400 bg-clip-text text-transparent">
@@ -112,7 +112,7 @@ const LandingHero = () => {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-xl md:text-2xl text-custom-seasalt mb-12 max-w-2xl mx-auto"
+          className="text-lg md:text-2xl text-custom-seasalt mb-8 md:mb-12 max-w-2xl mx-auto"
         >
           Quality certified cars at the best prices. 30 years of trust, 40,000+ happy customers.
         </motion.p>
@@ -125,8 +125,8 @@ const LandingHero = () => {
           className="max-w-3xl mx-auto mb-8"
         >
           <div className="relative">
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 shadow-2xl">
-              <div className="flex items-center flex-1 px-6">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl sm:rounded-full p-2 shadow-2xl">
+              <div className="flex items-center flex-1 px-4 sm:px-6 py-2 sm:py-0">
                 <FaSearch className="text-custom-platinum mr-3 text-lg" />
                 <input
                   type="text"
@@ -136,8 +136,8 @@ const LandingHero = () => {
                     setShowSuggestions(true)
                   }}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  placeholder="Search by brand, model, or type..."
-                  className="flex-1 bg-transparent text-white placeholder-white/50 outline-none text-lg"
+                  placeholder="Search by brand, model..."
+                  className="flex-1 bg-transparent text-white placeholder-white/50 outline-none text-base sm:text-lg w-full"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       handleSearch()
@@ -147,7 +147,7 @@ const LandingHero = () => {
               </div>
               <button
                 onClick={handleSearch}
-                className="px-8 py-4 bg-gradient-to-r from-custom-accent to-yellow-400 text-custom-black font-bold rounded-full hover:scale-105 transition-all shadow-lg"
+                className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-custom-accent to-yellow-400 text-custom-black font-bold rounded-xl sm:rounded-full hover:scale-105 transition-all shadow-lg text-sm sm:text-base"
               >
                 Search
               </button>
