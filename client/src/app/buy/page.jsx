@@ -51,21 +51,41 @@ import API_URL from '../config/api';
 import { generateItemListSchema } from '../utils/schema';
 
 export default async function Buy() {
-  const data = await fetch(
-    `${API_URL}/api/listings/`,
-    { cache: 'no-store' },
-  ).then((res) => res.json())
+  let data = [];
+  let itemListSchema = null;
 
-  // Generate ItemList schema for SEO
-  const itemListSchema = generateItemListSchema(data || []);
+  try {
+    // Fetch with revalidation caching (30 seconds) to prevent rate limiting
+    const response = await fetch(
+      `${API_URL}/api/listings/`,
+      { 
+        next: { revalidate: 30 } // Cache for 30 seconds
+      }
+    );
+
+    if (response.ok) {
+      data = await response.json();
+      // Generate ItemList schema for SEO only if data exists
+      if (data && data.length > 0) {
+        itemListSchema = generateItemListSchema(data);
+      }
+    } else {
+      console.error('Failed to fetch listings:', response.status);
+    }
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    // Fail gracefully - page will still load with empty data
+  }
 
   return (
     <>
       {/* ItemList Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
-      />
+      {itemListSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        />
+      )}
       <BuyCars allListings={data} />
     </>
   );
