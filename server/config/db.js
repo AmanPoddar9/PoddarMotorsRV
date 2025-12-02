@@ -16,10 +16,13 @@ const connectDB = async () => {
     const opts = {
       bufferCommands: true, // Allow buffering to prevent errors during initial connection
       serverSelectionTimeoutMS: 5000, // Fail fast if no connection
+      maxPoolSize: 10, // Maintain up to 10 socket connections
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      family: 4 // Use IPv4, skip IPv6
     };
 
     cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
-      console.log('MongoDB Connected (New)');
+      console.log('MongoDB Connected (New Connection)');
       return mongoose;
     }).catch((err) => {
       console.error('MongoDB Connection Error:', err);

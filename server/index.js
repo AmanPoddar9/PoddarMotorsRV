@@ -1,6 +1,10 @@
 const express = require('express');
 const connectDB = require('./config/db');
 require('dotenv').config();
+const validateEnv = require('./config/validateEnv');
+
+// Validate environment variables immediately
+validateEnv();
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const { setupSecurity } = require('./middleware/security');
@@ -82,11 +86,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
+  const mongoose = require('mongoose');
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  
   res.status(200).json({ 
     status: 'ok', 
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV
+    env: process.env.NODE_ENV,
+    database: dbStatus
   });
 });
 
