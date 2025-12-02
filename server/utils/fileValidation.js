@@ -1,4 +1,4 @@
-const fileType = require('file-type');
+// const fileType = require('file-type'); // Removed: file-type is ESM only
 
 // Allowed image MIME types
 const ALLOWED_IMAGE_TYPES = [
@@ -16,7 +16,9 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
  * Prevents attacks where file extension doesn't match actual content
  */
 const validateFileType = async (fileBuffer) => {
-  const type = await fileType.fromBuffer(fileBuffer);
+  // Dynamic import for ESM module
+  const { fileTypeFromBuffer } = await import('file-type');
+  const type = await fileTypeFromBuffer(fileBuffer);
   
   if (!type) {
     return { valid: false, error: 'Unable to determine file type' };
