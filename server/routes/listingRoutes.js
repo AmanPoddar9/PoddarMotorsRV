@@ -16,25 +16,27 @@ router.post('/filtered', listingController.getFilteredListings)
 
 router.post('/images', upload.single('image'), listingController.uploadImage)
 
-// Read all listings
-router.get('/', listingController.getAllListings)
+const { cacheMiddleware } = require('../middleware/cache');
 
-router.get('/featured', listingController.getFeaturedListings)
+// Read all listings (cache for 5 minutes)
+router.get('/', cacheMiddleware(300), listingController.getAllListings)
 
-router.get('/deals', listingController.getDealListings)
+router.get('/featured', cacheMiddleware(300), listingController.getFeaturedListings)
+
+router.get('/deals', cacheMiddleware(300), listingController.getDealListings)
 
 
-router.get('/brands', listingController.getAllBrands)
-router.get('/types', listingController.getAllTypes)
-router.get('/fuel', listingController.getAllFuelTypes)
-router.get('/transmission', listingController.getAllTransmissionTypes)
+router.get('/brands', cacheMiddleware(600), listingController.getAllBrands) // 10 min cache
+router.get('/types', cacheMiddleware(600), listingController.getAllTypes)
+router.get('/fuel', cacheMiddleware(600), listingController.getAllFuelTypes)
+router.get('/transmission', cacheMiddleware(600), listingController.getAllTransmissionTypes)
 
-router.get('/seats', listingController.getAllSeats)
+router.get('/seats', cacheMiddleware(600), listingController.getAllSeats)
 
-router.get('/slug/:slug', listingController.getListingBySlug)
+router.get('/slug/:slug', cacheMiddleware(300), listingController.getListingBySlug)
 
 // Read one listing by ID
-router.get('/:id', listingController.getListingById)
+router.get('/:id', cacheMiddleware(300), listingController.getListingById)
 
 // Update one listing by ID
 router.put('/:id', listingValidation, listingController.updateListingById)
