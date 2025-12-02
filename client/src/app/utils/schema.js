@@ -156,3 +156,59 @@ export function generateOrganizationSchema() {
     priceRange: '₹₹',
   };
 }
+
+/**
+ * Generate Service schema for Car Selling
+ * @returns {Object} Service schema JSON-LD
+ */
+export function generateServiceSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: 'Sell Used Car',
+    serviceType: 'Car Buying Service',
+    provider: {
+      '@type': 'AutoDealer',
+      name: 'Poddar Motors Real Value',
+      url: BASE_URL,
+    },
+    areaServed: {
+      '@type': 'City',
+      name: 'Ranchi',
+    },
+    description: 'Sell your used car in Ranchi at the best market price. Instant payment and free RC transfer.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'INR',
+      description: 'Free Car Valuation',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Car Selling Services',
+      itemListElement: [
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Instant Car Valuation',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Doorstep Inspection',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'RC Transfer Assistance',
+          },
+        },
+      ],
+    },
+  };
+}
