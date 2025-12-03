@@ -36,6 +36,16 @@ const listingSchema = new mongoose.Schema({
   emiStarting: { type: Number, required: false },
 })
 
+// Indexes for frequently queried fields
+listingSchema.index({ slug: 1 }); // Already unique, but explicit index
+listingSchema.index({ brand: 1 }); // For brand filtering
+listingSchema.index({ featured: 1 }); // For featured listings
+listingSchema.index({ isFeaturedDeal: 1 }); // For deal listings
+listingSchema.index({ price: 1 }); // For price sorting
+listingSchema.index({ year: -1 }); // For year sorting (newest first)
+listingSchema.index({ brand: 1, model: 1 }); // Compound index for brand+model queries
+listingSchema.index({ type: 1, fuelType: 1 }); // For filtering by type and fuel
+
 const Listing = mongoose.model('Listing', listingSchema)
 
 module.exports = Listing

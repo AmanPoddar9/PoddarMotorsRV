@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
@@ -101,6 +101,17 @@ export default function BookInspectionPage() {
     return true
   }
 
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    document.body.appendChild(script)
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -109,6 +120,7 @@ export default function BookInspectionPage() {
     setLoading(true)
     
     try {
+      // Step 1: Create booking
       const bookingPayload = {
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
@@ -120,8 +132,7 @@ export default function BookInspectionPage() {
         year: parseInt(formData.year),
         kmDriven: parseInt(formData.kmDriven),
         fuelType: formData.fuelType,
-        transmissionType: formData.transmissionType,
-        appointmentDate: formData.appointmentDate,
+        transmissionType: formData.transmissionType, appointmentDate: formData.appointmentDate,
         appointmentTimeSlot: formData.appointmentTimeSlot,
         inspectionLocation: {
           address: formData.address,
@@ -129,29 +140,112 @@ export default function BookInspectionPage() {
           pincode: formData.pincode
         },
         inspectionFee: formData.inspectionFee,
-        paymentStatus: 'Pending' // Will be updated after payment
+        paymentStatus: 'Pending'
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/inspections/bookings`, {
+      const bookingRes = await fetch(`${API_BASE_URL}/api/inspections/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload)
       })
 
-      const data = await res.json()
+      const bookingData = await bookingRes.json()
 
-      if (res.ok) {
-        // TODO: Integrate Razorpay payment here
-        // For now, redirect to confirmation
-        alert(`Booking created! Reference: ${data.bookingReference}`)
-        router.push(`/inspection/confirmation?ref=${data.bookingReference}`)
-      } else {
-        alert(data.error || 'Booking failed')
+      if (!bookingRes.ok) {
+        alert(bookingData.error || 'Booking failed')
+        setLoading(false)
+        return
       }
+
+      const bookingId = bookingData.booking._id
+
+      // Step 2: Create Razorpay order
+      const orderRes = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingId: bookingId,
+          amount: formData.inspectionFee
+        })
+      })
+
+      const orderData = await orderRes.json()
+
+      if (!orderRes.ok) {
+        alert('Payment initialization failed')
+        setLoading(false)
+        return
+      }
+
+      // Step 3: Open Razorpay checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Poddar Motors',
+        description: 'Car Inspection Fee',
+        order_id: orderData.orderId,
+        prefill: {
+          name: formData.customerName,
+          contact: formData.customerPhone,
+          email: formData.customerEmail
+        },
+        theme: {
+          color: '#3B82F6'
+        },
+        handler: async function (response) {
+          // Step 4: Verify payment
+          try {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/payment/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingId: bookingId
+              })
+            })
+
+            const verifyData = await verifyRes.json()
+
+            if (verifyData.success) {
+              // Payment successful
+              router.push(`/inspection/confirmation?ref=${bookingId}`)
+            } else {
+              alert('Payment verification failed')
+            }
+          } catch (error) {
+            console.error('Verification error:', error)
+            alert('Payment verification failed')
+          } finally {
+            setLoading(false)
+          }
+        },
+        modal: {
+          ondismiss: async function() {
+            // Payment cancelled
+            await fetch(`${API_BASE_URL}/api/payment/failed`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                bookingId: bookingId,
+                error: 'Payment cancelled by user'
+              })
+            })
+            setLoading(false)
+            alert('Payment cancelled. You can retry payment from your booking confirmation page.')
+            router.push(`/inspection/confirmation?ref=${bookingId}`)
+          }
+        }
+      }
+
+      const razorpay = new window.Razorpay(options)
+      razorpay.open()
+
     } catch (error) {
       console.error('Error:', error)
       alert('Something went wrong. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
