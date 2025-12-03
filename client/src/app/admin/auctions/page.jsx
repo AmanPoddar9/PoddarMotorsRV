@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
-export default function AdminAuctionsPage() {
+function AdminAuctionsContent() {
   const searchParams = useSearchParams()
   const createFromReportId = searchParams.get('createFrom')
   
@@ -283,5 +283,13 @@ export default function AdminAuctionsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function AdminAuctionsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading auctions...</div>}>
+      <AdminAuctionsContent />
+    </Suspense>
   )
 }
