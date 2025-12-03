@@ -121,19 +121,25 @@ app.use('/api/activities', require('./routes/activities'));
 app.use('/api/videos', videoRoutes);
 app.use('/api/inspections', inspectionRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/auctions', require('./routes/auctionRoutes'));
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+// Start Server
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
-  process.exit(1);
+// Initialize WebSocket
+const websocket = require('./websocket');
+websocket.init(server);
+
+// Handle Unhandled Promise Rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.log(`Error: ${err.message}`);
+  // Close server & exit process
+  server.close(() => process.exit(1));
 });
 
 module.exports = app;
