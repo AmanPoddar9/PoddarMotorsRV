@@ -2,10 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 export default function AdminAuctionsPage() {
+  const searchParams = useSearchParams()
+  const createFromReportId = searchParams.get('createFrom')
+  
   const [auctions, setAuctions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -23,6 +27,15 @@ export default function AdminAuctionsPage() {
   useEffect(() => {
     fetchAuctions()
     fetchInspectionReports()
+    
+    // Auto-open modal if createFrom param exists
+    if (createFromReportId) {
+      setFormData(prev => ({
+        ...prev,
+        inspectionReportId: createFromReportId
+      }))
+      setShowCreateModal(true)
+    }
   }, [])
 
   const fetchAuctions = async () => {

@@ -49,9 +49,28 @@ export default function ViewReportPage() {
             <h1 className="text-3xl font-bold text-white mb-2">Inspection Report</h1>
             <p className="text-gray-400">Report ID: {report._id}</p>
           </div>
-          <div className="text-right">
-            <div className="text-4xl font-bold text-blue-500">{report.overallScore}/100</div>
-            <div className="text-xl font-semibold text-white mt-1">Grade: {report.overallGrade}</div>
+          <div className="flex items-start gap-4">
+            <div className="text-right">
+              <div className="text-4xl font-bold text-blue-500">{report.overallScore}/100</div>
+              <div className="text-xl font-semibold text-white mt-1">Grade: {report.overallGrade}</div>
+            </div>
+            {report.sentToAuction && report.auctionId ? (
+              <a
+                href={`/admin/auctions`}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+              >
+                View Auction
+              </a>
+            ) : (
+              report.summary?.recommendation === 'Ready for Auction' && (
+                <button
+                  onClick={() => router.push(`/admin/auctions?createFrom=${report._id}`)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+                >
+                  Send to Auction
+                </button>
+              )
+            )}
           </div>
         </div>
 
