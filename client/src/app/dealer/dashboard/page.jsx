@@ -7,10 +7,15 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState([])
+  const [filteredAuctions, setFilteredAuctions] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('Live')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' })
+  const [sortBy, setSortBy] = useState('endTime')
 
   const [dealer, setDealer] = useState(null)
+  const [canBid, setCanBid] = useState(false)
 
   useEffect(() => {
     const storedDealer = localStorage.getItem('dealer')
@@ -18,9 +23,16 @@ export default function AuctionDashboard() {
       window.location.href = '/dealer/login'
       return
     }
-    setDealer(JSON.parse(storedDealer))
+    const dealerData = JSON.parse(storedDealer)
+    setDealer(dealerData)
+    // Only approved dealers can bid
+    setCanBid(dealerData.status === 'Approved')
     fetchAuctions()
   }, [filter])
+
+  useEffect(() => {
+    applyFilters()
+  }, [auctions, searchQuery, priceRange, sortBy])
 
   const fetchAuctions = async () => {
     setLoading(true)
@@ -33,6 +45,37 @@ export default function AuctionDashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const applyFilters = () => {
+    let filtered = [...auctions]
+
+    // Search filter (brand, model, registration)
+    if (searchQuery) {
+      filtered = filtered.filter(auction => 
+        auction.carDetails.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.carDetails.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        auction.carDetails.registrationNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // Price range filter
+    if (priceRange.min) {
+      filtered = filtered.filter(auction => auction.currentBid >= parseInt(priceRange.min))
+    }
+    if (priceRange.max) {
+      filtered = filtered.filter(auction => auction.currentBid <= parseInt(priceRange.max))
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      if (sortBy === 'endTime') return new Date(a.endTime) - new Date(b.endTime)
+      if (sortBy === 'price-asc') return a.currentBid - b.currentBid
+      if (sortBy === 'price-desc') return b.currentBid - a.currentBid
+      return 0
+    })
+
+    setFilteredAuctions(filtered)
   }
 
   const formatTimeRemaining = (endTime) => {
@@ -67,16 +110,81 @@ export default function AuctionDashboard() {
           </div>
         </div>
 
+        {/* Filters & Search */}
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Search */}
+            <div className="md:col-span-2">
+              <input
+                type="text"
+                placeholder="Search by brand, model, or registration..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Price Range */}
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="Min ₹"
+                value={priceRange.min}
+                onChange={(e) => setPriceRange({...priceRange, min: e.target.value})}
+                className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Max ₹"
+                value={priceRange.max}
+                onChange={(e) => setPriceRange({...priceRange, max: e.target.value})}
+                className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="endTime">Ending Soon</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+          
+          {/* Active Filters */}
+          {(searchQuery || priceRange.min || priceRange.max) && (
+            <div className="mt-4 flex items-center gap-2 flex-wrap text-sm">
+              <span className="text-gray-400">Active:</span>
+              {searchQuery && <span className="bg-blue-600 px-3 py-1 rounded-full">"{searchQuery}"</span>}
+              {priceRange.min && <span className="bg-blue-600 px-3 py-1 rounded-full">Min: ₹{parseInt(priceRange.min).toLocaleString()}</span>}
+              {priceRange.max && <span className="bg-blue-600 px-3 py-1 rounded-full">Max: ₹{parseInt(priceRange.max).toLocaleString()}</span>}
+              <button
+                onClick={() => { setSearchQuery(''); setPriceRange({ min: '', max: '' }); }}
+                className="text-red-400 hover:text-red-300 text-xs"
+              >
+                Clear All
+              </button>
+            </div>
+          )}
+        </div>
+
         {loading ? (
           <div className="text-center py-20 text-white">Loading auctions...</div>
-        ) : auctions.length === 0 ? (
+        ) : filteredAuctions.length === 0 ? (
           <div className="text-center py-20 bg-gray-800 rounded-2xl border border-gray-700">
-            <h3 className="text-2xl font-bold text-white mb-2">No {filter} Auctions</h3>
-            <p className="text-gray-400">Check back later for new listings</p>
+            <h3 className="text-2xl font-bold text-white mb-2">
+              {auctions.length === 0 ? `No ${filter} Auctions` : 'No Results Found'}
+            </h3>
+            <p className="text-gray-400">
+              {auctions.length === 0 ? 'Check back later for new listings' : 'Try adjusting your filters'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {auctions.map((auction) => (
+            {filteredAuctions.map((auction) => (
               <div key={auction._id} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500 transition-all group">
                 {/* Car Image Placeholder */}
                 <div className="h-48 bg-gray-700 relative">
