@@ -19,6 +19,10 @@ const dealerSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  password: {
+    type: String,
+    required: true
+  },
   businessName: {
     type: String,
     required: true,
