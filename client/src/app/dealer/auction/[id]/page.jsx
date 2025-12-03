@@ -207,51 +207,89 @@ export default function LiveAuctionRoom() {
               <p className="text-gray-500 text-sm mt-2">₹{currentBid.toLocaleString()}</p>
             </div>
 
+            {/* Winner / Auction Ended Notice */}
+            {(auction.status === 'Sold' || auction.status === 'Ended' || auction.status === 'Unsold') && (
+              <div className={`p-6 text-center border-b border-gray-700 ${
+                auction.status === 'Sold' ? 'bg-green-900/30' :
+                auction.status === 'Unsold' ? 'bg-red-900/30' : 'bg-gray-900/50'
+              }`}>
+                <p className="text-gray-400 text-xs uppercase tracking-wider mb-2">Auction Ended</p>
+                {auction.status === 'Sold' && auction.winner ? (
+                  <>
+                    <p className="text-2xl font-bold text-white mb-1">
+                      {auction.winner._id === dealer?._id ? '🎉 You Won!' : 'Sold'}
+                    </p>
+                    {auction.winner._id === dealer?._id ? (
+                      <p className="text-green-300 text-sm">
+                        Congratulations! We'll contact you shortly with next steps.
+                      </p>
+                    ) : (
+                      <p className="text-gray-400 text-sm">
+                        Won by {auction.winner.businessName}
+                      </p>
+                    )}
+                  </>
+                ) : auction.status === 'Unsold' ? (
+                  <>
+                    <p className="text-xl font-bold text-red-300 mb-1">Reserve Not Met</p>
+                    <p className="text-gray-400 text-sm">Auction closed without sale</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xl font-bold text-gray-300 mb-1">Auction Ended</p>
+                    <p className="text-gray-400 text-sm">No bids were placed</p>
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Bid Controls */}
-            <div className="p-6 space-y-4">
-              {!canBid ? (
-                <div className="bg-yellow-900/30 border border-yellow-500/30 p-6 rounded-lg text-center">
-                  <p className="text-yellow-300 font-bold mb-2">Account Pending Approval</p>
-                  <p className="text-yellow-200 text-sm">
-                    Your dealer account must be approved by admin before you can place bids.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">Your Bid Amount (₹)</label>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setBidAmount(Math.max(bidAmount - 1000, currentBid + 1000))}
-                        className="bg-gray-700 text-white px-4 rounded-lg hover:bg-gray-600"
-                      >-</button>
-                      <input
-                        type="number"
-                        value={bidAmount}
-                        onChange={(e) => setBidAmount(parseInt(e.target.value))}
-                        className="w-full bg-gray-900 text-white text-center font-bold text-xl py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-                      />
-                      <button 
-                        onClick={() => setBidAmount(bidAmount + 1000)}
-                        className="bg-gray-700 text-white px-4 rounded-lg hover:bg-gray-600"
-                      >+</button>
+            {auction.status === 'Live' && (
+              <div className="p-6 space-y-4">
+                {!canBid ? (
+                  <div className="bg-yellow-900/30 border border-yellow-500/30 p-6 rounded-lg text-center">
+                    <p className="text-yellow-300 font-bold mb-2">Account Pending Approval</p>
+                    <p className="text-yellow-200 text-sm">
+                      Your dealer account must be approved by admin before you can place bids.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-gray-400 text-sm mb-2">Your Bid Amount (₹)</label>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => setBidAmount(Math.max(bidAmount - 1000, currentBid + 1000))}
+                          className="bg-gray-700 text-white px-4 rounded-lg hover:bg-gray-600"
+                        >-</button>
+                        <input
+                          type="number"
+                          value={bidAmount}
+                          onChange={(e) => setBidAmount(parseInt(e.target.value))}
+                          className="w-full bg-gray-900 text-white text-center font-bold text-xl py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+                        />
+                        <button 
+                          onClick={() => setBidAmount(bidAmount + 1000)}
+                          className="bg-gray-700 text-white px-4 rounded-lg hover:bg-gray-600"
+                        >+</button>
+                      </div>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={placeBid}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    PLACE BID
-                  </button>
+                    <button
+                      onClick={placeBid}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-4 rounded-xl shadow-lg shadow-blue-900/50 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      PLACE BID
+                    </button>
 
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>Min Increment: ₹{auction.minIncrement}</span>
-                    <span>Reserve Met: {currentBid >= auction.reservePrice ? 'Yes' : 'No'}</span>
-                  </div>
-                </>
-              )}
-            </div>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Min Increment: ₹{auction.minIncrement}</span>
+                      <span>Reserve Met: {currentBid >= auction.reservePrice ? 'Yes' : 'No'}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
             {/* Bid History */}
             <div className="bg-gray-900 p-4 rounded-b-2xl max-h-64 overflow-y-auto">

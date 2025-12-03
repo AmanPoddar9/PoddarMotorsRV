@@ -113,6 +113,7 @@ export default function AdminAuctionsPage() {
                 <th className="p-4">Status</th>
                 <th className="p-4">Current Bid</th>
                 <th className="p-4">Ends In</th>
+                <th className="p-4">Winner / Next Steps</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
@@ -129,6 +130,8 @@ export default function AdminAuctionsPage() {
                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                       auction.status === 'Live' ? 'bg-green-500 text-white animate-pulse' :
                       auction.status === 'Scheduled' ? 'bg-blue-500 text-white' :
+                      auction.status === 'Sold' ? 'bg-green-700 text-green-100' :
+                      auction.status === 'Unsold' ? 'bg-red-700 text-red-100' :
                       'bg-gray-600 text-gray-300'
                     }`}>
                       {auction.status}
@@ -137,6 +140,21 @@ export default function AdminAuctionsPage() {
                   <td className="p-4 font-mono text-white">₹{auction.currentBid.toLocaleString()}</td>
                   <td className="p-4">
                     {new Date(auction.endTime).toLocaleString()}
+                  </td>
+                  <td className="p-4">
+                    {auction.status === 'Sold' && auction.winner ? (
+                      <div className="text-sm">
+                        <p className="text-white font-semibold">{auction.winner.businessName}</p>
+                        <p className="text-gray-400 text-xs">{auction.winner.phone}</p>
+                        <p className="text-green-400 text-xs font-bold mt-1">Contact for payment</p>
+                      </div>
+                    ) : auction.status === 'Unsold' ? (
+                      <p className="text-red-400 text-sm">Reserve not met</p>
+                    ) : auction.status === 'Ended' ? (
+                      <p className="text-gray-500 text-sm">No bids</p>
+                    ) : (
+                      <p className="text-gray-500 text-sm">-</p>
+                    )}
                   </td>
                   <td className="p-4">
                     <Link 
@@ -163,7 +181,7 @@ export default function AdminAuctionsPage() {
               ))}
               {auctions.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-gray-500">
+                  <td colSpan="6" className="p-8 text-center text-gray-500">
                     No auctions found. Create one to get started.
                   </td>
                 </tr>
