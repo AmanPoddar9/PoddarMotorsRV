@@ -36,7 +36,7 @@ export default function BookInspectionPage() {
     pincode: '',
     
     // Payment
-    inspectionFee: 499
+    inspectionFee: 0
   })
 
   const handleChange = (e) => {
@@ -101,16 +101,7 @@ export default function BookInspectionPage() {
     return true
   }
 
-  // Load Razorpay script
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.async = true
-    document.body.appendChild(script)
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -139,8 +130,8 @@ export default function BookInspectionPage() {
           city: formData.city,
           pincode: formData.pincode
         },
-        inspectionFee: formData.inspectionFee,
-        paymentStatus: 'Pending'
+        inspectionFee: 0,
+        paymentStatus: 'Free'
       }
 
       const bookingRes = await fetch(`${API_BASE_URL}/api/inspections/bookings`, {
@@ -157,91 +148,8 @@ export default function BookInspectionPage() {
         return
       }
 
-      const bookingId = bookingData.booking._id
-
-      // Step 2: Create Razorpay order
-      const orderRes = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: bookingId,
-          amount: formData.inspectionFee
-        })
-      })
-
-      const orderData = await orderRes.json()
-
-      if (!orderRes.ok) {
-        alert('Payment initialization failed')
-        setLoading(false)
-        return
-      }
-
-      // Step 3: Open Razorpay checkout
-      const options = {
-        key: orderData.keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: 'Poddar Motors',
-        description: 'Car Inspection Fee',
-        order_id: orderData.orderId,
-        prefill: {
-          name: formData.customerName,
-          contact: formData.customerPhone,
-          email: formData.customerEmail
-        },
-        theme: {
-          color: '#3B82F6'
-        },
-        handler: async function (response) {
-          // Step 4: Verify payment
-          try {
-            const verifyRes = await fetch(`${API_BASE_URL}/api/payment/verify`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                bookingId: bookingId
-              })
-            })
-
-            const verifyData = await verifyRes.json()
-
-            if (verifyData.success) {
-              // Payment successful
-              router.push(`/inspection/confirmation?ref=${bookingId}`)
-            } else {
-              alert('Payment verification failed')
-            }
-          } catch (error) {
-            console.error('Verification error:', error)
-            alert('Payment verification failed')
-          } finally {
-            setLoading(false)
-          }
-        },
-        modal: {
-          ondismiss: async function() {
-            // Payment cancelled
-            await fetch(`${API_BASE_URL}/api/payment/failed`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                bookingId: bookingId,
-                error: 'Payment cancelled by user'
-              })
-            })
-            setLoading(false)
-            alert('Payment cancelled. You can retry payment from your booking confirmation page.')
-            router.push(`/inspection/confirmation?ref=${bookingId}`)
-          }
-        }
-      }
-
-      const razorpay = new window.Razorpay(options)
-      razorpay.open()
+      // Success - Redirect to confirmation
+      router.push(`/inspection/confirmation?ref=${bookingData.bookingReference}`)
 
     } catch (error) {
       console.error('Error:', error)
@@ -611,7 +519,7 @@ export default function BookInspectionPage() {
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6">
                   <div className="flex justify-between items-center text-white">
                     <span className="text-xl font-semibold">Inspection Fee</span>
-                    <span className="text-3xl font-bold">₹{formData.inspectionFee}</span>
+                    <span className="text-3xl font-bold">Free</span>
                   </div>
                   <p className="text-blue-100 text-sm mt-2">100+ point professional inspection</p>
                 </div>
@@ -629,7 +537,7 @@ export default function BookInspectionPage() {
                     disabled={loading}
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all disabled:opacity-50"
                   >
-                    {loading ? 'Processing...' : 'Proceed to Payment →'}
+                    {loading ? 'Processing...' : 'Confirm Booking'}
                   </button>
                 </div>
               </div>

@@ -129,3 +129,41 @@ exports.getAuctionBids = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch bids' });
   }
 };
+
+// End auction manually (for testing/admin)
+exports.endAuction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const auction = await Auction.findById(id);
+
+    if (!auction) {
+      return res.status(404).json({ error: 'Auction not found' });
+    }
+
+    // Find highest bid
+    const highestBid = await Bid.findOne({ auctionId: id }).sort({ amount: -1 });
+
+    auction.status = 'Ended';
+    auction.endTime = new Date(); // Set end time to now
+
+    if (highestBid) {
+      // Check if reserve met
+      if (highestBid.amount >= auction.reservePrice) {
+        auction.status = 'Sold';
+        auction.winner = highestBid.dealerId;
+      } else {
+        auction.status = 'Unsold';
+      }
+    } else {
+      auction.status = 'Unsold';
+    }
+
+    await auction.save();
+
+    res.json({ message: 'Auction ended successfully', auction });
+
+  } catch (error) {
+    console.error('Error ending auction:', error);
+    res.status(500).json({ error: 'Failed to end auction' });
+  }
+};

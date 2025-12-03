@@ -89,7 +89,7 @@ const inspectionBookingSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['Pending', 'Paid', 'Refunded', 'Failed'],
+    enum: ['Pending', 'Paid', 'Refunded', 'Failed', 'Free'],
     default: 'Pending'
   },
   paymentId: { 

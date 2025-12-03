@@ -23,6 +23,10 @@ exports.createBooking = async (req, res) => {
       return res.status(400).json({ error: 'This time slot is fully booked. Please choose another slot.' })
     }
     
+    if (bookingData.paymentStatus === 'Free') {
+      bookingData.status = 'Confirmed'
+    }
+
     const booking = new InspectionBooking(bookingData)
     await booking.save()
     

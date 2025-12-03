@@ -132,6 +132,19 @@ export default function AdminAuctionsPage() {
                     >
                       View Room
                     </Link>
+                    {auction.status === 'Live' && (
+                      <button
+                        onClick={async () => {
+                          if (confirm('End this auction now?')) {
+                            await fetch(`${API_BASE_URL}/api/auctions/${auction._id}/end`, { method: 'POST' })
+                            fetchAuctions()
+                          }
+                        }}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        End Now
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

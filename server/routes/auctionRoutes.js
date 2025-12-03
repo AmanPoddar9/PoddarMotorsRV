@@ -10,5 +10,6 @@ router.get('/:id', auctionController.getAuctionById);
 // Bidding
 router.post('/bid', auctionController.placeBid);
 router.get('/:id/bids', auctionController.getAuctionBids);
+router.post('/:id/end', auctionController.endAuction);
 
 module.exports = router;
