@@ -10,7 +10,15 @@ export default function AuctionDashboard() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('Live')
 
+  const [dealer, setDealer] = useState(null)
+
   useEffect(() => {
+    const storedDealer = localStorage.getItem('dealer')
+    if (!storedDealer) {
+      window.location.href = '/dealer/login'
+      return
+    }
+    setDealer(JSON.parse(storedDealer))
     fetchAuctions()
   }, [filter])
 

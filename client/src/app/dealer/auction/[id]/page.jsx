@@ -16,9 +16,16 @@ export default function LiveAuctionRoom() {
   const [socket, setSocket] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Mock Dealer ID (In real app, get from auth)
-  const dealerId = '656e6d7f8a9b0c1d2e3f4g5h' 
-  const dealerName = 'Poddar Dealer'
+  const [dealer, setDealer] = useState(null)
+
+  useEffect(() => {
+    const storedDealer = localStorage.getItem('dealer')
+    if (!storedDealer) {
+      window.location.href = '/dealer/login'
+      return
+    }
+    setDealer(JSON.parse(storedDealer))
+  }, [])
 
   useEffect(() => {
     // 1. Fetch Auction Details
@@ -92,7 +99,7 @@ export default function LiveAuctionRoom() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           auctionId: id,
-          dealerId,
+          dealerId: dealer._id,
           amount: bidAmount
         })
       })
