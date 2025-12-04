@@ -43,7 +43,7 @@ export default function AddTestimonialPage() {
     setFormData(prev => ({ ...prev, type: isVideo ? 'video' : 'photo' }))
 
     try {
-      const res = await axios.post(`${API_URL}/api/upload`, uploadData, {
+      const res = await axios.post(`${API_URL}/api/upload/single`, uploadData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true
       })

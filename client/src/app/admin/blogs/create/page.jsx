@@ -63,7 +63,7 @@ const CreateBlog = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('image', file);
       
-      const response = await axios.post(`${API_URL}/api/upload`, uploadFormData, {
+      const response = await axios.post(`${API_URL}/api/upload/single`, uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true,
       });

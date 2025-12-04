@@ -8,8 +8,16 @@ const ALLOWED_IMAGE_TYPES = [
   'image/webp'
 ];
 
-// Maximum file size (5MB)
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Allowed video MIME types
+const ALLOWED_VIDEO_TYPES = [
+  'video/mp4',
+  'video/webm',
+  'video/quicktime'
+];
+
+// Maximum file size
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB for images
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB for videos
 
 /**
  * Validate file type using magic number detection  
@@ -24,24 +32,30 @@ const validateFileType = async (fileBuffer) => {
     return { valid: false, error: 'Unable to determine file type' };
   }
 
-  if (!ALLOWED_IMAGE_TYPES.includes(type.mime)) {
+  const isImage = ALLOWED_IMAGE_TYPES.includes(type.mime);
+  const isVideo = ALLOWED_VIDEO_TYPES.includes(type.mime);
+
+  if (!isImage && !isVideo) {
     return { 
       valid: false, 
-      error: `Invalid file type: ${type.mime}. Only JPEG, PNG, and WebP images are allowed.` 
+      error: `Invalid file type: ${type.mime}. Only JPEG, PNG, WebP images and MP4, WebM, MOV videos are allowed.` 
     };
   }
 
-  return { valid: true, mime: type.mime };
+  return { valid: true, mime: type.mime, isVideo };
 };
 
 /**
  * Validate file size
  */
-const validateFileSize = (fileBuffer) => {
-  if (fileBuffer.length > MAX_FILE_SIZE) {
+const validateFileSize = (fileBuffer, isVideo = false) => {
+  const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+  const maxSizeMB = isVideo ? 50 : 5;
+  
+  if (fileBuffer.length > maxSize) {
     return { 
       valid: false, 
-      error: `File too large: ${(fileBuffer.length / 1024 / 1024).toFixed(2)}MB. Maximum size is 5MB.` 
+      error: `File too large: ${(fileBuffer.length / 1024 / 1024).toFixed(2)}MB. Maximum size is ${maxSizeMB}MB.` 
     };
   }
   return { valid: true };
@@ -68,23 +82,23 @@ const validateFile = async (file) => {
     return { valid: false, errors: ['No file provided'] };
   }
 
-  // Check file size
-  const sizeCheck = validateFileSize(file.buffer || file);
-  if (!sizeCheck.valid) {
-    errors.push(sizeCheck.error);
-  }
-
-  // Check file type
+  // Check file type first to determine if it's a video
   const typeCheck = await validateFileType(file.buffer || file);
   if (!typeCheck.valid) {
     errors.push(typeCheck.error);
+  }
+
+  // Check file size with appropriate limit based on file type
+  const sizeCheck = validateFileSize(file.buffer || file, typeCheck.isVideo);
+  if (!sizeCheck.valid) {
+    errors.push(sizeCheck.error);
   }
 
   if (errors.length > 0) {
     return { valid: false, errors };
   }
 
-  return { valid: true, mime: typeCheck.mime };
+  return { valid: true, mime: typeCheck.mime, isVideo: typeCheck.isVideo };
 };
 
 module.exports = {
@@ -93,5 +107,7 @@ module.exports = {
   sanitizeFilename,
   validateFile,
   ALLOWED_IMAGE_TYPES,
-  MAX_FILE_SIZE
+  ALLOWED_VIDEO_TYPES,
+  MAX_IMAGE_SIZE,
+  MAX_VIDEO_SIZE
 };

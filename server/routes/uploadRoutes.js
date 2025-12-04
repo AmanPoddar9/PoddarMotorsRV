@@ -5,7 +5,9 @@ const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
-const upload = multer({ 
+
+// Multer for images only (inspections)
+const uploadImages = multer({ 
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
@@ -13,6 +15,19 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
+// Multer for images and videos (testimonials)
+const uploadMedia = multer({ 
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image and video files are allowed'));
     }
   }
 });
@@ -30,8 +45,65 @@ const bucketName = process.env.AWS_S3_BUCKET || 'realvaluestorage';
 
 const { validateFile, sanitizeFilename } = require('../utils/fileValidation');
 
-// Upload multiple images endpoint
-router.post('/', upload.array('images', 20), async (req, res) => {
+// Upload single image/video endpoint (for testimonials)
+router.post('/single', uploadMedia.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file provided',
+        error: 'Please upload an image or video file'
+      });
+    }
+
+    // Validate file
+    const validation = await validateFile(req.file);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: 'File validation failed',
+        error: validation.errors.join(', ')
+      });
+    }
+
+    // Sanitize filename
+    const safeFilename = sanitizeFilename(req.file.originalname);
+    const timestamp = Date.now();
+    const folder = validation.isVideo ? 'testimonial-videos' : 'testimonial-images';
+    const filename = `${folder}/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
+
+    // Upload to S3
+    const params = {
+      Bucket: bucketName,
+      Key: filename,
+      Body: req.file.buffer,
+      ContentType: validation.mime,
+      ACL: 'public-read',
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+
+    const url = `https://${bucketName}.s3.ap-south-1.amazonaws.com/${filename}`;
+
+    res.status(200).json({
+      success: true,
+      message: 'File uploaded successfully',
+      url: url,
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: `Failed to upload file: ${error.message}`,
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+// Upload multiple images endpoint (for inspections)
+router.post('/', uploadImages.array('images', 20), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
