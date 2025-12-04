@@ -1,8 +1,29 @@
 import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
-import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers } from 'react-icons/fi'
+import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck } from 'react-icons/fi'
 
 const adminSections = [
+  {
+    title: 'Inspections',
+    description: 'Manage car inspections & reports',
+    icon: <FiClipboard className="w-8 h-8" />,
+    href: '/admin/inspections',
+    color: 'bg-blue-600'
+  },
+  {
+    title: 'Auctions',
+    description: 'Manage live car auctions',
+    icon: <FiDollarSign className="w-8 h-8" />,
+    href: '/admin/auctions',
+    color: 'bg-green-600'
+  },
+  {
+    title: 'Dealers',
+    description: 'Manage dealer accounts',
+    icon: <FiUserCheck className="w-8 h-8" />,
+    href: '/admin/dealers',
+    color: 'bg-purple-600'
+  },
   {
     title: 'Listings',
     description: 'Manage car listings',
