@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import ImageUpload from '../../../../components/admin/ImageUpload'
@@ -47,12 +47,6 @@ const CheckItem = ({ label, name, value, onChange, required = false }) => {
   )
 }
 
-import { Suspense } from 'react'
-
-// ... imports remain same ...
-
-// Reusable CheckItem Component
-// ... CheckItem code remains same ...
 
 function CreateReportForm() {
   const router = useRouter()
@@ -1221,5 +1215,13 @@ function CreateReportForm() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function CreateInspectionReport() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading...</div>}>
+      <CreateReportForm />
+    </Suspense>
   )
 }
