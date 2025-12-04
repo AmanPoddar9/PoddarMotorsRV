@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-import ImageUpload from '@/app/components/admin/ImageUpload'
+import ImageUpload from '../../../../../components/admin/ImageUpload'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
