@@ -1,23 +1,27 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { useParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import io from 'socket.io-client'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
-export default function LiveAuctionRoom() {
-  const { id } = useParams()
+import ImageGallery from '@/app/components/dealer/ImageGallery'
+
+export default function AuctionRoom({ params }) {
+  const { id } = params
   const [auction, setAuction] = useState(null)
   const [bids, setBids] = useState([])
   const [currentBid, setCurrentBid] = useState(0)
   const [bidAmount, setBidAmount] = useState(0)
   const [timeLeft, setTimeLeft] = useState('')
-  const [socket, setSocket] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const [dealer, setDealer] = useState(null)
   const [canBid, setCanBid] = useState(false)
+
+  // Socket instance, not managed by useState to avoid re-renders and connection issues
+  let socket = null;
 
   useEffect(() => {
     const storedDealer = localStorage.getItem('dealer')
@@ -36,17 +40,20 @@ export default function LiveAuctionRoom() {
     fetchAuctionDetails()
 
     // 2. Connect Socket
-    const newSocket = io(API_BASE_URL)
-    setSocket(newSocket)
+    socket = io(API_BASE_URL)
 
-    newSocket.emit('join_auction', id)
+    socket.emit('join_auction', id)
 
-    newSocket.on('new_bid', (data) => {
+    socket.on('new_bid', (data) => {
       setBids((prev) => [data, ...prev])
       setCurrentBid(data.amount)
     })
 
-    return () => newSocket.disconnect()
+    return () => {
+      if (socket) {
+        socket.disconnect()
+      }
+    }
   }, [id])
 
   useEffect(() => {
@@ -120,17 +127,45 @@ export default function LiveAuctionRoom() {
     }
   }
 
-  if (loading) return <div className="text-white text-center py-20">Loading Auction Room...</div>
-  if (!auction) return <div className="text-white text-center py-20">Auction Not Found</div>
+  if (loading) return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">Loading Auction Room...</div>
+  if (!auction) return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">Auction not found</div>
+
+  const report = auction.inspectionReportId
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4 lg:p-8">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column: Car Details & Report */}
+    <div className="min-h-screen bg-gray-900 text-white pb-20">
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-10 shadow-lg">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Link href="/dealer/dashboard" className="text-gray-400 hover:text-white">
+              ← Back
+            </Link>
+            <h1 className="text-xl font-bold">{auction.carDetails.brand} {auction.carDetails.model} ({auction.carDetails.year})</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-xs text-gray-400">Current Bid</div>
+              <div className="text-2xl font-bold text-green-400">₹{currentBid.toLocaleString()}</div>
+            </div>
+            <div className={`px-4 py-2 rounded-lg font-mono font-bold ${
+              auction.status === 'Live' ? 'bg-red-600 animate-pulse' : 'bg-gray-700'
+            }`}>
+              {timeLeft}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Car Details & Gallery */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Car Header */}
-          <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+          
+          {/* Image Gallery */}
+          {report?.photos && <ImageGallery photos={report.photos} />}
+
+          {/* Inspection Summary */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-3xl font-bold text-white">

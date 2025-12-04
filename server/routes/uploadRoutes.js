@@ -30,58 +30,55 @@ const bucketName = process.env.AWS_S3_BUCKET || 'realvaluestorage';
 
 const { validateFile, sanitizeFilename } = require('../utils/fileValidation');
 
-// Upload image endpoint
-router.post('/', upload.single('image'), async (req, res) => {
+// Upload multiple images endpoint
+router.post('/', upload.array('images', 20), async (req, res) => {
   try {
-    if (!req.file) {
+    if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No image file provided',
+        message: 'No image files provided',
       });
     }
 
-    // Validate file (type, size, content)
-    const validation = await validateFile(req.file);
-    if (!validation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid file',
-        errors: validation.errors
-      });
-    }
+    const uploadPromises = req.files.map(async (file) => {
+      // Validate file
+      const validation = await validateFile(file);
+      if (!validation.valid) {
+        throw new Error(`Invalid file ${file.originalname}: ${validation.errors.join(', ')}`);
+      }
 
-    // Sanitize filename
-    const safeFilename = sanitizeFilename(req.file.originalname);
-    
-    // Generate unique filename
-    const timestamp = Date.now();
-    const filename = `blog-images/${timestamp}-${safeFilename}`;
+      // Sanitize filename
+      const safeFilename = sanitizeFilename(file.originalname);
+      const timestamp = Date.now();
+      const filename = `inspection-images/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
 
-    // Upload to S3
-    const params = {
-      Bucket: bucketName,
-      Key: filename,
-      Body: req.file.buffer,
-      ContentType: validation.mime, // Use validated MIME type
-      ACL: 'public-read',
-    };
+      // Upload to S3
+      constparams = {
+        Bucket: bucketName,
+        Key: filename,
+        Body: file.buffer,
+        ContentType: validation.mime,
+        ACL: 'public-read',
+      };
 
-    const command = new PutObjectCommand(params);
-    await s3Client.send(command);
+      const command = new PutObjectCommand(params);
+      await s3Client.send(command);
 
-    // Construct the public URL
-    const imageUrl = `https://${bucketName}.s3.ap-south-1.amazonaws.com/${filename}`;
+      return `https://${bucketName}.s3.ap-south-1.amazonaws.com/${filename}`;
+    });
+
+    const imageUrls = await Promise.all(uploadPromises);
 
     res.status(200).json({
       success: true,
-      message: 'Image uploaded successfully',
-      url: imageUrl,
+      message: 'Images uploaded successfully',
+      urls: imageUrls,
     });
   } catch (error) {
     console.error('Upload error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to upload image',
+      message: 'Failed to upload images',
       error: error.message,
     });
   }

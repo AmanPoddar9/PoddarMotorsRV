@@ -3,6 +3,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
+import ImageUpload from '@/app/components/admin/ImageUpload'
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 function CreateReportContent() {
@@ -19,6 +21,15 @@ function CreateReportContent() {
   const [inspectorPhone, setInspectorPhone] = useState('')
   const [recommendation, setRecommendation] = useState('Ready for Auction')
   const [notes, setNotes] = useState('')
+
+  // Photos State
+  const [photos, setPhotos] = useState({
+    exterior: [],
+    interior: [],
+    engine: [],
+    tyres: [],
+    damages: []
+  })
 
   // Simplified Checklist State (Category Level)
   const [checklist, setChecklist] = useState({
@@ -176,6 +187,15 @@ function CreateReportContent() {
           majorIssues: [],
           recommendation: recommendation
         },
+        photos: {
+          front: photos.exterior[0] || '',
+          rear: photos.exterior[1] || '',
+          left: photos.exterior[2] || '',
+          right: photos.exterior[3] || '',
+          interior: photos.interior,
+          engine: photos.engine,
+          damages: photos.damages
+        },
         overallScore: avgScore,
         overallGrade: avgScore >= 85 ? 'Excellent' : avgScore >= 70 ? 'Good' : avgScore >= 50 ? 'Fair' : 'Poor'
       }
@@ -250,6 +270,39 @@ function CreateReportContent() {
                   <textarea placeholder={`Remarks for ${category}...`} value={checklist[category].remarks} onChange={(e) => handleRemarksChange(category, e.target.value)} className="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none" />
                 </div>
               ))}
+            </div>
+            </div>
+          </div>
+
+          {/* Photos Section */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-6">Car Photos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ImageUpload 
+                label="Exterior (Front, Rear, Sides)" 
+                maxFiles={8}
+                onUpload={(urls) => setPhotos(prev => ({ ...prev, exterior: urls }))} 
+              />
+              <ImageUpload 
+                label="Interior (Dashboard, Seats)" 
+                maxFiles={8}
+                onUpload={(urls) => setPhotos(prev => ({ ...prev, interior: urls }))} 
+              />
+              <ImageUpload 
+                label="Engine Bay" 
+                maxFiles={4}
+                onUpload={(urls) => setPhotos(prev => ({ ...prev, engine: urls }))} 
+              />
+              <ImageUpload 
+                label="Tyres & Wheels" 
+                maxFiles={5}
+                onUpload={(urls) => setPhotos(prev => ({ ...prev, tyres: urls }))} 
+              />
+              <ImageUpload 
+                label="Defects / Scratches" 
+                maxFiles={10}
+                onUpload={(urls) => setPhotos(prev => ({ ...prev, damages: urls }))} 
+              />
             </div>
           </div>
 
