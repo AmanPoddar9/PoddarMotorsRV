@@ -334,6 +334,199 @@ const SellPageClient = () => {
           </div>
         </div>
 
+        {/* Choose Your Selling Plan Section */}
+        <div className="py-20 bg-gradient-to-b from-custom-black to-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Choose Your Selling Plan</h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                Select the service that best fits your needs. From instant cash offers to premium auction listings.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Plan 1: Instant Payment */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-custom-yellow/50 transition-all duration-300"
+              >
+                <div className="text-center mb-4">
+                  <div className="inline-block bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-semibold mb-4">
+                    FASTEST
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Instant Payment</h3>
+                  <div className="text-4xl font-bold text-custom-yellow mb-2">FREE</div>
+                  <p className="text-gray-400 text-sm">Our Direct Quote</p>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {[
+                    'Get quote in 30 minutes',
+                    'Instant cash payment',
+                    'Free RC transfer',
+                    'Zero commission',
+                    'Quick doorstep pickup'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-300 text-sm">
+                      <FaCheck className="text-green-400 mt-1 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="https://wa.me/918709119090?text=Hi,%20I%20want%20an%20instant%20quote%20for%20my%20car."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full bg-custom-yellow text-custom-black font-bold py-3 rounded-lg text-center hover:bg-yellow-400 transition-colors"
+                >
+                  Get Instant Quote
+                </a>
+              </motion.div>
+
+              {/* Plan 2: Inspection & Dealer Connection */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-custom-yellow/50 transition-all duration-300"
+              >
+                <div className="text-center mb-4">
+                  <div className="inline-block bg-blue-500/20 text-blue-400 px-4 py-1 rounded-full text-sm font-semibold mb-4">
+                    POPULAR
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Inspection & Dealer</h3>
+                  <div className="text-4xl font-bold text-custom-yellow mb-2">₹500</div>
+                  <p className="text-gray-400 text-sm">Connect with Buyers</p>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {[
+                    '145-point inspection',
+                    'Digital inspection report',
+                    'Connect with 2-3 dealers',
+                    'Best price comparison',
+                    'Negotiation support'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-300 text-sm">
+                      <FaCheck className="text-blue-400 mt-1 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="/inspection/book"
+                  className="block w-full bg-blue-600 text-white font-bold py-3 rounded-lg text-center hover:bg-blue-700 transition-colors"
+                >
+                  Book Inspection
+                </a>
+              </motion.div>
+
+              {/* Plan 3: Inspection Report & Bidding */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="bg-white/5 backdrop-blur-md border-2 border-custom-yellow rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 relative"
+              >
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-custom-yellow text-custom-black px-4 py-1 rounded-full text-xs font-bold">
+                  RECOMMENDED
+                </div>
+                
+                <div className="text-center mb-4 mt-2">
+                  <h3 className="text-xl font-bold text-white mb-2">Inspection & Bidding</h3>
+                  <div className="text-4xl font-bold text-custom-yellow mb-2">₹999</div>
+                  <p className="text-gray-400 text-sm">Live Auction Access</p>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {[
+                    '145-point inspection',
+                    'Professional photo shoot',
+                    'Live auction listing',
+                    'Multiple dealer bids',
+                    'Best market price guarantee',
+                    'Full transparency'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-300 text-sm">
+                      <FaCheck className="text-custom-yellow mt-1 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="/inspection/book"
+                  className="block w-full bg-custom-yellow text-custom-black font-bold py-3 rounded-lg text-center hover:bg-yellow-400 transition-colors"
+                >
+                  Start Auction Process
+                </a>
+              </motion.div>
+
+              {/* Plan 4: Premium Listing */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-md border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/60 transition-all duration-300"
+              >
+                <div className="text-center mb-4">
+                  <div className="inline-block bg-purple-500/20 text-purple-400 px-4 py-1 rounded-full text-sm font-semibold mb-4">
+                    PREMIUM
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Premium Listing</h3>
+                  <div className="text-4xl font-bold text-custom-yellow mb-2">₹1,500</div>
+                  <p className="text-gray-400 text-sm">Maximum Exposure</p>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {[
+                    'Everything in ₹999 plan',
+                    'Website listing featured',
+                    'Social media promotion',
+                    'WhatsApp dealer broadcast',
+                    'Priority auction slot',
+                    'Dedicated sales manager',
+                    'Extended listing (30 days)'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-300 text-sm">
+                      <FaCheck className="text-purple-400 mt-1 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="https://wa.me/918709119090?text=Hi,%20I%20want%20the%20Premium%20Listing%20service%20for%20my%20car."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg text-center hover:from-purple-700 hover:to-pink-700 transition-colors"
+                >
+                  Get Premium Service
+                </a>
+              </motion.div>
+            </div>
+
+            <div className="mt-12 bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+              <p className="text-gray-300 text-sm">
+                💡 <span className="font-semibold">Not sure which plan to choose?</span> Contact our sales team and we'll help you select the best option for your car.
+              </p>
+              <a
+                href="tel:+918709119090"
+                className="inline-block mt-4 text-custom-yellow hover:text-yellow-400 font-semibold"
+              >
+                Call us: +91 87091 19090
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* How It Works Section */}
         <div className="py-20 bg-custom-seasalt text-custom-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
