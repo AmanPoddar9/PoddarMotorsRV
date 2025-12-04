@@ -191,6 +191,37 @@ exports.getAvailableSlots = async (req, res) => {
     
     const allSlots = ['09:00-11:00', '11:00-13:00', '14:00-16:00', '16:00-18:00']
     
+    // Check if the selected date is today
+    const selectedDate = new Date(date)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const isToday = selectedDate.getTime() === today.getTime()
+    
+    // Filter out past slots if it's today
+    const now = new Date()
+    const currentHour = now.getHours()
+    const currentMinute = now.getMinutes()
+    
+    let availableSlotsForDay = allSlots
+    
+    if (isToday) {
+      availableSlotsForDay = allSlots.filter(slot => {
+        // Extract start time from slot (e.g., "09:00" from "09:00-11:00")
+        const [startTime] = slot.split('-')
+        const [slotHour, slotMinute] = startTime.split(':').map(Number)
+        
+        // Include slot only if it starts in the future (with 30-minute buffer)
+        if (slotHour > currentHour) return true
+        if (slotHour === currentHour && slotMinute > currentMinute + 30) return true
+        return false
+      })
+    }
+    
+    // If no slots available for today, return empty array
+    if (isToday && availableSlotsForDay.length === 0) {
+      return res.json([])
+    }
+    
     // Count bookings for each slot
     const bookingCounts = await InspectionBooking.aggregate([
       {
@@ -207,7 +238,7 @@ exports.getAvailableSlots = async (req, res) => {
       }
     ])
     
-    const availableSlots = allSlots.map(slot => {
+    const availableSlots = availableSlotsForDay.map(slot => {
       const slotData = bookingCounts.find(b => b._id === slot)
       const bookedCount = slotData ? slotData.count : 0
       return {
