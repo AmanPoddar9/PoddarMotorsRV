@@ -201,7 +201,7 @@ function CreateReportForm() {
       if (res.ok) {
         const data = await res.json()
         alert('Inspection report created successfully!')
-        router.push(`/admin/inspections/report/${data._id}`)
+        router.push(`/admin/inspections/report/${data.report._id}`)
       } else {
         const error = await res.json()
         alert(`Error: ${error.message}`)
