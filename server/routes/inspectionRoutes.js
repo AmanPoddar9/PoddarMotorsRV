@@ -14,6 +14,7 @@ router.get('/slots/available', inspectionController.getAvailableSlots)
 // Report routes
 router.post('/reports', inspectionController.createReport)
 router.get('/reports', inspectionController.getAllReports)
+router.get('/reports/public/:id', inspectionController.getPublicReport)
 router.get('/reports/:id', inspectionController.getReportById)
 router.get('/reports/booking/:bookingId', inspectionController.getReportByBookingId)
 router.put('/reports/:id', inspectionController.updateReport)

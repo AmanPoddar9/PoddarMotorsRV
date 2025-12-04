@@ -292,7 +292,28 @@ exports.getAllReports = async (req, res) => {
   }
 }
 
-// Get report by ID
+// Get public report by ID (Sanitized for sharing)
+exports.getPublicReport = async (req, res) => {
+  try {
+    const report = await InspectionReport.findById(req.params.id)
+      .populate('bookingId', 'brand model year variant fuelType transmission color registrationNumber')
+    
+    if (!report) {
+      return res.status(404).json({ error: 'Report not found' })
+    }
+    
+    // Hide sensitive inspector info for public view if needed, 
+    // but usually inspector name is fine. 
+    // Definitely hide customer details which are in bookingId (we only selected car details above).
+
+    res.json(report)
+  } catch (error) {
+    console.error('Error fetching public report:', error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// Get report by ID (Admin/Dealer full access)
 exports.getReportById = async (req, res) => {
   try {
     const report = await InspectionReport.findById(req.params.id)
