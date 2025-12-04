@@ -53,7 +53,7 @@ router.post('/', upload.array('images', 20), async (req, res) => {
       const filename = `inspection-images/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
 
       // Upload to S3
-      constparams = {
+      const params = {
         Bucket: bucketName,
         Key: filename,
         Body: file.buffer,
