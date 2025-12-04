@@ -473,7 +473,7 @@ export default function CreateInspectionReport() {
                 <CheckItem label="RC Condition" name="rcCondition" value={formData.documentation.rcCondition} onChange={(val) => updateCheckItem('documentation', 'rcCondition', val)} />
                 <CheckItem label="RC Mismatch" name="rcMismatch" value={formData.documentation.rcMismatch} onChange={(val) => updateCheckItem('documentation', 'rcMismatch', val)} />
                 <CheckItem label="Vehicle Flagged for Scrap?" name="vehicleFlaggedForScrap" value={formData.documentation.vehicleFlaggedForScrap} onChange={(val) => updateCheckItem('documentation', 'vehicleFlaggedForScrap', val)} />
-                <CheckItem label="HPA NOC Received" name="hpaNocReceived" value={formData.documentation.hpaNoc Received} onChange={(val) => updateCheckItem('documentation', 'hpaNocReceived', val)} />
+                <CheckItem label="HPA NOC Received" name="hpaNocReceived" value={formData.documentation.hpaNocReceived} onChange={(val) => updateCheckItem('documentation', 'hpaNocReceived', val)} />
                 <CheckItem label="On Road Fine/Challan Check" name="onRoadFineChallan" value={formData.documentation.onRoadFineChallan} onChange={(val) => updateCheckItem('documentation', 'onRoadFineChallan', val)} />
               </div>
               
@@ -534,20 +534,497 @@ export default function CreateInspectionReport() {
             </div>
           )}
           
-          {/* Placeholder for other steps - will implement fully in subsequent updates */}
-          {currentStep > 2 && currentStep < 8 && (
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Step {currentStep}: {
-                  currentStep === 3 ? 'Features & Warning Lamps' :
-                  currentStep === 4 ? 'Mechanical Inspection' :
-                  currentStep === 5 ? 'Body & Structure' :
-                  currentStep === 6 ? 'Electrical & Interior' :
-                  'Underbody & Road Test'
-                }
-              </h2>
-              <p className="text-gray-400">This section will be fully implemented in the next update.</p>
-              <p className="text-sm text-gray-500 mt-2">For now, you can skip to Photos & Assessment (Step 8)</p>
+          {/* Step 3: Features & Warning Lamps */}
+          {currentStep === 3 && (
+            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Step 3: Features & Warning Lamps</h2>
+              
+              {/* Features */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Features & Equipment</h3>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">No. of Airbags</label>
+                    <input
+                      type="number"
+                      value={formData.features.noOfAirbags}
+                      onChange={(e) => updateField('features', 'noOfAirbags', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      min="0"
+                      max="10"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Power Windows (Count)</label>
+                    <input
+                      type="number"
+                      value={formData.features.powerWindowsCount}
+                      onChange={(e) => updateField('features', 'powerWindowsCount', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      min="0"
+                      max="4"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Parking Sensors (Count)</label>
+                    <input
+                      type="number"
+                      value={formData.features.parkingSensorsCount}
+                      onChange={(e) => updateField('features', 'parkingSensorsCount', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      min="0"
+                      max="8"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="ABS Present" name="absPresent" value={formData.features.absPresent} onChange={(val) => updateCheckItem('features', 'absPresent', val)} />
+                  <CheckItem label="Rear Defogger" name="rearDefogger" value={formData.features.rearDefogger} onChange={(val) => updateCheckItem('features', 'rearDefogger', val)} />
+                  <CheckItem label="Reverse Camera" name="reverseCamera" value={formData.features.reverseCamera} onChange={(val) => updateCheckItem('features', 'reverseCamera', val)} />
+                  <CheckItem label="Sunroof" name="sunroof" value={formData.features.sunroof} onChange={(val) => updateCheckItem('features', 'sunroof', val)} />
+                  <CheckItem label="Cruise Control" name="cruiseControl" value={formData.features.cruiseControl} onChange={(val) => updateCheckItem('features', 'cruiseControl', val)} />
+                  <CheckItem label="ESP / ESC" name="espEsc" value={formData.features.espEsc} onChange={(val) => updateCheckItem('features', 'espEsc', val)} />
+                  <CheckItem label="TPMS" name="tpms" value={formData.features.tpms} onChange={(val) => updateCheckItem('features', 'tpms', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add more feature check items as needed using the same pattern</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Warning Lamps */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Warning Lamps & Diagnostics</h3>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Charging Voltage (idle)</label>
+                    <input
+                      type="text"
+                      value={formData.warningLamps.chargingVoltageIdle}
+                      onChange={(e) => updateField('warningLamps', 'chargingVoltageIdle', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="14.2V"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Cranking Voltage (min)</label>
+                    <input
+                      type="text"
+                      value={formData.warningLamps.crankingVoltageMin}
+                      onChange={(e) => updateField('warningLamps', 'crankingVoltageMin', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="10.5V"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Engine MIL" name="engineMIL" value={formData.warningLamps.engineMIL} onChange={(val) => updateCheckItem('warningLamps', 'engineMIL', val)} />
+                  <CheckItem label="ABS Light" name="absLight" value={formData.warningLamps.absLight} onChange={(val) => updateCheckItem('warningLamps', 'absLight', val)} />
+                  <CheckItem label="Airbag Light" name="airbagLight" value={formData.warningLamps.airbagLight} onChange={(val) => updateCheckItem('warningLamps', 'airbagLight', val)} />
+                  <CheckItem label="Oil Pressure Light" name="oilPressureLight" value={formData.warningLamps.oilPressureLight} onChange={(val) => updateCheckItem('warningLamps', 'oilPressureLight', val)} />
+                  <CheckItem label="Temperature Light" name="temperatureLight" value={formData.warningLamps.temperatureLight} onChange={(val) => updateCheckItem('warningLamps', 'temperatureLight', val)} />
+                  <CheckItem label="Battery/Charging Light" name="batteryChargingLight" value={formData.warningLamps.batteryChargingLight} onChange={(val) => updateCheckItem('warningLamps', 'batteryChargingLight', val)} />
+                  <CheckItem label="EPS Light" name="epsLight" value={formData.warningLamps.epsLight} onChange={(val) => updateCheckItem('warningLamps', 'epsLight', val)} />
+                  <CheckItem label="TPMS Light" name="tpmsLight" value={formData.warningLamps.tpmsLight} onChange={(val) => updateCheckItem('warningLamps', 'tpmsLight', val)} />
+                  <CheckItem label="SVHS/Hybrid Light" name="svhsHybridLight" value={formData.warningLamps.svhsHybridLight} onChange={(val) => updateCheckItem('warningLamps', 'svhsHybridLight', val)} />
+                  <CheckItem label="Brake Warning" name="brakeWarning" value={formData.warningLamps.brakeWarning} onChange={(val) => updateCheckItem('warningLamps', 'brakeWarning', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add more warning lamp checks as needed</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Step 4: Mechanical Inspection */}
+          {currentStep === 4 && (
+            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Step 4: Mechanical Inspection</h2>
+              <p className="text-gray-400 text-sm">Check engine, transmission, suspension, steering, and brakes.</p>
+              
+              {/* Engine */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Engine & Powertrain</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Engine Sound" name="engineSound" value={formData.engine.engineSound} onChange={(val) => updateCheckItem('engine', 'engineSound', val)} />
+                  <CheckItem label="Blow-by" name="blowBy" value={formData.engine.blowBy} onChange={(val) => updateCheckItem('engine', 'blowBy', val)} />
+                  <CheckItem label="Exhaust Smoke" name="exhaustSmoke" value={formData.engine.exhaustSmoke} onChange={(val) => updateCheckItem('engine', 'exhaustSmoke', val)} />
+                  <CheckItem label="Engine Oil Leaking" name="engineOilLeaking" value={formData.engine.engineOilLeaking} onChange={(val) => updateCheckItem('engine', 'engineOilLeaking', val)} />
+                  <CheckItem label="Coolant Level" name="coolantLevel" value={formData.engine.coolantLevel} onChange={(val) => updateCheckItem('engine', 'coolantLevel', val)} />
+                  <CheckItem label="Turbo Condition" name="turboCondition" value={formData.engine.turboCondition} onChange={(val) => updateCheckItem('engine', 'turboCondition', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Injector Noise, Timing Belt, Piston Noise, Oil Seals, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Transmission */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Transmission & Clutch</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="1st Gear Shift" name="gear1Shift" value={formData.transmission.gear1Shift} onChange={(val) => updateCheckItem('transmission', 'gear1Shift', val)} />
+                  <CheckItem label="2nd Gear Shift" name="gear2Shift" value={formData.transmission.gear2Shift} onChange={(val) => updateCheckItem('transmission', 'gear2Shift', val)} />
+                  <CheckItem label="3rd Gear Shift" name="gear3Shift" value={formData.transmission.gear3Shift} onChange={(val) => updateCheckItem('transmission', 'gear3Shift', val)} />
+                  <CheckItem label="Clutch Plate" name="clutchPlate" value={formData.transmission.clutchPlate} onChange={(val) => updateCheckItem('transmission', 'clutchPlate', val)} />
+                  <CheckItem label="Pressure Plate" name="pressurePlate" value={formData.transmission.pressurePlate} onChange={(val) => updateCheckItem('transmission', 'pressurePlate', val)} />
+                  <CheckItem label="Clutch Slip Under Load" name="clutchSlipUnderLoad" value={formData.transmission.clutchSlipUnderLoad} onChange={(val) => updateCheckItem('transmission', 'clutchSlipUnderLoad', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: 4th/5th/Reverse gears, Release Bearing, Clutch Bite Point, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Suspension & Steering */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Suspension & Steering</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Overall Suspension" name="overallSuspension" value={formData.suspensionSteering.overallSuspension} onChange={(val) => updateCheckItem('suspensionSteering', 'overallSuspension', val)} />
+                  <CheckItem label="Ball Joints" name="ballJoints" value={formData.suspensionSteering.ballJoints} onChange={(val) => updateCheckItem('suspensionSteering', 'ballJoints', val)} />
+                  <CheckItem label="Rack & Pinion" name="rackPinionPlayBootTear" value={formData.suspensionSteering.rackPinionPlayBootTear} onChange={(val) => updateCheckItem('suspensionSteering', 'rackPinionPlayBootTear', val)} />
+                  <CheckItem label="Front RH Shock" name="frontRHShockAbsorber" value={formData.suspensionSteering.frontRHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'frontRHShockAbsorber', val)} />
+                  <CheckItem label="Front LH Shock" name="frontLHShockAbsorber" value={formData.suspensionSteering.frontLHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'frontLHShockAbsorber', val)} />
+                  <CheckItem label="Power Steering Motor" name="powerSteeringMotorEPS" value={formData.suspensionSteering.powerSteeringMotorEPS} onChange={(val) => updateCheckItem('suspensionSteering', 'powerSteeringMotorEPS', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Rear shocks, Tie rods, Engine mounts, Lower/Upper arms, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Brakes */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Brakes</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Overall Brakes" name="overallBrakes" value={formData.brakes.overallBrakes} onChange={(val) => updateCheckItem('brakes', 'overallBrakes', val)} />
+                  <CheckItem label="Front RH Disc" name="frontRHDisc" value={formData.brakes.frontRHDisc} onChange={(val) => updateCheckItem('brakes', 'frontRHDisc', val)} />
+                  <CheckItem label="Front LH Disc" name="frontLHDisc" value={formData.brakes.frontLHDisc} onChange={(val) => updateCheckItem('brakes', 'frontLHDisc', val)} />
+                  <CheckItem label="Calipers" name="calipers" value={formData.brakes.calipers} onChange={(val) => updateCheckItem('brakes', 'calipers', val)} />
+                  <CheckItem label="Brake Oil Level" name="brakeOilLevel" value={formData.brakes.brakeOilLevel} onChange={(val) => updateCheckItem('brakes', 'brakeOilLevel', val)} />
+                  <CheckItem label="Handbrake" name="handbrakeLever" value={formData.brakes.handbrakeLever} onChange={(val) => updateCheckItem('brakes', 'handbrakeLever', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Rear brakes, Brake shoes, Drums, Handbrake cables, Vibration, etc.</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Step 5: Body & Structure */}
+          {currentStep === 5 && (
+            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Step 5: Body & Structure</h2>
+              <p className="text-gray-400 text-sm">Check body panels, structural integrity, paint, and glass.</p>
+              
+              {/* Body Panels */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Body Panels</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Bonnet" name="bonnet" value={formData.bodyPanels.bonnet} onChange={(val) => updateCheckItem('bodyPanels', 'bonnet', val)} />
+                  <CheckItem label="Front Bumper" name="frontBumper" value={formData.bodyPanels.frontBumper} onChange={(val) => updateCheckItem('bodyPanels', 'frontBumper', val)} />
+                  <CheckItem label="Rear Bumper" name="rearBumper" value={formData.bodyPanels.rearBumper} onChange={(val) => updateCheckItem('bodyPanels', 'rearBumper', val)} />
+                  <CheckItem label="RH Fender" name="rhFender" value={formData.bodyPanels.rhFender} onChange={(val) => updateCheckItem('bodyPanels', 'rhFender', val)} />
+                  <CheckItem label="LH Fender" name="lhFender" value={formData.bodyPanels.lhFender} onChange={(val) => updateCheckItem('bodyPanels', 'lhFender', val)} />
+                  <CheckItem label="Roof Condition" name="roofCondition" value={formData.bodyPanels.roofCondition} onChange={(val) => updateCheckItem('bodyPanels', 'roofCondition', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: All 4 doors, Running boards, Quarter panels, Boot/Dicky</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Structural Integrity */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Structural Integrity</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Chassis" name="chassis" value={formData.structuralIntegrity.chassis} onChange={(val) => updateCheckItem('structuralIntegrity', 'chassis', val)} />
+                  <CheckItem label="A/B/C Pillars" name="abcPillars" value={formData.structuralIntegrity.abcPillars} onChange={(val) => updateCheckItem('structuralIntegrity', 'abcPillars', val)} />
+                  <CheckItem label="Floor Pan" name="floorPan" value={formData.structuralIntegrity.floorPan} onChange={(val) => updateCheckItem('structuralIntegrity', 'floorPan', val)} />
+                  <CheckItem label="Apron LH" name="apronLH" value={formData.structuralIntegrity.apronLH} onChange={(val) => updateCheckItem('structuralIntegrity', 'apronLH', val)} />
+                  <CheckItem label="Apron RH" name="apronRH" value={formData.structuralIntegrity.apronRH} onChange={(val) => updateCheckItem('structuralIntegrity', 'apronRH', val)} />
+                  <CheckItem label="Weld Pasting/Joints" name="weldPastingJoints" value={formData.structuralIntegrity.weldPastingJoints} onChange={(val) => updateCheckItem('structuralIntegrity', 'weldPastingJoints', val)} />
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-200 mb-2">Paint Thickness (selected panels)</label>
+                  <input
+                    type="text"
+                    value={formData.structuralIntegrity.paintThickness}
+                    onChange={(e) => updateField('structuralIntegrity', 'paintThickness', e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    placeholder="e.g., 100-120 microns"
+                  />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Cross-members, Radiator support, Cowl, Firewall, Boot floor, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Paint & Glass */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Paint & Glass</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Front Windshield" name="frontWindshield" value={formData.paintGlass.frontWindshield} onChange={(val) => updateCheckItem('paintGlass', 'frontWindshield', val)} />
+                  <CheckItem label="Rear Windshield" name="rearWindshield" value={formData.paintGlass.rearWindshield} onChange={(val) => updateCheckItem('paintGlass', 'rearWindshield', val)} />
+                  <CheckItem label="Front RH Door Glass" name="frontRHDoorGlass" value={formData.paintGlass.frontRHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'frontRHDoorGlass', val)} />
+                  <CheckItem label="Front LH Door Glass" name="frontLHDoorGlass" value={formData.paintGlass.frontLHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'frontLHDoorGlass', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Rear door glass, Quarter glass</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Step 6: Electrical & Interior */}
+          {currentStep === 6 && (
+            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Step 6: Electrical & Interior</h2>
+              <p className="text-gray-400 text-sm">Check all lights, interior components, HVAC, and controls.</p>
+              
+              {/* Exterior Lights */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Exterior Lights</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="RH Headlamp" name="rhHeadlamp" value={formData.exteriorLights.rhHeadlamp} onChange={(val) => updateCheckItem('exteriorLights', 'rhHeadlamp', val)} />
+                  <CheckItem label="LH Headlamp" name="lhHeadlamp" value={formData.exteriorLights.lhHeadlamp} onChange={(val) => updateCheckItem('exteriorLights', 'lhHeadlamp', val)} />
+                  <CheckItem label="RH Tail Lamp" name="rhTailLamp" value={formData.exteriorLights.rhTailLamp} onChange={(val) => updateCheckItem('exteriorLights', 'rhTailLamp', val)} />
+                  <CheckItem label="LH Tail Lamp" name="lhTailLamp" value={formData.exteriorLights.lhTailLamp} onChange={(val) => updateCheckItem('exteriorLights', 'lhTailLamp', val)} />
+                  <CheckItem label="DRLs" name="drls" value={formData.exteriorLights.drls} onChange={(val) => updateCheckItem('exteriorLights', 'drls', val)} />
+                  <CheckItem label="Hazard Lamps" name="hazardLamps" value={formData.exteriorLights.hazardLamps} onChange={(val) => updateCheckItem('exteriorLights', 'hazardLamps', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Fog lamps, Indicators, Number plate lamp, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Interior & Controls */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Interior & Controls</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Dashboard" name="dashboard" value={formData.interiorControls.dashboard} onChange={(val) => updateCheckItem('interiorControls', 'dashboard', val)} />
+                  <CheckItem label="Seat Belts (all)" name="seatBeltsAll" value={formData.interiorControls.seatBeltsAll} onChange={(val) => updateCheckItem('interiorControls', 'seatBeltsAll', val)} />
+                  <CheckItem label="Music System" name="musicSystem" value={formData.interiorControls.musicSystem} onChange={(val) => updateCheckItem('interiorControls', 'musicSystem', val)} />
+                  <CheckItem label="AC Knob/Regulator" name="acKnobRegulator" value={formData.interiorControls.acKnobRegulator} onChange={(val) => updateCheckItem('interiorControls', 'acKnobRegulator', val)} />
+                  <CheckItem label="Headliner/Ceiling" name="headlinerCeilingCondition" value={formData.interiorControls.headlinerCeilingCondition} onChange={(val) => updateCheckItem('interiorControls', 'headlinerCeilingCondition', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Seat covers, Door pads, Floor mats, Steering wheel, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* HVAC */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">HVAC Performance</h3>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Vent Temp at Idle (°C)</label>
+                    <input
+                      type="text"
+                      value={formData.hvacPerformance.ventTempAtIdle}
+                      onChange={(e) => updateField('hvacPerformance', 'ventTempAtIdle', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="8°C"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Vent Temp at 1500 rpm (°C)</label>
+                    <input
+                      type="text"
+                      value={formData.hvacPerformance.ventTempAt1500rpm}
+                      onChange={(e) => updateField('hvacPerformance', 'ventTempAt1500rpm', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="6°C"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="AC Compressor" name="acCompressor" value={formData.hvacPerformance.acCompressor} onChange={(val) => updateCheckItem('hvacPerformance', 'acCompressor', val)} />
+                  <CheckItem label="Blower" name="blower" value={formData.hvacPerformance.blower} onChange={(val) => updateCheckItem('hvacPerformance', 'blower', val)} />
+                  <CheckItem label="Refrigerant Level" name="refrigerantGasLevel" value={formData.hvacPerformance.refrigerantGasLevel} onChange={(val) => updateCheckItem('hvacPerformance', 'refrigerantGasLevel', val)} />
+                  <CheckItem label="Condenser Cleanliness" name="condenserGrillCleanliness" value={formData.hvacPerformance.condenserGrillCleanliness} onChange={(val) => updateCheckItem('hvacPerformance', 'condenserGrillCleanliness', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: AC belt, Pipes, Mode flaps, etc.</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Step 7: Underbody, Tyres & Road Test */}
+          {currentStep === 7 && (
+            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Step 7: Underbody, Tyres & Road Test</h2>
+              <p className="text-gray-400 text-sm">Check tyres, underbody, driveline, and perform road test.</p>
+              
+              {/* Tyres */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Tyres & Wheels</h3>
+                <div className="grid grid-cols-5 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">LF Tread (mm)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreLFTread}
+                      onChange={(e) => updateField('tyresWheels', 'tyreLFTread', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="5.0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">RF Tread (mm)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreRFTread}
+                      onChange={(e) => updateField('tyresWheels', 'tyreRFTread', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="5.0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">LR Tread (mm)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreLRTread}
+                      onChange={(e) => updateField('tyresWheels', 'tyreLRTread', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="5.0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">RR Tread (mm)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreRRTread}
+                      onChange={(e) => updateField('tyresWheels', 'tyreRRTread', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="5.0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">Spare Tread (mm)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreSpareTread}
+                      onChange={(e) => updateField('tyresWheels', 'tyreSpareTread', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="7.0"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">LF DOT (week-year)</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreLFDOT}
+                      onChange={(e) => updateField('tyresWheels', 'tyreLFDOT', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="15-2022"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">RF DOT</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreRFDOT}
+                      onChange={(e) => updateField('tyresWheels', 'tyreRFDOT', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="15-2022"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">LR DOT</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreLRDOT}
+                      onChange={(e) => updateField('tyresWheels', 'tyreLRDOT', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="15-2022"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-200 mb-2">RR DOT</label>
+                    <input
+                      type="text"
+                      value={formData.tyresWheels.tyreRRDOT}
+                      onChange={(e) => updateField('tyresWheels', 'tyreRRDOT', e.target.value)}
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="15-2022"
+                    />
+                  </div>
+                </div>
+                <CheckItem label="Alloy/Wheel Damage" name="alloyWheelDamage" value={formData.tyresWheels.alloyWheelDamage} onChange={(val) => updateCheckItem('tyresWheels', 'alloyWheelDamage', val)} />
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Underbody */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Underbody & Exhaust</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Subframe Bent/Impact" name="subframeBentImpact" value={formData.underbodyExhaust.subframeBentImpact} onChange={(val) => updateCheckItem('underbodyExhaust', 'subframeBentImpact', val)} />
+                  <CheckItem label="Exhaust Leaks" name="exhaustLeaks" value={formData.underbodyExhaust.exhaustLeaks} onChange={(val) => updateCheckItem('underbodyExhaust', 'exhaustLeaks', val)} />
+                  <CheckItem label="Catalyst/DPF Intact" name="catalystDPFIntact" value={formData.underbodyExhaust.catalystDPFIntact} onChange={(val) => updateCheckItem('underbodyExhaust', 'catalystDPFIntact', val)} />
+                  <CheckItem label="Oil Leaks (underbody)" name="oilLeaksUnderbody" value={formData.underbodyExhaust.oilLeaksUnderbody} onChange={(val) => updateCheckItem('underbodyExhaust', 'oilLeaksUnderbody', val)} />
+                  <CheckItem label="Rust (underbody)" name="rustUnderbody" value={formData.underbodyExhaust.rustUnderbody} onChange={(val) => updateCheckItem('underbodyExhaust', 'rustUnderbody', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Gearbox leaks, Brake/Fuel lines, Heat shields, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Driveline */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Driveline & Axles</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="FR RH Wheel Bearing" name="frRHWheelBearing" value={formData.drivelineAxles.frRHWheelBearing} onChange={(val) => updateCheckItem('drivelineAxles', 'frRHWheelBearing', val)} />
+                  <CheckItem label="FR LH Wheel Bearing" name="frLHWheelBearing" value={formData.drivelineAxles.frLHWheelBearing} onChange={(val) => updateCheckItem('drivelineAxles', 'frLHWheelBearing', val)} />
+                  <CheckItem label="Propeller Shaft/CV Boots" name="propellerShaftCVBoots" value={formData.drivelineAxles.propellerShaftCVBoots} onChange={(val) => updateCheckItem('drivelineAxles', 'propellerShaftCVBoots', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Rear bearings, Axle oil seals, Strut bearings, etc.</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Road Test */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Road Test</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Straight-line Pull" name="straightLinePull" value={formData.roadTest.straightLinePull} onChange={(val) => updateCheckItem('roadTest', 'straightLinePull', val)} />
+                  <CheckItem label="Steering On-Centre" name="steeringOnCentre" value={formData.roadTest.steeringOnCentre} onChange={(val) => updateCheckItem('roadTest', 'steeringOnCentre', val)} />
+                  <CheckItem label="Vibration at 40 km/h" name="vibrationAt40" value={formData.roadTest.vibrationAt40} onChange={(val) => updateCheckItem('roadTest', 'vibrationAt40', val)} />
+                  <CheckItem label="Vibration at 60 km/h" name="vibrationAt60" value={formData.roadTest.vibrationAt60} onChange={(val) => updateCheckItem('roadTest', 'vibrationAt60', val)} />
+                  <CheckItem label="Brake Shudder" name="brakeShudder" value={formData.roadTest.brakeShudder} onChange={(val) => updateCheckItem('roadTest', 'brakeShudder', val)} />
+                  <CheckItem label="Suspension Knocks" name="suspensionKnocks" value={formData.roadTest.suspensionKnocks} onChange={(val) => updateCheckItem('roadTest', 'suspensionKnocks', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Vibration@80, Turbo whistle, AC effectiveness while driving</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Flood/Fire Detection */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Flood/Fire Detection</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Water Line Marks" name="waterLineMarks" value={formData.floodFireDetection.waterLineMarks} onChange={(val) => updateCheckItem('floodFireDetection', 'waterLineMarks', val)} />
+                  <CheckItem label="Silt Under Carpets" name="siltUnderCarpets" value={formData.floodFireDetection.siltUnderCarpets} onChange={(val) => updateCheckItem('floodFireDetection', 'siltUnderCarpets', val)} />
+                  <CheckItem label="Musty Smell" name="mustySmell" value={formData.floodFireDetection.mustySmell} onChange={(val) => updateCheckItem('floodFireDetection', 'mustySmell', val)} />
+                  <CheckItem label="Burnt Wiring/Plastic" name="burntWiringPlastic" value={formData.floodFireDetection.burntWiringPlastic} onChange={(val) => updateCheckItem('floodFireDetection', 'burntWiringPlastic', val)} />
+                </div>
+                <p className="text-sm text-gray-400 mt-2">💡 Add: Seat anchor corrosion, Connector oxidation</p>
+              </div>
+              
+              <hr className="border-gray-700" />
+              
+              {/* Accessories */}
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Accessories & Tools</h3>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-200 mb-2">Duplicate Key Count</label>
+                  <input
+                    type="number"
+                    value={formData.accessoriesTools.duplicateKeyCount}
+                    onChange={(e) => updateField('accessoriesTools', 'duplicateKeyCount', e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    min="0"
+                    max="5"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <CheckItem label="Remote Lock Working" name="remoteLockWorking" value={formData.accessoriesTools.remoteLockWorking} onChange={(val) => updateCheckItem('accessoriesTools', 'remoteLockWorking', val)} />
+                  <CheckItem label="Jack" name="jack" value={formData.accessoriesTools.jack} onChange={(val) => updateCheckItem('accessoriesTools', 'jack', val)} />
+                  <CheckItem label="Wheel Wrench" name="wheelWrench" value={formData.accessoriesTools.wheelWrench} onChange={(val) => updateCheckItem('accessoriesTools', 'wheelWrench', val)} />
+                  <CheckItem label="Owner's Manual" name="ownersManual" value={formData.accessoriesTools.ownersManual} onChange={(val) => updateCheckItem('accessoriesTools', 'ownersManual', val)} />
+                </div>
+              </div>
             </div>
           )}
           
