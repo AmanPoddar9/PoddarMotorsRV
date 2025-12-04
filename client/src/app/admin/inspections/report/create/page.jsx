@@ -47,12 +47,20 @@ const CheckItem = ({ label, name, value, onChange, required = false }) => {
   )
 }
 
-export default function CreateInspectionReport() {
+import { Suspense } from 'react'
+
+// ... imports remain same ...
+
+// Reusable CheckItem Component
+// ... CheckItem code remains same ...
+
+function CreateReportForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const bookingId = searchParams.get('bookingId')
   
   const [currentStep, setCurrentStep] = useState(1)
+  // ... rest of the component logic ...
   const [loading, setLoading] = useState(false)
   
   // Form state
