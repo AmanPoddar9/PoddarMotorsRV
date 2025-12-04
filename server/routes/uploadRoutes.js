@@ -78,8 +78,9 @@ router.post('/', upload.array('images', 20), async (req, res) => {
     console.error('Upload error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to upload images',
+      message: `Failed to upload images: ${error.message}`,
       error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
