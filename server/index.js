@@ -28,6 +28,7 @@ const inspectionRoutes = require('./routes/inspectionRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const auctionRoutes = require('./routes/auctionRoutes');
 const dealerRoutes = require('./routes/dealerRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const { requireAuth, requireRole } = require('./middleware/auth');
 
@@ -130,6 +131,7 @@ app.use('/api/inspections', inspectionRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/auctions', auctionRoutes);
 app.use('/api/dealers', dealerRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);
