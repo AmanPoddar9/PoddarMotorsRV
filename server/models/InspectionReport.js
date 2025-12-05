@@ -403,32 +403,11 @@ const inspectionReportSchema = new mongoose.Schema({
     ownersManual: checkItemSchema
   },
   
-  // ==================== PHOTOS (25 required photos) ====================
+  // ==================== PHOTOS (Dynamic based on Template) ====================
+  // Changed to Mixed type to support dynamic keys defined in InspectionTemplate
   photos: {
-    front34: String, // S3 URL
-    rear34: String,
-    leftSide: String,
-    rightSide: String,
-    frontHeadOn: String,
-    rearStraight: String,
-    odometerIGNON: String,
-    warningLampsCluster: String,
-    vinEmbossingCloseUp: String,
-    engineBay: String,
-    lowerCrossMemberUnderBumper: String,
-    apronLHPhoto: String,
-    apronRHPhoto: String,
-    chassisRailsUnderbody: String,
-    bootFloorSpareWell: String,
-    tyreLFCloseUp: String,
-    tyreRFCloseUp: String,
-    tyreLRCloseUp: String,
-    tyreRRCloseUp: String,
-    spareTyre: String,
-    damages: [String], // Multiple damage photos
-    rcFront: String,
-    insurance: String,
-    puc: String
+    type: mongoose.Schema.Types.Mixed,
+    default: {} 
   },
   
   // ==================== FINAL ASSESSMENT ====================

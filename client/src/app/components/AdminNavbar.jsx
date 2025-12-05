@@ -54,6 +54,12 @@ const AdminNavbar = () => {
             >
               Analytics
             </Link>
+            <Link
+              href="/admin/templates"
+              className="text-custom-platinum hover:bg-white/10 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Templates
+            </Link>
           </div>
           <div className="flex items-center">
             <span className="text-custom-platinum text-sm mr-4">

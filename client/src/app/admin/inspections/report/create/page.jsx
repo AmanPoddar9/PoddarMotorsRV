@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import ImageUpload from '../../../../components/admin/ImageUpload'
@@ -56,6 +56,50 @@ function CreateReportForm() {
   const [currentStep, setCurrentStep] = useState(1)
   // ... rest of the component logic ...
   const [loading, setLoading] = useState(false)
+  const [template, setTemplate] = useState(null)
+  
+  // Default Photo Requirements (Fallback)
+  const DEFAULT_PHOTO_REQUIREMENTS = [
+    { key: 'front34', label: 'Front 3/4 View' },
+    { key: 'rear34', label: 'Rear 3/4 View' },
+    { key: 'leftSide', label: 'Left Side' },
+    { key: 'rightSide', label: 'Right Side' },
+    { key: 'frontHeadOn', label: 'Front Head On' },
+    { key: 'rearStraight', label: 'Rear Straight' },
+    { key: 'odometerIGNON', label: 'Odometer (IGN ON)' },
+    { key: 'warningLampsCluster', label: 'Warning Lamps Cluster' },
+    { key: 'vinEmbossingCloseUp', label: 'VIN Embossing' },
+    { key: 'engineBay', label: 'Engine Bay' },
+    { key: 'bootFloorSpareWell', label: 'Boot Floor / Spare Well' },
+    { key: 'lowerCrossMemberUnderBumper', label: 'Lower Cross Member' },
+    { key: 'apronLHPhoto', label: 'Apron LH' },
+    { key: 'apronRHPhoto', label: 'Apron RH' },
+    { key: 'chassisRailsUnderbody', label: 'Chassis Rails' },
+    { key: 'tyreLFCloseUp', label: 'Tyre LF' },
+    { key: 'tyreRFCloseUp', label: 'Tyre RF' },
+    { key: 'tyreLRCloseUp', label: 'Tyre LR' },
+    { key: 'tyreRRCloseUp', label: 'Tyre RR' },
+    { key: 'spareTyre', label: 'Spare Tyre' },
+    { key: 'rcFront', label: 'RC Front' },
+    { key: 'insurance', label: 'Insurance' },
+    { key: 'puc', label: 'PUC Certificate' },
+  ]
+
+  // Fetch active template on mount
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/templates/active`)
+        if (res.ok) {
+          const data = await res.json()
+          setTemplate(data)
+        }
+      } catch (error) {
+        console.error('Failed to load template:', error)
+      }
+    }
+    fetchTemplate()
+  }, [])
   
   // Form state
   const [formData, setFormData] = useState({
@@ -1042,42 +1086,12 @@ function CreateReportForm() {
                 
                 {/* Main Photos Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {[
-                    // Exterior
-                    { key: 'front34', label: 'Front 3/4 View' },
-                    { key: 'rear34', label: 'Rear 3/4 View' },
-                    { key: 'leftSide', label: 'Left Side' },
-                    { key: 'rightSide', label: 'Right Side' },
-                    { key: 'frontHeadOn', label: 'Front Head On' },
-                    { key: 'rearStraight', label: 'Rear Straight' },
-                    
-                    // Interior & Details
-                    { key: 'odometerIGNON', label: 'Odometer (IGN ON)' },
-                    { key: 'warningLampsCluster', label: 'Warning Lamps Cluster' },
-                    { key: 'vinEmbossingCloseUp', label: 'VIN Embossing' },
-                    { key: 'engineBay', label: 'Engine Bay' },
-                    { key: 'bootFloorSpareWell', label: 'Boot Floor / Spare Well' },
-                    
-                    // Undercarriage
-                    { key: 'lowerCrossMemberUnderBumper', label: 'Lower Cross Member' },
-                    { key: 'apronLHPhoto', label: 'Apron LH' },
-                    { key: 'apronRHPhoto', label: 'Apron RH' },
-                    { key: 'chassisRailsUnderbody', label: 'Chassis Rails' },
-                    
-                    // Tyres
-                    { key: 'tyreLFCloseUp', label: 'Tyre LF' },
-                    { key: 'tyreRFCloseUp', label: 'Tyre RF' },
-                    { key: 'tyreLRCloseUp', label: 'Tyre LR' },
-                    { key: 'tyreRRCloseUp', label: 'Tyre RR' },
-                    { key: 'spareTyre', label: 'Spare Tyre' },
-                    
-                    // Documents
-                    { key: 'rcFront', label: 'RC Front' },
-                    { key: 'insurance', label: 'Insurance' },
-                    { key: 'puc', label: 'PUC Certificate' },
-                  ].map((photo) => (
+                  {(template?.photoRequirements?.length > 0 ? template.photoRequirements : DEFAULT_PHOTO_REQUIREMENTS).map((photo) => (
                     <div key={photo.key} className="bg-gray-700/50 p-3 rounded-lg">
-                      <label className="block text-sm text-gray-300 mb-2 font-medium">{photo.label}</label>
+                      <label className="block text-sm text-gray-300 mb-2 font-medium">
+                        {photo.label}
+                        {photo.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
                       <ImageUpload 
                         maxImages={1}
                         onImagesChange={(urls) => updateField('photos', photo.key, urls[0] || '')}
