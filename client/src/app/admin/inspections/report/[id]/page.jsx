@@ -189,33 +189,53 @@ export default function ViewReportPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-green-400 font-semibold mb-2">✅ Top Positives</h3>
-                  <p className="text-gray-300 whitespace-pre-wrap">{report.finalAssessment?.topPositives || 'None listed'}</p>
+                  {report.finalAssessment?.topPositives && Array.isArray(report.finalAssessment.topPositives) && report.finalAssessment.topPositives.length > 0 ? (
+                    <ul className="list-disc list-inside text-gray-300 space-y-1">
+                      {report.finalAssessment.topPositives.map((item, i) => (
+                        <li key={i}>{String(item || '')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-300">None listed</p>
+                  )}
                 </div>
                 <div>
                   <h3 className="text-red-400 font-semibold mb-2">⚠️ Top Issues</h3>
-                  <p className="text-gray-300 whitespace-pre-wrap">{report.finalAssessment?.topIssues || 'None listed'}</p>
+                  {report.finalAssessment?.topIssues && Array.isArray(report.finalAssessment.topIssues) && report.finalAssessment.topIssues.length > 0 ? (
+                    <ul className="list-disc list-inside text-red-400 space-y-1">
+                      {report.finalAssessment.topIssues.map((item, i) => (
+                        <li key={i}>{String(item || '')}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-300">None listed</p>
+                  )}
                 </div>
               </div>
               
               {/* Category Ratings */}
-              {report.finalAssessment?.categoryRatings && (
+              {report.finalAssessment?.categoryRatings && typeof report.finalAssessment.categoryRatings === 'object' && Object.keys(report.finalAssessment.categoryRatings).length > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-700">
                   <h3 className="text-white font-semibold mb-4">Category Ratings (0-10)</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {Object.entries(report.finalAssessment.categoryRatings).map(([key, value]) => (
-                      <div key={key} className="bg-gray-900/50 p-3 rounded border border-gray-700">
-                        <p className="text-gray-400 text-xs mb-1 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-700 rounded-full h-2">
-                            <div 
-                              className={`h-2 rounded-full ${value >= 7 ? 'bg-green-500' : value >= 4 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                              style={{ width: `${value * 10}%` }}
-                            />
+                    {Object.entries(report.finalAssessment.categoryRatings).map(([key, value]) => {
+                      // Ensure value is a number
+                      const rating = typeof value === 'number' ? value : 0
+                      return (
+                        <div key={key} className="bg-gray-900/50 p-3 rounded border border-gray-700">
+                          <p className="text-gray-400 text-xs mb-1 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-gray-700 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full ${rating >= 7 ? 'bg-green-500' : rating >= 4 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                style={{ width: `${rating * 10}%` }}
+                              />
+                            </div>
+                            <span className="text-white font-bold text-sm">{rating}/10</span>
                           </div>
-                          <span className="text-white font-bold text-sm">{value}/10</span>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               )}
