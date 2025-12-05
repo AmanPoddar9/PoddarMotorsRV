@@ -53,6 +53,9 @@ connectDB();
 // Request logging
 app.use(morgan('dev'));
 
+// Trust proxy for Vercel (required for rate limiting and correct IP identification)
+app.set('trust proxy', 1);
+
 // Security Middleware (Helmet, Rate Limiting, Sanitization)
 setupSecurity(app);
 
