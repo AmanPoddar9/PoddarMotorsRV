@@ -1036,24 +1036,97 @@ function CreateReportForm() {
               <h2 className="text-2xl font-bold text-white mb-4">Step 8: Photos & Final Assessment</h2>
               
               {/* Photo Uploads */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white">Required Photos (25 total)</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-300 mb-2">Front 3/4 View</label>
+              {/* Photo Uploads */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white">required Photos (25 total)</h3>
+                
+                {/* Main Photos Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {[
+                    // Exterior
+                    { key: 'front34', label: 'Front 3/4 View' },
+                    { key: 'rear34', label: 'Rear 3/4 View' },
+                    { key: 'leftSide', label: 'Left Side' },
+                    { key: 'rightSide', label: 'Right Side' },
+                    { key: 'frontHeadOn', label: 'Front Head On' },
+                    { key: 'rearStraight', label: 'Rear Straight' },
+                    
+                    // Interior & Details
+                    { key: 'odometerIGNON', label: 'Odometer (IGN ON)' },
+                    { key: 'warningLampsCluster', label: 'Warning Lamps Cluster' },
+                    { key: 'vinEmbossingCloseUp', label: 'VIN Embossing' },
+                    { key: 'engineBay', label: 'Engine Bay' },
+                    { key: 'bootFloorSpareWell', label: 'Boot Floor / Spare Well' },
+                    
+                    // Undercarriage
+                    { key: 'lowerCrossMemberUnderBumper', label: 'Lower Cross Member' },
+                    { key: 'apronLHPhoto', label: 'Apron LH' },
+                    { key: 'apronRHPhoto', label: 'Apron RH' },
+                    { key: 'chassisRailsUnderbody', label: 'Chassis Rails' },
+                    
+                    // Tyres
+                    { key: 'tyreLFCloseUp', label: 'Tyre LF' },
+                    { key: 'tyreRFCloseUp', label: 'Tyre RF' },
+                    { key: 'tyreLRCloseUp', label: 'Tyre LR' },
+                    { key: 'tyreRRCloseUp', label: 'Tyre RR' },
+                    { key: 'spareTyre', label: 'Spare Tyre' },
+                    
+                    // Documents
+                    { key: 'rcFront', label: 'RC Front' },
+                    { key: 'insurance', label: 'Insurance' },
+                    { key: 'puc', label: 'PUC Certificate' },
+                  ].map((photo) => (
+                    <div key={photo.key} className="bg-gray-700/50 p-3 rounded-lg">
+                      <label className="block text-sm text-gray-300 mb-2 font-medium">{photo.label}</label>
+                      <ImageUpload 
+                        maxImages={1}
+                        onImagesChange={(urls) => updateField('photos', photo.key, urls[0] || '')}
+                      />
+                      {formData.photos[photo.key] && (
+                        <div className="mt-2 relative aspect-video rounded overflow-hidden">
+                          <img 
+                            src={formData.photos[photo.key]} 
+                            alt={photo.label}
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <hr className="border-gray-700" />
+                
+                {/* Damages - Multi-upload */}
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">Damage Photos</h3>
+                  <p className="text-gray-400 text-sm mb-4">Upload multiple photos of scratches, dents, or other issues.</p>
+                  <div className="bg-gray-700/50 p-4 rounded-lg">
                     <ImageUpload 
-                      maxImages={1}
-                      onImagesChange={(urls) => updateField('photos', 'front34', urls[0] || '')}
+                      maxImages={10}
+                      onImagesChange={(urls) => {
+                        // Append new URLs to existing damages array
+                        const currentDamages = Array.isArray(formData.photos.damages) ? formData.photos.damages : [];
+                        // Check if we need to merge or replace. 
+                        // ImageUpload usually returns the full new list if it manages state, or just new files?
+                        // Looking at ImageUpload.jsx: `const newImages = [...images, ...data.urls]; handleUpload(newImages)`
+                        // So it returns the FULL list of images maintained by that component instance.
+                        // We should map that to our form field.
+                        updateField('photos', 'damages', urls)
+                      }}
                     />
+                    
+                    {/* Display uploaded damage photos if outside ImageUpload component's preview */}
+                    {Array.isArray(formData.photos?.damages) && formData.photos.damages.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2 mt-4">
+                        {formData.photos.damages.map((url, i) => (
+                          <div key={i} className="relative aspect-square rounded overflow-hidden border border-gray-600">
+                             <img src={url} alt={`Damage ${i+1}`} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm text-gray-300 mb-2">Rear 3/4 View</label>
-                    <ImageUpload 
-                      maxImages={1}
-                      onImagesChange={(urls) => updateField('photos', 'rear34', urls[0] || '')}
-                    />
-                  </div>
-                  {/* Add more photo upload fields... */}
                 </div>
               </div>
               
