@@ -22,9 +22,9 @@ const Testimonials = () => {
       setLoading(false)
       const response = await axios.get(url + 'api/testimonials')
       setTestimonials(response.data)
-      setLoading(false)
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[Testimonials] Failed to fetch testimonials:', error.message)
+    } finally {
       setLoading(false)
     }
   }

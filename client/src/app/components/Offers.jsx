@@ -21,12 +21,10 @@ const Offers = () => {
 
       const response = await axios.get(url + 'api/offers')
       setOffers(response.data)
-      if (response.data) {
-        setLoading(false)
-      }
-    } catch (e) {
+    } catch (error) {
+      console.error('[Offers] Failed to fetch offers:', error.message)
+    } finally {
       setLoading(false)
-      console.log(e.message)
     }
   }
   useEffect(() => {

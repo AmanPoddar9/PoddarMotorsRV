@@ -68,8 +68,8 @@ const LandingHero = () => {
         }))
         setTypes(arr)
       }
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[LandingHero] Failed to fetch types:', error.message)
     }
   }
 

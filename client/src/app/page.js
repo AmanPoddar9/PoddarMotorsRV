@@ -32,10 +32,10 @@ export default async function Home() {
   try {
     data = await fetch(
       `${API_URL}/api/listings/featured`,
-      { cache: 'no-store' },
+      { next: { revalidate: 300 } }, // Cache for 5 minutes
     ).then((res) => res.json())
   } catch (e) {
-    console.log(e.message)
+    console.error('[HomePage]', 'Failed to fetch featured listings:', e.message)
     data = []
   }
 

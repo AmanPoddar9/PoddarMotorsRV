@@ -161,8 +161,8 @@ const ButtonRows = () => {
         setBrands(response.data)
         setLoading(false)
       }
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[ButtonRows] Failed to fetch models:', error.message)
     }
   }
 

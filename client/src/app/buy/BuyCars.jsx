@@ -303,9 +303,9 @@ export default function Buy({ allListings }) {
       if (response.data) {
         setListings(response.data)
       }
-      setLoading(false)
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[BuyCars] Failed to fetch all listings:', error.message)
+    } finally {
       setLoading(false)
     }
   }
@@ -331,8 +331,8 @@ export default function Buy({ allListings }) {
         setFilters(tempObj)
         setBrands(response.data)
       }
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[BuyCars] Failed to fetch brands:', error.message)
     }
   }
   
@@ -411,9 +411,9 @@ export default function Buy({ allListings }) {
           try {
               const response = await axios.post(url + 'api/listings/filtered', apiObj)
               setListings(response.data)
-          } catch (e) {
-              console.log(e)
-          }
+            } catch (error) {
+              console.error('[BuyCars] Failed to fetch filtered listings:', error.message)
+            }
           setLoading(false)
       }
       fetchFiltered()
@@ -454,8 +454,8 @@ export default function Buy({ allListings }) {
         setFilters(tempObj)
         setTypes(response.data)
       }
-    } catch (e) {
-      console.log(e.message)
+    } catch (error) {
+      console.error('[BuyCars] Failed to fetch types:', error.message)
     }
   }
 
