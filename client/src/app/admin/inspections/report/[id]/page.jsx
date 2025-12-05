@@ -125,7 +125,7 @@ export default function ViewReportPage() {
             <div className="flex items-start gap-4">
               <div className="text-center bg-blue-600/20 border-2 border-blue-500 rounded-lg p-4">
                 <div className="text-4xl font-bold text-blue-400">{report.overallScore || 0}/100</div>
-                <div className="text-lg font-semibold text-white mt-1">{report.overallGrade || 'N/A'}</div>
+                <div className="text-lg font-semibold text-white mt-1">{report.finalAssessment?.overallGrade || 'N/A'}</div>
               </div>
             </div>
           </div>
