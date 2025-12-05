@@ -12,9 +12,31 @@ router.post('/login', loginValidation, async (req, res) => {
   if (!user || !(await user.validatePassword(password))) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
+  
+  // Only allow admin role to login via this endpoint
+  if (user.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied. Admin login only.' });
+  }
+  
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
   
   const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Clear any existing dealer/customer auth cookies to prevent conflicts
+  res.clearCookie('dealer_auth', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
+  });
+  res.clearCookie('customer_auth', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
+  });
+  
+  // Set admin auth cookie
   res.cookie('auth', token, { 
     httpOnly: true, 
     sameSite: 'lax',
@@ -22,18 +44,33 @@ router.post('/login', loginValidation, async (req, res) => {
     maxAge: 2 * 60 * 60 * 1000, // 2 hours
     path: '/'
   });
-  res.json({ message: 'Logged in' });
+  res.json({ message: 'Logged in', role: user.role });
 });
 
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Clear all auth cookies
   res.clearCookie('auth', {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProduction,
     path: '/'
   });
+  res.clearCookie('dealer_auth', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
+  });
+  res.clearCookie('customer_auth', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
+  });
+  
   res.json({ message: 'Logged out' });
 });
 
@@ -43,6 +80,12 @@ router.get('/me', (req, res) => {
   if (!token) return res.status(401).json({ message: 'Unauthenticated' });
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Ensure this endpoint only returns admin users
+    if (payload.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden: Admin access only' });
+    }
+    
     res.json({ id: payload.id, role: payload.role });
   } catch (e) {
     res.status(401).json({ message: 'Invalid token' });
