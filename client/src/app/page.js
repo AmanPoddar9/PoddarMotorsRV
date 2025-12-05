@@ -1,14 +1,20 @@
 // import Image from 'next/image';
 // import Image from 'next/image';
 import LandingHero from './components/LandingHero'
-import FeaturedCars from './FeaturedCars'
-import Highlights from './Highlights'
-import Faq from './components/Faq'
+import dynamic from 'next/dynamic'
+
+// Code splitting: Load non-critical components dynamically
+const FeaturedCars = dynamic(() => import('./FeaturedCars'), {
+  loading: () => <div className="h-96 bg-custom-jet animate-pulse rounded-lg" />
+})
+const Highlights = dynamic(() => import('./Highlights'))
+const Faq = dynamic(() => import('./components/Faq'))
+const ButtonRows = dynamic(() => import('./components/ButtonRows'))
+const DealsOfTheDay = dynamic(() => import('./components/DealsOfTheDay'))
+const SocialProof = dynamic(() => import('./components/SocialProof'))
+
 import Contact from './components/Contact'
 import { homeFAQ } from './data/homeFAQs'
-import ButtonRows from './components/ButtonRows'
-import DealsOfTheDay from './components/DealsOfTheDay'
-import SocialProof from './components/SocialProof'
 import API_URL from './config/api'
 
 
