@@ -40,9 +40,10 @@ export default function ViewReportPage() {
   if (!report) return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">Report Not Found</div>
 
   const renderCheckItem = (label, item) => {
-    if (!item || typeof item !== 'object') {
+    // Handle null/undefined
+    if (!item) {
       return (
-        <div className="bg-gray-900/50 p-3 rounded border border-gray-700">
+        <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700">
           <div className="flex justify-between items-center">
             <span className="text-gray-400 text-sm">{label}</span>
             <span className="text-gray-500 text-xs">N/A</span>
@@ -51,8 +52,21 @@ export default function ViewReportPage() {
       )
     }
     
+    // Handle string/number values (not objects)
+    if (typeof item !== 'object') {
+      return (
+        <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-300 text-sm font-medium">{label}</span>
+            <span className="text-white text-sm">{String(item)}</span>
+          </div>
+        </div>
+      )
+    }
+    
+    // Handle check item object with status
     return (
-      <div className="bg-gray-900/50 p-3 rounded border border-gray-700">
+      <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700">
         <div className="flex justify-between items-center mb-1">
           <span className="text-gray-300 text-sm font-medium">{label}</span>
           <span className={`px-2 py-1 rounded text-xs font-bold ${
@@ -223,21 +237,31 @@ export default function ViewReportPage() {
         {activeTab === 'details' && (
           <div className="space-y-6">
             {categories.slice(1).map(category => {
-              const data = report[category.id]
-              if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) return null
+              try {
+                const data = report[category.id]
+                if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) return null
 
-              return (
-                <div key={category.id} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
-                  <div className="bg-gray-700 px-6 py-4">
-                    <h3 className="text-lg font-bold text-white">{category.title}</h3>
+                return (
+                  <div key={category.id} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+                    <div className="bg-gray-700 px-6 py-4">
+                      <h3 className="text-lg font-bold text-white">{category.title}</h3>
+                    </div>
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Object.entries(data).map(([key, value]) => {
+                        try {
+                          return renderCheckItem(key.replace(/([A-Z])/g, ' $1').trim(), value)
+                        } catch (err) {
+                          console.error(`Error rendering ${key}:`, err)
+                          return null
+                        }
+                      })}
+                    </div>
                   </div>
-                  <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Object.entries(data).map(([key, value]) => 
-                      renderCheckItem(key.replace(/([A-Z])/g, ' $1').trim(), value)
-                    )}
-                  </div>
-                </div>
-              )
+                )
+              } catch (err) {
+                console.error(`Error rendering category ${category.id}:`, err)
+                return null
+              }
             })}
           </div>
         )}
