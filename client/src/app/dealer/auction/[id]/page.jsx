@@ -24,16 +24,35 @@ export default function AuctionRoom({ params }) {
   let socket = null;
 
   useEffect(() => {
-    const storedDealer = localStorage.getItem('dealer')
-    if (!storedDealer) {
-      window.location.href = '/dealer/login'
-      return
-    }
-    const dealerData = JSON.parse(storedDealer)
-    setDealer(dealerData)
-    // Only approved dealers can bid
-    setCanBid(dealerData.status === 'Approved')
-  }, [])
+    // Check authentication on mount via server
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/dealers/me`, {
+          credentials: 'include'
+        });
+        
+        if (!res.ok) {
+          // Not authenticated, redirect to login
+          localStorage.removeItem('dealer');
+          window.location.href = '/dealer/login';
+          return;
+        }
+        
+        const data = await res.json();
+        // Update localStorage with fresh data from server
+        localStorage.setItem('dealer', JSON.stringify(data));
+        setDealer(data);
+        // Only approved dealers can bid
+        setCanBid(data.status === 'Approved');
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        localStorage.removeItem('dealer');
+        window.location.href = '/dealer/login';
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     // 1. Fetch Auction Details

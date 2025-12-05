@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import InspectionReportView from '../../components/InspectionReportView'
+import InspectionReportView from '../components/InspectionReportView'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 

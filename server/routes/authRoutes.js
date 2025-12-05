@@ -13,21 +13,26 @@ router.post('/login', loginValidation, async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
+  
+  const isProduction = process.env.NODE_ENV === 'production';
   res.cookie('auth', token, { 
     httpOnly: true, 
-    sameSite: 'none',
-    secure: true,
-    maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    sameSite: 'lax',
+    secure: isProduction,
+    maxAge: 2 * 60 * 60 * 1000, // 2 hours
+    path: '/'
   });
   res.json({ message: 'Logged in' });
 });
 
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('auth', {
     httpOnly: true,
-    sameSite: 'none',
-    secure: true
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
   });
   res.json({ message: 'Logged out' });
 });

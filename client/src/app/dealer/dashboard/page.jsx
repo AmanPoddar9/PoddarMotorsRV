@@ -18,17 +18,36 @@ export default function AuctionDashboard() {
   const [canBid, setCanBid] = useState(false)
 
   useEffect(() => {
-    const storedDealer = localStorage.getItem('dealer')
-    if (!storedDealer) {
-      window.location.href = '/dealer/login'
-      return
-    }
-    const dealerData = JSON.parse(storedDealer)
-    setDealer(dealerData)
-    // Only approved dealers can bid
-    setCanBid(dealerData.status === 'Approved')
-    fetchAuctions()
-  }, [filter])
+    // Check authentication on mount via server
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/dealers/me`, {
+          credentials: 'include'
+        });
+        
+        if (!res.ok) {
+          // Not authenticated, redirect to login
+          localStorage.removeItem('dealer');
+          window.location.href = '/dealer/login';
+          return;
+        }
+        
+        const data = await res.json();
+        // Update localStorage with fresh data from server
+        localStorage.setItem('dealer', JSON.stringify(data));
+        setDealer(data);
+        // Only approved dealers can bid
+        setCanBid(data.status === 'Approved');
+        fetchAuctions();
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        localStorage.removeItem('dealer');
+        window.location.href = '/dealer/login';
+      }
+    };
+    
+    checkAuth();
+  }, [filter]);
 
   useEffect(() => {
     applyFilters()

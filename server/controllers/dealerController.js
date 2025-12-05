@@ -67,11 +67,14 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // Set Cookie
-    res.cookie('auth', token, {
+    // Set Cookie - using dealer_auth to avoid conflict with admin auth cookie
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('dealer_auth', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      sameSite: 'lax',
+      secure: isProduction,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({ 
@@ -91,7 +94,13 @@ exports.login = async (req, res) => {
 
 // Logout
 exports.logout = (req, res) => {
-  res.clearCookie('auth');
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('dealer_auth', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProduction,
+    path: '/'
+  });
   res.json({ message: 'Logged out successfully' });
 };
 
@@ -133,5 +142,25 @@ exports.updateStatus = async (req, res) => {
     res.json({ message: 'Dealer status updated', dealer });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update status' });
+  }
+};
+
+// Get current dealer (lightweight auth check)
+exports.getMe = async (req, res) => {
+  try {
+    const dealer = await Dealer.findById(req.user.id).select('name email status');
+    if (!dealer) {
+      return res.status(404).json({ error: 'Dealer not found' });
+    }
+    res.json({ 
+      id: dealer._id,
+      role: 'dealer',
+      name: dealer.name,
+      email: dealer.email,
+      status: dealer.status
+    });
+  } catch (error) {
+    console.error('Error fetching dealer info:', error);
+    res.status(500).json({ error: 'Failed to fetch dealer info' });
   }
 };
