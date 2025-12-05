@@ -2,7 +2,13 @@
 
 import { useState, useRef } from 'react'
 
-export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
+export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles = 5, maxImages }) {
+  // Support both maxFiles and maxImages prop names
+  const max = maxImages || maxFiles
+  
+  // Support both onUpload and onImagesChange callback names  
+  const handleUpload = onImagesChange || onUpload
+  
   const [images, setImages] = useState([])
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
@@ -11,8 +17,8 @@ export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
     const files = Array.from(e.target.files)
     if (files.length === 0) return
 
-    if (images.length + files.length > maxFiles) {
-      alert(`You can only upload up to ${maxFiles} images`)
+    if (images.length + files.length > max) {
+      alert(`You can only upload up to ${max} images`)
       return
     }
 
@@ -25,18 +31,22 @@ export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
         method: 'POST',
         body: formData
       })
-      const data = await res.json()
       
-      if (res.ok) {
-        const newImages = [...images, ...data.urls]
-        setImages(newImages)
-        onUpload(newImages)
-      } else {
-        alert('Upload failed: ' + data.message)
+      if (!res.ok) {
+        const errorData = await res.json()
+        alert('Upload failed: ' + (errorData.message || errorData.error || 'Unknown error'))
+        return
+      }
+      
+      const data = await res.json()
+      const newImages = [...images, ...(data.urls || data.images || [])]
+      setImages(newImages)
+      if (handleUpload) {
+        handleUpload(newImages)
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Upload failed')
+      alert('Upload failed: ' + error.message)
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -46,7 +56,9 @@ export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
   const removeImage = (index) => {
     const newImages = images.filter((_, i) => i !== index)
     setImages(newImages)
-    onUpload(newImages)
+    if (handleUpload) {
+      handleUpload(newImages)
+    }
   }
 
   return (
@@ -69,7 +81,7 @@ export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
           </div>
         ))}
         
-        {images.length < maxFiles && (
+        {images.length < max && (
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -98,7 +110,7 @@ export default function ImageUpload({ label, onUpload, maxFiles = 5 }) {
         accept="image/*"
         multiple
       />
-      <p className="text-xs text-gray-500">{images.length}/{maxFiles} images uploaded</p>
+      <p className="text-xs text-gray-500">{images.length}/{max} images uploaded</p>
     </div>
   )
 }
