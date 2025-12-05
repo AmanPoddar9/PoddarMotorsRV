@@ -184,12 +184,27 @@ export default function ViewReportPage() {
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
               <h2 className="text-xl font-semibold text-white mb-4">🚗 Vehicle Information</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {categories[0].fields.map(field => (
-                  <div key={field.key}>
-                    <p className="text-gray-500 text-sm">{field.label}</p>
-                    <p className="font-medium text-white">{report.vehicleInfo?.[field.key] || 'N/A'}</p>
-                  </div>
-                ))}
+                {categories[0].fields.map(field => {
+                  // Safely convert value to string, handling objects/arrays
+                  const rawValue = report.vehicleInfo?.[field.key]
+                  let displayValue = 'N/A'
+                  
+                  if (rawValue !== null && rawValue !== undefined) {
+                    if (typeof rawValue === 'object') {
+                      // Handle objects/arrays - don't render them directly!
+                      displayValue = Array.isArray(rawValue) ? rawValue.join(', ') : JSON.stringify(rawValue)
+                    } else {
+                      displayValue = String(rawValue)
+                    }
+                  }
+                  
+                  return (
+                    <div key={field.key}>
+                      <p className="text-gray-500 text-sm">{field.label}</p>
+                      <p className="font-medium text-white">{displayValue}</p>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
