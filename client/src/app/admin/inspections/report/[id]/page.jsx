@@ -22,15 +22,25 @@ export default function ViewReportPage() {
 
   const fetchReport = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/reports/${id}`)
+      const apiUrl = `${API_BASE_URL}/api/inspections/reports/${id}`
+      console.log('Fetching report from:', apiUrl)
+      console.log('Report ID:', id)
+      
+      const res = await fetch(apiUrl)
+      console.log('Response status:', res.status)
+      
       const data = await res.json()
+      console.log('Response data:', data)
+      
       if (res.ok) {
         setReport(data)
       } else {
-        alert('Report not found')
+        console.error('Report not found. Error:', data)
+        alert(`Report not found: ${data.error || 'Unknown error'}`)
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error fetching report:', error)
+      alert(`Failed to load report: ${error.message}`)
     } finally {
       setLoading(false)
     }
