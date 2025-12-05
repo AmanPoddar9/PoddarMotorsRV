@@ -13,6 +13,7 @@ export default function ViewReportPage() {
   const [report, setReport] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
+  const [debugMode, setDebugMode] = useState(false) // Debug toggle
 
   useEffect(() => {
     if (id) {
@@ -134,6 +135,35 @@ export default function ViewReportPage() {
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Debug Mode Toggle */}
+        <div className="mb-4 flex justify-between items-center">
+          <button
+            onClick={() => router.back()}
+            className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
+          >
+            ← Back
+          </button>
+          <button
+            onClick={() => setDebugMode(!debugMode)}
+            className={`px-4 py-2 rounded-lg font-semibold ${debugMode ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+          >
+            {debugMode ? '🐛 DEBUG MODE ON' : '🐛 Debug Mode'}
+          </button>
+        </div>
+
+        {/* Debug View - Shows Raw JSON Safely */}
+        {debugMode && report && (
+          <div className="mb-6 bg-gray-800 rounded-xl p-6 border-2 border-red-500">
+            <h2 className="text-xl font-bold text-red-400 mb-4">🐛 Debug: Raw Report Data</h2>
+            <div className="bg-gray-900 p-4 rounded overflow-auto max-h-96">
+              <pre className="text-green-400 text-xs">{JSON.stringify(report, null, 2)}</pre>
+            </div>
+            <p className="text-yellow-400 text-sm mt-4">
+              ⚠️ If you see this without errors, the data is valid. The issue is in how we're rendering it below.
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
