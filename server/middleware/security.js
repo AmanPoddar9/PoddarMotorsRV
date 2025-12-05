@@ -8,6 +8,13 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  // Custom key generator for Vercel/proxies
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for']?.split(',')[0].trim() || 
+           req.headers['x-real-ip'] || 
+           req.ip || 
+           'unknown';
+  },
   message: {
     status: 429,
     message: 'Too many requests from this IP, please try again after 15 minutes'
@@ -18,6 +25,13 @@ const limiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10, // Limit each IP to 10 login attempts per hour
+  // Custom key generator for Vercel/proxies
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for']?.split(',')[0].trim() || 
+           req.headers['x-real-ip'] || 
+           req.ip || 
+           'unknown';
+  },
   message: {
     status: 429,
     message: 'Too many login attempts, please try again after an hour'

@@ -29,8 +29,6 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const auctionRoutes = require('./routes/auctionRoutes');
 const dealerRoutes = require('./routes/dealerRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
-const templateRoutes = require('./routes/templateRoutes');
-const templateController = require('./controllers/templateController');
 
 const { requireAuth, requireRole } = require('./middleware/auth');
 
@@ -54,8 +52,6 @@ connectDB();
 
 // Request logging
 app.use(morgan('dev'));
-
-app.set('trust proxy', 1); // Trust first proxy (Vercel)
 
 // Security Middleware (Helmet, Rate Limiting, Sanitization)
 setupSecurity(app);
@@ -114,12 +110,6 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-// app.use('/api/workshop', workshopRoutes); // Removed non-existent route
-app.use('/api/templates', templateRoutes);
-
-// Seed default template
-templateController.seedDefaultTemplate();
-
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/testimonials', require('./routes/testimonialRoutes'));
 app.use('/api/offers', offersRoutes);
