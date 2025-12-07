@@ -41,11 +41,17 @@ async function proxyRequest(request, { params }) {
     // Get the response body
     const data = await response.blob();
 
+    // Create new headers, excluding conflicting ones
+    // specifically Content-Encoding (since we decoded query) and Content-Length
+    const resHeaders = new Headers(response.headers);
+    resHeaders.delete('content-encoding');
+    resHeaders.delete('content-length');
+
     // Create the Next.js response
     const nextResponse = new NextResponse(data, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers,
+      headers: resHeaders,
     });
 
     return nextResponse;
