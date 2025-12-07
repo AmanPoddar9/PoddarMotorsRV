@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
 
+import API_URL from '../../config/api'
+
 const Features = () => {
   const [features, setFeatures] = useState([])
   const [newFeatureText, setNewFeatureText] = useState('')
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
   useEffect(() => {
     fetchFeatures()
@@ -14,7 +15,7 @@ const Features = () => {
 
   const fetchFeatures = async () => {
     try {
-      const response = await axios.get(url + 'api/features')
+      const response = await axios.get(`${API_URL}/api/features`)
       setFeatures(response.data)
     } catch (error) {
       console.error('Error fetching features:', error)
@@ -23,7 +24,7 @@ const Features = () => {
 
   const handleDeleteFeature = async (id) => {
     try {
-      await axios.delete(url + `api/features/${id}`)
+      await axios.delete(`${API_URL}/api/features/${id}`, { withCredentials: true })
       fetchFeatures()
     } catch (error) {
       console.error('Error deleting feature:', error)
@@ -32,9 +33,9 @@ const Features = () => {
 
   const handleAddFeature = async () => {
     try {
-      await axios.post(url + 'api/features', {
+      await axios.post(`${API_URL}/api/features`, {
         text: newFeatureText,
-      })
+      }, { withCredentials: true })
       setNewFeatureText('')
       fetchFeatures()
     } catch (error) {

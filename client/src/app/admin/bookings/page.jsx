@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
+import API_URL from '../../config/api'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
 
@@ -10,12 +11,11 @@ const BookingsPage = () => {
   const [archivedBookings, setArchivedBookings] = useState([])
 
   const [showArchive, setShowArchive] = useState(false)
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
+  
   // Function to fetch bookings from the server
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(url + 'api/bookings')
+      const response = await axios.get(`${API_URL}/api/bookings`, { withCredentials: true })
       setBookings(response.data)
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -24,7 +24,7 @@ const BookingsPage = () => {
 
   const fetchArchivedBookings = async () => {
     try {
-      const response = await axios.get(url + 'api/bookings/archived')
+      const response = await axios.get(`${API_URL}/api/bookings/archived`, { withCredentials: true })
       setArchivedBookings(response.data)
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -34,9 +34,9 @@ const BookingsPage = () => {
   // Function to archive a booking
   const archiveBooking = async (id) => {
     try {
-      await axios.put(url + `api/bookings/${id}`, {
+      await axios.put(`${API_URL}/api/bookings/${id}`, {
         archived: true,
-      })
+      }, { withCredentials: true })
       // Refresh bookings after archiving
       fetchBookings()
       fetchArchivedBookings()
@@ -47,9 +47,9 @@ const BookingsPage = () => {
 
   const unArchiveBooking = async (id) => {
     try {
-      await axios.put(url + `api/bookings/${id}`, {
+      await axios.put(`${API_URL}/api/bookings/${id}`, {
         archived: false,
-      })
+      }, { withCredentials: true })
       // Refresh bookings after archiving
       fetchBookings()
       fetchArchivedBookings()
@@ -60,7 +60,7 @@ const BookingsPage = () => {
 
   const deleteBooking = async (id) => {
     try {
-      await axios.delete(url + `api/bookings/${id}`)
+      await axios.delete(`${API_URL}/api/bookings/${id}`, { withCredentials: true })
       // Refresh bookings after archiving
       fetchBookings()
     } catch (error) {

@@ -162,7 +162,7 @@ const Listings = () => {
   const deleteListing = async (id) => {
     try {
       setDeleting(id)
-      await axios.delete(`${API_URL}/api/listings/${id}`)
+      await axios.delete(`${API_URL}/api/listings/${id}`, { withCredentials: true })
       fetchListings()
       setDeleting(null)
     } catch (error) {
