@@ -2,12 +2,13 @@
 import Link from 'next/link'
 import { useCurrentUser } from '../utils/useCurrentUser'
 
+import API_URL from '../config/api'
+
 const AdminNavbar = () => {
   const { user, loading } = useCurrentUser()
 
   const handleLogout = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-    await fetch(`${apiUrl}/api/auth/logout`, { method: 'POST', credentials: 'include' })
+    await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
     window.location.href = '/admin/login'
   }
 
