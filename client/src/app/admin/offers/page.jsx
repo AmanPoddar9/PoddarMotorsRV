@@ -2,13 +2,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
+import API_URL from '../../config/api'
 
 const Offers = () => {
   const [offers, setOffers] = useState([])
   const [newOfferImage, setNewOfferImage] = useState(null)
   const [uploading, setUploading] = useState(false)
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
 
   useEffect(() => {
     fetchOffers()
@@ -16,7 +15,7 @@ const Offers = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get(url + 'api/offers')
+      const response = await axios.get(`${API_URL}/api/offers`, { withCredentials: true })
       setOffers(response.data)
     } catch (error) {
       console.error('Error fetching offers:', error)
@@ -25,7 +24,7 @@ const Offers = () => {
 
   const handleDeleteOffer = async (id) => {
     try {
-      await axios.delete(url + `api/offers/${id}`)
+      await axios.delete(`${API_URL}/api/offers/${id}`, { withCredentials: true })
       fetchOffers()
     } catch (error) {
       console.error('Error deleting offer:', error)
@@ -42,7 +41,8 @@ const Offers = () => {
       setUploading(true)
       const formData = new FormData()
       formData.append('image', newOfferImage)
-      await axios.post(url + 'api/offers', formData, {
+      await axios.post(`${API_URL}/api/offers`, formData, {
+        withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
         },

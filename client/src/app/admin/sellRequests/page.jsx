@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
+import API_URL from '../../config/api'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
 
@@ -9,12 +10,10 @@ const SellRequestsPage = () => {
   const [sellRequests, setSellRequests] = useState([])
   const [archivedSellRequests, setArchivedSellRequests] = useState([])
   const [showArchived, setShowArchived] = useState(false)
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
-
+  
   const fetchSellRequests = async () => {
     try {
-      const response = await axios.get(url + 'api/sellRequests')
+      const response = await axios.get(`${API_URL}/api/sellRequests`, { withCredentials: true })
       setSellRequests(response.data)
     } catch (error) {
       console.error('Error fetching sell requests:', error)
@@ -23,7 +22,7 @@ const SellRequestsPage = () => {
 
   const fetchArchivedSellRequests = async () => {
     try {
-      const response = await axios.get(url + 'api/sellRequests/archived')
+      const response = await axios.get(`${API_URL}/api/sellRequests/archived`, { withCredentials: true })
       setArchivedSellRequests(response.data)
     } catch (error) {
       console.error('Error fetching sell requests:', error)
@@ -36,9 +35,9 @@ const SellRequestsPage = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(url + `api/sellRequests/${id}`, {
+      await axios.put(`${API_URL}/api/sellRequests/${id}`, {
         status,
-      })
+      }, { withCredentials: true })
       // Refresh sell requests after status change
       fetchSellRequests()
       fetchArchivedSellRequests()
@@ -49,9 +48,9 @@ const SellRequestsPage = () => {
 
   const handleArchive = async (id, archiveValue) => {
     try {
-      await axios.put(url + `api/sellRequests/${id}`, {
+      await axios.put(`${API_URL}/api/sellRequests/${id}`, {
         archived: archiveValue,
-      })
+      }, { withCredentials: true })
       // Refresh sell requests after archive
       fetchSellRequests()
       fetchArchivedSellRequests()
@@ -62,7 +61,7 @@ const SellRequestsPage = () => {
 
   const deleteSellRequest = async (id) => {
     try {
-      await axios.delete(url + `api/sellRequests/${id}`)
+      await axios.delete(`${API_URL}/api/sellRequests/${id}`, { withCredentials: true })
       fetchSellRequests()
       fetchArchivedSellRequests()
     } catch (error) {

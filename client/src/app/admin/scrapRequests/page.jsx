@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AdminNavbar from '../../components/AdminNavbar'
+import API_URL from '../../config/api'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
 
@@ -9,12 +10,10 @@ const ScrapRequestsPage = () => {
   const [scrapRequests, setScrapRequests] = useState([])
   const [archivedScrapRequests, setArchivedScrapRequests] = useState([])
   const [showArchived, setShowArchived] = useState(false)
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
-  // url = 'http://localhost:5000/'
 
   const fetchScrapRequests = async () => {
     try {
-      const response = await axios.get(url + 'api/scrapRequests?archived=false')
+      const response = await axios.get(`${API_URL}/api/scrapRequests?archived=false`, { withCredentials: true })
       setScrapRequests(response.data)
     } catch (error) {
       console.error('Error fetching scrap requests:', error)
@@ -23,7 +22,7 @@ const ScrapRequestsPage = () => {
 
   const fetchArchivedScrapRequests = async () => {
     try {
-      const response = await axios.get(url + 'api/scrapRequests?archived=true')
+      const response = await axios.get(`${API_URL}/api/scrapRequests?archived=true`, { withCredentials: true })
       setArchivedScrapRequests(response.data)
     } catch (error) {
       console.error('Error fetching archived scrap requests:', error)
@@ -36,9 +35,9 @@ const ScrapRequestsPage = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(url + `api/scrapRequests/${id}`, {
+      await axios.put(`${API_URL}/api/scrapRequests/${id}`, {
         status,
-      })
+      }, { withCredentials: true })
       fetchScrapRequests()
       fetchArchivedScrapRequests()
     } catch (error) {
@@ -48,9 +47,9 @@ const ScrapRequestsPage = () => {
 
   const handleArchive = async (id, archiveValue) => {
     try {
-      await axios.put(url + `api/scrapRequests/${id}`, {
+      await axios.put(`${API_URL}/api/scrapRequests/${id}`, {
         archived: archiveValue,
-      })
+      }, { withCredentials: true })
       fetchScrapRequests()
       fetchArchivedScrapRequests()
     } catch (error) {
@@ -60,7 +59,7 @@ const ScrapRequestsPage = () => {
 
   const deleteScrapRequest = async (id) => {
     try {
-      await axios.delete(url + `api/scrapRequests/${id}`)
+      await axios.delete(`${API_URL}/api/scrapRequests/${id}`, { withCredentials: true })
       fetchScrapRequests()
       fetchArchivedScrapRequests()
     } catch (error) {
