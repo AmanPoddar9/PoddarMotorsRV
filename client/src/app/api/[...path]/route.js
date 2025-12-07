@@ -66,6 +66,7 @@ async function proxyRequest(request, { params }) {
 }
 
 // Export handler for all standard HTTP methods
+export const dynamic = 'force-dynamic'; // Prevent static generation
 export const GET = proxyRequest;
 export const POST = proxyRequest;
 export const PUT = proxyRequest;

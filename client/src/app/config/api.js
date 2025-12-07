@@ -1,18 +1,25 @@
 // API Configuration
 // This file provides the correct API URL for both development and production
 
-// Prefer an explicit NEXT_PUBLIC_API_URL. If it's missing (e.g., production builds
-// that should talk to the same origin), fall back to the current window origin on
-// the client. This keeps admin auth requests same-site so cookies are preserved.
-// During SSR/build we can't read window, so default to the primary site origin.
+// Config for API URL
+// In production, we want to hit the Next.js proxy (same origin) to handle cookies correctly.
+// But during BUILD time or SSR, we should hit the backend directly to avoid circular dependencies and timeouts.
+
+const BACKEND_URL = 'https://poddar-motors-rv-hkxu.vercel.app';
+
 let API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-if (!API_URL && typeof window !== 'undefined') {
-  API_URL = window.location.origin;
-}
-
-if (!API_URL) {
-  API_URL = 'https://www.poddarmotors.com';
+// Client-side: Use current origin (Proxy)
+if (typeof window !== 'undefined') {
+  if (!API_URL) {
+    API_URL = window.location.origin;
+  }
+} else {
+  // Server-side / Build-time: Use backend directly
+  // This prevents build errors where the build tries to fetch from the (possibly broken) live site
+  if (!API_URL) {
+    API_URL = BACKEND_URL;
+  }
 }
 
 export default API_URL;
