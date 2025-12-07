@@ -68,6 +68,7 @@ function AdminAuctionsContent() {
       const res = await fetch(`${API_BASE_URL}/api/auctions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData)
       })
 
@@ -167,7 +168,7 @@ function AdminAuctionsContent() {
                       <button
                         onClick={async () => {
                           if (confirm('End this auction now?')) {
-                            await fetch(`${API_BASE_URL}/api/auctions/${auction._id}/end`, { method: 'POST' })
+                            await fetch(`${API_BASE_URL}/api/auctions/${auction._id}/end`, { method: 'POST', credentials: 'include' })
                             fetchAuctions()
                           }
                         }}

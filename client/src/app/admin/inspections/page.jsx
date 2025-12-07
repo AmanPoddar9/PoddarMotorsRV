@@ -41,6 +41,7 @@ export default function AdminInspectionsPage() {
       const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}/assign-inspector`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ inspectorName, inspectorPhone })
       })
 
@@ -64,6 +65,7 @@ export default function AdminInspectionsPage() {
       const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus })
       })
 
@@ -92,9 +94,7 @@ export default function AdminInspectionsPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        credentials: 'include'
       })
 
       if (res.ok) {
@@ -115,9 +115,7 @@ export default function AdminInspectionsPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/inspections/reports/${reportId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        credentials: 'include'
       })
 
       if (res.ok) {
