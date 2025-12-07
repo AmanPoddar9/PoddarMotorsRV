@@ -40,7 +40,7 @@ function AdminAuctionsContent() {
 
   const fetchAuctions = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auctions`)
+      const res = await fetch(`${API_BASE_URL}/api/auctions`, { credentials: 'include' })
       const data = await res.json()
       setAuctions(data)
     } catch (error) {

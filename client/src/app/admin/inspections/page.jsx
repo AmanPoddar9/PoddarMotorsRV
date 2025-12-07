@@ -26,7 +26,7 @@ export default function AdminInspectionsPage() {
         ? `${API_BASE_URL}/api/inspections/bookings`
         : `${API_BASE_URL}/api/inspections/bookings?status=${filterStatus}`
       
-      const res = await fetch(url)
+      const res = await fetch(url, { credentials: 'include' })
       const data = await res.json()
       setBookings(data)
     } catch (error) {
