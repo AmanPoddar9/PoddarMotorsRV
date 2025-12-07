@@ -3,7 +3,51 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (
+  typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+    ? 'http://localhost:4000' 
+    : 'https://www.poddarmotors.com'
+)
+
+/* ... skipping to component ... */
+
+                {loadingSlots && <p className="text-gray-300">Loading available slots...</p>}
+
+                {!loadingSlots && formData.appointmentDate && availableSlots.length === 0 && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/50 p-4 rounded-lg text-yellow-200">
+                    <p className="font-semibold">⚠️ No slots available for this date</p>
+                    <p className="text-sm mt-1">Please select a different date for your inspection.</p>
+                  </div>
+                )}
+
+                {availableSlots.length > 0 && (
+                  <div>
+                    <label className="block text-gray-200 mb-2">Select Time Slot *</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {availableSlots.map((slot) => (
+                        <button
+                          key={slot.slot}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, appointmentTimeSlot: slot.slot })}
+                          disabled={!slot.available}
+                          className={`py-3 px-4 rounded-lg font-semibold transition-all ${
+                            formData.appointmentTimeSlot === slot.slot
+                              ? 'bg-blue-600 text-white ring-2 ring-blue-400'
+                              : slot.available
+                              ? 'bg-white/20 text-white hover:bg-white/30 border border-white/30'
+                              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                          }`}
+                        >
+                          {slot.slot}
+                          <br />
+                          <span className="text-xs">
+                            {slot.available ? `${slot.spotsLeft} spots left` : 'Fully Booked'}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
 export default function BookInspectionPage() {
   const router = useRouter()
