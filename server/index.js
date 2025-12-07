@@ -135,6 +135,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/auctions', auctionRoutes);
 app.use('/api/dealers', dealerRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/prime-enquiry', require('./routes/primeEnquiryRoutes'));
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);

@@ -66,6 +66,12 @@ const Footer = () => {
                   {t('nav.about')}
                 </a>
               </li>
+              <li>
+                <a href="/prime-membership" className="text-yellow-500 hover:text-yellow-400 transition-colors flex items-center justify-center md:justify-start gap-2 group font-bold">
+                  <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
+                  Prime Membership
+                </a>
+              </li>
             </ul>
           </div>
 

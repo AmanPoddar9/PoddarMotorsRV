@@ -129,6 +129,7 @@ const Navbar = () => {
                   <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-custom-jet border border-white/10 rounded-xl shadow-2xl overflow-hidden py-2 animate-fadeIn">
                     <Link href="/find-my-car" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Find My Car</Link>
                     <Link href="/testimonials" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Success Stories</Link>
+<Link href="/prime-membership" className="block px-4 py-2 text-sm text-yellow-500 hover:text-yellow-400 hover:bg-white/10 transition-colors font-bold"><FaCrown className="inline mb-1 mr-1" /> Prime Membership</Link>
                     <Link href="/buying-guide" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">Buying Guide</Link>
                     <Link href="/finance" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.finance')}</Link>
                     <Link href="/scrap" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">{t('nav.scrap')}</Link>
@@ -248,6 +249,10 @@ const Navbar = () => {
             </Link>
             
             <div className="w-16 h-px bg-white/10 my-2"></div>
+            
+            <Link href="/prime-membership" onClick={onClose} className="text-xl font-bold text-yellow-500 hover:text-yellow-400 transition-colors duration-300 w-full text-center py-2 flex items-center justify-center gap-2">
+              <FaCrown /> Prime Membership
+            </Link>
             
             <MobileNavLink href="/find-my-car" text="Find My Car" />
             <MobileNavLink href="/testimonials" text="Success Stories" />
