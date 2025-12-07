@@ -19,9 +19,9 @@ const Listings = () => {
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState('')
-  const [priceRange, setPriceRange] = useState([0, 3000000])
-  const [yearRange, setYearRange] = useState([2010, 2025])
-  const [kmRange, setKmRange] = useState([0, 200000])
+  const [priceRange, setPriceRange] = useState([0, 10000000]) // Max 1 Cr
+  const [yearRange, setYearRange] = useState([1990, new Date().getFullYear() + 1])
+  const [kmRange, setKmRange] = useState([0, 1000000]) // Max 10 Lakh km
   const [fuelType, setFuelType] = useState('all')
   const [transmission, setTransmission] = useState('all')
   const [bodyType, setBodyType] = useState('all')
@@ -138,9 +138,9 @@ const Listings = () => {
 
   const clearAllFilters = () => {
     setSearchQuery('')
-    setPriceRange([0, 3000000])
-    setYearRange([2010, 2025])
-    setKmRange([0, 200000])
+    setPriceRange([0, 10000000])
+    setYearRange([1990, new Date().getFullYear() + 1])
+    setKmRange([0, 1000000])
     setFuelType('all')
     setTransmission('all')
     setBodyType('all')
@@ -278,7 +278,7 @@ const Listings = () => {
                   <Slider
                     range
                     min={0}
-                    max={3000000}
+                    max={10000000}
                     step={50000}
                     value={priceRange}
                     onChange={setPriceRange}
@@ -292,8 +292,8 @@ const Listings = () => {
                   </label>
                   <Slider
                     range
-                    min={2010}
-                    max={2025}
+                    min={1990}
+                    max={new Date().getFullYear() + 1}
                     value={yearRange}
                     onChange={setYearRange}
                   />
@@ -307,7 +307,7 @@ const Listings = () => {
                   <Slider
                     range
                     min={0}
-                    max={200000}
+                    max={1000000}
                     step={5000}
                     value={kmRange}
                     onChange={setKmRange}
