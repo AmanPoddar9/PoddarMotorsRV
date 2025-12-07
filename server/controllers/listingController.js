@@ -142,7 +142,9 @@ exports.createListing = async (req, res) => {
       }
     } catch (emailError) {
       console.error('Error sending requirement emails:', emailError);
-      res.status(201).json({ message: "Listing created successfully", listing });
+    }
+
+    res.status(201).json({ message: "Listing created successfully", listing });
     // Invalidate cache
     clearCachePattern('/api/listings');
   } catch (error) {
