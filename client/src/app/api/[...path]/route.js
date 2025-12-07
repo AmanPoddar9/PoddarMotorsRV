@@ -15,23 +15,25 @@ async function proxyRequest(request, { params }) {
   const finalUrl = searchParams ? `${backendUrl}?${searchParams}` : backendUrl;
 
   try {
-    // Forward the request to the backend
-    const headers = new Headers(request.headers);
-    // Remove host header to avoid issues
-    headers.delete('host');
+    // Selectively forward headers to avoid conflicts
+    const headers = new Headers();
     
-    // Authorization headers and cookies are important to forward
-    // Browsers automatically attach cookies to same-origin requests (to Next.js)
-    // We forward them to the backend manually here
+    // Crucial headers to forward
+    const headersToForward = ['cookie', 'content-type', 'authorization', 'accept', 'user-agent'];
     
+    headersToForward.forEach(key => {
+      const value = request.headers.get(key);
+      if (value) {
+        headers.set(key, value);
+      }
+    });
+
     // Prepare fetch options
     const fetchOptions = {
       method: request.method,
       headers: headers,
       // Don't set body for GET/HEAD requests
       body: (request.method !== 'GET' && request.method !== 'HEAD') ? await request.blob() : undefined,
-      // Important: this allows the backend to receive the cookies
-      // and we will forward Set-Cookie back
     };
 
     const response = await fetch(finalUrl, fetchOptions);
