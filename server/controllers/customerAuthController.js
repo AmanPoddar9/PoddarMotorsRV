@@ -255,6 +255,7 @@ exports.updatePrimeStatus = async (req, res) => {
     customer.primeStatus.tier = tier || (isActive ? 'Gold' : null);
     customer.primeStatus.expiryDate = expiryDate || null;
     customer.primeStatus.benefits = benefits || [];
+    customer.primeStatus.servicesAvailed = req.body.servicesAvailed || [];
 
     await customer.save();
 

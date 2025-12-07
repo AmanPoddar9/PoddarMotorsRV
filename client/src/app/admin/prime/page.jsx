@@ -24,7 +24,9 @@ export default function PrimeMembershipsPage() {
     isActive: false,
     tier: 'Gold',
     expiryDate: '',
-    benefits: ''
+    expiryDate: '',
+    benefits: '',
+    servicesAvailed: []
   })
   const [saveLoading, setSaveLoading] = useState(false)
 
@@ -91,7 +93,8 @@ export default function PrimeMembershipsPage() {
       expiryDate: customer.primeStatus?.expiryDate 
         ? new Date(customer.primeStatus.expiryDate).toISOString().split('T')[0] 
         : '',
-      benefits
+      benefits,
+      servicesAvailed: customer.primeStatus?.servicesAvailed || []
     })
     setModalOpen(true)
   }
@@ -109,7 +112,8 @@ export default function PrimeMembershipsPage() {
           isActive: formData.isActive,
           tier: formData.tier,
           expiryDate: formData.expiryDate || null,
-          benefits: benefitsArray
+          benefits: benefitsArray,
+          servicesAvailed: formData.servicesAvailed
         },
         { withCredentials: true }
       )
@@ -417,6 +421,7 @@ export default function PrimeMembershipsPage() {
                     onChange={(e) => setFormData({ ...formData, tier: e.target.value })}
                     className="w-full px-4 py-3 bg-custom-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-custom-accent"
                   >
+                    <option value="Silver">Silver</option>
                     <option value="Gold">Gold</option>
                     <option value="Platinum">Platinum</option>
                   </select>
@@ -433,22 +438,66 @@ export default function PrimeMembershipsPage() {
                   />
                 </div>
 
-                {/* Benefits */}
+                {/* Benefits Management */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Benefits (comma-separated)</label>
+                  <label className="block text-sm font-medium mb-2">Entitled Benefits (comma-separated)</label>
                   <textarea
                     value={formData.benefits}
                     onChange={(e) => setFormData({ ...formData, benefits: e.target.value })}
-                    placeholder="E.g., Free Oil Change, 10% Discount on Parts, Priority Service"
-                    rows={3}
-                    className="w-full px-4 py-3 bg-custom-black border border-white/20 rounded-lg text-white placeholder-custom-platinum focus:outline-none focus:border-custom-accent resize-none"
+                    placeholder="E.g., Free Oil Change, Priority Service"
+                    rows={2}
+                    className="w-full px-4 py-3 bg-custom-black border border-white/20 rounded-lg text-white placeholder-custom-platinum focus:outline-none focus:border-custom-accent resize-none text-sm"
                   />
                 </div>
+
+                {/* Service Tracking */}
+                {formData.benefits && (
+                  <div className="bg-custom-black/50 p-4 rounded-lg border border-white/10">
+                    <h3 className="text-sm font-bold text-custom-accent mb-3 flex items-center gap-2">
+                       <FaCheck /> Track Services Availed
+                    </h3>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {formData.benefits.split(',').map(b => b.trim()).filter(Boolean).map((benefit, idx) => {
+                         const isAvailed = formData.servicesAvailed?.includes(benefit);
+                         return (
+                           <div key={idx} className={`flex items-center justify-between p-2 rounded ${isAvailed ? 'bg-green-900/20 border border-green-500/30' : 'bg-white/5'}`}>
+                             <span className={`text-sm ${isAvailed ? 'text-green-400 line-through' : 'text-gray-300'}`}>{benefit}</span>
+                             <button
+                               onClick={() => {
+                                 const currentAvailed = formData.servicesAvailed || [];
+                                 const newAvailed = isAvailed 
+                                   ? currentAvailed.filter(s => s !== benefit) 
+                                   : [...currentAvailed, benefit];
+                                 setFormData({ ...formData, servicesAvailed: newAvailed });
+                               }}
+                               className={`text-xs px-2 py-1 rounded font-bold transition-colors ${
+                                 isAvailed 
+                                   ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' 
+                                   : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                               }`}
+                             >
+                               {isAvailed ? 'Undo' : 'Mark Done'}
+                             </button>
+                           </div>
+                         );
+                      })}
+                      {(!formData.benefits || formData.benefits.trim() === '') && (
+                        <p className="text-xs text-gray-500 italic">Add benefits above to track them.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-3 pt-4">
                   <button
-                    onClick={handleSave}
+                    onClick={() => {
+                       const benefitsArray = formData.benefits
+                        ? formData.benefits.split(',').map(b => b.trim()).filter(Boolean)
+                        : [];
+                       // Also pass servicesAvailed to handleSave logic if not already handling state directly
+                       handleSave(); 
+                    }}
                     disabled={saveLoading}
                     className="flex-1 px-6 py-3 bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold rounded-lg transition disabled:opacity-50"
                   >

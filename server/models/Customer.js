@@ -11,10 +11,11 @@ const customerSchema = new mongoose.Schema({
   // Prime Membership
   primeStatus: {
     isActive: { type: Boolean, default: false },
-    tier: { type: String, enum: ['Gold', 'Platinum'], default: 'Gold' },
+    tier: { type: String, enum: ['Silver', 'Gold', 'Platinum'], default: 'Gold' },
     expiryDate: { type: Date },
     joinedAt: { type: Date },
-    benefits: [{ type: String }] // e.g., 'Free Car Wash', 'Priority Service'
+    benefits: [{ type: String }], // List of all entitled benefits
+    servicesAvailed: [{ type: String }] // List of benefits already used
   },
 
   // E-commerce Ready
