@@ -227,7 +227,9 @@ const CreateListing = () => {
       tempData['images'] = images
       console.log(tempData['images'])
       setImages([])
-      await axios.post(`${API_URL}/api/listings`, tempData)
+      await axios.post(`${API_URL}/api/listings`, tempData, {
+        withCredentials: true
+      })
       setFormData({
         brand: '',
         model: '',

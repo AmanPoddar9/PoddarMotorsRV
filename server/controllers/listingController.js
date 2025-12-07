@@ -7,6 +7,7 @@ const AdmZip = require("adm-zip");
 var detect = require("detect-file-type");
 const axios = require("axios");
 const CryptoJS = require("crypto-js");
+const { clearCachePattern } = require('../middleware/cache');
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || 'ap-south-1',
@@ -45,6 +46,8 @@ exports.deleteListingByIdCloudinary = async (req, res) => {
       message: "Listing deleted successfully",
       listing: deletedListing,
     });
+    // Invalidate cache
+    clearCachePattern('/api/listings');
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
@@ -88,6 +91,8 @@ exports.deleteListingById = async (req, res) => {
       message: "Listing deleted successfully",
       listing: deletedListing,
     });
+    // Invalidate cache
+    clearCachePattern('/api/listings');
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error deleting listing' });
@@ -137,10 +142,9 @@ exports.createListing = async (req, res) => {
       }
     } catch (emailError) {
       console.error('Error sending requirement emails:', emailError);
-      // Don't fail the request if email sending fails
-    }
-
-    res.status(201).json({ message: "Listing created successfully", listing });
+      res.status(201).json({ message: "Listing created successfully", listing });
+    // Invalidate cache
+    clearCachePattern('/api/listings');
   } catch (error) {
     console.error('❌ Error creating listing:', error);
     console.error('Error name:', error.name);
@@ -367,6 +371,8 @@ exports.updateListingById = async (req, res) => {
       message: "Listing updated successfully",
       listing: updatedListing,
     });
+    // Invalidate cache
+    clearCachePattern('/api/listings');
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }

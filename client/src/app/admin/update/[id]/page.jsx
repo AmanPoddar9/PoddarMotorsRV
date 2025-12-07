@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import API_URL from '../../../config/api'
 import AdminNavbar from '../../../components/AdminNavbar'
 import JSZip from 'jszip'
 import { useRouter } from 'next/router'
@@ -45,7 +46,7 @@ const CreateListing = () => {
     originalPrice: '',
     emiStarting: '',
   })
-  let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
+  
   const transmissionTypes = ['AMT', 'CVT', 'DCT', 'TC', 'iMT', 'MT']
   useEffect(() => {
     if (Object.keys(currListing).length) {
@@ -83,7 +84,7 @@ const CreateListing = () => {
   const getSingleListing = async () => {
     const tempArr = window.location.href.split('/')
     const id = tempArr[tempArr.length - 1]
-    const response = await axios.get(url + `api/listings/${id}`)
+    const response = await axios.get(`${API_URL}/api/listings/${id}`)
     setCurrListing(response.data)
   }
 
@@ -232,7 +233,7 @@ const CreateListing = () => {
 
   const fetchFeatures = async () => {
     try {
-      const response = await axios.get(url + 'api/features')
+      const response = await axios.get(`${API_URL}/api/features`)
       setFeatures(response.data)
     } catch (error) {
       console.error('Error fetching features:', error)
@@ -275,7 +276,9 @@ const CreateListing = () => {
       const tempArr = window.location.href.split('/')
       const id = tempArr[tempArr.length - 1]
 
-      await axios.put(url + 'api/listings/' + id, tempData)
+      await axios.put(`${API_URL}/api/listings/${id}`, tempData, {
+        withCredentials: true
+      })
       // setFormData({
       //   brand: '',
       //   model: '',
