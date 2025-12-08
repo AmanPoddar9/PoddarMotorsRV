@@ -88,6 +88,7 @@ const workshopBookingValidation = [
     .isLength({ max: 100 })
     .withMessage('Name too long'),
   body('email')
+    .optional()
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
@@ -96,10 +97,10 @@ const workshopBookingValidation = [
     .trim()
     .matches(/^[0-9]{10}$/)
     .withMessage('Please provide a valid 10-digit phone number'),
-  body('vehicleNumber')
+  body('carModel')
     .trim()
     .notEmpty()
-    .withMessage('Vehicle number is required'),
+    .withMessage('Car model is required'),
   body('serviceType')
     .trim()
     .notEmpty()
