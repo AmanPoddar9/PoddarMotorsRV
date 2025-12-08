@@ -141,9 +141,11 @@ const sellRequestValidation = [
     .notEmpty()
     .withMessage('Model is required'),
   body('manufactureYear')
+    .toInt()
     .isInt({ min: 1900, max: new Date().getFullYear() + 1 })
     .withMessage('Please provide a valid year'),
   body('kilometers')
+    .toInt()
     .isInt({ min: 0 })
     .withMessage('Kilometers must be a positive number'),
   validate
