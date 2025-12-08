@@ -115,11 +115,12 @@ const sellRequestValidation = [
     .notEmpty()
     .withMessage('Name is required'),
   body('email')
+    .optional()
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
     .normalizeEmail(),
-  body('phone')
+  body('phoneNumber')
     .trim()
     .matches(/^[0-9]{10}$/)
     .withMessage('Please provide a valid 10-digit phone number'),
