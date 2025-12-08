@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import API_URL from '../../config/api'
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -40,8 +41,7 @@ const BookingForm = () => {
         message: formData.message
       }
 
-      const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-      // const url = 'http://localhost:4000'
+      const url = API_URL
 
       const response = await fetch(url + '/api/workshop-bookings', {
         method: 'POST',

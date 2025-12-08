@@ -68,7 +68,7 @@ const bookingValidation = [
     .isEmail()
     .withMessage('Please provide a valid email address')
     .normalizeEmail(),
-  body('phone')
+  body('mobileNumber')
     .trim()
     .matches(/^[0-9]{10}$/)
     .withMessage('Please provide a valid 10-digit phone number'),
@@ -92,7 +92,7 @@ const workshopBookingValidation = [
     .isEmail()
     .withMessage('Please provide a valid email address')
     .normalizeEmail(),
-  body('phone')
+  body('mobileNumber')
     .trim()
     .matches(/^[0-9]{10}$/)
     .withMessage('Please provide a valid 10-digit phone number'),
@@ -130,9 +130,12 @@ const sellRequestValidation = [
     .trim()
     .notEmpty()
     .withMessage('Model is required'),
-  body('year')
+  body('manufactureYear')
     .isInt({ min: 1900, max: new Date().getFullYear() + 1 })
     .withMessage('Please provide a valid year'),
+  body('kilometers')
+    .isInt({ min: 0 })
+    .withMessage('Kilometers must be a positive number'),
   validate
 ];
 

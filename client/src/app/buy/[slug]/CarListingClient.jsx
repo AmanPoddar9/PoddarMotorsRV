@@ -213,6 +213,7 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
       .catch((err) => {
         console.log(err)
         setError(err)
+        setConfirmLoading(false)
       })
   }
 
