@@ -115,7 +115,7 @@ const sellRequestValidation = [
     .notEmpty()
     .withMessage('Name is required'),
   body('email')
-    .optional()
+    .optional({ values: 'falsy' })
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
