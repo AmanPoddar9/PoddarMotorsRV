@@ -124,6 +124,14 @@ const sellRequestValidation = [
     .trim()
     .matches(/^[0-9]{10}$/)
     .withMessage('Please provide a valid 10-digit phone number'),
+  body('location')
+    .trim()
+    .notEmpty()
+    .withMessage('Location is required'),
+  body('registrationNumber')
+    .trim()
+    .notEmpty()
+    .withMessage('Registration number is required'),
   body('brand')
     .trim()
     .notEmpty()
