@@ -4,8 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { FaArrowLeft, FaClock, FaCalendar, FaUser, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaEye } from 'react-icons/fa';
 import BlogContent from './BlogContent';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://poddar-motors-rv-hkxu.vercel.app';
+import API_URL from '@/app/config/api';
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }) {
