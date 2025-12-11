@@ -16,6 +16,6 @@ const BACKEND_URL = 'https://www.poddarmotors.com';
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.API_URL ||
-  BACKEND_URL;
+  (process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : BACKEND_URL);
 
 export default API_URL;

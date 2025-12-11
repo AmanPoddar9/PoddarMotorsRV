@@ -137,7 +137,7 @@ app.use('/api/auctions', auctionRoutes);
 app.use('/api/dealers', dealerRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/prime-enquiry', require('./routes/primeEnquiryRoutes'));
-app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CRM
+// app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CRM (Temporarily disabled for recovery)
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);

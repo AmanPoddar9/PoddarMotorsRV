@@ -176,7 +176,8 @@ exports.getAllListings = async (req, res) => {
     const listings = await Listing.find();
     res.json(listings);
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error('❌ Error in getAllListings:', error);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
