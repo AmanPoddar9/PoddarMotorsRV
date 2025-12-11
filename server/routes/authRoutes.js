@@ -21,28 +21,21 @@ router.post('/login', loginValidation, async (req, res) => {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
   
   const isProduction = process.env.NODE_ENV === 'production';
-  
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
+    path: '/'
+  };
+
   // Clear any existing dealer/customer auth cookies to prevent conflicts
-  res.clearCookie('dealer_auth', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
-    path: '/'
-  });
-  res.clearCookie('customer_auth', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
-    path: '/'
-  });
-  
+  res.clearCookie('dealer_auth', cookieOptions);
+  res.clearCookie('customer_auth', cookieOptions);
+
   // Set admin auth cookie
-  res.cookie('auth', token, { 
-    httpOnly: true, 
-    sameSite: 'lax',
-    secure: isProduction,
-    maxAge: 2 * 60 * 60 * 1000, // 2 hours
-    path: '/'
+  res.cookie('auth', token, {
+    ...cookieOptions,
+    maxAge: 2 * 60 * 60 * 1000 // 2 hours
   });
   res.json({ message: 'Logged in', role: user.role });
 });
@@ -50,26 +43,17 @@ router.post('/login', loginValidation, async (req, res) => {
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
-  
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
+    path: '/'
+  };
+
   // Clear all auth cookies
-  res.clearCookie('auth', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
-    path: '/'
-  });
-  res.clearCookie('dealer_auth', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
-    path: '/'
-  });
-  res.clearCookie('customer_auth', {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
-    path: '/'
-  });
+  res.clearCookie('auth', cookieOptions);
+  res.clearCookie('dealer_auth', cookieOptions);
+  res.clearCookie('customer_auth', cookieOptions);
   
   res.json({ message: 'Logged out' });
 });
