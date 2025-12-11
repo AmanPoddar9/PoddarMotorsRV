@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function AdminInspectionsPage() {
   const [bookings, setBookings] = useState([])
@@ -22,9 +21,9 @@ export default function AdminInspectionsPage() {
   const fetchBookings = async () => {
     setLoading(true)
     try {
-      const url = filterStatus === 'all'
-        ? `${API_BASE_URL}/api/inspections/bookings`
-        : `${API_BASE_URL}/api/inspections/bookings?status=${filterStatus}`
+    const url = filterStatus === 'all'
+      ? `${API_URL}/api/inspections/bookings`
+      : `${API_URL}/api/inspections/bookings?status=${filterStatus}`
       
       const res = await fetch(url)
       const data = await res.json()
@@ -38,7 +37,7 @@ export default function AdminInspectionsPage() {
 
   const assignInspector = async (bookingId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}/assign-inspector`, {
+      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingId}/assign-inspector`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -62,7 +61,7 @@ export default function AdminInspectionsPage() {
 
   const updateStatus = async (bookingId, newStatus) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}/status`, {
+      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -92,7 +91,7 @@ export default function AdminInspectionsPage() {
 
   const deleteBooking = async (bookingId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingId}`, {
+      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingId}`, {
         method: 'DELETE',
         credentials: 'include'
       })
@@ -113,7 +112,7 @@ export default function AdminInspectionsPage() {
 
   const deleteReport = async (reportId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/reports/${reportId}`, {
+      const res = await fetch(`${API_URL}/api/inspections/reports/${reportId}`, {
         method: 'DELETE',
         credentials: 'include'
       })

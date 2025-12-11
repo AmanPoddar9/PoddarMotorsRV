@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import io from 'socket.io-client'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../../config/api'
 
 import ImageGallery from '../../../components/dealer/ImageGallery'
 
@@ -27,7 +26,7 @@ export default function AuctionRoom({ params }) {
     // Check authentication on mount via server
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/dealers/me`, {
+        const res = await fetch(`${API_URL}/api/dealers/me`, {
           credentials: 'include'
         });
         
@@ -59,7 +58,7 @@ export default function AuctionRoom({ params }) {
     fetchAuctionDetails()
 
     // 2. Connect Socket
-    socket = io(API_BASE_URL)
+    socket = io(API_URL)
 
     socket.emit('join_auction', id)
 
@@ -99,14 +98,14 @@ export default function AuctionRoom({ params }) {
 
   const fetchAuctionDetails = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auctions/${id}`)
+      const res = await fetch(`${API_URL}/api/auctions/${id}`)
       const data = await res.json()
       setAuction(data)
       setCurrentBid(data.currentBid)
       setBidAmount(data.currentBid + data.minIncrement)
       
       // Fetch existing bids
-      const bidsRes = await fetch(`${API_BASE_URL}/api/auctions/${id}/bids`)
+      const bidsRes = await fetch(`${API_URL}/api/auctions/${id}/bids`)
       const bidsData = await bidsRes.json()
       setBids(bidsData)
     } catch (error) {
@@ -124,7 +123,7 @@ export default function AuctionRoom({ params }) {
 
     try {
       // API call to save bid
-      const res = await fetch(`${API_BASE_URL}/api/auctions/bid`, {
+      const res = await fetch(`${API_URL}/api/auctions/bid`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

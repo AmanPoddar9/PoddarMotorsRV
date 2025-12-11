@@ -3,8 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 function AdminAuctionsContent() {
   const searchParams = useSearchParams()
@@ -40,7 +39,7 @@ function AdminAuctionsContent() {
 
   const fetchAuctions = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auctions`)
+      const res = await fetch(`${API_URL}/api/auctions`)
       const data = await res.json()
       setAuctions(data)
     } catch (error) {
@@ -54,7 +53,7 @@ function AdminAuctionsContent() {
     try {
       // Fetch completed reports that haven't been auctioned yet
       // For now, just fetching all reports
-      const res = await fetch(`${API_BASE_URL}/api/inspections/reports`)
+      const res = await fetch(`${API_URL}/api/inspections/reports`)
       const data = await res.json()
       setInspectionReports(data)
     } catch (error) {
@@ -65,7 +64,7 @@ function AdminAuctionsContent() {
   const handleCreateAuction = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auctions`, {
+      const res = await fetch(`${API_URL}/api/auctions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -168,7 +167,7 @@ function AdminAuctionsContent() {
                       <button
                         onClick={async () => {
                           if (confirm('End this auction now?')) {
-                            await fetch(`${API_BASE_URL}/api/auctions/${auction._id}/end`, { method: 'POST', credentials: 'include' })
+                            await fetch(`${API_URL}/api/auctions/${auction._id}/end`, { method: 'POST', credentials: 'include' })
                             fetchAuctions()
                           }
                         }}

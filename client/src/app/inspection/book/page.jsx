@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function BookInspectionPage() {
   const router = useRouter()
@@ -49,7 +48,7 @@ export default function BookInspectionPage() {
   const fetchAvailableSlots = async (date) => {
     setLoadingSlots(true)
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/slots/available?date=${date}`)
+      const res = await fetch(`${API_URL}/api/inspections/slots/available?date=${date}`)
       const data = await res.json()
       setAvailableSlots(data)
     } catch (error) {
@@ -134,7 +133,7 @@ export default function BookInspectionPage() {
         paymentStatus: 'Free'
       }
 
-      const bookingRes = await fetch(`${API_BASE_URL}/api/inspections/bookings`, {
+      const bookingRes = await fetch(`${API_URL}/api/inspections/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload)

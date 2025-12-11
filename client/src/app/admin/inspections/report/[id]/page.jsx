@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import InspectionReportView from '../../../../components/InspectionReportView'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../../../config/api'
 
 export default function AdminReportPage() {
   const params = useParams()
@@ -22,7 +21,7 @@ export default function AdminReportPage() {
 
   const fetchReport = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/reports/${id}`)
+      const res = await fetch(`${API_URL}/api/inspections/reports/${id}`)
       const data = await res.json()
       if (res.ok) {
         setReport(data)

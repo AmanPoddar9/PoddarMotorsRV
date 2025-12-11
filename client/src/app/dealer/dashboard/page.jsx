@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function AuctionDashboard() {
   const [auctions, setAuctions] = useState([])
@@ -21,7 +20,7 @@ export default function AuctionDashboard() {
     // Check authentication on mount via server
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/dealers/me`, {
+        const res = await fetch(`${API_URL}/api/dealers/me`, {
           credentials: 'include'
         });
         
@@ -56,7 +55,7 @@ export default function AuctionDashboard() {
   const fetchAuctions = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auctions?status=${filter}`)
+      const res = await fetch(`${API_URL}/api/auctions?status=${filter}`)
       const data = await res.json()
       setAuctions(data)
     } catch (error) {

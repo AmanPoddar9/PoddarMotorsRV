@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import API_URL from '../../config/api'
 
 export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles = 5, maxImages }) {
   // Support both maxFiles and maxImages prop names
@@ -27,7 +28,7 @@ export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles 
     files.forEach(file => formData.append('images', file))
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
+      const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
         body: formData
       })
