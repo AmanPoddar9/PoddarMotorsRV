@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import io from 'socket.io-client'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-
+import API_URL from '@/app/config/api'
 import ImageGallery from '../../../components/dealer/ImageGallery'
+
+const API_BASE_URL = API_URL
 
 export default function AuctionRoom({ params }) {
   const { id } = params

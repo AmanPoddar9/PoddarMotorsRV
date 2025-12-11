@@ -4,8 +4,9 @@ import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import ImageUpload from '../../../../components/admin/ImageUpload'
+import API_URL from '@/app/config/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const API_BASE_URL = API_URL
 
 // Reusable CheckItem Component
 const CheckItem = ({ label, name, value, onChange, required = false }) => {

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import InspectionReportView from '../../../../components/InspectionReportView'
+import API_URL from '@/app/config/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const API_BASE_URL = API_URL
 
 export default function AdminReportPage() {
   const params = useParams()

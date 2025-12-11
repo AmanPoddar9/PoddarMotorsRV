@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import API_URL from '@/app/config/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const API_BASE_URL = API_URL
 
 export default function AdminInspectionsPage() {
   const [bookings, setBookings] = useState([])

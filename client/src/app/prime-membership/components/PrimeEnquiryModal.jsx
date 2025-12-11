@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FaTimes, FaSpinner } from 'react-icons/fa';
 import { message } from 'antd';
 import axios from 'axios';
+import API_URL from '@/app/config/api';
 
 const PrimeEnquiryModal = ({ isOpen, onClose, selectedPlan }) => {
   const [loading, setLoading] = useState(false);
@@ -32,8 +33,7 @@ const PrimeEnquiryModal = ({ isOpen, onClose, selectedPlan }) => {
       }
 
       // API Call
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const endpoint = `${API_BASE_URL}/api/prime-enquiry`;
+      const endpoint = `${API_URL}/api/prime-enquiry`;
       
       await axios.post(endpoint, {
         ...formData,

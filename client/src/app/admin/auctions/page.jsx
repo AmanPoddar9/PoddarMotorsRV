@@ -3,8 +3,9 @@
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import API_URL from '@/app/config/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+const API_BASE_URL = API_URL
 
 function AdminAuctionsContent() {
   const searchParams = useSearchParams()
