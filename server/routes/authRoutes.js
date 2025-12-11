@@ -22,12 +22,13 @@ router.post('/login', loginValidation, async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     const isProduction = process.env.NODE_ENV === 'production';
+    const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
     const cookieOptions = {
       httpOnly: true,
       sameSite: isProduction ? 'none' : 'lax',
       secure: isProduction,
       path: '/',
-      domain: process.env.COOKIE_DOMAIN || undefined
+      domain: cookieDomain
     };
 
     // Clear any existing dealer/customer auth cookies to prevent conflicts
@@ -49,12 +50,13 @@ router.post('/login', loginValidation, async (req, res) => {
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
+  const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
   const cookieOptions = {
     httpOnly: true,
     sameSite: isProduction ? 'none' : 'lax',
     secure: isProduction,
     path: '/',
-    domain: process.env.COOKIE_DOMAIN || undefined
+    domain: cookieDomain
   };
 
   // Clear all auth cookies
