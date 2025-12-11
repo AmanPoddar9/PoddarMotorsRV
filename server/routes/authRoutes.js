@@ -25,21 +25,21 @@ router.post('/login', loginValidation, async (req, res) => {
   // Clear any existing dealer/customer auth cookies to prevent conflicts
   res.clearCookie('dealer_auth', {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: isProduction,
     path: '/'
   });
   res.clearCookie('customer_auth', {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: isProduction,
     path: '/'
   });
-  
+
   // Set admin auth cookie
-  res.cookie('auth', token, { 
-    httpOnly: true, 
-    sameSite: 'lax',
+  res.cookie('auth', token, {
+    httpOnly: true,
+    sameSite: 'none',
     secure: isProduction,
     maxAge: 2 * 60 * 60 * 1000, // 2 hours
     path: '/'
@@ -54,19 +54,19 @@ router.post('/logout', (req, res) => {
   // Clear all auth cookies
   res.clearCookie('auth', {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: isProduction,
     path: '/'
   });
   res.clearCookie('dealer_auth', {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: isProduction,
     path: '/'
   });
   res.clearCookie('customer_auth', {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: isProduction,
     path: '/'
   });
