@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import axios from 'axios'
-import { getAPIURL } from '@/app/config/api'
+import API_URL from '@/app/config/api'
 import { FaSearch, FaTimes, FaSpinner, FaUserPlus, FaFileAlt } from 'react-icons/fa'
 
 export default function AddPolicyModal({ isOpen, onClose }) {
@@ -39,7 +39,6 @@ export default function AddPolicyModal({ isOpen, onClose }) {
     if (!searchQuery) return
     setSearching(true)
     try {
-      const API_URL = getAPIURL(); // Get URL at runtime
       const res = await axios.get(`${API_URL}/api/insurance/customers/search`, {
         params: { query: searchQuery },
         withCredentials: true
@@ -79,7 +78,6 @@ export default function AddPolicyModal({ isOpen, onClose }) {
     }
 
     try {
-        const API_URL = getAPIURL(); // Get URL at runtime
         await axios.post(`${API_URL}/api/insurance/policies`, payload, { withCredentials: true })
         onClose() // Success
     } catch (error) {
