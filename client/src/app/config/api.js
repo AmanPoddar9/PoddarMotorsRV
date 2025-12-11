@@ -6,7 +6,10 @@
 // so that production requests consistently reach the API (important when the
 // frontend and backend are deployed on different domains).
 
-const BACKEND_URL = 'https://poddar-motors-rv-hkxu.vercel.app';
+// Use the production domain instead of the old Vercel preview URL to avoid
+// 403s that prevent the listings (and other API-driven sections) from
+// loading on poddarmotors.com.
+const BACKEND_URL = 'https://www.poddarmotors.com';
 
 // Prefer an explicit environment override when available so server components
 // (which do not see NEXT_PUBLIC_*) and client components stay in sync.
