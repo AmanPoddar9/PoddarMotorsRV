@@ -194,6 +194,7 @@ export default function AddPolicyModal({ isOpen, onClose }) {
                 <h3 className="text-sm font-bold text-gray-400 uppercase mb-3">Vehicle Details</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <input required placeholder="Reg Number (UP16...)" className="col-span-2 bg-gray-900 border border-gray-700 text-white rounded px-3 py-2 uppercase" value={formData.regNumber} onChange={e => setFormData({...formData, regNumber: e.target.value.toUpperCase()})} />
+                    <input required placeholder="Make (e.g. Maruti)" className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" value={formData.make} onChange={e => setFormData({...formData, make: e.target.value})} />
                     <input required placeholder="Model (e.g. Swift)" className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} />
                     <input placeholder="Year" className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} />
                 </div>

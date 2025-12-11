@@ -218,7 +218,81 @@ exports.updatePolicy = async (req, res) => {
     }
 };
 
-// --- INTERACTIONS ---
+// --- WORKFLOW ACTIONS ---
+
+exports.renewPolicy = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { insurer, premium, idv, paymentDate, renewalDate } = req.body;
+
+        const policy = await InsurancePolicy.findById(id);
+        if (!policy) return res.status(404).json({ message: 'Policy not found' });
+
+        // Update status and details
+        policy.renewalStatus = 'Renewed';
+        policy.insurerAfterRenewal = insurer;
+        policy.idvAfterRenewal = idv;
+        policy.renewalDate = renewalDate || new Date();
+        
+        // Optionally, we could create a NEW policy document for the next year
+        // But for simplicity in this version, we mark this as Renewed.
+        // Or better: Create a new Policy for the next year and link them? 
+        // For now, based on schema, it seems we just track renewal on the same doc or create new.
+        // Let's create a NEW policy for the new period and mark old as Renewed.
+        
+        // 1. Mark Old as Renewed
+        // policy.renewalStatus = 'Renewed'; // Already done above
+        await policy.save();
+
+        // 2. Create New Policy (Next Year)
+        const newStartDate = new Date(policy.policyEndDate);
+        newStartDate.setDate(newStartDate.getDate() + 1);
+        const newEndDate = new Date(newStartDate);
+        newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+        newEndDate.setDate(newEndDate.getDate() - 1);
+
+        const newPolicy = new InsurancePolicy({
+             customer: policy.customer,
+             assignedAgent: req.user._id, // Assign to whoever renewed it
+             policyNumber: "RENEW-" + Math.floor(1000 + Math.random() * 9000), // Placeholder if not provided
+             insurer: insurer || policy.insurer,
+             policyType: policy.policyType,
+             source: 'Renewal',
+             policyStartDate: newStartDate,
+             policyEndDate: newEndDate,
+             vehicle: policy.vehicle,
+             premiumAmount: premium,
+             idv: idv,
+             renewalStatus: 'Pending'
+        });
+        
+        await newPolicy.save();
+
+        res.json({ message: 'Policy renewed', oldPolicy: policy, newPolicy });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error renewing policy' });
+    }
+};
+
+exports.markLost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { reason, remark } = req.body;
+
+        const policy = await InsurancePolicy.findByIdAndUpdate(id, {
+            renewalStatus: 'Lost',
+            lostCaseReason: reason,
+            lastRemark: remark
+        }, { new: true });
+
+        res.json(policy);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error marking policy as lost' });
+    }
+};
+
 
 exports.addInteraction = async (req, res) => {
     try {
