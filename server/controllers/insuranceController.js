@@ -190,7 +190,7 @@ exports.createPolicy = async (req, res) => {
         customer: customerId,
         policyNumber,
         insurer,
-        expiryDate,
+        policyEndDate: expiryDate, // Mapped from form expiryDate
         premiumAmount,
         idv: previousIDV,
         coverageType,

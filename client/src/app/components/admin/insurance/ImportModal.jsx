@@ -11,6 +11,9 @@ export default function ImportModal({ isOpen, onClose }) {
   const [previewData, setPreviewData] = useState([])
   const [isCommitReady, setIsCommitReady] = useState(false)
   const [stats, setStats] = useState({ total: 0, valid: 0, duplicates: 0, errors: 0 })
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+  const [result, setResult] = useState(null)
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0]

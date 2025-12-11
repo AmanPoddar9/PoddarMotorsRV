@@ -1,5 +1,6 @@
 const Customer = require('../models/Customer');
 const { generateCustomId } = require('../utils/idGenerator');
+const InsurancePolicy = require('../models/InsurancePolicy');
 
 // Search Customers (Admin)
 // Matches against name, mobile, alternatePhones, email, or vehicle registration
