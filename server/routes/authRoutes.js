@@ -7,37 +7,43 @@ const { loginValidation } = require('../middleware/validators');
 
 // Login – returns JWT in httpOnly cookie
 router.post('/login', loginValidation, async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user || !(await user.validatePassword(password))) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-  
-  // Only allow admin role to login via this endpoint
-  if (user.role !== 'admin') {
-    return res.status(403).json({ message: 'Access denied. Admin login only.' });
-  }
-  
-  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
-  
-  const isProduction = process.env.NODE_ENV === 'production';
-  const cookieOptions = {
-    httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',
-    secure: isProduction,
-    path: '/'
-  };
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || !(await user.validatePassword(password))) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
-  // Clear any existing dealer/customer auth cookies to prevent conflicts
-  res.clearCookie('dealer_auth', cookieOptions);
-  res.clearCookie('customer_auth', cookieOptions);
+    // Only allow admin role to login via this endpoint
+    if (user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin login only.' });
+    }
 
-  // Set admin auth cookie
-  res.cookie('auth', token, {
-    ...cookieOptions,
-    maxAge: 2 * 60 * 60 * 1000 // 2 hours
-  });
-  res.json({ message: 'Logged in', role: user.role });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2h' });
+
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+      path: '/',
+      domain: process.env.COOKIE_DOMAIN || undefined
+    };
+
+    // Clear any existing dealer/customer auth cookies to prevent conflicts
+    res.clearCookie('dealer_auth', cookieOptions);
+    res.clearCookie('customer_auth', cookieOptions);
+
+    // Set admin auth cookie
+    res.cookie('auth', token, {
+      ...cookieOptions,
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    });
+    res.json({ message: 'Logged in', role: user.role });
+  } catch (error) {
+    console.error('Error during admin login:', error);
+    res.status(500).json({ message: 'Unexpected error during login. Please try again.' });
+  }
 });
 
 // Logout – clear cookie
@@ -47,7 +53,8 @@ router.post('/logout', (req, res) => {
     httpOnly: true,
     sameSite: isProduction ? 'none' : 'lax',
     secure: isProduction,
-    path: '/'
+    path: '/',
+    domain: process.env.COOKIE_DOMAIN || undefined
   };
 
   // Clear all auth cookies

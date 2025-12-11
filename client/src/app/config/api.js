@@ -8,6 +8,11 @@
 
 const BACKEND_URL = 'https://poddar-motors-rv-hkxu.vercel.app';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || BACKEND_URL;
+// Prefer an explicit environment override when available so server components
+// (which do not see NEXT_PUBLIC_*) and client components stay in sync.
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.API_URL ||
+  BACKEND_URL;
 
 export default API_URL;
