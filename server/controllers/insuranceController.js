@@ -1,0 +1,446 @@
+const InsurancePolicy = require('../models/InsurancePolicy');
+const Interaction = require('../models/Interaction');
+const Customer = require('../models/Customer');
+const { generateCustomId } = require('../utils/idGenerator');
+
+// --- DASHBOARD ---
+
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const [expiringToday, expiringWeek, expiringMonth, expired] = await Promise.all([
+      // Today (Based on policyEndDate)
+      InsurancePolicy.countDocuments({ 
+        renewalStatus: { $in: ['Pending', 'InProgress'] }, 
+        policyEndDate: { $gte: today, $lt: tomorrow } 
+      }),
+      // This Week
+      InsurancePolicy.countDocuments({ 
+        renewalStatus: { $in: ['Pending', 'InProgress'] }, 
+        policyEndDate: { $gte: today, $lt: nextWeek } 
+      }),
+      // This Month
+      InsurancePolicy.countDocuments({ 
+        renewalStatus: { $in: ['Pending', 'InProgress'] }, 
+        policyEndDate: { $gte: startOfMonth, $lte: endOfMonth } 
+      }),
+      // Expired (Past date and NOT renewed)
+      InsurancePolicy.countDocuments({ 
+        renewalStatus: { $in: ['Pending', 'InProgress'] }, 
+        policyEndDate: { $lt: today } 
+      })
+    ]);
+
+    res.json({ expiringToday, expiringWeek, expiringMonth, expired });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching stats' });
+  }
+};
+
+// --- POLICIES ---
+
+exports.getPolicies = async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 20, 
+      filter = 'all', // 'today', 'week', 'month', 'expired', 'renewed'
+      search,
+    } = req.query;
+
+    const query = {};
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    // Filters
+    if (filter === 'today') {
+        const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
+        query.policyEndDate = { $gte: today, $lt: tomorrow };
+    } else if (filter === 'week') {
+        const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
+        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
+        query.policyEndDate = { $gte: today, $lt: nextWeek };
+    } else if (filter === 'month') {
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
+        query.policyEndDate = { $gte: startOfMonth, $lte: endOfMonth };
+    } else if (filter === 'expired') {
+        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
+        query.policyEndDate = { $lt: today };
+    } else if (filter === 'renewed') {
+        query.renewalStatus = 'Renewed';
+    } else if (filter === 'my_followups') {
+        // Policies assigned to me with follow-up <= today
+        if (req.user) query.assignedAgent = req.user._id;
+        query.nextFollowUpDate = { $lte: today, $ne: null };
+        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
+    } else if (filter === 'assigned_to_me') {
+        if (req.user) query.assignedAgent = req.user._id;
+    }
+
+    // Role-based restriction (Agents see only theirs unless searching)
+    // If Admin/Manager, no extra restriction. If Agent, enforce.
+    if (req.user && req.user.role === 'insurance_agent' && !search) {
+       query.assignedAgent = req.user._id;
+    }
+
+    // Search (Complex: Needs to join Customer?)
+    // For performance, if search is provided, we first find matching customers
+    if (search) {
+        const regex = new RegExp(search, 'i');
+        const customers = await Customer.find({
+            $or: [{ name: regex }, { mobile: regex }, { 'vehicles.regNumber': regex }]
+        }).select('_id');
+        
+        const customerIds = customers.map(c => c._id);
+        
+        // Clear conflicting filters if searching global
+        delete query.assignedAgent; 
+
+        query.$or = [
+            { customer: { $in: customerIds } },
+            { policyNumber: regex },
+            { 'vehicle.regNumber': regex }
+        ];
+    }
+
+    const policies = await InsurancePolicy.find(query)
+      .populate('customer', 'name mobile customId vehicles')
+      .populate('assignedAgent', 'name')
+      .sort({ policyEndDate: 1 }) // Expiring soonest first
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const total = await InsurancePolicy.countDocuments(query);
+
+    res.json({
+      policies,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / limit),
+      totalPolicies: total
+    });
+  } catch (error) {
+    console.error('Get policies error:', error);
+    res.status(500).json({ message: 'Error fetching policies' });
+  }
+};
+
+exports.createPolicy = async (req, res) => {
+  try {
+    const { 
+      // Customer Data (for matching/creation)
+      customerMobile, customerName, customerEmail,
+      // Policy Data
+      policyNumber, insurer, expiryDate, previousIDV, premiumAmount, coverageType,
+      // Vehicle Data
+      regNumber, make, model, year,
+      // Metadata
+      existingCustomerId 
+    } = req.body;
+
+    let customerId = existingCustomerId;
+
+    // 1. If no ID provided, try to find or create customer
+    if (!customerId) {
+        // Search by mobile
+        let customer = await Customer.findOne({ 
+            $or: [{ mobile: customerMobile }, { alternatePhones: customerMobile }]
+        });
+
+        if (!customer) {
+            // Create NEW Customer
+            const customId = await generateCustomId();
+            customer = new Customer({
+                customId,
+                name: customerName,
+                mobile: customerMobile,
+                email: customerEmail,
+                vehicles: [{ regNumber, make, model, year }]
+            });
+            await customer.save();
+        } else {
+            // Update existing customer? (Maybe add regNumber if not exists)
+            // Implementation choice: For now, just link.
+            // Check if vehicle exists in profile, if not add it?
+            const vehicleExists = customer.vehicles?.some(v => v.regNumber === regNumber);
+            if (!vehicleExists) {
+                customer.vehicles.push({ regNumber, make, model, year });
+                await customer.save();
+            }
+        }
+        customerId = customer._id;
+    }
+
+    // 2. Create Policy
+    const policy = new InsurancePolicy({
+        customer: customerId,
+        policyNumber,
+        insurer,
+        expiryDate,
+        premiumAmount,
+        idv: previousIDV,
+        coverageType,
+        vehicle: { regNumber, make, model, year }
+    });
+
+    await policy.save();
+
+    res.status(201).json({ message: 'Policy created', policy });
+
+  } catch (error) {
+    console.error('Create policy error:', error);
+    res.status(500).json({ message: 'Error creating policy' });
+  }
+};
+
+exports.updatePolicy = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+        const policy = await InsurancePolicy.findByIdAndUpdate(id, updates, { new: true });
+        res.json(policy);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating policy' });
+    }
+};
+
+// --- INTERACTIONS ---
+
+exports.addInteraction = async (req, res) => {
+    try {
+        const { customerId, remark, nextFollowUp, agentName } = req.body;
+        
+        const interaction = new Interaction({
+            customer: customerId,
+            type: 'insurance_followup',
+            agentName: agentName || 'Admin', // Should come from req.user
+            data: {
+                remark,
+                nextFollowUp
+            }
+        });
+
+        await interaction.save();
+        res.status(201).json(interaction);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding interaction' });
+    }
+};
+
+exports.getInteractions = async (req, res) => {
+    try {
+        const { customerId } = req.params;
+        const interactions = await Interaction.find({ customer: customerId })
+            .sort({ date: -1 });
+        res.json(interactions);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching interactions' });
+    }
+};
+
+// --- BULK IMPORT ---
+
+const { findPotentialMatches } = require('../utils/customerMatcher');
+
+exports.importPolicies = async (req, res) => {
+    try {
+        const { policies, preview = false } = req.body; // Expects array directly now, or { policies, preview }
+        
+        // Normalize input if just array passed
+        const rows = Array.isArray(req.body) ? req.body : policies;
+
+        if (!rows || !Array.isArray(rows)) {
+            return res.status(400).json({ message: 'Invalid data format. Expected array of policies.' });
+        }
+
+        const results = {
+            total: rows.length,
+            success: 0,
+            failed: 0,
+            skipped: 0,
+            errors: [], // { row: 1, error: '...' }
+            previewData: [] // For UI confirmation
+        };
+
+        // --- PREVIEW MODE ---
+        if (preview) {
+            // Check for existing policy numbers in one go (optimization)
+            const policyNumbers = rows.map(r => r.policyNumber).filter(Boolean);
+            const existingPolicies = await InsurancePolicy.find({ policyNumber: { $in: policyNumbers } }).select('policyNumber');
+            const existingSet = new Set(existingPolicies.map(p => p.policyNumber));
+
+            results.previewData = rows.map((row, index) => {
+                let status = 'Valid';
+                let valid = true;
+                let reason = '';
+
+                // Simple validations
+                if (!row.policyNumber) { status = 'Error'; reason = 'Missing Policy Number'; valid = false; }
+                if (!row.mobile) { status = 'Error'; reason = 'Missing Mobile'; valid = false; }
+                if (existingSet.has(row.policyNumber)) { valid = false; reason = 'Policy already exists'; }
+
+                return {
+                    row: index + 1,
+                    customer: row.customerName,
+                    policyNumber: row.policyNumber,
+                    status: valid ? 'Ready' : 'Skip',
+                    reason
+                };
+            });
+
+            return res.json({ message: 'Preview generated', results });
+        }
+
+        // --- COMMIT MODE ---
+        // Optimization: Fetch all potential duplicates upfront? Hard for Customers.
+        // We will process sequentially for safety, or batch if slow. Sequential is fine for 5-7k for now if timeout is high.
+
+        for (const [index, row] of rows.entries()) {
+            try {
+                // 1. Validation & Skip
+                if (!row.policyNumber || !row.mobile) {
+                    results.failed++;
+                    results.errors.push(`Row ${index + 1}: Missing mandatory fields`);
+                    continue;
+                }
+
+                const existingPolicy = await InsurancePolicy.findOne({ policyNumber: row.policyNumber });
+                if (existingPolicy) {
+                    results.skipped++;
+                    continue; // Skip duplicates silently or log
+                }
+
+                // 2. Find or Create Customer (Smart Match)
+                let customer;
+                
+                // Matches returns array. We take best match (first one usually).
+                // Or we trust "mobile" as unique key if our matcher is strict.
+                const matches = await findPotentialMatches({
+                    mobile: row.mobile,
+                    vehicleReg: row.regNumber,
+                    email: row.email,
+                    name: row.customerName // For fuzzy logic if we added it
+                });
+
+                if (matches.length > 0) {
+                    // LINK to Existing
+                    customer = await Customer.findById(matches[0]._id);
+                    
+                    // Update vehicle list if new reg
+                    if (row.regNumber && !customer.vehicles.some(v => v.regNumber === row.regNumber.toUpperCase())) {
+                        customer.vehicles.push({
+                            regNumber: row.regNumber.toUpperCase(),
+                            make: row.make,
+                            model: row.model,
+                            variant: row.variant,
+                            fuelType: row.fuelType,
+                            yearOfManufacture: row.yearOfManufacture,
+                            registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                        });
+                        await customer.save();
+                    }
+                    
+                    // Update stats/city if missing
+                    if (!customer.areaCity && row.areaCity) {
+                        customer.areaCity = row.areaCity;
+                        await customer.save();
+                    }
+
+                } else {
+                    // CREATE New
+                    const customId = await generateCustomId();
+                    customer = new Customer({
+                        customId,
+                        name: row.customerName || 'Unknown',
+                        mobile: row.mobile,
+                        email: row.email,
+                        areaCity: row.areaCity,
+                        vehicles: row.regNumber ? [{
+                            regNumber: row.regNumber.toUpperCase(),
+                            make: row.make,
+                            model: row.model,
+                            variant: row.variant,
+                            fuelType: row.fuelType,
+                            yearOfManufacture: row.yearOfManufacture,
+                            registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                        }] : []
+                    });
+                    await customer.save();
+                }
+
+                // 3. Create Policy
+                // Parse Dates safely
+                const pEndDate = row.expiryDate ? new Date(row.expiryDate) : null;
+                const pStartDate = row.policyStartDate ? new Date(row.policyStartDate) : null;
+                
+                // Determine status based on end date
+                const isExpired = pEndDate && pEndDate < new Date();
+
+                const policy = new InsurancePolicy({
+                    customer: customer._id,
+                    policyNumber: row.policyNumber,
+                    insurer: row.insurer || 'Unknown',
+                    policyType: row.policyType,
+                    source: row.source || 'Import',
+                    
+                    policyStartDate: pStartDate,
+                    policyEndDate: pEndDate, // Crucial
+                    
+                    vehicle: {
+                        regNumber: row.regNumber ? row.regNumber.toUpperCase() : 'UNKNOWN',
+                        make: row.make,
+                        model: row.model,
+                        variant: row.variant,
+                        year: row.year,
+                        chassisNumber: row.chassisNo,
+                        engineNumber: row.engineNo
+                    },
+
+                    premiumAmount: parseFloat(row.totalPremiumPaid) || parseFloat(row.premiumAmount) || 0,
+                    ownDamagePremium: parseFloat(row.ownDamagePremium) || 0,
+                    tpPremium: parseFloat(row.tpPremium) || 0,
+                    addonPremium: parseFloat(row.addonPremium) || 0,
+                    totalPremiumPaid: parseFloat(row.totalPremiumPaid) || 0,
+                    idv: parseFloat(row.idvCurrent) || 0,
+                    ncb: parseFloat(row.ncb) || 0,
+                    currentAddons: row.currentAddons ? row.currentAddons.split(',').map(s=>s.trim()) : [],
+
+                    renewalStatus: isExpired ? 'Pending' : 'Pending', // Everything imported starts as Pending renewal unless specified?
+                    // Actually if it is expired, it IS pending renewal. If active, it will become pending.
+                });
+
+                await policy.save();
+                results.success++;
+
+                // Optional: Log Import Interaction? 
+                // Might be too noisy for 7000 rows. Skip for now.
+
+            } catch (err) {
+                results.failed++;
+                results.errors.push(`Row ${index + 1} (${row.policyNumber}): ${err.message}`);
+                console.error(err);
+            }
+        }
+
+        res.json({ message: 'Import processed', results });
+
+    } catch (error) {
+        console.error('Import error:', error);
+        res.status(500).json({ message: 'Server error during import' });
+    }
+};

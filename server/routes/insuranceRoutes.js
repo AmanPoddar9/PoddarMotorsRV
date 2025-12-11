@@ -1,0 +1,43 @@
+const express = require('express');
+const router = express.Router();
+const insuranceController = require('../controllers/insuranceController');
+const customerController = require('../controllers/customerController');
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+// Apply Auth Middleware (Admin only for now)
+// Apply Auth Middleware
+// Open to Admin, Manager, and Insurance Agents
+router.use(requireAuth);
+router.use(requireRole('admin', 'manager', 'insurance_agent'));
+
+// --- DASHBOARD ---
+router.get('/stats', insuranceController.getDashboardStats);
+
+// --- POLICIES ---
+router.get('/policies', insuranceController.getPolicies);
+router.post('/policies', insuranceController.createPolicy);
+router.patch('/policies/:id', insuranceController.updatePolicy);
+
+// Workflows
+router.post('/policies/:id/renew', insuranceController.renewPolicy);
+router.post('/policies/:id/lost', insuranceController.markLost);
+router.post('/policies/followup', insuranceController.addInteraction); // Unified follow-up adding
+
+// --- CUSTOMERS (Helper routes for the CRM) ---
+router.get('/customers/search', customerController.searchCustomers);
+router.post('/customers', customerController.createCustomer);
+router.get('/customers/:id', customerController.getCustomerDetails);
+
+// --- INTERACTIONS ---
+router.post('/interactions', insuranceController.addInteraction); // Legacy endpoint, alias
+router.get('/interactions/:customerId', insuranceController.getInteractions);
+
+// --- BULK IMPORT ---
+// Restricted to Admin/Manager only
+router.post('/import', (req, res, next) => {
+    // Only Admin/Manager can import
+    if (['admin', 'manager'].includes(req.user.role)) return next();
+    return res.status(403).json({ message: 'Forbidden' });
+}, insuranceController.importPolicies);
+
+module.exports = router;

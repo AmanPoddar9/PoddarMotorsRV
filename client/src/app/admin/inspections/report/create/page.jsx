@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import ImageUpload from '../../../../components/admin/ImageUpload'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:4000'
-    : 'https://www.poddarmotors.com'
-)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 // Reusable CheckItem Component
 const CheckItem = ({ label, name, value, onChange, required = false }) => {

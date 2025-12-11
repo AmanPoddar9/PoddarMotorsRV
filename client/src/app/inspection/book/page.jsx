@@ -3,15 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (
-  typeof window !== 'undefined' && window.location.hostname === 'localhost' 
-    ? 'http://localhost:4000' 
-    : 'https://www.poddarmotors.com'
-)
-
-/* ... skipping to component ... */
-
-// Code moved inside component
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 export default function BookInspectionPage() {
   const router = useRouter()
@@ -416,13 +408,6 @@ export default function BookInspectionPage() {
                 </div>
 
                 {loadingSlots && <p className="text-gray-300">Loading available slots...</p>}
-
-                {!loadingSlots && formData.appointmentDate && availableSlots.length === 0 && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/50 p-4 rounded-lg text-yellow-200">
-                    <p className="font-semibold">⚠️ No slots available for this date</p>
-                    <p className="text-sm mt-1">Please select a different date for your inspection.</p>
-                  </div>
-                )}
 
                 {availableSlots.length > 0 && (
                   <div>

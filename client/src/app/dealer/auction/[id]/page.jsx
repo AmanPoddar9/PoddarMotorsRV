@@ -4,11 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import io from 'socket.io-client'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || (
-  typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:4000'
-    : 'https://www.poddarmotors.com'
-)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 import ImageGallery from '../../../components/dealer/ImageGallery'
 

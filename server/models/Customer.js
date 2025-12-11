@@ -3,10 +3,25 @@ const bcrypt = require('bcrypt');
 
 const customerSchema = new mongoose.Schema({
   // Identity
+  customId: { type: String, unique: true, index: true, sparse: true }, // e.g., PM-25-00001
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String }, // Made optional for offline customers
   mobile: { type: String, required: true, unique: true, index: true },
-  passwordHash: { type: String, required: true },
+  alternatePhones: [{ type: String, index: true }], // Array for multiple contacts, indexed for search
+  areaCity: { type: String }, // New field
+  passwordHash: { type: String }, // Optional for offline customers
+  
+  // Vehicles (Hub storage for easy access)
+  vehicles: [{
+    regNumber: { type: String, index: true, required: true }, // Indexed for duplicate check
+    chassisNo: { type: String },
+    make: { type: String },
+    model: { type: String },
+    variant: { type: String },
+    fuelType: { type: String },
+    yearOfManufacture: { type: String },
+    registrationDate: { type: Date }
+  }],
   
   // Prime Membership
   primeStatus: {
