@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function AdminDashboard() {
   const [overview, setOverview] = useState(null)
@@ -23,11 +22,11 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       const [overviewRes, funnelRes, dealersRes, revenueRes, activityRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/analytics/overview`),
-        fetch(`${API_BASE_URL}/api/analytics/funnel`),
-        fetch(`${API_BASE_URL}/api/analytics/dealers`),
-        fetch(`${API_BASE_URL}/api/analytics/revenue?days=30`),
-        fetch(`${API_BASE_URL}/api/analytics/activity?limit=10`)
+        fetch(`${API_URL}/api/analytics/overview`),
+        fetch(`${API_URL}/api/analytics/funnel`),
+        fetch(`${API_URL}/api/analytics/dealers`),
+        fetch(`${API_URL}/api/analytics/revenue?days=30`),
+        fetch(`${API_URL}/api/analytics/activity?limit=10`)
       ])
 
       const [overviewData, funnelData, dealersData, revenueData, activityData] = await Promise.all([

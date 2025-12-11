@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { IoMdSend, IoMdClose, IoMdChatbubbles } from 'react-icons/io'
 import { FaRobot } from 'react-icons/fa'
 import axios from 'axios'
+import API_URL from '../config/api'
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,7 +39,7 @@ const ChatBot = () => {
       // Send last 10 messages to maintain context without overloading
       const contextMessages = [...messages, userMessage].slice(-10)
       
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/chat`, {
+      const response = await axios.post(`${API_URL}/api/chat`, {
         messages: contextMessages
       })
 

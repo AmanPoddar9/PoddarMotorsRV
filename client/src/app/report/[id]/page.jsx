@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import InspectionReportView from '../../components/InspectionReportView'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function PublicReportPage({ params }) {
   const { id } = params
@@ -14,7 +13,7 @@ export default function PublicReportPage({ params }) {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/inspections/reports/public/${id}`)
+        const res = await fetch(`${API_URL}/api/inspections/reports/public/${id}`)
         if (!res.ok) throw new Error('Report not found')
         const data = await res.json()
         setReport(data)

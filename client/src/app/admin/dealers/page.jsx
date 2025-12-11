@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 export default function AdminDealersPage() {
   const [dealers, setDealers] = useState([])
@@ -15,7 +14,7 @@ export default function AdminDealersPage() {
 
   const fetchDealers = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/dealers`, {
+      const res = await fetch(`${API_URL}/api/dealers`, {
         credentials: 'include'
       })
       if (res.ok) {
@@ -31,7 +30,7 @@ export default function AdminDealersPage() {
 
   const updateStatus = async (dealerId, status) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/dealers/${dealerId}/status`, {
+      const res = await fetch(`${API_URL}/api/dealers/${dealerId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

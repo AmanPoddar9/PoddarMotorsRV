@@ -3,8 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+import API_URL from '../../config/api'
 
 function ConfirmationContent() {
   const searchParams = useSearchParams()
@@ -20,7 +19,7 @@ function ConfirmationContent() {
 
   const fetchBooking = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inspections/bookings/${bookingRef}`)
+      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingRef}`)
       const data = await res.json()
       setBooking(data)
     } catch (error) {
