@@ -21,6 +21,7 @@ router.patch('/policies/:id', insuranceController.updatePolicy);
 // Workflows
 router.post('/policies/:id/renew', insuranceController.renewPolicy);
 router.post('/policies/:id/lost', insuranceController.markLost);
+router.post('/policies/:id/action', insuranceController.logWorkflowAction); // New Workflow Action
 router.post('/policies/followup', insuranceController.addInteraction); // Unified follow-up adding
 
 // --- CUSTOMERS (Helper routes for the CRM) ---

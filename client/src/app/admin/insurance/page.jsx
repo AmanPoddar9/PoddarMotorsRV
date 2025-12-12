@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import DashboardStats from '../../components/admin/insurance/DashboardStats'
 import PolicyList from '../../components/admin/insurance/PolicyList'
 import AddPolicyModal from '../../components/admin/insurance/AddPolicyModal'
+import AgentDashboard from '../../components/admin/insurance/AgentDashboard'
 import ImportModal from '../../components/admin/insurance/ImportModal'
 import { FaPlus, FaSearch, FaFileImport } from 'react-icons/fa'
 
@@ -71,10 +72,20 @@ export default function InsurancePage() {
           >
             All Policies
           </button>
+          <button 
+            onClick={() => setActiveTab('workflow')}
+            className={`pb-3 px-2 font-medium transition ${activeTab === 'workflow' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-white'}`}
+          >
+            Agent Workflow
+          </button>
         </div>
 
         {activeTab === 'dashboard' && (
           <PolicyList key="list" />
+        )}
+        
+        {activeTab === 'workflow' && (
+          <AgentDashboard key="workflow" />
         )}
       </div>
 

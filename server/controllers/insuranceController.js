@@ -56,7 +56,8 @@ exports.getPolicies = async (req, res) => {
     const { 
       page = 1, 
       limit = 20, 
-      filter = 'all', // 'today', 'week', 'month', 'expired', 'renewed'
+      filter = 'all', 
+      bucket, // New param: 'upcoming_month', '15_days', '7_days', 'overdue'
       search,
     } = req.query;
 
@@ -64,7 +65,41 @@ exports.getPolicies = async (req, res) => {
     const today = new Date();
     today.setHours(0,0,0,0);
 
-    // Filters
+    // --- BUCKET LOGIC (Priority Timeline) ---
+    if (bucket) {
+        query.renewalStatus = { $in: ['Pending', 'InProgress', 'NotInterested'] }; // Exclude Renewed/Lost? Or keep NotInterested? 
+        // Logic: We want to work on Pending stuff.
+        
+        if (bucket === 'upcoming_month') {
+            // Policies expiring next month (e.g. if Dec, then Jan 1 - Jan 31)
+            // Or roughly 30 days out? User said "1 month prior".
+            // Let's do: Start of Next Month to End of Next Month? 
+            // Or simply: Expiry > Today + 25 days?
+            // "If Jan expiry, start Dec end". So Next Month logic is best.
+            const currentMonth = today.getMonth();
+            const nextMonthStart = new Date(today.getFullYear(), currentMonth + 1, 1);
+            const nextMonthEnd = new Date(today.getFullYear(), currentMonth + 2, 0);
+            query.policyEndDate = { $gte: nextMonthStart, $lte: nextMonthEnd };
+        
+        } else if (bucket === '15_days') {
+            // Expiring in 8 to 20 days? 
+            const start = new Date(today); start.setDate(start.getDate() + 8);
+            const end = new Date(today); end.setDate(end.getDate() + 21);
+            query.policyEndDate = { $gte: start, $lte: end };
+            
+        } else if (bucket === '7_days') {
+            // Expiring in 0 to 7 days
+            const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
+            query.policyEndDate = { $gte: today, $lte: nextWeek };
+            
+        } else if (bucket === 'overdue') {
+            // Expired in last 30 days
+            const lastMonth = new Date(today); lastMonth.setDate(lastMonth.getDate() - 30);
+            query.policyEndDate = { $lt: today, $gte: lastMonth };
+        }
+    }
+
+    // Existing Filters (Backward Compat)
     if (filter === 'today') {
         const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
         query.renewalStatus = { $in: ['Pending', 'InProgress'] };
@@ -73,33 +108,18 @@ exports.getPolicies = async (req, res) => {
         const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
         query.renewalStatus = { $in: ['Pending', 'InProgress'] };
         query.policyEndDate = { $gte: today, $lt: nextWeek };
-    } else if (filter === 'month') {
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
-        query.policyEndDate = { $gte: startOfMonth, $lte: endOfMonth };
     } else if (filter === 'expired') {
         query.renewalStatus = { $in: ['Pending', 'InProgress'] };
         query.policyEndDate = { $lt: today };
     } else if (filter === 'renewed') {
         query.renewalStatus = 'Renewed';
     } else if (filter === 'my_followups') {
-        // Policies assigned to me with follow-up <= today
         if (req.user) query.assignedAgent = req.user._id;
         query.nextFollowUpDate = { $lte: today, $ne: null };
         query.renewalStatus = { $in: ['Pending', 'InProgress'] };
-    } else if (filter === 'assigned_to_me') {
-        if (req.user) query.assignedAgent = req.user._id;
     }
 
-    // Role-based restriction (Agents see only theirs unless searching)
-    // If Admin/Manager, no extra restriction. If Agent, enforce.
-    if (req.user && req.user.role === 'insurance_agent' && !search) {
-       query.assignedAgent = req.user._id;
-    }
-
-    // Search (Complex: Needs to join Customer?)
-    // For performance, if search is provided, we first find matching customers
+    // Search Logic
     if (search) {
         const regex = new RegExp(search, 'i');
         const customers = await Customer.find({
@@ -107,21 +127,29 @@ exports.getPolicies = async (req, res) => {
         }).select('_id');
         
         const customerIds = customers.map(c => c._id);
-        
-        // Clear conflicting filters if searching global
         delete query.assignedAgent; 
-
-        query.$or = [
-            { customer: { $in: customerIds } },
-            { policyNumber: regex },
-            { 'vehicle.regNumber': regex }
-        ];
+        
+        if (Object.keys(query).length > 0) {
+             query.$and = [
+                 { $or: [
+                     { customer: { $in: customerIds } },
+                     { policyNumber: regex },
+                     { 'vehicle.regNumber': regex }
+                 ]}
+             ];
+        } else {
+             query.$or = [
+                 { customer: { $in: customerIds } },
+                 { policyNumber: regex },
+                 { 'vehicle.regNumber': regex }
+             ];
+        }
     }
 
     const policies = await InsurancePolicy.find(query)
       .populate('customer', 'name mobile customId vehicles')
       .populate('assignedAgent', 'name')
-      .sort({ policyEndDate: 1 }) // Expiring soonest first
+      .sort({ policyEndDate: 1 }) 
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -516,5 +544,67 @@ exports.importPolicies = async (req, res) => {
     } catch (error) {
         console.error('Import error:', error);
         res.status(500).json({ message: 'Server error during import' });
+    }
+    }
+
+// --- WORKFLOW ACTIONS ---
+exports.logWorkflowAction = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { actionType, outcome, remark, nextFollowUp } = req.body;
+        
+        const policy = await InsurancePolicy.findById(id);
+        if (!policy) return res.status(404).json({ message: 'Policy not found' });
+
+        // 1. Determine New Stage based on Outcome
+        let newStage = policy.renewalStage;
+        let newStatus = policy.renewalStatus;
+        
+        if (outcome.includes('Quote Sent')) {
+            newStage = 'QuoteSent';
+            newStatus = 'InProgress';
+        } else if (outcome.includes('Connected')) {
+            newStage = 'Contacted';
+            newStatus = 'InProgress';
+        } else if (outcome.includes('Not Interested')) {
+            newStatus = 'NotInterested'; // Or Lost?
+        } else if (outcome.includes('Wrong Number')) {
+            // maybe flag customer?
+        }
+
+        // 2. Update Policy
+        policy.lastInteractionDate = new Date();
+        policy.lastRemark = remark;
+        if (nextFollowUp) policy.nextFollowUpDate = nextFollowUp;
+        if (newStage) policy.renewalStage = newStage;
+        if (newStatus) policy.renewalStatus = newStatus;
+        
+        // Add to nextActions history if needed, or just clear pending
+        // For now, simple update
+        await policy.save();
+
+        // 3. Log Interaction
+        // We need customer ID. Policy has it.
+        const Interaction = require('../models/Interaction'); // Ensure import
+        const interaction = new Interaction({
+            customer: policy.customer,
+            policy: policy._id,
+            type: 'insurance_followup',
+            agentName: (req.user && req.user.name) || 'Lead Agent', // Fallback as JWT might not have name
+            agentId: req.user ? req.user.id : null, // req.user.id from JWT payload
+            data: {
+                remark: `${actionType.toUpperCase()}: ${remark}`,
+                outcome,
+                nextFollowUpDate: nextFollowUp,
+                statusAfter: newStatus
+            }
+        });
+        await interaction.save();
+
+        res.json({ message: 'Action logged', policy });
+
+    } catch (error) {
+        console.error('Log Action Error:', error);
+        res.status(500).json({ message: 'Error logging action' });
     }
 };

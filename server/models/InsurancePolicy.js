@@ -49,6 +49,14 @@ const insurancePolicySchema = new mongoose.Schema({
     default: 'Pending',
     index: true
   },
+  
+  // NEW: Granular Sales Stage
+  renewalStage: {
+      type: String, // 'New', 'Contacted', 'QuoteSent', 'Negotiation', 'Closed'
+      default: 'New',
+      index: true
+  },
+  
   renewalDate: { type: Date }, // When it was renewed
   insurerAfterRenewal: { type: String },
   addonsAfterRenewal: [{ type: String }],
@@ -57,7 +65,15 @@ const insurancePolicySchema = new mongoose.Schema({
   
   // Follow-up (Denormalized)
   nextFollowUpDate: { type: Date, index: true }, // For "My Follow-ups" view
+  lastInteractionDate: { type: Date }, // When was the last call/msg?
   lastRemark: { type: String },
+  
+  // System Automation
+  nextActions: [{
+      type: { type: String }, // 'Call', 'WhatsApp'
+      dueDate: { type: Date },
+      status: { type: String, default: 'Pending' } // Pending, Done
+  }],
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
