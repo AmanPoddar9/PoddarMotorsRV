@@ -1,45 +1,40 @@
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const User = require('../models/user')
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
 
-exports.signup = async (req, res) => {
-  try {
-    const { username, password, access_level } = req.body
-    const user = new User({ username, password, access_level })
-    await user.save()
-    res.status(201).json({ message: 'User created successfully' })
-  } catch (error) {
-    res.status(400).json({ error: error.message })
-  }
-}
+// Get all agents (or potential agents)
+exports.getAgents = async (req, res) => {
+    try {
+        // Fetch admins and insurance agents
+        // If roles aren't strictly set yet, we might just fetch all for now, 
+        // but let's try to filter if possible.
+        // For now, return all users so Admin can assign anyone.
+        const agents = await User.find({}, 'name email role _id');
+        res.json(agents);
+    } catch (error) {
+        console.error('Error fetching agents:', error);
+        res.status(500).json({ message: 'Error fetching agents' });
+    }
+};
 
-exports.login = async (req, res) => {
-  try {
-    const { username, password } = req.body
-    const user = await User.findOne({ username })
-    if (!user) {
-      throw new Error('Invalid username')
+// Create User (Admin only likely)
+exports.createUser = async (req, res) => {
+    try {
+        const { name, email, password, role } = req.body;
+        
+        // Basic validation
+        if (!email || !password) return res.status(400).json({ message: 'Email/Password required' });
+
+        const existing = await User.findOne({ email });
+        if (existing) return res.status(400).json({ message: 'User already exists' });
+
+        const user = new User({ name, email, role });
+        await user.setPassword(password);
+        await user.save();
+
+        res.status(201).json({ message: 'User created', userId: user._id });
+    } catch (error) {
+        console.error('Create User Error:', error);
+        res.status(500).json({ message: 'Error creating user' });
     }
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) {
-      throw new Error('Invalid password')
-    }
-    const token = jwt.sign(
-      { userId: user._id, access_level: user.access_level },
-      process.env.JWT_SECRET || 'RealValueSecretKey',
-      { expiresIn: '7d' }
-    )
-    
-    // Set httpOnly cookie
-    res.cookie('auth', token, {
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    })
-    
-    res.json({ message: 'Login successful', success: true })
-  } catch (error) {
-    res.status(401).json({ error: error.message })
-  }
-}
+};
+

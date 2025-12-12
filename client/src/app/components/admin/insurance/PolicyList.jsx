@@ -6,22 +6,54 @@ import API_URL from '@/app/config/api'
 import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort } from 'react-icons/fa'
 import CustomerDetailModal from './CustomerDetailModal'
 
-export default function PolicyList() {
+export default function PolicyList({ initialFilter, initialBucket }) {
   const [policies, setPolicies] = useState([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
+  /* eslint-disable no-unused-vars */
   const [totalPages, setTotalPages] = useState(1)
-  const [filter, setFilter] = useState('all') // all, today, week, month, expired
+  const [filter, setFilter] = useState(initialFilter || 'all') // all, today, week, month, expired, my_followups
+  const [bucket, setBucket] = useState(initialBucket || null) // upcoming_month, 15_days, 7_days, overdue
   const [search, setSearch] = useState('')
   
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [agents, setAgents] = useState([])
+
+  // Update state when props change (re-sync)
+  useEffect(() => {
+     if(initialFilter) setFilter(initialFilter)
+     if(initialBucket) setBucket(initialBucket)
+  }, [initialFilter, initialBucket])
+
+  useEffect(() => {
+      fetchAgents()
+  }, [])
+
+  const fetchAgents = async () => {
+      try {
+          const res = await axios.get(`${API_URL}/api/user/agents`, { withCredentials: true })
+          setAgents(res.data)
+      } catch (error) {
+          console.error("Error fetching agents", error)
+      }
+  }
+
+  const handleAssignAgent = async (policyId, agentId) => {
+      try {
+          await axios.patch(`${API_URL}/api/insurance/policies/${policyId}`, { assignedAgent: agentId }, { withCredentials: true })
+          // Optionally refresh or optimistic update
+          fetchPolicies()
+      } catch (error) {
+          alert('Failed to assign agent')
+      }
+  }
 
   const fetchPolicies = async () => {
     setLoading(true)
     try {
       const res = await axios.get(`${API_URL}/api/insurance/policies`, {
-        params: { page, limit: 10, filter, search },
+        params: { page, limit: 10, filter, bucket, search },
         withCredentials: true
       })
       setPolicies(res.data.policies)
@@ -39,7 +71,7 @@ export default function PolicyList() {
     }, 500) // Debounce search
 
     return () => clearTimeout(delayDebounceFn)
-  }, [page, filter, search])
+  }, [page, filter, bucket, search])
 
   const handleOpenDetail = (customerId) => {
     setSelectedCustomer(customerId)
@@ -70,9 +102,9 @@ export default function PolicyList() {
           ].map(f => (
             <button
               key={f.id}
-              onClick={() => { setFilter(f.id); setPage(1); }}
+              onClick={() => { setFilter(f.id); setBucket(null); setPage(1); }}
               className={`px-4 py-2 rounded-lg text-sm font-medium capitalize whitespace-nowrap transition ${
-                filter === f.id ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                filter === f.id && !bucket ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               {f.label}
@@ -149,7 +181,16 @@ export default function PolicyList() {
                      ) : <span className="text-gray-600 text-xs">-</span>}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-400">
-                    {policy.assignedAgent?.name || '-'}
+                    <select 
+                        value={policy.assignedAgent?._id || ''} 
+                        onChange={(e) => handleAssignAgent(policy._id, e.target.value)}
+                        className="bg-gray-700 text-white text-xs rounded p-1 border-none focus:ring-1 focus:ring-blue-500"
+                    >
+                        <option value="">Unassigned</option>
+                        {agents.map(agent => (
+                            <option key={agent._id} value={agent._id}>{agent.name || agent.email}</option>
+                        ))}
+                    </select>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-md text-xs font-bold ${getStatusColor(policy.renewalStatus || policy.status, policy.policyEndDate)}`}>

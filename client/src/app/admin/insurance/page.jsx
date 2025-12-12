@@ -18,6 +18,7 @@ export default function InsurancePage() {
     expired: 0
   })
   const [activeTab, setActiveTab] = useState('dashboard') 
+  const [viewState, setViewState] = useState({ filter: 'all', bucket: null })
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -81,11 +82,14 @@ export default function InsurancePage() {
         </div>
 
         {activeTab === 'dashboard' && (
-          <PolicyList key="list" />
+          <PolicyList key="list" initialFilter={viewState.filter} initialBucket={viewState.bucket} />
         )}
         
         {activeTab === 'workflow' && (
-          <AgentDashboard key="workflow" />
+          <AgentDashboard key="workflow" onViewBucket={(bucketName) => {
+              setViewState({ filter: 'all', bucket: bucketName })
+              setActiveTab('dashboard')
+          }} />
         )}
       </div>
 

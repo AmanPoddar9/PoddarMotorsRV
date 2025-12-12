@@ -6,7 +6,7 @@ import API_URL from '@/app/config/api'
 import ActionModal from './ActionModal'
 import { FaWhatsapp, FaPhone, FaCalendarAlt, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
-export default function AgentDashboard() {
+export default function AgentDashboard({ onViewBucket }) {
   // Buckets
   const [buckets, setBuckets] = useState({
     upcoming: { title: 'Focus: Next Month', count: 0, items: [] },
@@ -89,9 +89,23 @@ export default function AgentDashboard() {
                 ))
             )}
         </div>
-        <button className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white border-t border-gray-700">View All</button>
+        <button 
+            onClick={() => onViewBucket && onViewBucket(getActionBucketKey(title))}
+            className="w-full mt-4 py-2 text-xs text-gray-400 hover:text-white border-t border-gray-700"
+        >
+            View All
+        </button>
     </div>
   )
+
+  // Helper to map display title to API bucket key
+  const getActionBucketKey = (title) => {
+      if (title.includes('Next Month')) return 'upcoming_month';
+      if (title.includes('15 Days')) return '15_days';
+      if (title.includes('7 Days')) return '7_days';
+      if (title.includes('Lapse')) return 'overdue';
+      return null;
+  }
  
   if (loading) return <div className="p-8 text-center text-gray-400">Loading your workflow...</div>
 

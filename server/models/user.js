@@ -3,8 +3,9 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
+  name: { type: String }, // Added for agent identification
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ['admin', 'blogEditor', 'bookingManager'], default: 'admin' },
+  role: { type: String, enum: ['admin', 'blogEditor', 'bookingManager', 'insurance_agent'], default: 'admin' },
 });
 
 // Set password (hash)
