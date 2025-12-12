@@ -5,6 +5,8 @@ const { generateCustomId } = require('../utils/idGenerator');
 
 // --- DASHBOARD ---
 
+// --- DASHBOARD & ANALYTICS ---
+
 exports.getDashboardStats = async (req, res) => {
   try {
     const today = new Date();
@@ -48,6 +50,75 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Error fetching stats' });
   }
 };
+
+exports.getAnalytics = async (req, res) => {
+    try {
+        const today = new Date();
+        const startOfYear = new Date(today.getFullYear(), 0, 1);
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // 1. Overall Stats
+        const totalRevenueResult = await InsurancePolicy.aggregate([
+            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfYear } } },
+            { $group: { _id: null, total: { $sum: "$totalPremiumPaid" }, count: { $sum: 1 } } }
+        ]);
+        
+        const monthlyRevenueResult = await InsurancePolicy.aggregate([
+             { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfMonth } } },
+             { $group: { _id: null, total: { $sum: "$totalPremiumPaid" } } }
+        ]);
+
+        // 2. Revenue Trend (Last 6 Months)
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        const revenueTrend = await InsurancePolicy.aggregate([
+            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: sixMonthsAgo } } },
+            { $group: { 
+                _id: { $month: "$policyStartDate" }, 
+                revenue: { $sum: "$totalPremiumPaid" },
+                count: { $sum: 1 }
+            }},
+            { $sort: { "_id": 1 } }
+        ]);
+
+        // 3. Conversion Rate (Based on Expiry Date in current month)
+        // Expired in current month vs Renewed in current month (Approximation)
+        // Better: Policies Expiring this month -> Status check
+        const conversionStats = await InsurancePolicy.aggregate([
+            { $match: { policyEndDate: { $gte: startOfMonth } } },
+            { $group: { 
+                _id: "$renewalStatus", 
+                count: { $sum: 1 } 
+            }}
+        ]);
+
+        // 4. Agent Performance (From Interactions or Assignment?)
+        // Let's use Assigned Agent on Closed Policies
+        const agentPerformance = await InsurancePolicy.aggregate([
+            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfYear } } },
+            { $group: {
+                _id: "$assignedAgent",
+                revenue: { $sum: "$totalPremiumPaid" },
+                policiesSold: { $sum: 1 }
+            }},
+            { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'agent' } },
+            { $unwind: { path: "$agent", preserveNullAndEmptyArrays: true } },
+            { $project: { name: "$agent.name", revenue: 1, policiesSold: 1 } }
+        ]);
+
+        res.json({
+            totalRevenue: totalRevenueResult[0]?.total || 0,
+            monthlyRevenue: monthlyRevenueResult[0]?.total || 0,
+            revenueTrend,
+            conversionStats,
+            agentPerformance
+        });
+
+    } catch (error) {
+        console.error("Analytics Error", error);
+        res.status(500).json({ message: 'Error loading analytics' });
+    }
+}
 
 // --- POLICIES ---
 
