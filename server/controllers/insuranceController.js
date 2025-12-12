@@ -21,6 +21,11 @@ exports.getDashboardStats = async (req, res) => {
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
+    // DEBUG LOGS
+    console.log('--- DASHBOARD STATS DEBUG ---');
+    console.log('Today:', today);
+    console.log('StartMonth:', startOfMonth, 'EndMonth:', endOfMonth);
+
     const [expiringToday, expiringWeek, expiringMonth, expired] = await Promise.all([
       // Today (Based on policyEndDate)
       InsurancePolicy.countDocuments({ 
@@ -43,6 +48,14 @@ exports.getDashboardStats = async (req, res) => {
         policyEndDate: { $lt: today } 
       })
     ]);
+
+    console.log('Stats Found:', { expiringToday, expiringWeek, expiringMonth, expired });
+    
+    // Check strict match for debugging if counts are 0
+    if (expired === 0) {
+         const quickCheck = await InsurancePolicy.find({ policyEndDate: { $lt: today } }).limit(2).select('policyEndDate renewalStatus');
+         console.log('Sample Expired policies (ignoring status?):', quickCheck);
+    }
 
     res.json({ expiringToday, expiringWeek, expiringMonth, expired });
   } catch (error) {
@@ -561,9 +574,26 @@ exports.importPolicies = async (req, res) => {
                 }
 
                 // 3. Create Policy
-                // Parse Dates safely
-                const pEndDate = row.expiryDate ? new Date(row.expiryDate) : null;
-                const pStartDate = row.policyStartDate ? new Date(row.policyStartDate) : null;
+                // Helper to parse dates (DD-MM-YYYY or ISO)
+                const parseDate = (dateStr) => {
+                    if (!dateStr) return null;
+                    // Try DD-MM-YYYY format first (common in CSVs)
+                    if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                        const [day, month, year] = dateStr.split('-');
+                        return new Date(`${year}-${month}-${day}`);
+                    }
+                    // Try DD/MM/YYYY
+                    if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                        const [day, month, year] = dateStr.split('/');
+                        return new Date(`${year}-${month}-${day}`);
+                    }
+                    // Fallback to standard parser
+                    const d = new Date(dateStr);
+                    return isNaN(d.getTime()) ? null : d;
+                };
+
+                const pEndDate = parseDate(row.expiryDate);
+                const pStartDate = parseDate(row.policyStartDate);
                 
                 // Determine status based on end date
                 const isExpired = pEndDate && pEndDate < new Date();
