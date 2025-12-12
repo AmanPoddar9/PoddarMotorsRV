@@ -136,8 +136,12 @@ exports.getPolicies = async (req, res) => {
     const today = new Date();
     today.setHours(0,0,0,0);
 
+    // --- DEBUG ---
+    console.log('GET /policies Params:', { page, limit, filter, bucket, search });
+
     // --- BUCKET LOGIC (Priority Timeline) ---
-    if (bucket) {
+    // Ensure bucket is a valid string and not 'null' or 'undefined'
+    if (bucket && bucket !== 'null' && bucket !== 'undefined' && bucket !== '') {
         query.renewalStatus = { $in: ['Pending', 'InProgress', 'NotInterested'] }; // Exclude Renewed/Lost? Or keep NotInterested? 
         // Logic: We want to work on Pending stuff.
         

@@ -52,8 +52,11 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const fetchPolicies = async () => {
     setLoading(true)
     try {
+      const params = { page, limit: 10, filter, search };
+      if (bucket) params.bucket = bucket;
+
       const res = await axios.get(`${API_URL}/api/insurance/policies`, {
-        params: { page, limit: 10, filter, bucket, search },
+        params,
         withCredentials: true
       })
       setPolicies(res.data.policies)
