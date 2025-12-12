@@ -75,6 +75,9 @@ export default function InsurancePage() {
             All Policies
           </button>
           <button 
+            onClick={() => setActiveTab('workflow')}
+            className={`pb-3 px-2 font-medium transition ${activeTab === 'workflow' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-white'}`}
+          >
             Agent Workflow
           </button>
           <button 
