@@ -343,10 +343,17 @@ exports.updatePolicy = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
+        
+        // Sanitize Dates: Mongoose errors on "" for Date fields
+        if (updates.policyEndDate === '') updates.policyEndDate = null;
+        if (updates.nextFollowUpDate === '') updates.nextFollowUpDate = null;
+        if (updates.policyStartDate === '') updates.policyStartDate = null;
+
         const policy = await InsurancePolicy.findByIdAndUpdate(id, updates, { new: true });
         res.json(policy);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating policy' });
+        console.error('Update Policy Error:', error);
+        res.status(500).json({ message: 'Error updating policy', error: error.message });
     }
 };
 
@@ -428,41 +435,114 @@ exports.markLost = async (req, res) => {
 
 exports.addInteraction = async (req, res) => {
     try {
-        const { customerId, remark, nextFollowUp, agentName } = req.body;
-        
-        const interaction = new Interaction({
-            customer: customerId,
-            type: 'insurance_followup',
-            agentName: agentName || 'Admin', // Should come from req.user
-            data: {
-                remark,
-                nextFollowUp
-            }
+        const { id } = req.params;
+        const { type, outcome, remark, nextFollowUpDate, lostReason } = req.body;
+        const userId = req.user ? req.user._id : null;
+
+        const policy = await InsurancePolicy.findById(id);
+        if (!policy) return res.status(404).json({ message: 'Policy not found' });
+
+        // Push Interaction
+        policy.interactions.push({
+            type: type || 'Other',
+            outcome,
+            remark,
+            nextFollowUpDate,
+            createdBy: userId
         });
 
-        await interaction.save();
-        res.status(201).json(interaction);
+        // Update Top-level fields
+        policy.lastInteractionDate = new Date();
+        policy.lastRemark = remark;
+        if (nextFollowUpDate) {
+            policy.nextFollowUpDate = nextFollowUpDate;
+        }
+
+        // Auto-Mapping Logic
+        // 1. Stage Mapping
+        const outcomeToStage = {
+            'Contacted': 'Contacted',
+            'QuoteSent': 'QuoteSent',
+            'Negotiation': 'Negotiation',
+            'Accepted': 'Accepted',
+            'PaymentLinkSent': 'PaymentPending',
+            'PaymentReceived': 'PaymentReceived'
+        };
+        if (outcomeToStage[outcome]) {
+            policy.renewalStage = outcomeToStage[outcome];
+        } else if (outcome === 'CallbackLater') {
+            policy.renewalStage = 'FollowUp';
+        }
+
+        // 2. Status Mapping
+        if (['Contacted', 'QuoteSent', 'Negotiation', 'Accepted', 'CallbackLater', 'PaymentLinkSent'].includes(outcome)) {
+            if (policy.renewalStatus === 'Pending') policy.renewalStatus = 'InProgress';
+        } else if (outcome === 'NotInterested') {
+            policy.renewalStatus = 'NotInterested';
+            if (lostReason) policy.lostReason = lostReason;
+        } else if (outcome === 'RenewedElsewhere') {
+            policy.renewalStatus = 'Lost';
+            policy.lostReason = 'RenewedElsewhere';
+        }
+
+        await policy.save();
+        res.json(policy);
 
     } catch (error) {
-        res.status(500).json({ message: 'Error adding interaction' });
+        console.error('Log Action Error:', error);
+        res.status(500).json({ message: 'Error logging action', error: error.message });
     }
 };
 
 exports.getInteractions = async (req, res) => {
     try {
         const { customerId } = req.params;
-        const interactions = await Interaction.find({ customer: customerId })
+        // Fetch interactions from Interactions collection (legacy)
+        const legacy = await Interaction.find({ customer: customerId })
             .sort({ date: -1 });
-        res.json(interactions);
+        
+        // Also fetch from Policy embedded (future proofing) if we can match customer
+        // But for now, let's keep it simple. If we move fully to embedded, we should fetch from Policy.
+        // Actually, the frontend CustomerDetailModal fetches from /api/insurance/interactions/:customerId
+        // The new addInteraction writes to Policy.interactions. 
+        // WE HAVE A DISCONNECT.
+        
+        // FIX: Verify if we should search Policies for this customer and aggregate interactions?
+        // Or keep dual write? 
+        // The addInteraction above writes to Policy. 
+        // This getInteractions reads from Interaction model.
+        // THEY ARE DISCONNECTED.
+        
+        // IMMEDIATE FIX: Write to BOTH or read from BOTH.
+        // Since we refactored to Policy-centric, we should read from Policy as well.
+        
+        const policies = await InsurancePolicy.find({ customer: customerId }).select('interactions');
+        let policyInteractions = [];
+        policies.forEach(p => {
+             if (p.interactions) {
+                 policyInteractions = [...policyInteractions, ...p.interactions.map(i => ({
+                     ...i.toObject(),
+                     date: i.createdAt,
+                     data: { remark: i.remark, outcome: i.outcome, nextFollowUp: i.nextFollowUpDate },
+                     agentName: 'Agent' // Populate if needed
+                 }))];
+             }
+        });
+
+        // Merge and Sort
+        const allInteractions = [...legacy, ...policyInteractions].sort((a,b) => new Date(b.date) - new Date(a.date));
+        
+        res.json(allInteractions);
+
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error fetching interactions' });
     }
 };
 
-// --- BULK IMPORT ---
-
-const { findPotentialMatches } = require('../utils/customerMatcher');
-
+exports.logWorkflowAction = async (req, res) => {
+    res.status(410).json({ message: 'Use /policies/:id/interaction endpoint' });
+};
 exports.importPolicies = async (req, res) => {
     try {
         const { policies, preview = false } = req.body; // Expects array directly now, or { policies, preview }
