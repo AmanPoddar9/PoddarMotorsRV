@@ -97,13 +97,10 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {[
             { id: 'all', label: 'All Policies' },
-            { id: 'my_followups', label: 'My Follow-ups' },
-            { id: 'needs_fix', label: 'Needs Fix', isBucket: true }, // New Bucket
-            { id: 'today', label: 'Expiring Today' },
-            { id: 'week', label: 'Expiring Week' },
-            { id: 'expired', label: 'Overdue / Expired' },
-            { id: 'renewed', label: 'Renewed' },
-            { id: 'lost', label: 'Lost' }
+            { id: 'followups_done_today', label: 'Follow-ups Done Today' },
+            { id: 'needs_fix', label: 'Needs Fix' },
+            { id: 'renewed_month', label: 'Renewed This Month' },
+            { id: 'lost_month', label: 'Lost This Month' }
           ].map(f => (
             <button
               key={f.id}

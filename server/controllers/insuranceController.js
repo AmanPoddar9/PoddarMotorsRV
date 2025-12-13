@@ -207,18 +207,37 @@ exports.getPolicies = async (req, res) => {
         }
     }
 
-    // Existing Filters
-    if (filter === 'my_followups') {
+    // Existing Filters & New Requests
+    if (filter === 'followups_done_today') {
+        // "Track what agent has done today"
+        // Based on lastInteractionDate being >= today start
         if (req.user) query.assignedAgent = req.user._id;
-        query.nextFollowUpDate = { $lte: today, $ne: null }; // Due today or earlier
-        // Only active tasks
-        query.renewalStatus = { $nin: ['Renewed', 'Lost'] };
-    } else if (filter === 'renewed') {
+        query.lastInteractionDate = { $gte: today };
+    } else if (filter === 'renewed_month') {
+        // Renewed in current month
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
         query.renewalStatus = 'Renewed';
-    } else if (filter === 'lost') {
-        query.renewalStatus = 'Lost';
+        // We can use renewalDate if it exists, else updatedAt or policyStartDate
+        query.$or = [
+            { renewalDate: { $gte: startOfMonth, $lte: endOfMonth } },
+            { updatedAt: { $gte: startOfMonth, $lte: endOfMonth } } // Fallback
+        ];
+    } else if (filter === 'lost_month') {
+        // Lost in current month
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        query.renewalStatus = { $in: ['Lost', 'NotInterested'] };
+        query.updatedAt = { $gte: startOfMonth, $lte: endOfMonth };
     } else if (filter === 'my_policies') {
         if (req.user) query.assignedAgent = req.user._id;
+    } else if (filter === 'needs_fix') {
+         query.$or = [
+                { policyEndDate: null }, 
+                { dataQuality: { $in: ['InvalidEndDate', 'MissingEndDate'] } }
+         ];
     }
 
     // Search Logic (Preserve existing regex logic)
