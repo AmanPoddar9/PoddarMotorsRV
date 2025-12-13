@@ -62,8 +62,8 @@ export default function InsurancePage() {
         </div>
       </div>
 
-      {/* Stats Widgets */}
-      <DashboardStats stats={stats} loading={loading} />
+      {/* Stats Widgets Removed per user request */}
+      {/* <DashboardStats stats={stats} loading={loading} /> */}
 
       {/* Main Content Area */}
       <div className="mt-8">
