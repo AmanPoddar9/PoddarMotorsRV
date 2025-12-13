@@ -48,25 +48,13 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
 
     setLoading(true)
     try {
-        await axios.post(`${API_URL}/api/insurance/policies/followup`, {
-            id: policyId, // Backend uses param :id usually, but let's check backend route.
-            // Route is /policies/followup. It expects { id } in body or param?
-            // Actually router.post('/policies/followup', addInteraction) expects id in req.params based on "const { id } = req.params"
-            // Wait, previous file view showed "router.post('/policies/followup', insuranceController.addInteraction)"
-            // BUT "addInteraction" does "const { id } = req.params". This is a mismatch.
-            // I should have used /policies/:id/interaction. Let's fix this now by using the correct route from my update.
+        await axios.post(`${API_URL}/api/insurance/policies/${policyId}/interaction`, {
+            type: actionType === 'call' ? 'Call' : 'WhatsApp',
+            outcome,
+            remark,
+            nextFollowUpDate: nextFollowUp || null,
+            lostReason: isLost ? lostReason : null
         }, { 
-            // Correct call:
-            baseURL: API_URL,
-            url: `/api/insurance/policies/${policyId}/interaction`,
-            method: 'POST',
-            data: {
-                type: actionType === 'call' ? 'Call' : 'WhatsApp',
-                outcome,
-                remark,
-                nextFollowUpDate: nextFollowUp || null,
-                lostReason: isLost ? lostReason : null
-            },
             withCredentials: true 
         })
         
