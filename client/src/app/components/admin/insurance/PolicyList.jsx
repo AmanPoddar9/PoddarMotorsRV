@@ -1,10 +1,9 @@
-'use client'
-
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '@/app/config/api'
-import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort } from 'react-icons/fa'
+import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort, FaEdit } from 'react-icons/fa'
 import CustomerDetailModal from './CustomerDetailModal'
+import EditPolicyModal from './EditPolicyModal'
 
 export default function PolicyList({ initialFilter, initialBucket }) {
   const [policies, setPolicies] = useState([])
@@ -18,8 +17,10 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [editingPolicy, setEditingPolicy] = useState(null) // New Selection
   const [agents, setAgents] = useState([])
 
+  // ... (Keep existing effects)
   // Update state when props change (re-sync)
   useEffect(() => {
      if(initialFilter) setFilter(initialFilter)
@@ -92,22 +93,34 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   return (
     <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
       {/* Filters & Search */}
-      {/* Filters & Search */}
       <div className="flex flex-col md:flex-row gap-4 justify-between mb-6">
         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {[
             { id: 'all', label: 'All Policies' },
             { id: 'my_followups', label: 'My Follow-ups' },
+            { id: 'needs_fix', label: 'Needs Fix', isBucket: true }, // New Bucket
             { id: 'today', label: 'Expiring Today' },
             { id: 'week', label: 'Expiring Week' },
             { id: 'expired', label: 'Overdue / Expired' },
-            { id: 'renewed', label: 'Renewed' }
+            { id: 'renewed', label: 'Renewed' },
+            { id: 'lost', label: 'Lost' }
           ].map(f => (
             <button
               key={f.id}
-              onClick={() => { setFilter(f.id); setBucket(null); setPage(1); }}
+              onClick={() => { 
+                  if (f.isBucket) { 
+                      setFilter('all'); 
+                      setBucket(f.id); 
+                  } else { 
+                      setFilter(f.id); 
+                      setBucket(null); 
+                  }
+                  setPage(1); 
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium capitalize whitespace-nowrap transition ${
-                filter === f.id && !bucket ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                (filter === f.id && !bucket) || (bucket === f.id) 
+                ? 'bg-blue-600 text-white shadow-lg' 
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               {f.label}
@@ -136,6 +149,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
               <th className="px-6 py-4">Vehicle</th>
               <th className="px-6 py-4">Policy No</th>
               <th className="px-6 py-4"><div className="flex items-center gap-1">Expiry <FaSort className="text-xs"/></div></th>
+              <th className="px-6 py-4">Stage</th>
               <th className="px-6 py-4">Follow-up</th>
               <th className="px-6 py-4">Agent</th>
               <th className="px-6 py-4">Status</th>
@@ -145,13 +159,13 @@ export default function PolicyList({ initialFilter, initialBucket }) {
           <tbody className="divide-y divide-gray-700">
             {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-12">
+                <td colSpan="9" className="text-center py-12">
                   <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
                 </td>
               </tr>
             ) : policies.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center py-12 text-gray-400">
+                <td colSpan="9" className="text-center py-12 text-gray-400">
                   No policies found matching filter.
                 </td>
               </tr>
@@ -159,22 +173,33 @@ export default function PolicyList({ initialFilter, initialBucket }) {
               policies.map((policy) => (
                 <tr key={policy._id} className="hover:bg-gray-700/30 transition">
                   <td className="px-6 py-4">
-                    <div className="font-bold text-white">{policy.customer?.name || 'Unknown'}</div>
+                    <div className="font-bold text-white max-w-[150px] truncate" title={policy.customer?.name}>{policy.customer?.name || 'Unknown'}</div>
                     <div className="text-sm text-gray-400">{policy.customer?.mobile}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-medium text-white">{policy.vehicle?.regNumber}</div>
-                    <div className="text-xs text-gray-400">{policy.vehicle?.model}</div>
+                    <div className="text-xs text-gray-400 max-w-[120px] truncate">{policy.vehicle?.model}</div>
                   </td>
                   <td className="px-6 py-4 text-gray-300 font-mono text-sm">
-                    {policy.policyNumber}
+                    <div title={policy.policyNumber} className="truncate max-w-[120px]">{policy.policyNumber}</div>
                     <div className="text-xs text-gray-500">{policy.insurer}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className={`font-medium ${new Date(policy.policyEndDate) < new Date() ? 'text-red-400' : 'text-white'}`}>
-                      {new Date(policy.policyEndDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                    </div>
-                    <div className="text-xs text-gray-500">{new Date(policy.policyEndDate).getFullYear()}</div>
+                    {policy.policyEndDate ? (
+                        <>
+                            <div className={`font-medium ${new Date(policy.policyEndDate) < new Date() && policy.renewalStatus !== 'Renewed' ? 'text-red-400' : 'text-white'}`}>
+                            {new Date(policy.policyEndDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                            </div>
+                            <div className="text-xs text-gray-500">{new Date(policy.policyEndDate).getFullYear()}</div>
+                        </>
+                    ) : (
+                        <span className="text-red-500 text-xs font-bold bg-red-500/10 px-2 py-1 rounded">Invalid Date</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                     <span className="text-xs text-gray-300 bg-gray-700 px-2 py-1 rounded">
+                         {policy.renewalStage || 'New'}
+                     </span>
                   </td>
                   <td className="px-6 py-4">
                      {policy.nextFollowUpDate ? (
@@ -187,7 +212,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                     <select 
                         value={policy.assignedAgent?._id || ''} 
                         onChange={(e) => handleAssignAgent(policy._id, e.target.value)}
-                        className="bg-gray-700 text-white text-xs rounded p-1 border-none focus:ring-1 focus:ring-blue-500"
+                        className="bg-gray-700 text-white text-xs rounded p-1 border-none focus:ring-1 focus:ring-blue-500 w-24"
                     >
                         <option value="">Unassigned</option>
                         {agents.map(agent => (
@@ -196,12 +221,20 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                     </select>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${getStatusColor(policy.renewalStatus || policy.status, policy.policyEndDate)}`}>
-                      {policy.renewalStatus || policy.status}
+                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${getStatusColor(policy.renewalStatus || 'Pending', policy.policyEndDate)}`}>
+                      {policy.renewalStatus || 'Pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
+                        {/* New Edit Button */}
+                        <button 
+                         onClick={() => setEditingPolicy(policy)}
+                         className="p-2 bg-gray-700 hover:text-white rounded-lg text-yellow-500 transition"
+                         title="Edit Policy"
+                        >
+                            <FaEdit />
+                        </button>
                         <button 
                         onClick={() => handleOpenDetail(policy.customer._id)}
                         className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-blue-400 transition"
@@ -229,7 +262,8 @@ export default function PolicyList({ initialFilter, initialBucket }) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
-          <button 
+            {/* ... keep pagination same ... */}
+            <button 
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
             className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50 text-white"
@@ -254,6 +288,13 @@ export default function PolicyList({ initialFilter, initialBucket }) {
           onClose={() => setIsDetailModalOpen(false)}
         />
       )}
+
+      <EditPolicyModal 
+        isOpen={!!editingPolicy}
+        policy={editingPolicy}
+        onClose={() => setEditingPolicy(null)}
+        onSuccess={() => fetchPolicies()}
+      />
     </div>
   )
 }

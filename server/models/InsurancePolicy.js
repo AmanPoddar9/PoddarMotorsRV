@@ -50,29 +50,71 @@ const insurancePolicySchema = new mongoose.Schema({
     index: true
   },
   
-  // NEW: Granular Sales Stage
+  // Granular Sales Stage
   renewalStage: {
-      type: String, // 'New', 'Contacted', 'QuoteSent', 'Negotiation', 'Closed'
+      type: String, 
+      enum: ['New', 'Contacted', 'FollowUp', 'QuoteSent', 'Negotiation', 'Accepted', 'PaymentPending', 'PaymentReceived', 'PolicyIssued', 'Closed'],
       default: 'New',
       index: true
   },
+
+  lostReason: {
+      type: String,
+      enum: ['PriceTooHigh', 'RenewedElsewhere', 'NoResponse', 'VehicleSold', 'NotRequired', 'BadExperience', 'Delay', 'Other', null],
+      default: null
+  },
   
+  // Payment Tracking
+  paymentStatus: { type: String, enum: ['NotInitiated', 'LinkSent', 'Pending', 'Received', 'Failed'], default: 'NotInitiated' },
+  paymentMode: { type: String, enum: ['UPI', 'Card', 'NetBanking', 'Cash', 'Cheque', 'Check', 'Other', null] },
+  paymentLink: { type: String },
+  paymentReceivedDate: { type: Date },
+  paymentTxnRef: { type: String },
+
+  // Docs & Compliance
+  docsStatus: { type: String, enum: ['NotRequested', 'Requested', 'Partial', 'Complete'], default: 'NotRequested' },
+  docs: { 
+      previousPolicy: { type: Boolean, default: false },
+      aadhaar: { type: Boolean, default: false },
+      pan: { type: Boolean, default: false }
+  },
+  complianceStatus: { type: String, enum: ['NotRequired', 'Pending', 'Completed'], default: 'Pending' },
+  physicalFileCreated: { type: Boolean, default: false },
+  fileLocation: { type: String },
+
+  // Renewal Chain + History
+  renewedFromPolicyId: { type: mongoose.Schema.Types.ObjectId, ref: 'InsurancePolicy' },
+  renewals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'InsurancePolicy' }], // Forward links
+
+  // Interactions (Embedded)
+  interactions: [{
+      type: { type: String, enum: ['Call', 'WhatsApp', 'Email', 'Meeting', 'Other'] },
+      outcome: { type: String }, // Enum validated in controller/service layer
+      remark: { type: String },
+      nextFollowUpDate: { type: Date },
+      createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      createdAt: { type: Date, default: Date.now }
+  }],
+  
+  // Date Quality (For Invalid Dates)
+  dataQuality: { type: String, enum: ['OK', 'InvalidEndDate', 'MissingEndDate'], default: 'OK' },
+  rawPolicyEndDateString: { type: String },
+
   renewalDate: { type: Date }, // When it was renewed
   insurerAfterRenewal: { type: String },
   addonsAfterRenewal: [{ type: String }],
   idvAfterRenewal: { type: Number },
-  lostCaseReason: { type: String }, // If Lost
   
-  // Follow-up (Denormalized)
-  nextFollowUpDate: { type: Date, index: true }, // For "My Follow-ups" view
-  lastInteractionDate: { type: Date }, // When was the last call/msg?
+  // Follow-up (Top-level cache for indexing)
+  nextFollowUpDate: { type: Date, index: true }, 
+  lastInteractionDate: { type: Date }, 
   lastRemark: { type: String },
   
-  // System Automation
+  // System Automation (Legacy? Keep for now)
   nextActions: [{
-      type: { type: String }, // 'Call', 'WhatsApp'
+      type: { type: String }, 
       dueDate: { type: Date },
-      status: { type: String, default: 'Pending' } // Pending, Done
+      status: { type: String, default: 'Pending' } 
   }],
 
   createdAt: { type: Date, default: Date.now },

@@ -22,8 +22,8 @@ router.patch('/policies/:id', insuranceController.updatePolicy);
 // Workflows
 router.post('/policies/:id/renew', insuranceController.renewPolicy);
 router.post('/policies/:id/lost', insuranceController.markLost);
-router.post('/policies/:id/action', insuranceController.logWorkflowAction); // New Workflow Action
-router.post('/policies/followup', insuranceController.addInteraction); // Unified follow-up adding
+router.post('/policies/:id/action', insuranceController.logWorkflowAction); // Deprecated
+router.post('/policies/:id/interaction', insuranceController.addInteraction); // New Standard
 
 // --- CUSTOMERS (Helper routes for the CRM) ---
 router.get('/customers/search', customerController.searchCustomers);

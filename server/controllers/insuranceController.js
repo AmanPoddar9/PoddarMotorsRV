@@ -154,68 +154,84 @@ exports.getPolicies = async (req, res) => {
 
     // --- BUCKET LOGIC (Priority Timeline) ---
     // Ensure bucket is a valid string and not 'null' or 'undefined'
+    // --- BUCKET LOGIC (Priority Timeline) ---
+    // Ensure bucket is a valid string
     if (bucket && bucket !== 'null' && bucket !== 'undefined' && bucket !== '') {
-        query.renewalStatus = { $in: ['Pending', 'InProgress', 'NotInterested'] }; // Exclude Renewed/Lost? Or keep NotInterested? 
-        // Logic: We want to work on Pending stuff.
         
-        if (bucket === 'upcoming_month') {
-            // Policies expiring next month (e.g. if Dec, then Jan 1 - Jan 31)
-            // Or roughly 30 days out? User said "1 month prior".
-            // Let's do: Start of Next Month to End of Next Month? 
-            // Or simply: Expiry > Today + 25 days?
-            // "If Jan expiry, start Dec end". So Next Month logic is best.
-            const currentMonth = today.getMonth();
-            const nextMonthStart = new Date(today.getFullYear(), currentMonth + 1, 1);
-            const nextMonthEnd = new Date(today.getFullYear(), currentMonth + 2, 0);
-            query.policyEndDate = { $gte: nextMonthStart, $lte: nextMonthEnd };
-        
-        } else if (bucket === '15_days') {
-            // Expiring in 8 to 20 days? 
-            const start = new Date(today); start.setDate(start.getDate() + 8);
-            const end = new Date(today); end.setDate(end.getDate() + 21);
-            query.policyEndDate = { $gte: start, $lte: end };
+        // Special Bucket: Needs Fix (Invalid Dates)
+        if (bucket === 'needs_fix') {
+            query.$or = [
+                { policyEndDate: null }, 
+                { dataQuality: { $in: ['InvalidEndDate', 'MissingEndDate'] } }
+            ];
+            // Don't filter by renewalStatus strictly here, we want to fix ALL of them
+        } else {
+            // STANDARD BUCKETS: Must have valid dates
+            query.policyEndDate = { $ne: null }; 
+            // Allow OK or undefined (legacy)
+            query.$or = [
+                { dataQuality: 'OK' }, 
+                { dataQuality: { $exists: false } }, 
+                { dataQuality: null }
+            ];
             
-        } else if (bucket === '7_days') {
-            // Expiring in 0 to 7 days
-            const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
-            query.policyEndDate = { $gte: today, $lte: nextWeek };
+            // Status: Generally we want active items for buckets
+            // But if user wants to see 'renewed' in buckets, we might need a separate toggle.
+            // For now, default to Active (Pending/InProgress) as per request.
+            query.renewalStatus = { $in: ['Pending', 'InProgress', 'NotInterested'] }; 
+
+            if (bucket === 'upcoming_month') {
+                const currentMonth = today.getMonth();
+                const nextMonthStart = new Date(today.getFullYear(), currentMonth + 1, 1);
+                const nextMonthEnd = new Date(today.getFullYear(), currentMonth + 2, 0);
+                query.policyEndDate = { $gte: nextMonthStart, $lte: nextMonthEnd };
             
-        } else if (bucket === 'overdue') {
-            // Expired in last 30 days
-            const lastMonth = new Date(today); lastMonth.setDate(lastMonth.getDate() - 30);
-            query.policyEndDate = { $lt: today, $gte: lastMonth };
+            } else if (bucket === '15_days') {
+                const start = new Date(today); start.setDate(start.getDate() + 8);
+                const end = new Date(today); end.setDate(end.getDate() + 21);
+                query.policyEndDate = { $gte: start, $lte: end };
+                
+            } else if (bucket === '7_days') {
+                const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
+                query.policyEndDate = { $gte: today, $lte: nextWeek };
+                
+            } else if (bucket === 'overdue') {
+                const lastMonth = new Date(today); lastMonth.setDate(lastMonth.getDate() - 30);
+                query.policyEndDate = { $lt: today, $gte: lastMonth };
+            
+            } else if (bucket === 'expired_all') {
+                // Older than 30 days
+                const lastMonth = new Date(today); lastMonth.setDate(lastMonth.getDate() - 30);
+                query.policyEndDate = { $lt: lastMonth };
+            }
         }
     }
 
-    // Existing Filters (Backward Compat)
-    if (filter === 'today') {
-        const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
-        query.policyEndDate = { $gte: today, $lt: tomorrow };
-    } else if (filter === 'week') {
-        const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
-        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
-        query.policyEndDate = { $gte: today, $lt: nextWeek };
-    } else if (filter === 'expired') {
-        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
-        query.policyEndDate = { $lt: today };
+    // Existing Filters
+    if (filter === 'my_followups') {
+        if (req.user) query.assignedAgent = req.user._id;
+        query.nextFollowUpDate = { $lte: today, $ne: null }; // Due today or earlier
+        // Only active tasks
+        query.renewalStatus = { $nin: ['Renewed', 'Lost'] };
     } else if (filter === 'renewed') {
         query.renewalStatus = 'Renewed';
-    } else if (filter === 'my_followups') {
+    } else if (filter === 'lost') {
+        query.renewalStatus = 'Lost';
+    } else if (filter === 'my_policies') {
         if (req.user) query.assignedAgent = req.user._id;
-        query.nextFollowUpDate = { $lte: today, $ne: null };
-        query.renewalStatus = { $in: ['Pending', 'InProgress'] };
     }
 
-    // Search Logic
+    // Search Logic (Preserve existing regex logic)
     if (search) {
+        // ... (keep search logic below)
         const regex = new RegExp(search, 'i');
         const customers = await Customer.find({
             $or: [{ name: regex }, { mobile: regex }, { 'vehicles.regNumber': regex }]
         }).select('_id');
         
         const customerIds = customers.map(c => c._id);
-        delete query.assignedAgent; 
+        delete query.assignedAgent; // Allow global search? Or keep restricted? 
+        delete query.nextFollowUpDate; // Search overrides filters usually
         
         if (Object.keys(query).length > 0) {
              query.$and = [
@@ -653,63 +669,69 @@ exports.importPolicies = async (req, res) => {
     }
 
 // --- WORKFLOW ACTIONS ---
-exports.logWorkflowAction = async (req, res) => {
+// --- ACTIONS ---
+
+exports.addInteraction = async (req, res) => {
     try {
         const { id } = req.params;
-        const { actionType, outcome, remark, nextFollowUp } = req.body;
-        
+        const { type, outcome, remark, nextFollowUpDate, lostReason } = req.body;
+        const userId = req.user ? req.user._id : null;
+
         const policy = await InsurancePolicy.findById(id);
         if (!policy) return res.status(404).json({ message: 'Policy not found' });
 
-        // 1. Determine New Stage based on Outcome
-        let newStage = policy.renewalStage;
-        let newStatus = policy.renewalStatus;
-        
-        if (outcome.includes('Quote Sent')) {
-            newStage = 'QuoteSent';
-            newStatus = 'InProgress';
-        } else if (outcome.includes('Connected')) {
-            newStage = 'Contacted';
-            newStatus = 'InProgress';
-        } else if (outcome.includes('Not Interested')) {
-            newStatus = 'NotInterested'; // Or Lost?
-        } else if (outcome.includes('Wrong Number')) {
-            // maybe flag customer?
-        }
+        // Push Interaction
+        policy.interactions.push({
+            type: type || 'Other',
+            outcome,
+            remark,
+            nextFollowUpDate,
+            createdBy: userId
+        });
 
-        // 2. Update Policy
+        // Update Top-level fields
         policy.lastInteractionDate = new Date();
         policy.lastRemark = remark;
-        if (nextFollowUp) policy.nextFollowUpDate = nextFollowUp;
-        if (newStage) policy.renewalStage = newStage;
-        if (newStatus) policy.renewalStatus = newStatus;
-        
-        // Add to nextActions history if needed, or just clear pending
-        // For now, simple update
+        if (nextFollowUpDate) {
+            policy.nextFollowUpDate = nextFollowUpDate;
+        }
+
+        // Auto-Mapping Logic
+        // 1. Stage Mapping
+        const outcomeToStage = {
+            'Contacted': 'Contacted',
+            'QuoteSent': 'QuoteSent',
+            'Negotiation': 'Negotiation',
+            'Accepted': 'Accepted',
+            'PaymentLinkSent': 'PaymentPending',
+            'PaymentReceived': 'PaymentReceived'
+        };
+        if (outcomeToStage[outcome]) {
+            policy.renewalStage = outcomeToStage[outcome];
+        } else if (outcome === 'CallbackLater') {
+            policy.renewalStage = 'FollowUp';
+        }
+
+        // 2. Status Mapping
+        if (['Contacted', 'QuoteSent', 'Negotiation', 'Accepted', 'CallbackLater', 'PaymentLinkSent'].includes(outcome)) {
+            if (policy.renewalStatus === 'Pending') policy.renewalStatus = 'InProgress';
+        } else if (outcome === 'NotInterested') {
+            policy.renewalStatus = 'NotInterested';
+            if (lostReason) policy.lostReason = lostReason;
+        } else if (outcome === 'RenewedElsewhere') {
+            policy.renewalStatus = 'Lost';
+            policy.lostReason = 'RenewedElsewhere';
+        }
+
         await policy.save();
-
-        // 3. Log Interaction
-        // We need customer ID. Policy has it.
-        const Interaction = require('../models/Interaction'); // Ensure import
-        const interaction = new Interaction({
-            customer: policy.customer,
-            policy: policy._id,
-            type: 'insurance_followup',
-            agentName: (req.user && req.user.name) || 'Lead Agent', // Fallback as JWT might not have name
-            agentId: req.user ? req.user.id : null, // req.user.id from JWT payload
-            data: {
-                remark: `${actionType.toUpperCase()}: ${remark}`,
-                outcome,
-                nextFollowUpDate: nextFollowUp,
-                statusAfter: newStatus
-            }
-        });
-        await interaction.save();
-
-        res.json({ message: 'Action logged', policy });
+        res.json(policy);
 
     } catch (error) {
         console.error('Log Action Error:', error);
         res.status(500).json({ message: 'Error logging action' });
     }
+};
+
+exports.logWorkflowAction = async (req, res) => {
+    res.status(410).json({ message: 'Use /policies/:id/interaction endpoint' });
 };
