@@ -19,6 +19,7 @@ exports.signup = async (req, res) => {
   try {
     const { name, email, mobile, password } = req.body;
 
+    // ... (Customer logic remains the same) ...
     // Check if exists by Mobile first (Primary Key)
     let customer = await Customer.findOne({ mobile });
 
@@ -34,16 +35,16 @@ exports.signup = async (req, res) => {
             
             // Generate Token & Login
             const token = createToken(customer);
-            // ... (Cookie logic same as below) ...
+            
             const isProduction = process.env.NODE_ENV === 'production';
             const cookieOptions = {
                 httpOnly: true,
-                sameSite: 'lax',
-                secure: isProduction,
+                sameSite: 'none', // Allow cross-site (Frontend vs Backend Vercel)
+                secure: true, // Always secure for 'none'
                 maxAge: 30 * 24 * 60 * 60 * 1000,
                 path: '/'
             };
-            if (isProduction) cookieOptions.domain = '.poddarmotors.com';
+            // Do NOT set domain explicitly if backend URL differs from frontend
             res.cookie('customer_auth', token, cookieOptions);
 
             return res.status(201).json({
@@ -73,7 +74,6 @@ exports.signup = async (req, res) => {
       name,
       email,
       mobile,
-      // Initialize empty preferences
       preferences: {},
       primeStatus: { isActive: false }
     });
@@ -81,23 +81,15 @@ exports.signup = async (req, res) => {
     await customer.setPassword(password);
     await customer.save();
 
-    // Create token
     const token = createToken(customer);
-
-    // Set cookie with proper domain configuration
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: 'lax', // Changed from conditional 'none'/'lax' to always 'lax'
-      secure: isProduction,
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: 'none',
+      secure: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
       path: '/'
     };
-    
-    // Only set domain in production to allow cross-subdomain access
-    if (isProduction) {
-      cookieOptions.domain = '.poddarmotors.com';
-    }
     
     res.cookie('customer_auth', token, cookieOptions);
 
@@ -123,7 +115,6 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find by email (or mobile could be added later)
     const customer = await Customer.findOne({ email });
     if (!customer) return res.status(401).json({ message: 'Invalid credentials' });
 
@@ -135,15 +126,11 @@ exports.login = async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: isProduction,
+      sameSite: 'none',
+      secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       path: '/'
     };
-    
-    if (isProduction) {
-      cookieOptions.domain = '.poddarmotors.com';
-    }
     
     res.cookie('customer_auth', token, cookieOptions);
 
@@ -169,14 +156,10 @@ exports.logout = (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const cookieOptions = {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: isProduction,
+    sameSite: 'none',
+    secure: true,
     path: '/'
   };
-  
-  if (isProduction) {
-    cookieOptions.domain = '.poddarmotors.com';
-  }
   
   res.clearCookie('customer_auth', cookieOptions);
   res.json({ message: 'Logged out successfully' });
