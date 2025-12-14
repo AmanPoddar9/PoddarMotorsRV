@@ -9,7 +9,8 @@ const {
   toggleWishlist,
   getAllCustomers,
   updatePrimeStatus,
-  getMe
+  getMe,
+  updateProfile // New Import
 } = require('../controllers/customerAuthController.js');
 
 // Import customer auth middleware
@@ -23,6 +24,7 @@ router.post('/logout', logout);
 // Protected Routes
 router.get('/dashboard', requireCustomerAuth, getDashboard);
 router.put('/preferences', requireCustomerAuth, updatePreferences);
+router.patch('/profile', requireCustomerAuth, updateProfile); // New Route
 router.post('/wishlist', requireCustomerAuth, toggleWishlist);
 
 // Check Auth Status (for frontend init)

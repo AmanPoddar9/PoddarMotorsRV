@@ -182,6 +182,10 @@ exports.logout = (req, res) => {
   res.json({ message: 'Logged out successfully' });
 };
 
+const InsurancePolicy = require('../models/InsurancePolicy');
+
+// ... imports ...
+
 // Get Current Profile & Dashboard Data
 exports.getDashboard = async (req, res) => {
   try {
@@ -194,10 +198,12 @@ exports.getDashboard = async (req, res) => {
     // This "auto-links" past interactions without needing database migration
     const mobile = customer.mobile;
 
-    const [workshopBookings, testDrives, offers] = await Promise.all([
+    // Fetch everything in parallel
+    const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
       Booking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
-      CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing')
+      CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing'),
+      InsurancePolicy.find({ customer: customer._id }).sort({ policyEndDate: -1 }) // Fetch Policies linked to this ID
     ]);
 
     res.json({
@@ -205,7 +211,8 @@ exports.getDashboard = async (req, res) => {
       dashboard: {
         workshopBookings,
         testDrives,
-        offers
+        offers,
+        insurancePolicies
       }
     });
 
@@ -213,6 +220,37 @@ exports.getDashboard = async (req, res) => {
     console.error('Dashboard fetch error:', error);
     res.status(500).json({ message: 'Error fetching dashboard data' });
   }
+};
+
+// Update Own Profile (Name/Mobile)
+exports.updateProfile = async (req, res) => {
+    try {
+        const { name, mobile } = req.body;
+        const customerId = req.user.id;
+
+        // Check if mobile is taken by someone else
+        if (mobile) {
+            const existing = await Customer.findOne({ mobile, _id: { $ne: customerId } });
+            if (existing) {
+                return res.status(400).json({ message: 'Mobile number already in use by another account.' });
+            }
+        }
+
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (mobile) updateData.mobile = mobile;
+
+        const updatedCustomer = await Customer.findByIdAndUpdate(customerId, updateData, { new: true });
+
+        res.json({ 
+            message: 'Profile updated successfully', 
+            customer: updatedCustomer 
+        });
+
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Error updating profile' });
+    }
 };
 
 // Update Preferences

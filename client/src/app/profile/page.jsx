@@ -1,14 +1,7 @@
-'use client'
 
-import { useState, useEffect } from 'react'
-import { useCustomer } from '../utils/customerContext'
-import { useRouter } from 'next/navigation'
-import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser } from 'react-icons/fa'
-import axios from 'axios'
-import ProfileRequirements from '../components/profile/ProfileRequirements'
-import Image from 'next/image'
-
-import API_URL from '../config/api'
+// ... (keep existing imports)
+import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser, FaEdit, FaShieldAlt } from 'react-icons/fa' // Added FaEdit, FaShieldAlt
+// ...
 
 export default function ProfilePage() {
   const { customer, loading } = useCustomer()
@@ -17,9 +10,17 @@ export default function ProfilePage() {
   const [dashboardData, setDashboardData] = useState(null)
   const [dataLoading, setDataLoading] = useState(true)
 
+  // Edit Profile State
+  const [isEditing, setIsEditing] = useState(false)
+  const [editForm, setEditForm] = useState({ name: '', mobile: '' })
+  const [saveLoading, setSaveLoading] = useState(false)
+
   useEffect(() => {
     if (!loading && !customer) {
       router.push('/login')
+    }
+    if (customer) {
+        setEditForm({ name: customer.name, mobile: customer.mobile })
     }
   }, [customer, loading, router])
 
@@ -40,6 +41,19 @@ export default function ProfilePage() {
     } finally {
       setDataLoading(false)
     }
+  }
+
+  const handleUpdateProfile = async () => {
+      setSaveLoading(true)
+      try {
+          await axios.patch(`${API_URL}/api/customer/profile`, editForm, { withCredentials: true })
+          setIsEditing(false)
+          window.location.reload() // Reload to reflect changes globally
+      } catch (error) {
+          alert(error.response?.data?.message || 'Error updating profile')
+      } finally {
+          setSaveLoading(false)
+      }
   }
 
   if (loading || !customer) {
@@ -65,14 +79,61 @@ export default function ProfilePage() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-custom-jet rounded-2xl p-6 border border-white/10 sticky top-28">
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 relative">
+                 {/* Edit Button */}
+                 {!isEditing && (
+                     <button 
+                        onClick={() => setIsEditing(true)}
+                        className="absolute top-0 right-0 text-gray-400 hover:text-white"
+                        title="Edit Profile"
+                     >
+                         <FaEdit />
+                     </button>
+                 )}
+
                 <div className="w-20 h-20 bg-custom-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl font-bold text-custom-accent">
                     {customer.name.charAt(0)}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-white">{customer.name}</h2>
-                <p className="text-custom-platinum text-sm mt-1">{customer.mobile}</p>
+
+                {isEditing ? (
+                    <div className="space-y-3 mb-4">
+                        <input 
+                            className="w-full bg-custom-black text-white px-3 py-2 rounded border border-white/20"
+                            placeholder="Name"
+                            value={editForm.name}
+                            onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                        />
+                        <input 
+                            className="w-full bg-custom-black text-white px-3 py-2 rounded border border-white/20"
+                            placeholder="Mobile"
+                            value={editForm.mobile}
+                            onChange={(e) => setEditForm({...editForm, mobile: e.target.value})}
+                        />
+                        <div className="flex gap-2 justify-center">
+                            <button 
+                                onClick={handleUpdateProfile}
+                                disabled={saveLoading}
+                                className="bg-custom-accent text-custom-black px-4 py-1 rounded font-bold text-sm"
+                            >
+                                {saveLoading ? 'Saving...' : 'Save'}
+                            </button>
+                            <button 
+                                onClick={() => setIsEditing(false)}
+                                className="bg-white/10 text-white px-4 py-1 rounded text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="text-xl font-bold text-white">{customer.name}</h2>
+                        <p className="text-custom-platinum text-sm mt-1">{customer.mobile}</p>
+                    </>
+                )}
+
                 {customer.primeStatus?.isActive && (
                   <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-bold rounded-full">
                     <FaCrown /> {customer.primeStatus.tier} Member
@@ -111,9 +172,9 @@ export default function ProfilePage() {
                     </p>
                   </div>
                   <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
-                    <h3 className="text-custom-platinum text-sm">Test Drive Requests</h3>
-                    <p className="text-3xl font-bold text-white mt-2">
-                      {dashboardData?.testDrives?.length || 0}
+                    <h3 className="text-custom-platinum text-sm">Insurance Policies</h3>
+                     <p className="text-3xl font-bold text-white mt-2">
+                      {dashboardData?.insurancePolicies?.length || 0}
                     </p>
                   </div>
                   <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
@@ -123,6 +184,31 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 </div>
+
+                {/* Insurance Card - NEW */}
+                {dashboardData?.insurancePolicies?.length > 0 && (
+                     <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
+                         <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <FaShieldAlt className="text-blue-500" /> My Insurance Policies
+                         </h2>
+                         <div className="space-y-4">
+                             {dashboardData.insurancePolicies.map((policy) => (
+                                 <div key={policy._id} className="bg-white/5 p-4 rounded-lg flex justify-between items-center">
+                                     <div>
+                                         <h4 className="text-white font-bold">{policy.vehicle?.regNumber} ({policy.vehicle?.make} {policy.vehicle?.model})</h4>
+                                         <p className="text-sm text-gray-400">{policy.insurer} • Policy #{policy.policyNumber}</p>
+                                         <p className="text-xs text-blue-400 mt-1">Expires: {new Date(policy.policyEndDate).toLocaleDateString()}</p>
+                                     </div>
+                                     <div>
+                                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${policy.renewalStatus === 'Pending' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'}`}>
+                                            {policy.renewalStatus}
+                                         </span>
+                                     </div>
+                                 </div>
+                             ))}
+                         </div>
+                     </div>
+                )}
 
                 {/* Prime Status Card */}
                 <div className={`p-6 rounded-xl border ${
