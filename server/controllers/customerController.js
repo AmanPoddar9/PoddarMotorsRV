@@ -87,3 +87,35 @@ exports.getCustomerDetails = async (req, res) => {
     res.status(500).json({ message: 'Error fetching customer details' });
   }
 };
+// Update Customer (Admin)
+exports.updateCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, mobile, email, alternatePhones } = req.body;
+
+    // Check unique constraints if changing mobile/email
+    if (mobile || email) {
+        const existing = await Customer.findOne({
+            $and: [
+                { _id: { $ne: id } }, // Not self
+                { $or: [{ mobile }, { email: email || 'dummy_nomatch' }] }
+            ]
+        });
+        if (existing) return res.status(400).json({ message: 'Mobile or Email already in use by another customer' });
+    }
+
+    const updates = {};
+    if (name) updates.name = name;
+    if (mobile) updates.mobile = mobile;
+    if (email) updates.email = email;
+    if (alternatePhones) updates.alternatePhones = alternatePhones;
+
+    const customer = await Customer.findByIdAndUpdate(id, updates, { new: true });
+    if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+    res.json(customer);
+  } catch (error) {
+    console.error('Update customer error:', error);
+    res.status(500).json({ message: 'Error updating customer' });
+  }
+};

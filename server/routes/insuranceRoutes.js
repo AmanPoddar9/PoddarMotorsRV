@@ -29,6 +29,7 @@ router.post('/policies/:id/interaction', insuranceController.addInteraction); //
 router.get('/customers/search', customerController.searchCustomers);
 router.post('/customers', customerController.createCustomer);
 router.get('/customers/:id', customerController.getCustomerDetails);
+router.patch('/customers/:id', customerController.updateCustomer);
 
 // --- INTERACTIONS ---
 router.post('/interactions', insuranceController.addInteraction); // Legacy endpoint, alias

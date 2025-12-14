@@ -19,6 +19,24 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
   const [showActionModal, setShowActionModal] = useState(false) // Unified Action Modal
   const [editingPolicy, setEditingPolicy] = useState(null) // Manual Edit
   const [actionType, setActionType] = useState('call') // call, whatsapp
+  
+  // Profile Edit
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [editForm, setEditForm] = useState({ name: '', mobile: '' })
+  const [saveLoading, setSaveLoading] = useState(false)
+
+  const handleSaveProfile = async () => {
+      setSaveLoading(true)
+      try {
+          await axios.patch(`${API_URL}/api/insurance/customers/${customer._id}`, editForm, { withCredentials: true })
+          setIsEditingProfile(false)
+          fetchData() // Refresh
+      } catch (error) {
+          alert(error.response?.data?.message || 'Error updating profile')
+      } finally {
+          setSaveLoading(false)
+      }
+  }
 
   const fetchData = async () => {
     try {
@@ -41,6 +59,12 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
         fetchData()
     }
   }, [isOpen, customerId])
+
+  useEffect(() => {
+      if (customer) {
+          setEditForm({ name: customer.name, mobile: customer.mobile })
+      }
+  }, [customer])
 
   const openActionInput = (policyId, type) => {
       setSelectedPolicyId(policyId)
@@ -79,27 +103,74 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
         ) : customer ? (
            <div className="p-6 space-y-8">
              {/* Identity Card */}
-             <div className="bg-gray-800 p-5 rounded-xl border border-gray-700">
+             <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 relative">
+                {/* Header Actions */}
+                <div className="absolute top-4 right-4">
+                    <button 
+                        onClick={() => setIsEditingProfile(!isEditingProfile)} 
+                        className="text-gray-400 hover:text-white p-2"
+                        title="Edit Profile"
+                    >
+                        <FaEdit />
+                    </button>
+                </div>
+
                 <div className="flex items-center gap-4 mb-4">
                     <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold text-white">
                         {customer.name[0]}
                     </div>
-                    <div>
-                        <h3 className="text-xl font-bold text-white">{customer.name}</h3>
-                        <p className="text-gray-400 font-mono text-sm">{customer.customId}</p>
+                    <div className="flex-1">
+                        {isEditingProfile ? (
+                            <div className="space-y-2">
+                                <input 
+                                    className="bg-gray-900 text-white border border-gray-600 rounded px-2 py-1 w-full"
+                                    value={editForm.name}
+                                    onChange={e => setEditForm({...editForm, name: e.target.value})}
+                                    placeholder="Name"
+                                />
+                                <input 
+                                    className="bg-gray-900 text-white border border-gray-600 rounded px-2 py-1 w-full"
+                                    value={editForm.mobile}
+                                    onChange={e => setEditForm({...editForm, mobile: e.target.value})}
+                                    placeholder="Mobile"
+                                />
+                                <div className="flex gap-2 mt-1">
+                                    <button 
+                                        onClick={handleSaveProfile}
+                                        disabled={saveLoading}
+                                        className="bg-blue-600 text-xs px-3 py-1 rounded text-white"
+                                    >
+                                        {saveLoading ? 'Saving...' : 'Save'}
+                                    </button>
+                                     <button 
+                                        onClick={() => setIsEditingProfile(false)}
+                                        className="bg-gray-700 text-xs px-3 py-1 rounded text-white"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <h3 className="text-xl font-bold text-white">{customer.name}</h3>
+                                <p className="text-gray-400 font-mono text-sm">{customer.customId}</p>
+                            </>
+                        )}
                     </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                    <a href={`tel:${customer.mobile}`} className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition">
-                        <FaPhone className="text-green-400" />
-                        <span>{customer.mobile}</span>
-                    </a>
-                    <a href={`https://wa.me/91${customer.mobile}`} target="_blank" className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition">
-                        <FaWhatsapp className="text-green-500" />
-                        <span>WhatsApp</span>
-                    </a>
-                </div>
+                {!isEditingProfile && (
+                    <div className="grid grid-cols-2 gap-4">
+                        <a href={`tel:${customer.mobile}`} className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition">
+                            <FaPhone className="text-green-400" />
+                            <span>{customer.mobile}</span>
+                        </a>
+                        <a href={`https://wa.me/91${customer.mobile}`} target="_blank" className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition">
+                            <FaWhatsapp className="text-green-500" />
+                            <span>WhatsApp</span>
+                        </a>
+                    </div>
+                )}
 
                 {customer.vehicles?.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-700">
