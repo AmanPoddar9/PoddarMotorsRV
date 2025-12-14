@@ -183,7 +183,16 @@ exports.getDashboard = async (req, res) => {
 
     // Find ALL customer IDs closely matching this mobile (handle duplicates from imports)
     const linkedCustomerDocs = await Customer.find({ mobile }).select('_id');
+    
+    // Ensure we ALWAYS include the current customer's ID, interacting defensively with the aggregation
     const linkedCustomerIds = linkedCustomerDocs.map(c => c._id);
+    const hasCurrentId = linkedCustomerIds.some(id => id.toString() === customer._id.toString());
+    if (!hasCurrentId) {
+        linkedCustomerIds.push(customer._id);
+    }
+
+    console.log(`[Dashboard] Fetching for Mobile: ${mobile}`);
+    console.log(`[Dashboard] Linked IDs:`, linkedCustomerIds);
 
     // Fetch everything in parallel
     const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
@@ -193,6 +202,8 @@ exports.getDashboard = async (req, res) => {
       // Fetch policies where the customer ID matches ANY of the IDs associated with this mobile
       InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 })
     ]);
+    
+    console.log(`[Dashboard] Found Policies: ${insurancePolicies.length}`);
 
     res.json({
       profile: customer,
