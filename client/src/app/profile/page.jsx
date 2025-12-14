@@ -1,7 +1,14 @@
+'use client'
 
-// ... (keep existing imports)
-import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser, FaEdit, FaShieldAlt } from 'react-icons/fa' // Added FaEdit, FaShieldAlt
-// ...
+import { useState, useEffect } from 'react'
+import { useCustomer } from '../utils/customerContext'
+import { useRouter } from 'next/navigation'
+import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser, FaEdit, FaShieldAlt } from 'react-icons/fa'
+import axios from 'axios'
+import ProfileRequirements from '../components/profile/ProfileRequirements'
+import Image from 'next/image'
+
+import API_URL from '../config/api'
 
 export default function ProfilePage() {
   const { customer, loading } = useCustomer()
