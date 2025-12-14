@@ -181,12 +181,17 @@ exports.getDashboard = async (req, res) => {
     // This "auto-links" past interactions without needing database migration
     const mobile = customer.mobile;
 
+    // Find ALL customer IDs closely matching this mobile (handle duplicates from imports)
+    const linkedCustomerDocs = await Customer.find({ mobile }).select('_id');
+    const linkedCustomerIds = linkedCustomerDocs.map(c => c._id);
+
     // Fetch everything in parallel
     const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
       Booking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
       CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing'),
-      InsurancePolicy.find({ customer: customer._id }).sort({ policyEndDate: -1 }) // Fetch Policies linked to this ID
+      // Fetch policies where the customer ID matches ANY of the IDs associated with this mobile
+      InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 })
     ]);
 
     res.json({
