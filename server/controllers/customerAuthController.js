@@ -191,9 +191,6 @@ exports.getDashboard = async (req, res) => {
         linkedCustomerIds.push(customer._id);
     }
 
-    console.log(`[Dashboard] Fetching for Mobile: ${mobile}`);
-    console.log(`[Dashboard] Linked IDs:`, linkedCustomerIds);
-
     // Fetch everything in parallel
     const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
@@ -203,8 +200,6 @@ exports.getDashboard = async (req, res) => {
       InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 })
     ]);
     
-    console.log(`[Dashboard] Found Policies: ${insurancePolicies.length}`);
-
     res.json({
       profile: customer,
       dashboard: {
@@ -364,59 +359,3 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-// DEBUG: Diagnostic endpoint
-exports.debugCustomer = async (req, res) => {
-    try {
-        const customerId = req.user.id;
-        const customer = await Customer.findById(customerId);
-        const mobile = customer.mobile;
-        
-        // 1. Find all sharing mobile
-        const duplicates = await Customer.find({ mobile });
-        
-        // 2. Find policies linked to ME
-        const policiesDirect = await InsurancePolicy.find({ customer: customerId });
-        
-        // 3. Find policies linked to Mobile Group
-        const linkedCustomerDocs = await Customer.find({ mobile }).select('_id');
-        const linkedCustomerIds = linkedCustomerDocs.map(c => c._id);
-        const hasCurrentId = linkedCustomerIds.some(id => id.toString() === customer._id.toString());
-        if (!hasCurrentId) linkedCustomerIds.push(customer._id);
-        
-        const policiesGroup = await InsurancePolicy.find({ customer: { $in: linkedCustomerIds } });
-        
-        // 4. Test OTHER Dashboard Queries (to see if they crash)
-        const workshopQuery = WorkshopBooking.find({ mobile }).sort({ createdAt: -1 });
-        const bookingQuery = Booking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing');
-        const offerQuery = CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing');
-        
-        const [workshopRes, bookingRes, offerRes] = await Promise.allSettled([
-            workshopQuery, bookingQuery, offerQuery
-        ]);
-        
-        res.json({
-            me: { id: customer._id, name: customer.name, mobile: customer.mobile },
-            duplicates: duplicates.map(d => ({ id: d._id, mobile: d.mobile, name: d.name })),
-            policiesDirectCount: policiesDirect.length,
-            policiesGroupCount: policiesGroup.length,
-            linkedIds: linkedCustomerIds,
-            // Debugging other queries
-            workshopStatus: workshopRes.status,
-            workshopError: workshopRes.status === 'rejected' ? workshopRes.reason : null,
-            workshopCount: workshopRes.status === 'fulfilled' ? workshopRes.value.length : 0,
-            
-            bookingStatus: bookingRes.status,
-            bookingError: bookingRes.status === 'rejected' ? bookingRes.reason : null,
-            bookingCount: bookingRes.status === 'fulfilled' ? bookingRes.value.length : 0,
-            
-            offerStatus: offerRes.status,
-            offerError: offerRes.status === 'rejected' ? offerRes.reason : null,
-            offerCount: offerRes.status === 'fulfilled' ? offerRes.value.length : 0
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message, stack: error.stack });
-    }
-};
-
-// ... existing code ...

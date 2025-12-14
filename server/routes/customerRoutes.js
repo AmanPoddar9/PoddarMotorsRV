@@ -10,8 +10,7 @@ const {
   getAllCustomers,
   updatePrimeStatus,
   getMe,
-  updateProfile,
-  debugCustomer // New Import
+  updateProfile
 } = require('../controllers/customerAuthController.js');
 
 // Import customer auth middleware
@@ -24,7 +23,6 @@ router.post('/logout', logout);
 
 // Protected Routes
 router.get('/dashboard', requireCustomerAuth, getDashboard);
-router.get('/debug', requireCustomerAuth, debugCustomer); // DEBUG TOOL
 router.put('/preferences', requireCustomerAuth, updatePreferences);
 router.patch('/profile', requireCustomerAuth, updateProfile); // New Route
 router.post('/wishlist', requireCustomerAuth, toggleWishlist);
