@@ -1,3 +1,4 @@
+```javascript
 const express = require('express');
 const router = express.Router();
 const { 
@@ -10,7 +11,8 @@ const {
   getAllCustomers,
   updatePrimeStatus,
   getMe,
-  updateProfile // New Import
+  updateProfile,
+  debugCustomer // New Import
 } = require('../controllers/customerAuthController.js');
 
 // Import customer auth middleware
@@ -23,6 +25,7 @@ router.post('/logout', logout);
 
 // Protected Routes
 router.get('/dashboard', requireCustomerAuth, getDashboard);
+router.get('/debug', requireCustomerAuth, debugCustomer); // DEBUG TOOL
 router.put('/preferences', requireCustomerAuth, updatePreferences);
 router.patch('/profile', requireCustomerAuth, updateProfile); // New Route
 router.post('/wishlist', requireCustomerAuth, toggleWishlist);

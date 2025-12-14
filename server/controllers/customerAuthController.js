@@ -365,3 +365,34 @@ exports.getMe = async (req, res) => {
   }
 };
 
+// DEBUG: Diagnostic endpoint
+exports.debugCustomer = async (req, res) => {
+    try {
+        const customerId = req.user.id;
+        const customer = await Customer.findById(customerId);
+        const mobile = customer.mobile;
+        
+        // 1. Find all sharing mobile
+        const duplicates = await Customer.find({ mobile });
+        
+        // 2. Find policies linked to ME
+        const policiesDirect = await InsurancePolicy.find({ customer: customerId });
+        
+        // 3. Find policies linked to Mobile Group
+        const ids = duplicates.map(c => c._id);
+        const policiesGroup = await InsurancePolicy.find({ customer: { $in: ids } });
+        
+        res.json({
+            me: { id: customer._id, name: customer.name, mobile: customer.mobile },
+            duplicates: duplicates.map(d => ({ id: d._id, mobile: d.mobile, name: d.name })),
+            policiesDirectCount: policiesDirect.length,
+            policiesGroupCount: policiesGroup.length,
+            policiesDirect: policiesDirect,
+            linkedIds: ids
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// ... existing code ...

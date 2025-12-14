@@ -16,37 +16,21 @@ const connectDB = async () => {
 const debugUser = async () => {
     await connectDB();
 
-    const targetMobile = '8873002702'; // The user's mobile from screenshot
-
-    console.log(`\n--- Searching for Customers with mobile ${targetMobile} ---`);
-    // Search exact
-    const exactMatches = await Customer.find({ mobile: targetMobile });
-    console.log(`Exact Matches found: ${exactMatches.length}`);
-    exactMatches.forEach(c => {
-        console.log(`ID: ${c._id}, Name: ${c.name}, Mobile: '${c.mobile}', HasPassword: ${!!c.passwordHash}`);
+    console.log(`\n--- Deep Search for 'Aman' ---`);
+    const amans = await Customer.find({ name: /Aman/i });
+    console.log(`Found ${amans.length} profiles with name 'Aman':`);
+    amans.forEach(c => {
+        console.log(` - ID: ${c._id}, Mobile: '${c.mobile}', Name: '${c.name}', Pwd: ${!!c.passwordHash}, Created: ${c.createdAt}`);
     });
 
-    // Search fuzzy (last 10 digits) to catch +91 issues
-    const allCustomers = await Customer.find({});
-    const fuzzyMatches = allCustomers.filter(c => c.mobile && c.mobile.toString().includes(targetMobile) && c.mobile !== targetMobile);
-    
-    if (fuzzyMatches.length > 0) {
-        console.log(`\n--- Fuzzy Matches (Potential duplicates with different formats) ---`);
-        fuzzyMatches.forEach(c => {
-            console.log(`ID: ${c._id}, Name: ${c.name}, Mobile: '${c.mobile}', HasPassword: ${!!c.passwordHash}`);
-        });
-    }
+    console.log(`\n--- Deep Search for Mobile '8873' ---`);
+    // Regex search
+    const mobiles = await Customer.find({ mobile: { $regex: '8873', $options: 'i' } });
+    console.log(`Found ${mobiles.length} profiles with mobile containing '8873':`);
+    mobiles.forEach(c => {
+        console.log(` - ID: ${c._id}, Mobile: '${c.mobile}', Name: '${c.name}'`);
+    });
 
-    // Mimic Controller Logic
-    console.log(`\n--- Controller Simulation ---`);
-    const mobile = targetMobile;
-    const linkedCustomerDocs = await Customer.find({ mobile }).select('_id');
-    const linkedCustomerIds = linkedCustomerDocs.map(c => c._id);
-    console.log(`Linked IDs:`, linkedCustomerIds);
-
-    const policies = await InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 });
-    console.log(`Found ${policies.length} policies.`);
-    
     process.exit();
 };
 
