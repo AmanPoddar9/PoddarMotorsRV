@@ -19,15 +19,57 @@ exports.signup = async (req, res) => {
   try {
     const { name, email, mobile, password } = req.body;
 
-    // Check if exists
-    const existingEmail = await Customer.findOne({ email });
-    if (existingEmail) return res.status(400).json({ message: 'Email already registered' });
+    // Check if exists by Mobile first (Primary Key)
+    let customer = await Customer.findOne({ mobile });
 
-    const existingMobile = await Customer.findOne({ mobile });
-    if (existingMobile) return res.status(400).json({ message: 'Mobile number already registered' });
+    if (customer) {
+        // CASE 1: Account exists but NO password (Imported/Offline Customer) -> CLAIM ACCOUNT
+        if (!customer.passwordHash) {
+            // Update details if missing
+            if (!customer.email && email) customer.email = email;
+            if (name) customer.name = name; // Update name if provided
 
-    // Create customer
-    const customer = new Customer({
+            await customer.setPassword(password);
+            await customer.save();
+            
+            // Generate Token & Login
+            const token = createToken(customer);
+            // ... (Cookie logic same as below) ...
+            const isProduction = process.env.NODE_ENV === 'production';
+            const cookieOptions = {
+                httpOnly: true,
+                sameSite: 'lax',
+                secure: isProduction,
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+                path: '/'
+            };
+            if (isProduction) cookieOptions.domain = '.poddarmotors.com';
+            res.cookie('customer_auth', token, cookieOptions);
+
+            return res.status(201).json({
+                message: 'Account linked and registered successfully',
+                customer: {
+                    id: customer._id,
+                    name: customer.name,
+                    email: customer.email,
+                    mobile: customer.mobile,
+                    primeStatus: customer.primeStatus
+                }
+            });
+        }
+        
+        // CASE 2: Account exists AND has password -> ERROR
+        return res.status(400).json({ message: 'Mobile number already registered. Please login.' });
+    }
+
+    // Check email uniqueness only if creating NEW account or if email provided doesn't match existing
+    if (email) {
+        const existingEmail = await Customer.findOne({ email });
+        if (existingEmail) return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Create NEW customer
+    customer = new Customer({
       name,
       email,
       mobile,
