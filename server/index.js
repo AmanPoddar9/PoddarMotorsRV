@@ -97,6 +97,9 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(compression());
 
+// Data sanitization against NoSQL query injection (Must be after body parser)
+app.use(require('express-mongo-sanitize')());
+
 app.get('/', (req, res) => {
   res.send('Real Value backend Server');
 });

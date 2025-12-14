@@ -28,12 +28,6 @@ const setupSecurity = (app) => {
   // Set security HTTP headers
   app.use(helmet());
 
-  // Data sanitization against NoSQL query injection
-  app.use(mongoSanitize());
-
-  // Limit request size to prevent DoS
-  app.use(require('express').json({ limit: '10kb' }));
-
   // Apply global rate limiting to all requests
   app.use('/api', limiter);
   
