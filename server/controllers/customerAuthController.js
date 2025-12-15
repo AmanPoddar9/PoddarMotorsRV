@@ -378,7 +378,7 @@ exports.updatePrimeStatus = async (req, res) => {
 // Get Current User (Lightweight)
 exports.getMe = async (req, res) => {
   try {
-    const customer = await Customer.findById(req.user.id).select('-passwordHash');
+    const customer = await Customer.findById(req.user.id).select('-passwordHash').populate('wishlist');
     if (!customer) {
       return res.status(404).json({ message: 'User not found' });
     }

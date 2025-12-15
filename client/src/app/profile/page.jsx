@@ -80,7 +80,7 @@ export default function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-custom-black pt-24 pb-12">
+    <div className="min-h-screen bg-custom-black pt-24 pb-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
@@ -200,7 +200,7 @@ export default function ProfilePage() {
                          </h2>
                          <div className="space-y-4">
                              {dashboardData.insurancePolicies.map((policy) => (
-                                 <div key={policy._id} className="bg-white/5 p-4 rounded-lg flex justify-between items-center">
+                                 <div key={policy._id} className="bg-white/5 p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                                      <div>
                                          <h4 className="text-white font-bold">{policy.vehicle?.regNumber} ({policy.vehicle?.make} {policy.vehicle?.model})</h4>
                                          <p className="text-sm text-gray-400">{policy.insurer} • Policy #{policy.policyNumber}</p>
