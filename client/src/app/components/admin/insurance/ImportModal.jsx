@@ -167,17 +167,53 @@ export default function ImportModal({ isOpen, onClose }) {
                 ncb: row['ncb']
             })).filter(p => p.policyNumber && p.expiryDate && p.mobile)
 
+            // --- CLIENT SIDE CHUNKING ---
+            // Split into chunks of 50 to prevent Vercel Timeouts
+            const CHUNK_SIZE = 50;
+            const chunks = [];
+            for (let i = 0; i < policies.length; i += CHUNK_SIZE) {
+                chunks.push(policies.slice(i, i + CHUNK_SIZE));
+            }
+
+            const aggregatedResult = {
+                total: policies.length,
+                success: 0,
+                failed: 0,
+                skipped: 0,
+                errors: []
+            };
+
             try {
-                const res = await axios.post(`${API_URL}/api/insurance/import`, { 
-                    policies, 
-                    preview: false 
-                }, { withCredentials: true })
-                setResult(res.data.results)
+                // Process chunks sequentially
+                for (let i = 0; i < chunks.length; i++) {
+                    const chunk = chunks[i];
+                    // Optional: Update progress indicator text?
+                    
+                    const res = await axios.post(`${API_URL}/api/insurance/import`, { 
+                        policies: chunk, 
+                        preview: false 
+                    }, { withCredentials: true });
+
+                    const chunkRes = res.data.results;
+                    aggregatedResult.success += chunkRes.success || 0;
+                    aggregatedResult.failed += chunkRes.failed || 0;
+                    aggregatedResult.skipped += chunkRes.skipped || 0;
+                    if(chunkRes.errors) {
+                         aggregatedResult.errors = [...aggregatedResult.errors, ...chunkRes.errors];
+                    }
+                }
+
+                setResult(aggregatedResult)
                 setFile(null)
                 setPreviewData([])
                 setIsCommitReady(false)
             } catch (err) {
-                 setError(err.response?.data?.message || 'Upload failed')
+                 console.error(err);
+                 setError(err.response?.data?.message || 'Upload failed. Some chunks may have succeeded.');
+                 // Still show partial results if we have them
+                 if (aggregatedResult.success > 0) {
+                     setResult(aggregatedResult);
+                 }
             } finally {
                 setUploading(false)
             }
