@@ -828,3 +828,25 @@ exports.addInteraction = async (req, res) => {
 exports.logWorkflowAction = async (req, res) => {
     res.status(410).json({ message: 'Use /policies/:id/interaction endpoint' });
 };
+
+// --- HELPERS ---
+
+const findPotentialMatches = async ({ mobile, vehicleReg, email, name }) => {
+    const query = { $or: [] };
+    
+    // 1. Mobile Match (Strongest)
+    if (mobile) query.$or.push({ mobile: mobile });
+    
+    // 2. Vehicle Reg Match
+    if (vehicleReg) {
+        query.$or.push({ "vehicles.regNumber": vehicleReg.toUpperCase() });
+    }
+    
+    // 3. Email Match
+    if (email) query.$or.push({ email: email.toLowerCase() });
+
+    if (query.$or.length === 0) return [];
+
+    // Return fields needed for decision
+    return await Customer.find(query).select('_id name mobile email areaCity vehicles');
+};
