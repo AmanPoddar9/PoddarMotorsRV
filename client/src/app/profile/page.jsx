@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useCustomer } from '../utils/customerContext'
 import { useRouter } from 'next/navigation'
-import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser, FaEdit, FaShieldAlt } from 'react-icons/fa'
+import { FaCrown, FaCar, FaHeart, FaWrench, FaCog, FaSpinner, FaUser, FaEdit, FaShieldAlt, FaCheck } from 'react-icons/fa'
 import axios from 'axios'
 import ProfileRequirements from '../components/profile/ProfileRequirements'
 import Image from 'next/image'
@@ -218,34 +218,124 @@ export default function ProfilePage() {
                 )}
 
                 {/* Prime Status Card */}
-                <div className={`p-6 rounded-xl border ${
-                  customer.primeStatus?.isActive
-                    ? 'bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border-yellow-500/30'
-                    : 'bg-custom-jet border-white/10'
-                }`}>
-                  <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <FaCrown className="text-yellow-400" />
-                    Prime Membership
-                  </h2>
-                  {customer.primeStatus?.isActive ? (
-                    <div>
-                      <p className="text-custom-platinum">Status: <span className="text-yellow-400 font-bold">{customer.primeStatus.tier} Member</span></p>
-                      <p className="text-custom-platinum mt-2">Benefits:</p>
-                      <ul className="list-disc list-inside text-custom-platinum/80 mt-1">
-                        <li>2 Free Car Washes</li>
-                        <li>Priority Workshop Booking</li>
-                        <li>10% Off on Services</li>
-                      </ul>
+                {(() => {
+                  const getTierStyles = (tier) => {
+                    switch (tier) {
+                      case 'Platinum':
+                        return {
+                          cardBg: 'bg-gradient-to-br from-slate-900 to-black',
+                          borderColor: 'border-slate-500/50',
+                          iconColor: 'text-blue-300',
+                          textColor: 'text-white',
+                          accentColor: 'text-blue-200',
+                          badgeBg: 'bg-blue-500/20 text-blue-300',
+                          checkColor: 'text-blue-400 bg-blue-500/20'
+                        }
+                      case 'Silver':
+                        return {
+                          cardBg: 'bg-gradient-to-br from-slate-700 to-slate-600',
+                          borderColor: 'border-slate-400/50',
+                          iconColor: 'text-slate-300',
+                          textColor: 'text-slate-100',
+                          accentColor: 'text-slate-200',
+                          badgeBg: 'bg-slate-400/20 text-slate-200',
+                          checkColor: 'text-slate-300 bg-slate-400/20'
+                        }
+                      default: // Gold
+                        return {
+                          cardBg: 'bg-gradient-to-br from-yellow-900/40 to-yellow-700/20',
+                          borderColor: 'border-yellow-500/50',
+                          iconColor: 'text-yellow-400',
+                          textColor: 'text-yellow-50',
+                          accentColor: 'text-yellow-400',
+                          badgeBg: 'bg-yellow-500/20 text-yellow-400',
+                          checkColor: 'text-yellow-400 bg-yellow-500/20'
+                        }
+                    }
+                  }
+
+                  const tierStyles = customer.primeStatus?.isActive 
+                    ? getTierStyles(customer.primeStatus.tier) 
+                    : { 
+                        cardBg: 'bg-custom-jet', 
+                        borderColor: 'border-white/10',
+                        iconColor: 'text-yellow-400' 
+                      }
+
+                  return (
+                    <div className={`p-6 rounded-xl border ${tierStyles.cardBg} ${tierStyles.borderColor}`}>
+                      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <FaCrown className={tierStyles.iconColor} />
+                        Prime Membership
+                      </h2>
+                      {customer.primeStatus?.isActive ? (
+                        <div>
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                               <p className="text-custom-platinum text-sm">Current Status</p>
+                               <p className={`text-xl font-bold ${tierStyles.accentColor}`}>{customer.primeStatus.tier} Member</p>
+                            </div>
+                            {customer.primeStatus.expiryDate && (
+                                <div className="text-right">
+                                    <p className="text-custom-platinum text-sm">Valid Until</p>
+                                    <p className="text-white font-medium">{new Date(customer.primeStatus.expiryDate).toLocaleDateString()}</p>
+                                </div>
+                            )}
+                          </div>
+                          
+                          <div className="bg-black/30 rounded-lg p-4 border border-white/5">
+                            <p className="text-custom-platinum mb-3 font-semibold text-sm uppercase tracking-wider">Your Benefits</p>
+                            <ul className="space-y-3">
+                              {(() => {
+                                  const defaultBenefits = {
+                                      Silver: ['1 Full Car Wash', '1 Top Wash', 'Wheel Alignment + Balancing (50% Off)', 'General Check-up', 'Priority Service'],
+                                      Gold: ['2 Complete Car Washes', 'Wheel Alignment + Balancing', ' Labor Discount (50% Off)', 'Brake Overhaul (20% Off)', 'Standard Check-Up'],
+                                      Platinum: ['Unlimited Pickup & Drop', 'Unlimited Exterior Washing', 'Interior Cleaning (6x)', 'Wheel Alignment + Balancing (2x)', 'Engine Oil Change']
+                                  };
+                                  
+                                  const benefitsList = (customer.primeStatus.benefits && customer.primeStatus.benefits.length > 0)
+                                      ? customer.primeStatus.benefits
+                                      : (defaultBenefits[customer.primeStatus.tier] || []);
+
+                                  if (benefitsList.length === 0) return <p className="text-custom-platinum text-sm italic">No benefits details available.</p>;
+
+                                  return benefitsList.map((benefit, idx) => {
+                                      const isAvailed = customer.primeStatus.servicesAvailed?.includes(benefit);
+                                      return (
+                                          <li key={idx} className="flex items-start gap-3">
+                                              <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                                  isAvailed ? tierStyles.checkColor : 'bg-white/10'
+                                              }`}>
+                                                  {isAvailed ? <FaCheck size={10} /> : <div className={`w-1.5 h-1.5 rounded-full ${tierStyles.accentColor.replace('text-', 'bg-')}`} />}
+                                              </div>
+                                              <div className="flex-1">
+                                                  <p className={`text-sm ${isAvailed ? 'text-custom-platinum/50 line-through' : 'text-white'}`}>
+                                                      {benefit}
+                                                  </p>
+                                              </div>
+                                              {isAvailed && (
+                                                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${tierStyles.badgeBg}`}>
+                                                      Used
+                                                  </span>
+                                              )}
+                                          </li>
+                                      );
+                                  });
+                              })()}
+                            </ul>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-center">
+                          <p className="text-custom-platinum">Not a Prime member yet. Upgrade to enjoy exclusive benefits!</p>
+                          <button onClick={() => router.push('/prime-membership')} className="px-4 py-2 bg-custom-accent text-custom-black font-bold rounded-lg text-sm">
+                            View Plans
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="flex justify-between items-center">
-                      <p className="text-custom-platinum">Not a Prime member yet. Upgrade to enjoy exclusive benefits!</p>
-                      <button onClick={() => router.push('/workshop')} className="px-4 py-2 bg-custom-accent text-custom-black font-bold rounded-lg text-sm">
-                        View Plans
-                      </button>
-                    </div>
-                  )}
-                </div>
+                  )
+                })()}
               </div>
             )}
 
