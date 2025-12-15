@@ -5,7 +5,7 @@ const customerSchema = new mongoose.Schema({
   // Identity
   customId: { type: String, unique: true, index: true, sparse: true }, // e.g., PM-25-00001
   name: { type: String, required: true },
-  email: { type: String }, // Made optional for offline customers
+  email: { type: String, unique: true, index: true, sparse: true }, // Made optional for offline customers, sparse allows duplicates of null/undefined
   mobile: { type: String, required: true, unique: true, index: true },
   alternatePhones: [{ type: String, index: true }], // Array for multiple contacts, indexed for search
   areaCity: { type: String }, // New field

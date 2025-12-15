@@ -582,6 +582,14 @@ exports.importPolicies = async (req, res) => {
             previewData: [] // For UI confirmation
         };
 
+        // SELF-HEAL: Ensure email index is sparse by dropping potentially bad index
+        try {
+            await Customer.collection.dropIndex('email_1');
+            console.log('Dropped email_1 index to ensure sparsity');
+        } catch (e) {
+            // Ignore if index doesn't exist
+        }
+
         // --- PREVIEW MODE ---
         if (preview) {
             // Check for existing policy numbers in one go (optimization)
