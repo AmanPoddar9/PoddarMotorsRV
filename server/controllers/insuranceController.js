@@ -680,7 +680,7 @@ exports.importPolicies = async (req, res) => {
                             customId,
                             name: row.customerName || 'Unknown',
                             mobile: row.mobile,
-                            email: row.email,
+                            email: row.email || undefined, // Avoid saving null to prevent unique index error
                             areaCity: row.areaCity,
                             vehicles: row.regNumber ? [{
                                 regNumber: row.regNumber.toUpperCase(),
@@ -843,7 +843,7 @@ const findPotentialMatches = async ({ mobile, vehicleReg, email, name }) => {
     }
     
     // 3. Email Match
-    if (email) query.$or.push({ email: email.toLowerCase() });
+    if (email && email.length > 5) query.$or.push({ email: email.toLowerCase() });
 
     if (query.$or.length === 0) return [];
 
