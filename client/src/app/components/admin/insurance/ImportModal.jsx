@@ -15,6 +15,32 @@ export default function ImportModal({ isOpen, onClose }) {
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
 
+  // Helper: robust mobile extraction
+  const cleanMobile = (val) => {
+    if (!val) return '';
+    const str = String(val).replace(/\D/g, ''); // Remove non-digits
+    return str.slice(-10); // Take last 10
+  };
+
+  // Helper: Smart Column Finder
+  // If specific header is missing, search ALL columns for a value that looks like a mobile number (10 digits starting with 6-9)
+  const findMobileInRow = (row) => {
+     // 1. Try explicit columns first
+     const explicit = row['mobile'] || row['phone'] || row['contact'];
+     if (explicit) return cleanMobile(explicit);
+     
+     // 2. Fallback: Search all values
+     for (const key in row) {
+         const val = row[key];
+         if (!val) continue;
+         const str = String(val).replace(/\D/g, '');
+         if (str.length === 10 && ['6','7','8','9'].includes(str[0])) {
+             return str;
+         }
+     }
+     return '';
+  };
+
   const handleFileChange = (e) => {
     const selected = e.target.files[0]
     if (selected) {
@@ -35,33 +61,38 @@ export default function ImportModal({ isOpen, onClose }) {
     Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
+        transformHeader: (h) => h.trim().toLowerCase(), // normalize headers
         complete: async (results) => {
             const policies = results.data.map(row => ({
-                policyNumber: row['Policy Number'] || row['policyNumber'],
-                insurer: row['Insurer'] || row['insurer'],
-                expiryDate: row['Expiry Date'] || row['expiryDate'],
-                // New Fields Mapped
-                policyStartDate: row['Policy Start Date'],
-                customerName: row['Customer Name'] || row['name'],
-                customerMobile: row['Mobile'] || row['mobile'],
-                email: row['Email'],
-                areaCity: row['City'],
+                // Keys are now guaranteed lowercase and trimmed
+                policyNumber: row['policynumber'] || row['policy number'] || row['policy_no'],
+                insurer: row['insurer'],
+                expiryDate: row['expirydate'] || row['expiry date'] || row['expiry'], // Added 'expiry'
+                policyStartDate: row['policystartdate'] || row['policy start date'],
                 
-                regNumber: row['Reg Number'] || row['regNumber'],
-                make: row['Make'],
-                model: row['Model'],
-                variant: row['Variant'],
-                fuelType: row['Fuel Type'],
-                yearOfManufacture: row['Year'],
-                registrationDate: row['Registration Date'],
+                customerName: row['customername'] || row['customer name'] || row['name'],
                 
-                premiumAmount: row['Total Premium'] || row['Premium'],
-                ownDamagePremium: row['OD Premium'],
-                tpPremium: row['TP Premium'],
-                addonPremium: row['Addon Premium'],
-                idvCurrent: row['IDV'],
-                ncb: row['NCB']
-            })).filter(p => p.policyNumber && p.expiryDate && p.customerMobile)
+                // ROBUST Mobile Extraction
+                mobile: findMobileInRow(row),
+
+                email: row['email'],
+                areaCity: row['city'] || row['areacity'] || row['area city'],
+                
+                regNumber: row['regnumber'] || row['reg number'],
+                make: row['make'],
+                model: row['model'],
+                variant: row['variant'],
+                fuelType: row['fueltype'] || row['fuel type'],
+                year: row['year'] || row['yearofmanufacture'] || row['year of manufacture'],
+                registrationDate: row['registrationdate'] || row['registration date'],
+                
+                premiumAmount: row['totalpremium'] || row['total premium'] || row['premium'] || row['premiumamount'],
+                ownDamagePremium: row['odpremium'] || row['od premium'] || row['owndhamagepremium'],
+                tpPremium: row['tppremium'] || row['tp premium'],
+                addonPremium: row['addonpremium'] || row['addon premium'],
+                idvCurrent: row['idv'] || row['idvcurrent'],
+                ncb: row['ncb']
+            })).filter(p => p.policyNumber && p.expiryDate && p.mobile)
 
             if (policies.length === 0) {
                 setError('No valid rows found. Check column headers.')
@@ -100,34 +131,41 @@ export default function ImportModal({ isOpen, onClose }) {
     if (!file || !isCommitReady) return
     setUploading(true)
     
-     Papa.parse(file, {
+    Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
+        transformHeader: (h) => h.trim().toLowerCase(), // normalize headers
         complete: async (results) => {
-             // (Identical mapping as above - could extract function but repeating for safety)
-             const policies = results.data.map(row => ({
-                policyNumber: row['Policy Number'] || row['policyNumber'],
-                insurer: row['Insurer'] || row['insurer'],
-                expiryDate: row['Expiry Date'] || row['expiryDate'],
-                policyStartDate: row['Policy Start Date'],
-                customerName: row['Customer Name'] || row['name'],
-                customerMobile: row['Mobile'] || row['mobile'],
-                email: row['Email'],
-                areaCity: row['City'],
-                regNumber: row['Reg Number'] || row['regNumber'],
-                make: row['Make'],
-                model: row['Model'],
-                variant: row['Variant'],
-                fuelType: row['Fuel Type'],
-                yearOfManufacture: row['Year'],
-                registrationDate: row['Registration Date'],
-                premiumAmount: row['Total Premium'] || row['Premium'],
-                ownDamagePremium: row['OD Premium'],
-                tpPremium: row['TP Premium'],
-                addonPremium: row['Addon Premium'],
-                idvCurrent: row['IDV'],
-                ncb: row['NCB']
-            })).filter(p => p.policyNumber && p.expiryDate && p.customerMobile)
+            const policies = results.data.map(row => ({
+                // Keys are now guaranteed lowercase and trimmed
+                policyNumber: row['policynumber'] || row['policy number'] || row['policy_no'],
+                insurer: row['insurer'],
+                expiryDate: row['expirydate'] || row['expiry date'] || row['expiry'],
+                policyStartDate: row['policystartdate'] || row['policy start date'],
+                
+                customerName: row['customername'] || row['customer name'] || row['name'],
+                
+                // ROBUST Mobile Extraction
+                mobile: findMobileInRow(row), // Use same smart logic
+
+                email: row['email'],
+                areaCity: row['city'] || row['areacity'] || row['area city'],
+                
+                regNumber: row['regnumber'] || row['reg number'],
+                make: row['make'],
+                model: row['model'],
+                variant: row['variant'],
+                fuelType: row['fueltype'] || row['fuel type'],
+                year: row['year'] || row['yearofmanufacture'] || row['year of manufacture'],
+                registrationDate: row['registrationdate'] || row['registration date'],
+                
+                premiumAmount: row['totalpremium'] || row['total premium'] || row['premium'] || row['premiumamount'],
+                ownDamagePremium: row['odpremium'] || row['od premium'] || row['owndhamagepremium'],
+                tpPremium: row['tppremium'] || row['tp premium'],
+                addonPremium: row['addonpremium'] || row['addon premium'],
+                idvCurrent: row['idv'] || row['idvcurrent'],
+                ncb: row['ncb']
+            })).filter(p => p.policyNumber && p.expiryDate && p.mobile)
 
             try {
                 const res = await axios.post(`${API_URL}/api/insurance/import`, { 
