@@ -615,148 +615,142 @@ exports.importPolicies = async (req, res) => {
         // Optimization: Fetch all potential duplicates upfront? Hard for Customers.
         // We will process sequentially for safety, or batch if slow. Sequential is fine for 5-7k for now if timeout is high.
 
-        for (const [index, row] of rows.entries()) {
-            try {
-                // 1. Validation & Skip
-                if (!row.policyNumber || !row.mobile) {
-                    results.failed++;
-                    results.errors.push(`Row ${index + 1}: Missing mandatory fields`);
-                    continue;
-                }
+        // --- COMMIT MODE ---
+        // Optimization: Parallel Batch Processing to prevent Timeouts
+        const batchSize = 20; // Process 20 records at a time
+        for (let i = 0; i < rows.length; i += batchSize) {
+            const batch = rows.slice(i, i + batchSize);
+            
+            await Promise.all(batch.map(async (row, batchIdx) => {
+                const globalIndex = i + batchIdx;
+                try {
+                    // 1. Validation & Skip (Silent skip for bad data to focus on bulk)
+                    if (!row.policyNumber || !row.mobile) {
+                        results.failed++;
+                        results.errors.push(`Row ${globalIndex + 1}: Missing mandatory fields`);
+                        return;
+                    }
 
-                const existingPolicy = await InsurancePolicy.findOne({ policyNumber: row.policyNumber });
-                if (existingPolicy) {
-                    results.skipped++;
-                    continue; // Skip duplicates silently or log
-                }
+                    const existingPolicy = await InsurancePolicy.findOne({ policyNumber: row.policyNumber });
+                    if (existingPolicy) {
+                        results.skipped++;
+                        return;
+                    }
 
-                // 2. Find or Create Customer (Smart Match)
-                let customer;
-                
-                // Matches returns array. We take best match (first one usually).
-                // Or we trust "mobile" as unique key if our matcher is strict.
-                const matches = await findPotentialMatches({
-                    mobile: row.mobile,
-                    vehicleReg: row.regNumber,
-                    email: row.email,
-                    name: row.customerName // For fuzzy logic if we added it
-                });
+                    // 2. Find or Create Customer
+                    let customer;
+                    // Optimization: We could cache recent customers in memory map for this batch but risk is low for 500 rows.
+                    const matches = await findPotentialMatches({
+                        mobile: row.mobile,
+                        vehicleReg: row.regNumber,
+                        email: row.email,
+                        name: row.customerName
+                    });
 
-                if (matches.length > 0) {
-                    // LINK to Existing
-                    customer = await Customer.findById(matches[0]._id);
-                    
-                    // Update vehicle list if new reg
-                    if (row.regNumber && !customer.vehicles.some(v => v.regNumber === row.regNumber.toUpperCase())) {
-                        customer.vehicles.push({
-                            regNumber: row.regNumber.toUpperCase(),
-                            make: row.make,
-                            model: row.model,
-                            variant: row.variant,
-                            fuelType: row.fuelType,
-                            yearOfManufacture: row.yearOfManufacture,
-                            registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                    if (matches.length > 0) {
+                        // LINK
+                        customer = await Customer.findById(matches[0]._id);
+                        if (!customer) { // Safety check
+                             throw new Error('Matched customer not found');
+                        }
+
+                        let needsSave = false;
+                        if (row.regNumber && !customer.vehicles.some(v => v.regNumber === row.regNumber.toUpperCase())) {
+                            customer.vehicles.push({
+                                regNumber: row.regNumber.toUpperCase(),
+                                make: row.make,
+                                model: row.model,
+                                variant: row.variant,
+                                fuelType: row.fuelType,
+                                yearOfManufacture: row.yearOfManufacture,
+                                registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                            });
+                            needsSave = true;
+                        }
+                        if (!customer.areaCity && row.areaCity) {
+                            customer.areaCity = row.areaCity;
+                            needsSave = true;
+                        }
+                        if (needsSave) await customer.save();
+
+                    } else {
+                        // CREATE
+                        const customId = await generateCustomId();
+                        customer = new Customer({
+                            customId,
+                            name: row.customerName || 'Unknown',
+                            mobile: row.mobile,
+                            email: row.email,
+                            areaCity: row.areaCity,
+                            vehicles: row.regNumber ? [{
+                                regNumber: row.regNumber.toUpperCase(),
+                                make: row.make,
+                                model: row.model,
+                                variant: row.variant,
+                                fuelType: row.fuelType,
+                                yearOfManufacture: row.yearOfManufacture,
+                                registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                            }] : []
                         });
                         await customer.save();
                     }
-                    
-                    // Update stats/city if missing
-                    if (!customer.areaCity && row.areaCity) {
-                        customer.areaCity = row.areaCity;
-                        await customer.save();
-                    }
 
-                } else {
-                    // CREATE New
-                    const customId = await generateCustomId();
-                    customer = new Customer({
-                        customId,
-                        name: row.customerName || 'Unknown',
-                        mobile: row.mobile,
-                        email: row.email,
-                        areaCity: row.areaCity,
-                        vehicles: row.regNumber ? [{
-                            regNumber: row.regNumber.toUpperCase(),
+                    // 3. Create Policy
+                    const parseDate = (dateStr) => {
+                        if (!dateStr) return null;
+                        if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                            const [day, month, year] = dateStr.split('-');
+                            return new Date(`${year}-${month}-${day}`);
+                        }
+                        if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                            const [day, month, year] = dateStr.split('/');
+                            return new Date(`${year}-${month}-${day}`);
+                        }
+                        const d = new Date(dateStr);
+                        return isNaN(d.getTime()) ? null : d;
+                    };
+
+                    const pEndDate = parseDate(row.expiryDate);
+                    const pStartDate = parseDate(row.policyStartDate);
+                    const isExpired = pEndDate && pEndDate < new Date();
+
+                    const policy = new InsurancePolicy({
+                        customer: customer._id,
+                        policyNumber: row.policyNumber,
+                        insurer: row.insurer || 'Unknown',
+                        policyType: row.policyType,
+                        source: row.source || 'Import',
+                        policyStartDate: pStartDate,
+                        policyEndDate: pEndDate,
+                        vehicle: {
+                            regNumber: row.regNumber ? row.regNumber.toUpperCase() : 'UNKNOWN',
                             make: row.make,
                             model: row.model,
                             variant: row.variant,
-                            fuelType: row.fuelType,
-                            yearOfManufacture: row.yearOfManufacture,
-                            registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
-                        }] : []
+                            year: row.year,
+                            chassisNumber: row.chassisNo,
+                            engineNumber: row.engineNo
+                        },
+                        premiumAmount: parseFloat(row.totalPremiumPaid) || parseFloat(row.premiumAmount) || 0,
+                        ownDamagePremium: parseFloat(row.ownDamagePremium) || 0,
+                        tpPremium: parseFloat(row.tpPremium) || 0,
+                        addonPremium: parseFloat(row.addonPremium) || 0,
+                        totalPremiumPaid: parseFloat(row.totalPremiumPaid) || 0,
+                        idv: parseFloat(row.idvCurrent) || 0,
+                        ncb: parseFloat(row.ncb) || 0,
+                        currentAddons: row.currentAddons ? row.currentAddons.split(',').map(s=>s.trim()) : [],
+                        renewalStatus: isExpired ? 'Pending' : 'Pending',
                     });
-                    await customer.save();
+
+                    await policy.save();
+                    results.success++;
+
+                } catch (err) {
+                    results.failed++;
+                    results.errors.push(`Row ${globalIndex + 1} (${row.policyNumber}): ${err.message}`);
+                    console.error(`Import Error Row ${globalIndex}:`, err); // Keep simple log
                 }
-
-                // 3. Create Policy
-                // Helper to parse dates (DD-MM-YYYY or ISO)
-                const parseDate = (dateStr) => {
-                    if (!dateStr) return null;
-                    // Try DD-MM-YYYY format first (common in CSVs)
-                    if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-                        const [day, month, year] = dateStr.split('-');
-                        return new Date(`${year}-${month}-${day}`);
-                    }
-                    // Try DD/MM/YYYY
-                    if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-                        const [day, month, year] = dateStr.split('/');
-                        return new Date(`${year}-${month}-${day}`);
-                    }
-                    // Fallback to standard parser
-                    const d = new Date(dateStr);
-                    return isNaN(d.getTime()) ? null : d;
-                };
-
-                const pEndDate = parseDate(row.expiryDate);
-                const pStartDate = parseDate(row.policyStartDate);
-                
-                // Determine status based on end date
-                const isExpired = pEndDate && pEndDate < new Date();
-
-                const policy = new InsurancePolicy({
-                    customer: customer._id,
-                    policyNumber: row.policyNumber,
-                    insurer: row.insurer || 'Unknown',
-                    policyType: row.policyType,
-                    source: row.source || 'Import',
-                    
-                    policyStartDate: pStartDate,
-                    policyEndDate: pEndDate, // Crucial
-                    
-                    vehicle: {
-                        regNumber: row.regNumber ? row.regNumber.toUpperCase() : 'UNKNOWN',
-                        make: row.make,
-                        model: row.model,
-                        variant: row.variant,
-                        year: row.year,
-                        chassisNumber: row.chassisNo,
-                        engineNumber: row.engineNo
-                    },
-
-                    premiumAmount: parseFloat(row.totalPremiumPaid) || parseFloat(row.premiumAmount) || 0,
-                    ownDamagePremium: parseFloat(row.ownDamagePremium) || 0,
-                    tpPremium: parseFloat(row.tpPremium) || 0,
-                    addonPremium: parseFloat(row.addonPremium) || 0,
-                    totalPremiumPaid: parseFloat(row.totalPremiumPaid) || 0,
-                    idv: parseFloat(row.idvCurrent) || 0,
-                    ncb: parseFloat(row.ncb) || 0,
-                    currentAddons: row.currentAddons ? row.currentAddons.split(',').map(s=>s.trim()) : [],
-
-                    renewalStatus: isExpired ? 'Pending' : 'Pending', // Everything imported starts as Pending renewal unless specified?
-                    // Actually if it is expired, it IS pending renewal. If active, it will become pending.
-                });
-
-                await policy.save();
-                results.success++;
-
-                // Optional: Log Import Interaction? 
-                // Might be too noisy for 7000 rows. Skip for now.
-
-            } catch (err) {
-                results.failed++;
-                results.errors.push(`Row ${index + 1} (${row.policyNumber}): ${err.message}`);
-                console.error(err);
-            }
+            }));
         }
 
         res.json({ message: 'Import processed', results });
