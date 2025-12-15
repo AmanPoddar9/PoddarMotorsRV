@@ -137,27 +137,7 @@ const SellPageClient = () => {
                 <p className="text-gray-400 text-sm">Fill in the details to get started</p>
               </div>
 
-              {submitSuccess ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-green-500/20 border border-green-500/50 rounded-xl p-8 text-center"
-                >
-                  <FaCheckCircle className="text-5xl text-green-400 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-white mb-2">Request Submitted!</h3>
-                  <p className="text-gray-200">
-                    Thank you for choosing us. Our purchase expert will contact you shortly with the best offer.
-                  </p>
-                  <button 
-                    onClick={() => setSubmitSuccess(false)}
-                    className="mt-6 text-sm text-green-400 hover:text-green-300 underline"
-                  >
-                    Submit another request
-                  </button>
-                </motion.div>
-              ) : (
-                <SellRequestForm />
-              )}
+              <SellRequestForm />
             </motion.div>
           </div>
         </div>
