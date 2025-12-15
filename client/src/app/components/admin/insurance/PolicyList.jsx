@@ -15,6 +15,8 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const [bucket, setBucket] = useState(initialBucket || null) // upcoming_month, 15_days, 7_days, overdue
   const [search, setSearch] = useState('')
   
+  const [limit, setLimit] = useState(10) // Limit Rows
+  
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [editingPolicy, setEditingPolicy] = useState(null) // New Selection
@@ -53,7 +55,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const fetchPolicies = async () => {
     setLoading(true)
     try {
-      const params = { page, limit: 10, filter, search };
+      const params = { page, limit, filter, search };
       if (bucket) params.bucket = bucket;
 
       const res = await axios.get(`${API_URL}/api/insurance/policies`, {
@@ -75,7 +77,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
     }, 500) // Debounce search
 
     return () => clearTimeout(delayDebounceFn)
-  }, [page, filter, bucket, search])
+  }, [page, filter, bucket, search, limit])
 
   const handleOpenDetail = (customerId) => {
     setSelectedCustomer(customerId)
@@ -256,27 +258,53 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         </table>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6 gap-2">
-            {/* ... keep pagination same ... */}
-            <button 
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-            className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50 text-white"
-          >
-            Prev
-          </button>
-          <span className="text-gray-400 py-1">Page {page} of {totalPages}</span>
-          <button 
-             disabled={page === totalPages}
-             onClick={() => setPage(page + 1)}
-             className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50 text-white"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      {/* Pagination & Limit Control */}
+      <div className="flex flex-col md:flex-row justify-between items-center mt-4 border-t border-gray-700 pt-4">
+          <div className="text-sm text-gray-400 mb-4 md:mb-0">
+              Showing <span className="text-white font-bold">{policies.length}</span> of <span className="text-white font-bold">{totalPages * limit}</span> entries
+          </div>
+
+          <div className="flex items-center gap-4">
+               {/* Limit Selector */}
+               <div className="flex items-center gap-2">
+                   <span className="text-sm text-gray-400">Rows:</span>
+                   <select 
+                       value={limit} 
+                       onChange={(e) => {
+                           setLimit(Number(e.target.value));
+                           setPage(1); // Reset to page 1 on limit change
+                       }}
+                       className="bg-gray-700 text-white text-sm rounded-lg px-2 py-1 border-none focus:ring-1 focus:ring-blue-500"
+                   >
+                       <option value={10}>10</option>
+                       <option value={20}>20</option>
+                       <option value={50}>50</option>
+                       <option value={100}>100</option>
+                   </select>
+               </div>
+
+               {/* Pagination Buttons */}
+               <div className="flex gap-1">
+                    <button 
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                        className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg disabled:opacity-50 text-white text-sm transition"
+                    >
+                        Prev
+                    </button>
+                    <span className="px-3 py-1 text-gray-400 text-sm">
+                        Page <span className="text-white font-bold">{page}</span> of {totalPages}
+                    </span>
+                    <button 
+                        disabled={page === totalPages}
+                        onClick={() => setPage(page + 1)}
+                        className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg disabled:opacity-50 text-white text-sm transition"
+                    >
+                        Next
+                    </button>
+               </div>
+          </div>
+      </div>
 
       {isDetailModalOpen && (
         <CustomerDetailModal 
