@@ -11,11 +11,15 @@ export default function PrimeMembershipsPage() {
   
   // Members State
   const [customers, setCustomers] = useState([])
-  const [filteredCustomers, setFilteredCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all') // all, active, inactive
   const [error, setError] = useState(null)
+  
+  // Members Pagination
+  const [membersPage, setMembersPage] = useState(1)
+  const [membersTotalPages, setMembersTotalPages] = useState(1)
+  const [membersTotal, setMembersTotal] = useState(0)
 
   // Edit Modal State
   const [modalOpen, setModalOpen] = useState(false)
@@ -23,7 +27,6 @@ export default function PrimeMembershipsPage() {
   const [formData, setFormData] = useState({
     isActive: false,
     tier: 'Gold',
-    expiryDate: '',
     expiryDate: '',
     benefits: '',
     servicesAvailed: []
@@ -33,29 +36,57 @@ export default function PrimeMembershipsPage() {
   // Enquiries State
   const [enquiries, setEnquiries] = useState([])
   const [enquiriesLoading, setEnquiriesLoading] = useState(false)
+  
+  // Enquiries Pagination
+  const [enquiriesPage, setEnquiriesPage] = useState(1)
+  const [enquiriesTotalPages, setEnquiriesTotalPages] = useState(1)
+  const [enquiriesTotal, setEnquiriesTotal] = useState(0)
+
+  // Debounce search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (activeTab === 'members') {
+        setMembersPage(1) // Reset to page 1 on search change
+        fetchCustomers(1)
+      }
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchQuery])
 
   useEffect(() => {
     if (activeTab === 'members') {
-      fetchCustomers()
+      fetchCustomers(membersPage)
     } else {
-      fetchEnquiries()
+      fetchEnquiries(enquiriesPage)
     }
-  }, [activeTab])
-
-  useEffect(() => {
-    if (activeTab === 'members') {
-      filterCustomers()
-    }
-  }, [customers, searchQuery, filterStatus, activeTab])
+  }, [activeTab, membersPage, enquiriesPage, filterStatus])
 
   // --- Members Functions ---
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (page = 1) => {
     try {
       setLoading(true)
       setError(null)
-      const res = await axios.get(`${API_URL}/api/customer/all`, { withCredentials: true })
+      const params = {
+        page,
+        limit: 20,
+        search: searchQuery,
+      }
+      if (filterStatus !== 'all') {
+        params.primeStatus = filterStatus
+      }
+
+      const res = await axios.get(`${API_URL}/api/customer/all`, { 
+        params,
+        withCredentials: true 
+      })
+      
       setCustomers(res.data.customers)
+      if (res.data.pagination) {
+        setMembersTotalPages(res.data.pagination.totalPages)
+        setMembersTotal(res.data.pagination.total)
+      }
     } catch (error) {
       console.error('Error fetching customers:', error)
       setError(error.response?.data?.message || 'Failed to load customers. Please ensure you are logged in as admin.')
@@ -64,24 +95,38 @@ export default function PrimeMembershipsPage() {
     }
   }
 
-  const filterCustomers = () => {
-    let filtered = customers
+  // --- Enquiries Functions ---
 
-    if (searchQuery) {
-      filtered = filtered.filter(c => 
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.mobile.includes(searchQuery) ||
-        c.email.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+  const fetchEnquiries = async (page = 1) => {
+    try {
+      setEnquiriesLoading(true)
+      const res = await axios.get(`${API_URL}/api/prime-enquiry`, { 
+        params: { page, limit: 20 },
+        withCredentials: true 
+      })
+      if (res.data.success) {
+        setEnquiries(res.data.data)
+        if (res.data.pagination) {
+          setEnquiriesTotalPages(res.data.pagination.totalPages)
+          setEnquiriesTotal(res.data.pagination.total)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching enquiries:', error)
+    } finally {
+      setEnquiriesLoading(false)
     }
+  }
 
-    if (filterStatus === 'active') {
-      filtered = filtered.filter(c => c.primeStatus?.isActive)
-    } else if (filterStatus === 'inactive') {
-      filtered = filtered.filter(c => !c.primeStatus?.isActive)
+  const updateEnquiryStatus = async (id, newStatus) => {
+    try {
+      await axios.patch(`${API_URL}/api/prime-enquiry/${id}`, { status: newStatus }, { withCredentials: true })
+      // Optimistic update
+      setEnquiries(enquiries.map(e => e._id === id ? { ...e, status: newStatus } : e))
+    } catch (error) {
+      console.error('Error updating status:', error)
+      alert('Failed to update status')
     }
-
-    setFilteredCustomers(filtered)
   }
 
   const openEditModal = (customer) => {
@@ -119,7 +164,7 @@ export default function PrimeMembershipsPage() {
       )
 
       setModalOpen(false)
-      fetchCustomers()
+      fetchCustomers(membersPage)
     } catch (error) {
       console.error('Error updating Prime status:', error)
       alert('Failed to update Prime status')
@@ -128,32 +173,31 @@ export default function PrimeMembershipsPage() {
     }
   }
 
-  // --- Enquiries Functions ---
-
-  const fetchEnquiries = async () => {
-    try {
-      setEnquiriesLoading(true)
-      const res = await axios.get(`${API_URL}/api/prime-enquiry`, { withCredentials: true })
-      if (res.data.success) {
-        setEnquiries(res.data.data)
-      }
-    } catch (error) {
-      console.error('Error fetching enquiries:', error)
-    } finally {
-      setEnquiriesLoading(false)
-    }
-  }
-
-  const updateEnquiryStatus = async (id, newStatus) => {
-    try {
-      await axios.patch(`${API_URL}/api/prime-enquiry/${id}`, { status: newStatus }, { withCredentials: true })
-      // Optimistic update
-      setEnquiries(enquiries.map(e => e._id === id ? { ...e, status: newStatus } : e))
-    } catch (error) {
-      console.error('Error updating status:', error)
-      alert('Failed to update status')
-    }
-  }
+  // Pagination Control Component
+  const PaginationControls = ({ currentPage, totalPages, onPageChange, totalItems }) => (
+    <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 bg-custom-black/50">
+      <div className="text-sm text-custom-platinum">
+        Showing page <span className="font-bold text-white">{currentPage}</span> of <span className="font-bold text-white">{totalPages}</span> 
+        <span className="ml-2 text-gray-500">({totalItems} total)</span>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 text-sm bg-custom-black border border-white/20 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 text-sm bg-custom-black border border-white/20 rounded hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-custom-black text-white">
@@ -219,7 +263,10 @@ export default function PrimeMembershipsPage() {
                   </div>
                   <select
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
+                    onChange={(e) => {
+                      setFilterStatus(e.target.value)
+                      setMembersPage(1) // Reset page on filter change
+                    }}
                     className="w-full px-4 py-2 bg-custom-black border border-white/20 rounded-lg text-white focus:outline-none focus:border-custom-accent"
                   >
                     <option value="all">All Status</option>
@@ -231,69 +278,78 @@ export default function PrimeMembershipsPage() {
                 {loading ? (
                   <div className="text-center py-12 text-custom-platinum">Loading members...</div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-custom-black border-b border-white/10">
-                        <tr>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Name</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Mobile</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Prime Status</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Tier</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Expiry</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredCustomers.length === 0 ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-custom-black border-b border-white/10">
                           <tr>
-                            <td colSpan="6" className="px-6 py-12 text-center text-custom-platinum">No members found</td>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Name</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Mobile</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Prime Status</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Tier</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Expiry</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
                           </tr>
-                        ) : (
-                          filteredCustomers.map((customer) => (
-                            <tr key={customer._id} className="border-b border-white/5 hover:bg-custom-black/50">
-                              <td className="px-6 py-4 font-medium">{customer.name}</td>
-                              <td className="px-6 py-4 text-custom-platinum">{customer.mobile}</td>
-                              <td className="px-6 py-4">
-                                {customer.primeStatus?.isActive ? (
-                                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-bold uppercase tracking-wide">
-                                    Active
-                                  </span>
-                                ) : (
-                                  <span className="px-3 py-1 bg-gray-700/30 text-gray-400 rounded-full text-xs font-bold uppercase tracking-wide">
-                                    Inactive
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4">
-                                {customer.primeStatus?.tier && (
-                                  <span className={`px-2 py-1 rounded text-xs font-bold border ${
-                                    customer.primeStatus.tier === 'Platinum' 
-                                      ? 'bg-slate-700 border-slate-500 text-white' 
-                                      : 'bg-yellow-900/30 border-yellow-600 text-yellow-500'
-                                  }`}>
-                                    {customer.primeStatus.tier}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4 text-custom-platinum text-sm">
-                                {customer.primeStatus?.expiryDate 
-                                  ? new Date(customer.primeStatus.expiryDate).toLocaleDateString()
-                                  : '-'}
-                              </td>
-                              <td className="px-6 py-4">
-                                <button
-                                  onClick={() => openEditModal(customer)}
-                                  className="text-custom-accent hover:text-white font-medium text-sm transition"
-                                >
-                                  Edit Status
-                                </button>
-                              </td>
+                        </thead>
+                        <tbody>
+                          {customers.length === 0 ? (
+                            <tr>
+                              <td colSpan="6" className="px-6 py-12 text-center text-custom-platinum">No members found</td>
                             </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                          ) : (
+                            customers.map((customer) => (
+                              <tr key={customer._id} className="border-b border-white/5 hover:bg-custom-black/50">
+                                <td className="px-6 py-4 font-medium">{customer.name}</td>
+                                <td className="px-6 py-4 text-custom-platinum">{customer.mobile}</td>
+                                <td className="px-6 py-4">
+                                  {customer.primeStatus?.isActive ? (
+                                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-bold uppercase tracking-wide">
+                                      Active
+                                    </span>
+                                  ) : (
+                                    <span className="px-3 py-1 bg-gray-700/30 text-gray-400 rounded-full text-xs font-bold uppercase tracking-wide">
+                                      Inactive
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4">
+                                  {customer.primeStatus?.tier && (
+                                    <span className={`px-2 py-1 rounded text-xs font-bold border ${
+                                      customer.primeStatus.tier === 'Platinum' 
+                                        ? 'bg-slate-700 border-slate-500 text-white' 
+                                        : 'bg-yellow-900/30 border-yellow-600 text-yellow-500'
+                                    }`}>
+                                      {customer.primeStatus.tier}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4 text-custom-platinum text-sm">
+                                  {customer.primeStatus?.expiryDate 
+                                    ? new Date(customer.primeStatus.expiryDate).toLocaleDateString()
+                                    : '-'}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <button
+                                    onClick={() => openEditModal(customer)}
+                                    className="text-custom-accent hover:text-white font-medium text-sm transition"
+                                  >
+                                    Edit Status
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Pagination */}
+                    <PaginationControls 
+                      currentPage={membersPage}
+                      totalPages={membersTotalPages}
+                      totalItems={membersTotal}
+                      onPageChange={setMembersPage}
+                    />
+                  </>
                 )}
               </>
             )}
@@ -304,77 +360,86 @@ export default function PrimeMembershipsPage() {
                 {enquiriesLoading ? (
                   <div className="text-center py-12 text-custom-platinum">Loading enquiries...</div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-custom-black border-b border-white/10">
-                        <tr>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Date</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Name</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Contact</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Car Details</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Plan Interest</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {enquiries.length === 0 ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-custom-black border-b border-white/10">
                           <tr>
-                            <td colSpan="7" className="px-6 py-12 text-center text-custom-platinum">No new enquiries found</td>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Date</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Name</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Contact</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Car Details</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Plan Interest</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold">Actions</th>
                           </tr>
-                        ) : (
-                          enquiries.map((enquiry) => (
-                            <tr key={enquiry._id} className="border-b border-white/5 hover:bg-custom-black/50">
-                              <td className="px-6 py-4 text-custom-platinum text-sm">
-                                {new Date(enquiry.createdAt).toLocaleDateString()}
-                                <div className="text-xs text-gray-500">{new Date(enquiry.createdAt).toLocaleTimeString()}</div>
-                              </td>
-                              <td className="px-6 py-4 font-medium">{enquiry.name}</td>
-                              <td className="px-6 py-4 text-sm text-custom-platinum">
-                                <div><FaPhone className="inline mr-1 text-xs" />{enquiry.phone}</div>
-                                {enquiry.email && <div className="text-xs text-gray-500 mt-1">{enquiry.email}</div>}
-                              </td>
-                              <td className="px-6 py-4 text-sm text-custom-platinum">
-                                <div className="font-medium text-white">{enquiry.registrationNumber || '-'}</div>
-                                <div className="text-xs">{enquiry.carModel || '-'}</div>
-                              </td>
-                              <td className="px-6 py-4">
-                                <span className={`px-2 py-1 rounded text-xs font-bold ${
-                                  enquiry.selectedPlan.includes('Platinum') 
-                                    ? 'bg-slate-700 text-white' 
-                                    : 'bg-yellow-900/30 text-yellow-500'
-                                }`}>
-                                  {enquiry.selectedPlan}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${
-                                  enquiry.status === 'New' ? 'bg-blue-500/20 text-blue-400' :
-                                  enquiry.status === 'Contacted' ? 'bg-yellow-500/20 text-yellow-400' :
-                                  enquiry.status === 'Converted' ? 'bg-green-500/20 text-green-400' :
-                                  'bg-red-500/20 text-red-400'
-                                }`}>
-                                  {enquiry.status}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <select
-                                  value={enquiry.status}
-                                  onChange={(e) => updateEnquiryStatus(enquiry._id, e.target.value)}
-                                  className="bg-custom-black border border-white/20 rounded px-2 py-1 text-xs text-white focus:border-custom-accent outline-none"
-                                >
-                                  <option value="New">New</option>
-                                  <option value="Contacted">Contacted</option>
-                                  <option value="Converted">Converted</option>
-                                  <option value="Closed">Closed</option>
-                                </select>
-                              </td>
+                        </thead>
+                        <tbody>
+                          {enquiries.length === 0 ? (
+                            <tr>
+                              <td colSpan="7" className="px-6 py-12 text-center text-custom-platinum">No new enquiries found</td>
                             </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                          ) : (
+                            enquiries.map((enquiry) => (
+                              <tr key={enquiry._id} className="border-b border-white/5 hover:bg-custom-black/50">
+                                <td className="px-6 py-4 text-custom-platinum text-sm">
+                                  {new Date(enquiry.createdAt).toLocaleDateString()}
+                                  <div className="text-xs text-gray-500">{new Date(enquiry.createdAt).toLocaleTimeString()}</div>
+                                </td>
+                                <td className="px-6 py-4 font-medium">{enquiry.name}</td>
+                                <td className="px-6 py-4 text-sm text-custom-platinum">
+                                  <div><FaPhone className="inline mr-1 text-xs" />{enquiry.phone}</div>
+                                  {enquiry.email && <div className="text-xs text-gray-500 mt-1">{enquiry.email}</div>}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-custom-platinum">
+                                  <div className="font-medium text-white">{enquiry.registrationNumber || '-'}</div>
+                                  <div className="text-xs">{enquiry.carModel || '-'}</div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                    enquiry.selectedPlan.includes('Platinum') 
+                                      ? 'bg-slate-700 text-white' 
+                                      : 'bg-yellow-900/30 text-yellow-500'
+                                  }`}>
+                                    {enquiry.selectedPlan}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${
+                                    enquiry.status === 'New' ? 'bg-blue-500/20 text-blue-400' :
+                                    enquiry.status === 'Contacted' ? 'bg-yellow-500/20 text-yellow-400' :
+                                    enquiry.status === 'Converted' ? 'bg-green-500/20 text-green-400' :
+                                    'bg-red-500/20 text-red-400'
+                                  }`}>
+                                    {enquiry.status}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <select
+                                    value={enquiry.status}
+                                    onChange={(e) => updateEnquiryStatus(enquiry._id, e.target.value)}
+                                    className="bg-custom-black border border-white/20 rounded px-2 py-1 text-xs text-white focus:border-custom-accent outline-none"
+                                  >
+                                    <option value="New">New</option>
+                                    <option value="Contacted">Contacted</option>
+                                    <option value="Converted">Converted</option>
+                                    <option value="Closed">Closed</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Pagination */}
+                    <PaginationControls 
+                      currentPage={enquiriesPage}
+                      totalPages={enquiriesTotalPages}
+                      totalItems={enquiriesTotal}
+                      onPageChange={setEnquiriesPage}
+                    />
+                  </>
                 )}
               </>
             )}

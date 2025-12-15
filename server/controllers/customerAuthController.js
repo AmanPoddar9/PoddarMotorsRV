@@ -292,23 +292,52 @@ exports.toggleWishlist = async (req, res) => {
   }
 };
 
-// ADMIN: Get All Customers (with optional Prime filter)
+// ADMIN: Get All Customers (with pagination & search)
 exports.getAllCustomers = async (req, res) => {
   try {
-    const { primeStatus } = req.query; // 'active', 'inactive', or undefined (all)
+    const { primeStatus, search, page = 1, limit = 20 } = req.query;
     
     let filter = {};
+    
+    // Status Filter
     if (primeStatus === 'active') {
       filter['primeStatus.isActive'] = true;
     } else if (primeStatus === 'inactive') {
       filter['primeStatus.isActive'] = false;
     }
 
-    const customers = await Customer.find(filter)
-      .select('-passwordHash') // Exclude password
-      .sort({ createdAt: -1 });
+    // Search Filter (Name, Email, Mobile)
+    if (search) {
+      filter['$or'] = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { mobile: { $regex: search, $options: 'i' } }
+      ];
+    }
 
-    res.json({ customers });
+    // Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Customer.countDocuments(filter);
+    
+    const customers = await Customer.find(filter)
+      .select('-passwordHash')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.json({
+      customers,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    });
+
   } catch (error) {
     console.error('Error fetching customers:', error);
     res.status(500).json({ message: 'Error fetching customers' });

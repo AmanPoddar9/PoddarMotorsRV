@@ -44,12 +44,41 @@ router.post('/', async (req, res) => {
 });
 
 // @route   GET /api/prime-enquiry
-// @desc    Get all Prime Enquiries
+// @desc    Get all Prime Enquiries (Paginated)
 // @access  Admin only
 router.get('/', requireAuth, requireRole('admin'), async (req, res) => {
   try {
-    const enquiries = await PrimeEnquiry.find().sort({ createdAt: -1 });
-    res.json({ success: true, count: enquiries.length, data: enquiries });
+    const { status, page = 1, limit = 20 } = req.query;
+    
+    let filter = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    // Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await PrimeEnquiry.countDocuments(filter);
+
+    const enquiries = await PrimeEnquiry.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    res.json({ 
+      success: true, 
+      count: enquiries.length, 
+      data: enquiries,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    });
+
   } catch (error) {
     console.error('Error fetching prime enquiries:', error);
     res.status(500).json({ success: false, message: 'Server Error' });
