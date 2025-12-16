@@ -1,6 +1,6 @@
 import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
-import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck } from 'react-icons/fi'
+import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart } from 'react-icons/fi'
 
 const adminSections = [
   {
@@ -101,6 +101,13 @@ const adminSections = [
     icon: <FiAward className="w-8 h-8" />,
     href: '/admin/prime',
     color: 'bg-rose-500'
+  },
+  {
+    title: 'Inspection Analytics',
+    description: 'View inspection analytics',
+    icon: <FiPieChart className="w-8 h-8" />,
+    href: '/admin/dashboard',
+    color: 'bg-indigo-600'
   }
 ]
 
