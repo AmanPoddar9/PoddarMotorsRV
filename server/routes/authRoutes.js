@@ -32,9 +32,13 @@ router.post('/login', loginValidation, async (req, res) => {
       httpOnly: true,
       sameSite: isProduction ? 'none' : 'lax',
       secure: isProduction,
-      path: '/',
-      domain: cookieDomain
+      path: '/'
+      // domain: cookieDomain // Remove domain in dev to rely on host
     };
+
+    if (isProduction && cookieDomain) {
+        cookieOptions.domain = cookieDomain;
+    }
 
     // Clear any existing dealer/customer auth cookies
     res.clearCookie('dealer_auth', cookieOptions);
@@ -63,9 +67,12 @@ router.post('/logout', (req, res) => {
     httpOnly: true,
     sameSite: isProduction ? 'none' : 'lax',
     secure: isProduction,
-    path: '/',
-    domain: cookieDomain
+    path: '/'
   };
+
+  if (isProduction && cookieDomain) {
+      cookieOptions.domain = cookieDomain;
+  }
 
   // Clear all auth cookies
   res.clearCookie('auth', cookieOptions);

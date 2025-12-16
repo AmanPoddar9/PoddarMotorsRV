@@ -79,7 +79,10 @@ app.use(cors({
       return callback(null, true);
     }
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Allow local network IPs for mobile testing (e.g., 192.168.x.x)
+    const isLocalNetwork = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.0\.0\.1).*/.test(origin);
+
+    if (allowedOrigins.indexOf(origin) !== -1 || isLocalNetwork) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
