@@ -52,13 +52,7 @@ const adminSections = [
     href: '/admin/testimonials',
     color: 'bg-purple-500'
   },
-  {
-    title: 'Offers',
-    description: 'Manage special offers',
-    icon: <FiTag className="w-8 h-8" />,
-    href: '/admin/offers',
-    color: 'bg-yellow-500'
-  },
+
   {
     title: 'Features',
     description: 'Manage website features',

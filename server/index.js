@@ -12,7 +12,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
-const offersRoutes = require('./routes/offersRoutes');
+
 const featuresRoutes = require('./routes/featuresRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 const sellRequestRoutes = require('./routes/sellRequestRoutes');
@@ -124,7 +124,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/testimonials', require('./routes/testimonialRoutes'));
-app.use('/api/offers', offersRoutes);
+
 app.use('/api/features', featuresRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/sellRequests', sellRequestRoutes);
