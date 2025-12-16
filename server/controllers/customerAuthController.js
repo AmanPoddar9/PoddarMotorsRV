@@ -39,8 +39,8 @@ exports.signup = async (req, res) => {
             const isProduction = process.env.NODE_ENV === 'production';
             const cookieOptions = {
                 httpOnly: true,
-                sameSite: 'none', // Allow cross-site (Frontend vs Backend Vercel)
-                secure: true, // Always secure for 'none'
+                sameSite: isProduction ? 'none' : 'lax', // 'lax' is better for local dev than 'none'
+                secure: isProduction, // Secure only in production
                 maxAge: 30 * 24 * 60 * 60 * 1000,
                 path: '/'
             };
@@ -85,8 +85,8 @@ exports.signup = async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       path: '/'
     };
@@ -126,8 +126,8 @@ exports.login = async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       path: '/'
     };
@@ -156,8 +156,8 @@ exports.logout = (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const cookieOptions = {
     httpOnly: true,
-    sameSite: 'none',
-    secure: true,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
     path: '/'
   };
   
