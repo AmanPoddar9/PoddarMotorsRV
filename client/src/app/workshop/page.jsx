@@ -6,6 +6,10 @@ import PrimeMembership from '../components/workshop/PrimeMembership'
 import BookingForm from '../components/workshop/BookingForm'
 import Testimonials from '../components/workshop/Testimonials'
 import AddressMap from '../components/workshop/AddressMap'
+import GenuineParts from '../components/workshop/GenuineParts'
+import Amenities from '../components/workshop/Amenities'
+import EmergencySupport from '../components/workshop/EmergencySupport'
+import InsurancePartners from '../components/workshop/InsurancePartners'
 
 export default function WorkshopPage() {
   return (
@@ -13,8 +17,12 @@ export default function WorkshopPage() {
       <WorkshopHero />
       <WhyChoose />
       <ServicesGrid />
+      <GenuineParts />
+      <EmergencySupport />
       <Highlights />
+      <Amenities />
       <PrimeMembership />
+      <InsurancePartners />
       <BookingForm />
       <Testimonials />
       <AddressMap />
