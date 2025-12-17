@@ -1,6 +1,6 @@
 import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
-import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart } from 'react-icons/fi'
+import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart, FiShield } from 'react-icons/fi'
 
 const adminSections = [
   {
@@ -108,6 +108,13 @@ const adminSections = [
     icon: <FiPieChart className="w-8 h-8" />,
     href: '/admin/dashboard',
     color: 'bg-indigo-600'
+  },
+  {
+    title: 'Insurance',
+    description: 'Manage insurance policies',
+    icon: <FiShield className="w-8 h-8" />,
+    href: '/admin/insurance',
+    color: 'bg-emerald-600'
   }
 ]
 
