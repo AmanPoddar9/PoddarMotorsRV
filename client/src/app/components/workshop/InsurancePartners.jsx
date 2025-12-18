@@ -14,7 +14,7 @@ const partners = [
 
 const InsurancePartners = () => {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-16 md:py-24 bg-workshop-gray border-t border-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-3xl font-bold text-gray-900 mb-4">Cashless Insurance Partners</h2>
@@ -26,7 +26,7 @@ const InsurancePartners = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {partners.map((partner, index) => (
-            <div key={index} className="flex items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
+            <div key={index} className="flex items-center justify-center p-6 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
               <span className="font-semibold text-gray-700 text-center">{partner}</span>
             </div>
           ))}

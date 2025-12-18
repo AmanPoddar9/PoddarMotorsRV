@@ -7,7 +7,7 @@ const stats = [
 
 const Highlights = () => {
   return (
-    <section id="highlights" className="py-20 bg-workshop-blue text-white relative overflow-hidden">
+    <section id="highlights" className="py-16 md:py-24 bg-workshop-blue text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
       

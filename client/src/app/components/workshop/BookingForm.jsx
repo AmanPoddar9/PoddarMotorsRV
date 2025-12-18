@@ -73,7 +73,7 @@ const BookingForm = () => {
   }
 
   return (
-    <section id="book-service" className="py-20 bg-white">
+    <section id="book-service" className="py-16 md:py-24 bg-white border-t border-gray-50">
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-24 right-4 z-50 animate-slide-in">

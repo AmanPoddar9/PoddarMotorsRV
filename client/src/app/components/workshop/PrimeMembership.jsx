@@ -3,7 +3,7 @@ import { FaCrown, FaCheckCircle, FaArrowRight } from 'react-icons/fa'
 
 const PrimeMembership = () => {
   return (
-    <section id="prime" className="py-20 bg-gradient-to-br from-workshop-blue to-blue-900 relative overflow-hidden">
+    <section id="prime" className="py-16 md:py-24 bg-gradient-to-br from-workshop-blue to-blue-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>

@@ -20,7 +20,7 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="py-20 bg-workshop-gray">
+    <section id="testimonials" className="py-16 md:py-24 bg-white border-t border-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-workshop-blue mb-4">Customer Testimonials</h2>
@@ -29,7 +29,7 @@ const Testimonials = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-white p-8 rounded-xl shadow-sm relative">
+            <div key={index} className="bg-gray-50 p-8 rounded-xl border border-gray-100 relative">
               <FaQuoteLeft className="text-4xl text-workshop-blue/10 absolute top-6 left-6" />
               <p className="text-gray-600 mb-6 relative z-10 pt-4 italic">"{testimonial.text}"</p>
               <div className="flex items-center gap-4">

@@ -2,7 +2,7 @@ import { FaPhoneAlt, FaTruck } from 'react-icons/fa'
 
 const EmergencySupport = () => {
   return (
-    <section className="bg-workshop-red py-12">
+    <section className="bg-workshop-red py-12 md:py-16">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           

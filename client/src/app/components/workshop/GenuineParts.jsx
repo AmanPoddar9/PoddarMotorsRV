@@ -25,7 +25,7 @@ const features = [
 
 const GenuineParts = () => {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-16 md:py-24 bg-white border-t border-gray-50">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center gap-12">
           {/* Left Content */}

@@ -35,7 +35,7 @@ const services = [
 
 const ServicesGrid = () => {
   return (
-    <section id="services" className="py-20 bg-workshop-gray">
+    <section id="services" className="py-16 md:py-24 bg-workshop-gray">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div className="mb-6 md:mb-0">
