@@ -6,6 +6,7 @@ const CustomerOffer = require('../models/CustomerOffer');
 const Listing = require('../models/listing');
 const SellRequest = require('../models/sellRequest');
 const InspectionBooking = require('../models/InspectionBooking');
+const InsurancePolicy = require('../models/InsurancePolicy');
 
 // Helper to create JWT
 const createToken = (customer) => {
@@ -167,9 +168,7 @@ exports.logout = (req, res) => {
   res.json({ message: 'Logged out successfully' });
 };
 
-const InsurancePolicy = require('../models/InsurancePolicy');
-
-// ... imports ...
+// Get Current Profile & Dashboard Data
 
 // Get Current Profile & Dashboard Data
 exports.getDashboard = async (req, res) => {
