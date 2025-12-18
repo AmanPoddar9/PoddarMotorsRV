@@ -1,7 +1,7 @@
 const Customer = require('../models/Customer');
 const jwt = require('jsonwebtoken');
 const WorkshopBooking = require('../models/workshopBooking');
-const Booking = require('../models/booking'); // Test drives
+const TestDriveBooking = require('../models/testDriveBooking'); // Test drives
 const CustomerOffer = require('../models/CustomerOffer');
 const Listing = require('../models/listing');
 
@@ -194,7 +194,7 @@ exports.getDashboard = async (req, res) => {
     // Fetch everything in parallel
     const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
-      Booking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
+      TestDriveBooking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
       CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing'),
       // Fetch policies where the customer ID matches ANY of the IDs associated with this mobile
       InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 })
