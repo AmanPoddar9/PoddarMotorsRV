@@ -11,7 +11,7 @@ const { setupSecurity } = require('./middleware/security');
 const errorHandler = require('./middleware/errorHandler');
 
 const userRoutes = require('./routes/userRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
+const testDriveRoutes = require('./routes/testDriveRoutes');
 
 const featuresRoutes = require('./routes/featuresRoutes');
 const listingRoutes = require('./routes/listingRoutes');
@@ -122,7 +122,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/bookings', bookingRoutes);
+app.use('/api/test-drive-bookings', testDriveRoutes);
 app.use('/api/testimonials', require('./routes/testimonialRoutes'));
 
 app.use('/api/features', featuresRoutes);
@@ -146,6 +146,7 @@ app.use('/api/dealers', dealerRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/prime-enquiry', require('./routes/primeEnquiryRoutes'));
 app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CRM
+app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);

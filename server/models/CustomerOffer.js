@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 
 const customerOfferSchema = new mongoose.Schema(
   {
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+      index: true
+    },
     name: {
       type: String,
       required: true,

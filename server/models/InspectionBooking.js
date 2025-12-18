@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 
 const inspectionBookingSchema = new mongoose.Schema({
   // Customer Details
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    index: true
+  },
   customerName: { 
     type: String, 
     required: true 

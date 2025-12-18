@@ -1,11 +1,11 @@
-const Booking = require('../models/booking')
+const TestDriveBooking = require('../models/testDriveBooking')
 const Listing = require('../models/listing')
 
 // Create a booking
 exports.createBooking = async (req, res) => {
   try {
     const { listingId, date, email, time, name, mobileNumber } = req.body
-    const booking = new Booking({ listingId, email, date, time, name, mobileNumber })
+    const booking = new TestDriveBooking({ listingId, email, date, time, name, mobileNumber })
     await booking.save()
     res.status(201).json({ message: 'Booking created successfully', booking })
   } catch (error) {
@@ -17,7 +17,7 @@ exports.createBooking = async (req, res) => {
 exports.getAllBookings = async (req, res) => {
   try {
     // Find all bookings where archive is false, sorted by createdAt in descending order
-    let bookings = await Booking.find({ archived: false })
+    let bookings = await TestDriveBooking.find({ archived: false })
 
       .populate({
         path: 'listingId',

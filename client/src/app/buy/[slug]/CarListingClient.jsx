@@ -62,7 +62,7 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null)
   const [mainSwiper, setMainSwiper] = useState(null)
 
-  const bookingPOSTURL = `${API_URL}/api/bookings`
+  const bookingPOSTURL = `${API_URL}/api/test-drive-bookings`
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 

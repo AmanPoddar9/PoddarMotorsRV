@@ -63,7 +63,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         withCredentials: true
       })
       setPolicies(res.data.policies)
-      setTotalPages(res.data.pages)
+      setTotalPages(res.data.totalPages)
     } catch (error) {
       console.error('Error fetching policies:', error)
     } finally {

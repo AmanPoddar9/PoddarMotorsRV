@@ -10,6 +10,24 @@ const customerSchema = new mongoose.Schema({
   alternatePhones: [{ type: String, index: true }], // Array for multiple contacts, indexed for search
   areaCity: { type: String }, // New field
   passwordHash: { type: String }, // Optional for offline customers
+
+  // Source & Classification (Unified System)
+  source: { 
+    type: String, 
+    enum: ['Walk-in', 'TeleCRM', 'GoogleSheet', 'Website', 'Workshop', 'Facebook', 'Import', 'Other'],
+    default: 'Other'
+  },
+  lifecycleStage: {
+    type: String,
+    enum: ['Lead', 'Prospect', 'Customer', 'Churned'],
+    default: 'Lead'
+  },
+  tags: [{ type: String }], // Flexible labels like 'VIP', 'Difficult', 'Due-For-Service'
+  notes: [{ // Timeline notes
+    content: String,
+    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdAt: { type: Date, default: Date.now }
+  }],
   
   // Vehicles (Hub storage for easy access)
   vehicles: [{

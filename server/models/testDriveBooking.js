@@ -17,6 +17,11 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    index: true
+  },
   email: {
     type: String,
     default: '',
@@ -43,6 +48,6 @@ bookingSchema.virtual('listing', {
   justOne: true
 });
 
-const Booking = mongoose.model('Booking', bookingSchema)
+const TestDriveBooking = mongoose.model('TestDriveBooking', bookingSchema)
 
-module.exports = Booking
+module.exports = TestDriveBooking

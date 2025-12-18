@@ -15,7 +15,7 @@ const BookingsPage = () => {
   // Function to fetch bookings from the server
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/bookings`, { withCredentials: true })
+      const response = await axios.get(`${API_URL}/api/test-drive-bookings`, { withCredentials: true })
       setBookings(response.data)
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -24,7 +24,7 @@ const BookingsPage = () => {
 
   const fetchArchivedBookings = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/bookings/archived`, { withCredentials: true })
+      const response = await axios.get(`${API_URL}/api/test-drive-bookings/archived`, { withCredentials: true })
       setArchivedBookings(response.data)
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -34,7 +34,7 @@ const BookingsPage = () => {
   // Function to archive a booking
   const archiveBooking = async (id) => {
     try {
-      await axios.put(`${API_URL}/api/bookings/${id}`, {
+      await axios.put(`${API_URL}/api/test-drive-bookings/${id}`, {
         archived: true,
       }, { withCredentials: true })
       // Refresh bookings after archiving
@@ -47,7 +47,7 @@ const BookingsPage = () => {
 
   const unArchiveBooking = async (id) => {
     try {
-      await axios.put(`${API_URL}/api/bookings/${id}`, {
+      await axios.put(`${API_URL}/api/test-drive-bookings/${id}`, {
         archived: false,
       }, { withCredentials: true })
       // Refresh bookings after archiving
@@ -60,7 +60,7 @@ const BookingsPage = () => {
 
   const deleteBooking = async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/bookings/${id}`, { withCredentials: true })
+      await axios.delete(`${API_URL}/api/test-drive-bookings/${id}`, { withCredentials: true })
       // Refresh bookings after archiving
       fetchBookings()
     } catch (error) {
@@ -101,7 +101,7 @@ const BookingsPage = () => {
       <AdminNavbar />
 
       <div className="container mx-auto mb-8 min-h-[70vh] px-4">
-        <h1 className="text-3xl font-semibold mb-6 text-white pt-8">Bookings</h1>
+        <h1 className="text-3xl font-semibold mb-6 text-white pt-8">Test Drive Bookings</h1>
         <div className="text-center my-4">
           <button
             onClick={() => downloadBookings()}
