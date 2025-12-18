@@ -171,23 +171,29 @@ export default function ProfilePage() {
             {activeTab === 'dashboard' && (
               <div className="space-y-6">
                 {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
-                    <h3 className="text-custom-platinum text-sm">Workshop Bookings</h3>
-                    <p className="text-3xl font-bold text-white mt-2">
+                    <h3 className="text-custom-platinum text-sm">Workshop</h3>
+                    <p className="text-2xl font-bold text-white mt-2">
                       {dashboardData?.workshopBookings?.length || 0}
                     </p>
                   </div>
                   <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
-                    <h3 className="text-custom-platinum text-sm">Insurance Policies</h3>
-                     <p className="text-3xl font-bold text-white mt-2">
-                      {dashboardData?.insurancePolicies?.length || 0}
+                    <h3 className="text-custom-platinum text-sm">Test Drives</h3>
+                    <p className="text-2xl font-bold text-white mt-2">
+                      {dashboardData?.testDrives?.length || 0}
                     </p>
                   </div>
                   <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
-                    <h3 className="text-custom-platinum text-sm">Offers Made</h3>
-                    <p className="text-3xl font-bold text-white mt-2">
-                      {dashboardData?.offers?.length || 0}
+                    <h3 className="text-custom-platinum text-sm">Sell Requests</h3>
+                    <p className="text-2xl font-bold text-white mt-2">
+                      {dashboardData?.sellRequests?.length || 0}
+                    </p>
+                  </div>
+                  <div className="bg-custom-jet p-6 rounded-xl border border-white/10">
+                    <h3 className="text-custom-platinum text-sm">Inspections</h3>
+                    <p className="text-2xl font-bold text-white mt-2">
+                      {dashboardData?.inspections?.length || 0}
                     </p>
                   </div>
                 </div>
@@ -396,7 +402,7 @@ export default function ProfilePage() {
                               <h4 className="text-lg font-bold text-white">
                                 {booking.listing?.brand} {booking.listing?.model}
                               </h4>
-                              <p className="text-custom-platinum mt-1">Date: {new Date(booking.preferredDate).toLocaleDateString()}</p>
+                              <p className="text-custom-platinum mt-1">Date: {booking.date}</p>
                             </div>
                           </div>
                         </div>

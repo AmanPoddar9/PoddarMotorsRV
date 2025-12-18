@@ -1,6 +1,6 @@
 import AdminNavbar from '../../components/AdminNavbar'
 import Link from 'next/link'
-import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart, FiShield } from 'react-icons/fi'
+import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart, FiShield, FiUpload } from 'react-icons/fi'
 
 const adminSections = [
   {
@@ -32,10 +32,10 @@ const adminSections = [
     color: 'bg-blue-500'
   },
   {
-    title: 'Bookings',
-    description: 'View car booking requests',
+    title: 'Test Drives',
+    description: 'View test drive bookings',
     icon: <FiCalendar className="w-8 h-8" />,
-    href: '/admin/bookings',
+    href: '/admin/test-drives',
     color: 'bg-green-500'
   },
   {
@@ -115,6 +115,13 @@ const adminSections = [
     icon: <FiShield className="w-8 h-8" />,
     href: '/admin/insurance',
     color: 'bg-emerald-600'
+  },
+  {
+    title: 'Data Import',
+    description: 'Bulk upload customers/data',
+    icon: <FiUpload className="w-8 h-8" />,
+    href: '/admin/import',
+    color: 'bg-orange-600'
   }
 ]
 

@@ -4,6 +4,8 @@ const WorkshopBooking = require('../models/workshopBooking');
 const TestDriveBooking = require('../models/testDriveBooking'); // Test drives
 const CustomerOffer = require('../models/CustomerOffer');
 const Listing = require('../models/listing');
+const SellRequest = require('../models/sellRequest');
+const InspectionBooking = require('../models/InspectionBooking');
 
 // Helper to create JWT
 const createToken = (customer) => {
@@ -192,12 +194,14 @@ exports.getDashboard = async (req, res) => {
     }
 
     // Fetch everything in parallel
-    const [workshopBookings, testDrives, offers, insurancePolicies] = await Promise.all([
+    const [workshopBookings, testDrives, offers, insurancePolicies, sellRequests, inspections] = await Promise.all([
       WorkshopBooking.find({ mobile }).sort({ createdAt: -1 }),
       TestDriveBooking.find({ mobileNumber: mobile }).sort({ createdAt: -1 }).populate('listing'),
       CustomerOffer.find({ mobile }).sort({ createdAt: -1 }).populate('listing'),
       // Fetch policies where the customer ID matches ANY of the IDs associated with this mobile
-      InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 })
+      InsurancePolicy.find({ customer: { $in: linkedCustomerIds } }).sort({ policyEndDate: -1 }),
+      SellRequest.find({ phoneNumber: mobile }).sort({ createdAt: -1 }),
+      InspectionBooking.find({ customerPhone: mobile }).sort({ createdAt: -1 })
     ]);
     
     res.json({
@@ -206,7 +210,9 @@ exports.getDashboard = async (req, res) => {
         workshopBookings,
         testDrives,
         offers,
-        insurancePolicies
+        insurancePolicies,
+        sellRequests,
+        inspections
       }
     });
 
