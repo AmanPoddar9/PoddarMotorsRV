@@ -146,7 +146,7 @@ app.use('/api/dealers', dealerRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/prime-enquiry', require('./routes/primeEnquiryRoutes'));
 app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CRM
-// app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools - Temporarily disabled for debugging
+app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);

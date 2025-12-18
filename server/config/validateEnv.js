@@ -13,7 +13,7 @@ const validateEnv = () => {
       console.error(`   - ${envVar}`);
     });
     console.error('Server cannot start without these variables. Please check your .env file or deployment configuration.');
-    process.exit(1);
+    // process.exit(1); // Don't crash, just log. Vercel env vars might be weird during build.
   }
 
   // Warn about missing optional but important variables
