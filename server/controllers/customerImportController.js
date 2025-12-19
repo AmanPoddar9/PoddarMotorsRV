@@ -110,7 +110,7 @@ exports.bulkImport = async (req, res) => {
                      const alreadyInBatch = newCustomerDocs.find(d => d.mobile === row.mobile);
                      if (!alreadyInBatch) {
                         newCustomerDocs.push({
-                            customId: 'IMP-' + Date.now() + '-' + (i + idxInChunk),
+                            customId: 'IMP-' + Date.now() + '-' + (i + idxInChunk) + '-' + Math.floor(Math.random() * 1000),
                             name: row.name,
                             mobile: row.mobile,
                             email: row.email,
@@ -129,8 +129,19 @@ exports.bulkImport = async (req, res) => {
 
             // C. Insert New Customers
             if (newCustomerDocs.length > 0) {
-                const createdDocs = await Customer.insertMany(newCustomerDocs);
-                createdDocs.forEach(c => customerMap.set(c.mobile, c));
+                try {
+                     // ordered: false ensures that if one doc fails (e.g. duplicate), others still get inserted
+                     const createdDocs = await Customer.insertMany(newCustomerDocs, { ordered: false });
+                     createdDocs.forEach(c => customerMap.set(c.mobile, c));
+                } catch (err) {
+                     // If some failed (e.g. duplicates), valid ones are still in err.insertedDocs (mongoose < 6) or just proceed
+                     // Mongoose 6+ insertMany throws on error but returns insertedDocs in error object if ordered: false
+                     if (err.insertedDocs) {
+                         err.insertedDocs.forEach(c => customerMap.set(c.mobile, c));
+                     }
+                     // Log the error but don't crash
+                     console.error('Bulk Insert Partial Error:', err.message);
+                }
             }
 
             // D. Prepare Spokes
