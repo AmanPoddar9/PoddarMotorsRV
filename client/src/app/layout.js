@@ -6,7 +6,7 @@ import dynamicImport from 'next/dynamic'
 const Navbar = dynamicImport(() => import('./components/Navbar'), { ssr: false })
 const Footer = dynamicImport(() => import('./components/Footer'), { ssr: false })
 const WhatsAppWidget = dynamicImport(() => import('./components/WhatsAppWidget'), { ssr: false })
-const ChatBot = dynamicImport(() => import('./components/ChatBot'), { ssr: false })
+
 import { Providers } from './providers'
 import Script from 'next/script'
 
@@ -179,7 +179,7 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
             <WhatsAppWidget />
-            <ChatBot />
+
           </Providers>
         </AntdRegistry>
       </body>
