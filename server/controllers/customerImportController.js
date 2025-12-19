@@ -250,6 +250,7 @@ exports.bulkImport = async (req, res) => {
     if (req.file) try { fs.unlinkSync(req.file.path); } catch (e) {}
     res.status(500).json({ success: false, error: error.message });
   }
+};
 /**
  * Handle chunked import via JSON body (Avoids Vercel Timeout)
  * Accepts: { rows: [], importType: string, defaultSource: string }
