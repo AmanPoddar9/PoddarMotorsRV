@@ -451,6 +451,8 @@ exports.importChunk = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+// Helper
+function cleanMobile(mobile) {
   if (!mobile) return null;
   return mobile.toString().replace(/\D/g, '').slice(-10);
 }
