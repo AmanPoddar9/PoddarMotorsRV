@@ -45,22 +45,13 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Production vs Development response
-  if (process.env.NODE_ENV === 'production') {
-    // Don't leak stack traces in production
-    res.status(statusCode).json({
-      success: false,
-      message: statusCode === 500 ? 'Something went wrong' : message
-    });
-  } else {
-    // Send full error details in development
-    res.status(statusCode).json({
+  // DEBUGGING: Always show full error details
+  res.status(statusCode).json({
       success: false,
       message: message,
-      stack: err.stack,
+      stack: err.stack, // Exposed for debugging
       error: err
-    });
-  }
+  });
 };
 
 module.exports = errorHandler;
