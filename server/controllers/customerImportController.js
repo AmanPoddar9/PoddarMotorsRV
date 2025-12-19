@@ -35,20 +35,41 @@ exports.bulkImport = async (req, res) => {
       .pipe(csv())
       .on('data', (data) => rows.push(data))
       .on('end', async () => {
+        // Helper to find value case-insensitively
+        const getValue = (row, possibleKeys) => {
+             const rowKeys = Object.keys(row);
+             for (const key of possibleKeys) {
+                 // Exact match first
+                 if (row[key]) return row[key];
+                 // Fuzzy match
+                 const foundKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase());
+                 if (foundKey && row[foundKey]) return row[foundKey];
+             }
+             // Super fuzzy: check if key *contains* the specific word (e.g. "Mobile Number" contains "mobile")
+             for (const search of possibleKeys) {
+                 const foundKey = rowKeys.find(k => k.toLowerCase().includes(search.toLowerCase()));
+                 if (foundKey && row[foundKey]) return row[foundKey];
+             }
+             return null;
+        };
+
         // Process rows
         for (const row of rows) {
           try {
-            const mobile = cleanMobile(row.mobile || row.phone || row.contact);
-            // Some rows might be missing mobile but have other identifying info? 
-            // For now, Mobile is our primary anchor.
+            // Fuzzy lookup for Mobile
+            const rawMobile = getValue(row, ['mobile', 'phone', 'contact', 'mob', 'cell']);
+            const mobile = cleanMobile(rawMobile);
+            
+
+
+            const name = getValue(row, ['name', 'customer', 'customername', 'fullname']) || 'Unknown';
+            const email = getValue(row, ['email', 'mail']) || '';
+            const regNumber = getValue(row, ['reg', 'registration', 'regno', 'vehicleno', 'numberplate']);
+
             if (!mobile && importType !== 'insurance') { 
                 // Insurance can technically import via Policy Num, but let's stick to Mobile anchor for now
                 // or Reg Number.
             }
-
-            const name = row.name || row.customerName || 'Unknown';
-            const email = row.email || '';
-            const regNumber = row.regNumber || row.regNo || row.registrationNumber;
 
             if (!mobile) {
               errors.push({ row, error: 'Missing mobile number' });
