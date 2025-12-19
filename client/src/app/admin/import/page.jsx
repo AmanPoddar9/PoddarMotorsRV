@@ -7,42 +7,101 @@ export default function BulkImportPage() {
   const [file, setFile] = useState(null);
   const [importType, setImportType] = useState('general');
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [summary, setSummary] = useState(null);
   const [errors, setErrors] = useState([]);
+
+  // Dynamically import PapaParse to ensure it works in Next.js client component
+  // or use require if import fails. But 'papaparse' is standard.
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setSummary(null);
     setErrors([]);
+    setProgress(0);
   };
 
   const handleUpload = async () => {
     if (!file) return toast.error('Please select a file');
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('importType', importType);
-    formData.append('defaultSource', 'Bulk Import Tool');
-
+    
+    // Lazy load Papa
+    const Papa = require('papaparse');
+    
     setLoading(true);
-    try {
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/import/bulk`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+    setProgress(0);
+    setErrors([]);
+    
+    // 1. Parse CSV on Client
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = results.data;
+        const totalRows = rows.length;
+        
+        if (totalRows === 0) {
+            setLoading(false);
+            return toast.error("File is empty");
+        }
 
-      if (data.success) {
-        toast.success(`Imported ${data.summary.imported} records successfully!`);
-        setSummary(data.summary);
-        setErrors(data.errors);
+        toast.loading(`Starting import of ${totalRows} rows...`, { id: 'import-toast' });
+        
+        let importedCount = 0;
+        let failedCount = 0;
+        const currentErrors = [];
+
+        // 2. Chunk Loop
+        const CHUNK_SIZE = 200; // Safe size for 10s timeout
+        const totalChunks = Math.ceil(totalRows / CHUNK_SIZE);
+
+        for (let i = 0; i < totalChunks; i++) {
+             const start = i * CHUNK_SIZE;
+             const end = start + CHUNK_SIZE;
+             const chunk = rows.slice(start, end);
+
+             try {
+                const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/import/chunk`, {
+                    rows: chunk,
+                    importType,
+                    defaultSource: 'Bulk Import Tool'
+                });
+
+                if (data.success) {
+                    importedCount += data.summary.imported;
+                    failedCount += data.summary.failed;
+                    if (data.errors) currentErrors.push(...data.errors);
+                } else {
+                    failedCount += chunk.length;
+                    currentErrors.push({ row: 'Chunk ' + (i+1), error: data.error || 'Unknown Error' });
+                }
+
+             } catch (err) {
+                 console.error(err);
+                 failedCount += chunk.length;
+                 currentErrors.push({ row: 'Chunk ' + (i+1), error: err.response?.data?.error || err.message });
+             }
+
+             // Update Progress
+             const currentProgress = Math.round(((i + 1) / totalChunks) * 100);
+             setProgress(currentProgress);
+        }
+
+        setSummary({
+            total: totalRows,
+            imported: importedCount, 
+            failed: failedCount
+        });
+        setErrors(currentErrors);
+        setLoading(false);
+        toast.dismiss('import-toast');
+        toast.success('Import Completed!');
+      },
+      error: (err) => {
+          setLoading(false);
+          toast.error("CSV Parse Error: " + err.message);
       }
-    } catch (error) {
-      console.error('Frontend Import Error:', error);
-      const msg = error.response?.data?.error || error.message || 'Import failed';
-      const status = error.response?.status ? ` (Status: ${error.response.status})` : '';
-      toast.error(`Error: ${msg}${status}`);
-    } finally {
-      setLoading(false);
-    }
+    });
+
   };
 
   return (
@@ -58,7 +117,6 @@ export default function BulkImportPage() {
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           >
             <option value="general">General Customer Data (Hub Only)</option>
-            {/* <option value="workshop">Workshop History (Managed by DMS)</option> */}
             <option value="sell_request">Sell Requests (Purchase Dept)</option>
             <option value="car_requirement">Customer Requirements (Sales Dept)</option>
             <option value="test_drive">Test Drive Bookings (Sales Dept)</option>
@@ -85,13 +143,25 @@ export default function BulkImportPage() {
           />
         </div>
 
+        {loading && (
+            <div className="mb-4">
+                <div className="flex justify-between text-xs text-blue-600 mb-1">
+                    <span>Processing...</span>
+                    <span>{progress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.5s' }}></div>
+                </div>
+            </div>
+        )}
+
         <button 
           onClick={handleUpload} 
           disabled={loading || !file}
           className={`w-full py-3 rounded-lg font-semibold text-white transition-all
             ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg'}`}
         >
-          {loading ? 'Processing...' : 'Start Import'}
+          {loading ? 'Processing Import...' : 'Start Import'}
         </button>
       </div>
 

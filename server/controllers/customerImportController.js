@@ -250,10 +250,207 @@ exports.bulkImport = async (req, res) => {
     if (req.file) try { fs.unlinkSync(req.file.path); } catch (e) {}
     res.status(500).json({ success: false, error: error.message });
   }
-};
+/**
+ * Handle chunked import via JSON body (Avoids Vercel Timeout)
+ * Accepts: { rows: [], importType: string, defaultSource: string }
+ */
+exports.importChunk = async (req, res) => {
+    try {
+        const { rows, importType, defaultSource } = req.body;
+        if (!rows || !Array.isArray(rows)) {
+            return res.status(400).json({ success: false, error: 'Invalid data format' });
+        }
 
-// Helper
-function cleanMobile(mobile) {
+        const validRows = [];
+        const mobileSet = new Set();
+        const errors = [];
+        const results = [];
+
+        // Helper for fuzzy match
+        const getValue = (row, possibleKeys) => {
+             const rowKeys = Object.keys(row);
+             for (const key of possibleKeys) {
+                 if (row[key]) return row[key];
+                 const foundKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase());
+                 if (foundKey && row[foundKey]) return row[foundKey];
+             }
+             for (const search of possibleKeys) {
+                 const foundKey = rowKeys.find(k => k.toLowerCase().includes(search.toLowerCase()));
+                 if (foundKey && row[foundKey]) return row[foundKey];
+             }
+             return null;
+        };
+
+        // 1. PRE-PROCESS
+        for (const row of rows) {
+            const rawMobile = getValue(row, ['mobile', 'phone', 'contact', 'mob', 'cell']);
+            const mobile = cleanMobile(rawMobile);
+            
+            if (!mobile && importType !== 'insurance') {
+                errors.push({ row, error: 'Missing mobile number' });
+                continue;
+            }
+
+            const processed = {
+                originalRow: row,
+                mobile,
+                name: getValue(row, ['name', 'customer', 'customername', 'fullname']) || 'Unknown',
+                email: getValue(row, ['email', 'mail']) || undefined,
+                regNumber: getValue(row, ['reg', 'registration', 'regno', 'vehicleno', 'numberplate']),
+                city: row.city || row.address,
+                rawSpokeData: row 
+            };
+            
+            validRows.push(processed);
+            if (mobile) mobileSet.add(mobile);
+        }
+
+        if (validRows.length === 0) {
+             return res.json({ success: true, summary: { imported: 0, failed: errors.length }, errors });
+        }
+
+        // 2. BATCH FETCH EXISTING
+        const existingCustomers = await Customer.find({ mobile: { $in: Array.from(mobileSet) } });
+        const customerMap = new Map();
+        existingCustomers.forEach(c => customerMap.set(c.mobile, c));
+
+        // 3. IDENTIFY NEW
+        const newCustomerDocs = [];
+        const timestamp = Date.now();
+        const randomBatchId = Math.floor(Math.random() * 10000);
+
+        validRows.forEach((row, idx) => {
+            if (!customerMap.has(row.mobile)) {
+                 const alreadyInBatch = newCustomerDocs.find(d => d.mobile === row.mobile);
+                 if (!alreadyInBatch) {
+                    newCustomerDocs.push({
+                        customId: `IMP-${timestamp}-${randomBatchId}-${idx}`,
+                        name: row.name,
+                        mobile: row.mobile,
+                        email: row.email,
+                        source: defaultSource || 'Import',
+                        lifecycleStage: 'Lead',
+                        tags: ['Imported', 'Chunked'],
+                        areaCity: row.city,
+                        vehicles: row.regNumber ? [{
+                            regNumber: row.regNumber.toUpperCase(),
+                            make: 'Unknown', model: 'Unknown', fuelType: 'Petrol'
+                        }] : []
+                    });
+                 }
+            }
+        });
+
+        // 4. INSERT NEW
+        if (newCustomerDocs.length > 0) {
+            try {
+                 const createdDocs = await Customer.insertMany(newCustomerDocs, { ordered: false });
+                 createdDocs.forEach(c => customerMap.set(c.mobile, c));
+            } catch (err) {
+                 if (err.insertedDocs) {
+                     err.insertedDocs.forEach(c => customerMap.set(c.mobile, c));
+                 }
+                 console.error('Chunk Custom Insert Partial Error:', err.message);
+            }
+        }
+
+        // 5. PREPARE SPOKES
+        const spokesToInsert = [];
+        const ModelMap = {
+            'workshop': WorkshopBooking,
+            'sell_request': SellRequest,
+            'test_drive': TestDriveBooking,
+            'inspection': InspectionBooking,
+            'car_requirement': CarRequirement,
+            'insurance': InsurancePolicy
+        };
+        const TargetModel = ModelMap[importType];
+
+        if (TargetModel) {
+             validRows.forEach(item => {
+                const customer = customerMap.get(item.mobile);
+                if (!customer) return;
+
+                const row = item.originalRow;
+                let spokeDoc = null;
+
+                if (importType === 'car_requirement') {
+                    spokeDoc = {
+                        customer: customer._id,
+                        brand: getValue(row, ['brand', 'make']) || 'Any',
+                        model: getValue(row, ['model']) || 'Any',
+                        budgetMin: 0,
+                        budgetMax: parseFloat(getValue(row, ['maximum budget', 'max budget', 'budget'])) || 10000000,
+                        yearMin: parseInt(getValue(row, ['minimum year', 'min year', 'year', 'minimum year of registration'])) || 2015,
+                        isActive: true
+                    };
+                } else if (importType === 'sell_request') {
+                     spokeDoc = {
+                        customer: customer._id,
+                        name: customer.name,
+                        phoneNumber: customer.mobile,
+                        location: item.city || 'Unknown',
+                        registrationNumber: item.regNumber || 'Unknown',
+                        brand: getValue(row, ['brand', 'make']) || 'Unknown',
+                        model: getValue(row, ['model']) || 'Unknown',
+                        manufactureYear: row.year || 2020,
+                        kilometers: row.km || 0
+                     };
+                } else if (importType === 'test_drive') {
+                    spokeDoc = {
+                       customer: customer._id,
+                       name: customer.name,
+                       mobileNumber: customer.mobile,
+                       listingId: 'General', 
+                       date: row.date || new Date().toISOString(),
+                       time: row.time || '10:00 AM'
+                    };
+               } else if (importType === 'inspection') {
+                     spokeDoc = {
+                       customer: customer._id,
+                       customerName: customer.name,
+                       customerPhone: customer.mobile,
+                       registrationNumber: item.regNumber || 'Unknown',
+                       brand: row.brand || 'Unknown',
+                       model: row.model || 'Unknown',
+                       year: row.year || 2020,
+                       kmDriven: row.km || 0,
+                       fuelType: row.fuelType || 'Petrol',
+                       transmissionType: row.transmission || 'Manual',
+                       appointmentDate: row.date || new Date().toISOString(),
+                       appointmentTimeSlot: row.timeSlot || '09:00-11:00',
+                       inspectionLocation: {
+                         address: row.address || 'Unknown',
+                         city: row.city || 'Ranchi',
+                         pincode: row.pincode || '834001'
+                       }
+                     };
+               } 
+               // Skipping insurance for complex reasons/limits in chunks
+
+                if (spokeDoc) spokesToInsert.push(spokeDoc);
+             });
+
+             if (spokesToInsert.length > 0) {
+                await TargetModel.insertMany(spokesToInsert);
+                results.push(...spokesToInsert.map(s => ({ status: 'Success' })));
+             }
+        }
+
+        res.json({
+            success: true,
+            summary: {
+                imported: results.length,
+                failed: errors.length
+            },
+            errors
+        });
+
+    } catch (error) {
+        console.error('Import Chunk Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
   if (!mobile) return null;
   return mobile.toString().replace(/\D/g, '').slice(-10);
 }
