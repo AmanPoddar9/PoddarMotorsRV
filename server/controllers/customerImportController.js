@@ -167,11 +167,11 @@ exports.bulkImport = async (req, res) => {
                     if (importType === 'car_requirement') {
                         spokeDoc = {
                             customer: customer._id,
-                            brand: row.brand || row.make || 'Any',
-                            model: row.model || 'Any',
-                            budgetMin: parseFloat(row.budgetMin) || 0,
-                            budgetMax: parseFloat(row.budgetMax) || 10000000,
-                            yearMin: parseInt(row.yearMin) || 2015,
+                            brand: getValue(row, ['brand', 'make']) || 'Any',
+                            model: getValue(row, ['model']) || 'Any',
+                            budgetMin: 0, // CSV doesn't seem to have Min Budget usually, default to 0
+                            budgetMax: parseFloat(getValue(row, ['maximum budget', 'max budget', 'budget'])) || 10000000,
+                            yearMin: parseInt(getValue(row, ['minimum year', 'min year', 'year', 'minimum year of registration'])) || 2015,
                             isActive: true
                         };
                     } else if (importType === 'sell_request') {
