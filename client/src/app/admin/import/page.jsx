@@ -191,7 +191,8 @@ export default function BulkImportPage() {
           <div className="max-h-60 overflow-y-auto bg-white rounded-lg border border-red-100 p-4 text-sm">
             {errors.map((err, idx) => (
               <div key={idx} className="mb-2 pb-2 border-b border-gray-100 last:border-0">
-                <span className="font-mono text-red-600">Row {idx + 1}:</span> {err.error}
+                <span className="font-mono text-red-600">Row {idx + 1}:</span> 
+                <span className="text-gray-800 ml-2">{err.error}</span>
               </div>
             ))}
           </div>

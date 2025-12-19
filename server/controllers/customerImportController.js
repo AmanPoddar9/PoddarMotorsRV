@@ -352,6 +352,8 @@ exports.importChunk = async (req, res) => {
                      err.insertedDocs.forEach(c => customerMap.set(c.mobile, c));
                  }
                  console.error('Chunk Custom Insert Partial Error:', err.message);
+                 // Push the actual DB error so user knows WHY it failed (e.g. E11000 duplicate email)
+                 errors.push({ row: 'Batch Processing', error: 'DB Error: ' + err.message });
             }
         }
 
