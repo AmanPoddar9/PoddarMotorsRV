@@ -271,13 +271,13 @@ exports.importChunk = async (req, res) => {
         const getValue = (row, possibleKeys) => {
              const rowKeys = Object.keys(row);
              for (const key of possibleKeys) {
-                 if (row[key]) return row[key];
+                 if (row[key]) return String(row[key]).trim(); // Trim to avoid " " duplicates
                  const foundKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase());
-                 if (foundKey && row[foundKey]) return row[foundKey];
+                 if (foundKey && row[foundKey]) return String(row[foundKey]).trim();
              }
              for (const search of possibleKeys) {
                  const foundKey = rowKeys.find(k => k.toLowerCase().includes(search.toLowerCase()));
-                 if (foundKey && row[foundKey]) return row[foundKey];
+                 if (foundKey && row[foundKey]) return String(row[foundKey]).trim();
              }
              return null;
         };
@@ -343,17 +343,33 @@ exports.importChunk = async (req, res) => {
         });
 
         // 4. INSERT NEW
+        const failedMobileMap = new Map();
+        
         if (newCustomerDocs.length > 0) {
             try {
                  const createdDocs = await Customer.insertMany(newCustomerDocs, { ordered: false });
                  createdDocs.forEach(c => customerMap.set(c.mobile, c));
             } catch (err) {
+                 // 1. Recover successful inserts
                  if (err.insertedDocs) {
                      err.insertedDocs.forEach(c => customerMap.set(c.mobile, c));
                  }
-                 console.error('Chunk Custom Insert Partial Error:', err.message);
-                 // Push the actual DB error so user knows WHY it failed (e.g. E11000 duplicate email)
-                 errors.push({ row: 'Batch Processing', error: 'DB Error: ' + err.message });
+                 
+                 // 2. Map failures to specific mobiles so we can show user EXACTLY why
+                 // Mongoose/BulkWriteError provides .writeErrors array with .index and .errmsg
+                 if (err.writeErrors) {
+                     err.writeErrors.forEach(we => {
+                        const failedDoc = newCustomerDocs[we.index];
+                        if (failedDoc) {
+                             // Clean up error message (e.g. simplify duplicate key msg)
+                             let msg = we.errmsg;
+                             if (msg.includes('duplicate key')) msg = 'Duplicate Value (Email or ID already exists)';
+                             failedMobileMap.set(failedDoc.mobile, msg);
+                        }
+                     });
+                 } else {
+                     console.error('Chunk Insert Error (No writeErrors):', err.message);
+                 }
             }
         }
 
@@ -373,7 +389,8 @@ exports.importChunk = async (req, res) => {
              validRows.forEach(item => {
                 const customer = customerMap.get(item.mobile);
                 if (!customer) {
-                    errors.push({ row: item.originalRow, error: 'Failed to create/find customer profile (Duplicate or DB Error)' });
+                    const specificReason = failedMobileMap.get(item.mobile) || 'Failed to create profile (Unknown DB Error)';
+                    errors.push({ row: item.originalRow, error: specificReason });
                     return;
                 }
 
