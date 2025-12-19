@@ -4,6 +4,7 @@ const SellRequest = require('../models/sellRequest');
 const TestDriveBooking = require('../models/testDriveBooking');
 const InspectionBooking = require('../models/InspectionBooking');
 const InsurancePolicy = require('../models/InsurancePolicy');
+const CarRequirement = require('../models/CarRequirement');
 const csv = require('csv-parser');
 const fs = require('fs');
 // Try to import ID generator, fallback if not found (though it should be there)
@@ -171,6 +172,18 @@ exports.bulkImport = async (req, res) => {
                   city: row.city || 'Ranchi',
                   pincode: row.pincode || '834001'
                 }
+              });
+
+            } else if (importType === 'car_requirement') {
+              // SALES DEPT: Customer Requirements
+              await CarRequirement.create({
+                customer: customer._id,
+                brand: row.brand || row.make || 'Any',
+                model: row.model || 'Any',
+                budgetMin: parseFloat(row.budgetMin) || 0,
+                budgetMax: parseFloat(row.budgetMax) || 10000000,
+                yearMin: parseInt(row.yearMin) || 2015,
+                isActive: true
               });
 
             } else if (importType === 'insurance') {

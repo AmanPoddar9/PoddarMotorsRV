@@ -56,10 +56,11 @@ export default function BulkImportPage() {
             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           >
             <option value="general">General Customer Data (Hub Only)</option>
-            <option value="workshop">Workshop History (Create Workshop Bookings)</option>
-            <option value="sell_request">Used Car Leads (Create Sell Requests)</option>
-            <option value="test_drive">Test Drive Bookings (Create Bookings)</option>
-            <option value="inspection">Inspection Bookings (Create Inspections)</option>
+            {/* <option value="workshop">Workshop History (Managed by DMS)</option> */}
+            <option value="sell_request">Sell Requests (Purchase Dept)</option>
+            <option value="car_requirement">Customer Requirements (Sales Dept)</option>
+            <option value="test_drive">Test Drive Bookings (Sales Dept)</option>
+            <option value="inspection">Inspection Bookings (Evaluation Dept)</option>
             <option value="insurance">Insurance Policies (Create Policies & Enrich Profile)</option>
           </select>
           <p className="text-xs text-gray-500 mt-2">
