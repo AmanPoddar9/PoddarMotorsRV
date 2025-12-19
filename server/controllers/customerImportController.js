@@ -141,6 +141,10 @@ exports.bulkImport = async (req, res) => {
                      }
                      // Log the error but don't crash
                      console.error('Bulk Insert Partial Error:', err.message);
+                     // Capture validation errors for summary if possible (though difficult in bulk flow without map)
+                     if (err.errors) {
+                         Object.values(err.errors).forEach(e => errors.push({ error: `Validation Error: ${e.message}` }));
+                     }
                 }
             }
 
@@ -356,19 +360,43 @@ exports.importChunk = async (req, res) => {
                  }
                  
                  // 2. Map failures to specific mobiles so we can show user EXACTLY why
-                 // Mongoose/BulkWriteError provides .writeErrors array with .index and .errmsg
+                 // Case A: BulkWriteError (Duplicate keys, etc)
                  if (err.writeErrors) {
                      err.writeErrors.forEach(we => {
                         const failedDoc = newCustomerDocs[we.index];
                         if (failedDoc) {
-                             // Clean up error message (e.g. simplify duplicate key msg)
                              let msg = we.errmsg;
                              if (msg.includes('duplicate key')) msg = 'Duplicate Value (Email or ID already exists)';
                              failedMobileMap.set(failedDoc.mobile, msg);
                         }
                      });
-                 } else {
+                 } 
+                 // Case B: Mongoose Validation Error (Missing required fields, etc - though rare in insertMany with ordered:false, can happen)
+                 else if (err.errors) {
+                     // In insertMany, err.errors might not map directly to index easily unless we parse, 
+                     // but usually validation runs pre-insert. 
+                     // For insertMany, if validation fails, it might fail the whole batch or return specific errors.
+                     // We'll try to map generic errors or if it's a specific doc error
+                     console.error('Validation Error Details:', JSON.stringify(err.errors, null, 2));
+                     
+                     // If we can identify which doc, great. If not, we might have to fail the batch generic
+                     // But often err.errors is { "0": ValError, "1": ValError } in some versions or just global
+                     
+                     // Try to match generic error to all new docs if we can't be specific, or log it
+                     newCustomerDocs.forEach(doc => {
+                         if (!failedMobileMap.has(doc.mobile)) {
+                             failedMobileMap.set(doc.mobile, `Validation Error: ${err.message}`);
+                         }
+                     });
+                 }
+                 else {
                      console.error('Chunk Insert Error (No writeErrors):', err.message);
+                     // Fallback for unknown request-level errors
+                      newCustomerDocs.forEach(doc => {
+                         if (!failedMobileMap.has(doc.mobile)) {
+                             failedMobileMap.set(doc.mobile, `Write Error: ${err.message}`);
+                         }
+                     });
                  }
             }
         }
