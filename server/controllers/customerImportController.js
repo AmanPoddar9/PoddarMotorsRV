@@ -370,7 +370,10 @@ exports.importChunk = async (req, res) => {
         if (TargetModel) {
              validRows.forEach(item => {
                 const customer = customerMap.get(item.mobile);
-                if (!customer) return;
+                if (!customer) {
+                    errors.push({ row: item.originalRow, error: 'Failed to create/find customer profile (Duplicate or DB Error)' });
+                    return;
+                }
 
                 const row = item.originalRow;
                 let spokeDoc = null;
