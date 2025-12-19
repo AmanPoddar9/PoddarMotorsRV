@@ -86,145 +86,135 @@ exports.bulkImport = async (req, res) => {
              return res.json({ success: true, summary: { total: rows.length, imported: 0, failed: errors.length }, errors });
         }
 
-        // 2. BATCH FETCH EXISTING CUSTOMERS
-        const existingCustomers = await Customer.find({ mobile: { $in: Array.from(mobileSet) } });
-        const customerMap = new Map(); // Mobile -> Customer Doc
-        existingCustomers.forEach(c => customerMap.set(c.mobile, c));
 
-        // 3. IDENTIFY NEW VS EXISTING
-        const newCustomerDocs = [];
-        const customerUpdates = []; // If we want to enrich existing, skipping for speed/complexity limit on Vercel unless critical. 
-                                    // Let's do partial enrichment (reg number/email) via bulkWrite if needed.
-                                    // For now, let's prioritize CREATING the missing links.
-        
-        // Map to track which validRows link to which Customer ID (resolved later)
-        const rowToCustomerId = new Map(); // Index -> ObjectId
+        // 2. BATCH PROCESS IN CHUNKS
+        // Vercel Serverless has timeouts, so we process in chunks of 500
+        const CHUNK_SIZE = 500;
+        let processedCount = 0;
 
-        // Pre-allocate Custom IDs for new customers
-        const timestamp = Date.now();
-        
-        // Prepare New Customers in Memory
-        const uniqueNewMobiles = new Set();
-        
-        validRows.forEach((row, idx) => {
-            if (customerMap.has(row.mobile)) {
-                // Existing
-                rowToCustomerId.set(idx, customerMap.get(row.mobile)._id);
-            } else {
-                // New - Queue for creation if not already queued
-                if (!uniqueNewMobiles.has(row.mobile)) {
-                    uniqueNewMobiles.add(row.mobile);
-                    newCustomerDocs.push({
-                        customId: 'IMP-' + timestamp + '-' + newCustomerDocs.length,
-                        name: row.name,
-                        mobile: row.mobile,
-                        email: row.email,
-                        source: defaultSource || 'Import',
-                        lifecycleStage: 'Lead',
-                        tags: ['Imported'],
-                        areaCity: row.city,
-                        vehicles: row.regNumber ? [{
-                            regNumber: row.regNumber.toUpperCase(),
-                            make: 'Unknown', model: 'Unknown', fuelType: 'Petrol' // Minimal info
-                        }] : []
-                    });
+        for (let i = 0; i < validRows.length; i += CHUNK_SIZE) {
+            const chunk = validRows.slice(i, i + CHUNK_SIZE);
+            const mobileSet = new Set(chunk.map(r => r.mobile));
+
+            // A. Fetch Existing for this chunk
+            const existingCustomers = await Customer.find({ mobile: { $in: Array.from(mobileSet) } });
+            const customerMap = new Map(); 
+            existingCustomers.forEach(c => customerMap.set(c.mobile, c));
+
+            // B. Identify New vs Existing
+            const newCustomerDocs = [];
+            
+            chunk.forEach((row, idxInChunk) => {
+                if (!customerMap.has(row.mobile)) {
+                     // Check if duplicate within this chunk
+                     const alreadyInBatch = newCustomerDocs.find(d => d.mobile === row.mobile);
+                     if (!alreadyInBatch) {
+                        newCustomerDocs.push({
+                            customId: 'IMP-' + Date.now() + '-' + (i + idxInChunk),
+                            name: row.name,
+                            mobile: row.mobile,
+                            email: row.email,
+                            source: defaultSource || 'Import',
+                            lifecycleStage: 'Lead',
+                            tags: ['Imported', 'Batch-' + Math.floor(i/CHUNK_SIZE)],
+                            areaCity: row.city,
+                            vehicles: row.regNumber ? [{
+                                regNumber: row.regNumber.toUpperCase(),
+                                make: 'Unknown', model: 'Unknown', fuelType: 'Petrol'
+                            }] : []
+                        });
+                     }
                 }
-            }
-        });
+            });
 
-        // 4. BULK INSERT NEW CUSTOMERS
-        if (newCustomerDocs.length > 0) {
-            // insertMany returns the docs with _ids
-            const createdDocs = await Customer.insertMany(newCustomerDocs);
-            // Update our map
-            createdDocs.forEach(c => customerMap.set(c.mobile, c));
-        }
-
-        // 5. PREPARE SPOKE RECORDS (Now that everyone has an ID)
-        const spokesToInsert = [];
-        const ModelMap = {
-            'workshop': WorkshopBooking,
-            'sell_request': SellRequest,
-            'test_drive': TestDriveBooking,
-            'inspection': InspectionBooking,
-            'car_requirement': CarRequirement,
-            'insurance': InsurancePolicy
-        };
-        const TargetModel = ModelMap[importType];
-
-        if (TargetModel) {
-            for (let i = 0; i < validRows.length; i++) {
-                const item = validRows[i];
-                const customer = customerMap.get(item.mobile);
-                if (!customer) continue; // Should not happen
-
-                const row = item.originalRow;
-                
-                // MAPPING LOGIC (Simplified for Batch)
-                let spokeDoc = null;
-
-                if (importType === 'car_requirement') {
-                    spokeDoc = {
-                        customer: customer._id,
-                        brand: row.brand || row.make || 'Any',
-                        model: row.model || 'Any',
-                        budgetMin: parseFloat(row.budgetMin) || 0,
-                        budgetMax: parseFloat(row.budgetMax) || 10000000,
-                        yearMin: parseInt(row.yearMin) || 2015,
-                        isActive: true
-                    };
-                } else if (importType === 'sell_request') {
-                     spokeDoc = {
-                        customer: customer._id,
-                        name: customer.name,
-                        phoneNumber: customer.mobile,
-                        location: item.city || 'Unknown',
-                        registrationNumber: item.regNumber || 'Unknown',
-                        brand: row.brand || row.make || 'Unknown',
-                        model: row.model || 'Unknown',
-                        manufactureYear: row.year || 2020,
-                        kilometers: row.km || 0
-                     };
-                } else if (importType === 'test_drive') {
-                     spokeDoc = {
-                        customer: customer._id,
-                        name: customer.name,
-                        mobileNumber: customer.mobile,
-                        listingId: 'General', // difficult to map batch
-                        date: row.date || new Date().toISOString(),
-                        time: row.time || '10:00 AM'
-                     };
-                } else if (importType === 'inspection') {
-                      spokeDoc = {
-                        customer: customer._id,
-                        customerName: customer.name,
-                        customerPhone: customer.mobile,
-                        registrationNumber: item.regNumber || 'Unknown',
-                        brand: row.brand || 'Unknown',
-                        model: row.model || 'Unknown',
-                        year: row.year || 2020,
-                        kmDriven: row.km || 0,
-                        fuelType: row.fuelType || 'Petrol',
-                        transmissionType: row.transmission || 'Manual',
-                        appointmentDate: row.date || new Date().toISOString(),
-                        appointmentTimeSlot: row.timeSlot || '09:00-11:00',
-                        inspectionLocation: {
-                          address: row.address || 'Unknown',
-                          city: row.city || 'Ranchi',
-                          pincode: row.pincode || '834001'
-                        }
-                      };
-                } else if (importType === 'insurance') {
-                    // Skip insurance batch for now as it has complex duplication logic
-                    // Or implement simplified version if needed
-                }
-
-                if (spokeDoc) spokesToInsert.push(spokeDoc);
+            // C. Insert New Customers
+            if (newCustomerDocs.length > 0) {
+                const createdDocs = await Customer.insertMany(newCustomerDocs);
+                createdDocs.forEach(c => customerMap.set(c.mobile, c));
             }
 
-            // 6. BULK INSERT SPOKES
-            if (spokesToInsert.length > 0) {
-                await TargetModel.insertMany(spokesToInsert);
+            // D. Prepare Spokes
+            const spokesToInsert = [];
+            const ModelMap = {
+                'workshop': WorkshopBooking,
+                'sell_request': SellRequest,
+                'test_drive': TestDriveBooking,
+                'inspection': InspectionBooking,
+                'car_requirement': CarRequirement,
+                'insurance': InsurancePolicy
+            };
+            const TargetModel = ModelMap[importType];
+
+            if (TargetModel) {
+                 chunk.forEach(item => {
+                    const customer = customerMap.get(item.mobile);
+                    if (!customer) return;
+
+                    const row = item.originalRow;
+                    let spokeDoc = null;
+
+                    if (importType === 'car_requirement') {
+                        spokeDoc = {
+                            customer: customer._id,
+                            brand: row.brand || row.make || 'Any',
+                            model: row.model || 'Any',
+                            budgetMin: parseFloat(row.budgetMin) || 0,
+                            budgetMax: parseFloat(row.budgetMax) || 10000000,
+                            yearMin: parseInt(row.yearMin) || 2015,
+                            isActive: true
+                        };
+                    } else if (importType === 'sell_request') {
+                         spokeDoc = {
+                            customer: customer._id,
+                            name: customer.name,
+                            phoneNumber: customer.mobile,
+                            location: item.city || 'Unknown',
+                            registrationNumber: item.regNumber || 'Unknown',
+                            brand: row.brand || row.make || 'Unknown',
+                            model: row.model || 'Unknown',
+                            manufactureYear: row.year || 2020,
+                            kilometers: row.km || 0
+                         };
+                    }
+                    // reuse existing logic for others (test_drive, inspection)
+                    else if (importType === 'test_drive') {
+                        spokeDoc = {
+                           customer: customer._id,
+                           name: customer.name,
+                           mobileNumber: customer.mobile,
+                           listingId: 'General', 
+                           date: row.date || new Date().toISOString(),
+                           time: row.time || '10:00 AM'
+                        };
+                   } else if (importType === 'inspection') {
+                         spokeDoc = {
+                           customer: customer._id,
+                           customerName: customer.name,
+                           customerPhone: customer.mobile,
+                           registrationNumber: item.regNumber || 'Unknown',
+                           brand: row.brand || 'Unknown',
+                           model: row.model || 'Unknown',
+                           year: row.year || 2020,
+                           kmDriven: row.km || 0,
+                           fuelType: row.fuelType || 'Petrol',
+                           transmissionType: row.transmission || 'Manual',
+                           appointmentDate: row.date || new Date().toISOString(),
+                           appointmentTimeSlot: row.timeSlot || '09:00-11:00',
+                           inspectionLocation: {
+                             address: row.address || 'Unknown',
+                             city: row.city || 'Ranchi',
+                             pincode: row.pincode || '834001'
+                           }
+                         };
+                   }
+
+                    if (spokeDoc) spokesToInsert.push(spokeDoc);
+                 });
+
+                 if (spokesToInsert.length > 0) {
+                    await TargetModel.insertMany(spokesToInsert);
+                    results.push(...spokesToInsert.map(s => ({ status: 'Success' }))); 
+                 }
             }
         }
 

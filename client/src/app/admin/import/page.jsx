@@ -36,8 +36,10 @@ export default function BulkImportPage() {
         setErrors(data.errors);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.error || 'Import failed');
+      console.error('Frontend Import Error:', error);
+      const msg = error.response?.data?.error || error.message || 'Import failed';
+      const status = error.response?.status ? ` (Status: ${error.response.status})` : '';
+      toast.error(`Error: ${msg}${status}`);
     } finally {
       setLoading(false);
     }
