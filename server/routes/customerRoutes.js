@@ -31,8 +31,12 @@ router.post('/wishlist', requireCustomerAuth, toggleWishlist);
 router.get('/me', requireCustomerAuth, getMe);
 
 // ADMIN Routes (require admin authentication)
+// ADMIN Routes (require admin authentication)
 const { requireAuth, requireRole } = require('../middleware/auth');
+const customerController = require('../controllers/customerController');
+
 router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
+router.get('/:id', requireAuth, requireRole('admin'), customerController.getCustomerDetails);
 router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 
 // Requirements Routes

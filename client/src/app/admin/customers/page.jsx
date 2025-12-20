@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Link from 'next/link'
 import AdminNavbar from '../../components/AdminNavbar'
 import API_URL from '../../config/api'
 import { FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiTag, FiMoreHorizontal } from 'react-icons/fi'
@@ -165,7 +166,9 @@ const CustomersPage = () => {
                                 <span className="text-sm text-custom-platinum">{c.areaCity || '-'}</span>
                             </td>
                             <td className="p-4 text-right">
-                                <button className="text-custom-accent hover:text-white font-medium text-sm">View 360 &rarr;</button>
+                                <Link href={`/admin/customers/${c._id}`} className="text-custom-accent hover:text-white font-medium text-sm">
+                                    View 360 &rarr;
+                                </Link>
                             </td>
                         </tr>
                     ))
