@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '@/app/config/api'
-import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort, FaEdit } from 'react-icons/fa'
+import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort, FaEdit, FaTrash } from 'react-icons/fa'
 import CustomerDetailModal from './CustomerDetailModal'
 import EditPolicyModal from './EditPolicyModal'
 
@@ -51,6 +51,19 @@ export default function PolicyList({ initialFilter, initialBucket }) {
           alert('Failed to assign agent')
       }
   }
+
+  const handleDelete = async (policyId) => {
+      if (!window.confirm("Are you sure you want to delete this policy? This action cannot be undone.")) return;
+
+      try {
+          await axios.delete(`${API_URL}/api/insurance/policies/${policyId}`, { withCredentials: true });
+          alert("Policy deleted successfully");
+          fetchPolicies(); // Refresh list
+      } catch (error) {
+          console.error("Error deleting policy:", error);
+          alert("Failed to delete policy");
+      }
+  };
 
   const fetchPolicies = async () => {
     setLoading(true)
@@ -249,6 +262,13 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                         >
                             <FaWhatsapp />
                         </a>
+                        <button 
+                            onClick={() => handleDelete(policy._id)}
+                            className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition"
+                            title="Delete Policy"
+                        >
+                            <FaTrash />
+                        </button>
                     </div>
                   </td>
                 </tr>

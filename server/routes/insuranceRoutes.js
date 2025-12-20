@@ -18,6 +18,7 @@ router.get('/analytics', insuranceController.getAnalytics);
 router.get('/policies', insuranceController.getPolicies);
 router.post('/policies', insuranceController.createPolicy);
 router.patch('/policies/:id', insuranceController.updatePolicy);
+router.delete('/policies/:id', insuranceController.deletePolicy);
 
 // Workflows
 router.post('/policies/:id/renew', insuranceController.renewPolicy);

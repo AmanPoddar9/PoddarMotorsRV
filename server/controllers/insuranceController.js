@@ -376,6 +376,22 @@ exports.updatePolicy = async (req, res) => {
     }
 };
 
+exports.deletePolicy = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const policy = await InsurancePolicy.findByIdAndDelete(id);
+
+        if (!policy) {
+            return res.status(404).json({ message: 'Policy not found' });
+        }
+
+        res.json({ message: 'Policy deleted successfully' });
+    } catch (error) {
+        console.error('Delete Policy Error:', error);
+        res.status(500).json({ message: 'Error deleting policy', error: error.message });
+    }
+};
+
 // --- WORKFLOW ACTIONS ---
 
 exports.renewPolicy = async (req, res) => {
