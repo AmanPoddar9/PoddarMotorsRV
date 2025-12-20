@@ -74,16 +74,71 @@ exports.createCustomer = async (req, res) => {
 };
 
 // Get Single Customer Details (Full View)
+// Import all spoke models
+const CarRequirement = require('../models/CarRequirement');
+const SellRequest = require('../models/SellRequest');
+const WorkshopBooking = require('../models/WorkshopBooking');
+const TestDriveBooking = require('../models/testDriveBooking');
+const CustomerOffer = require('../models/CustomerOffer');
+
+// Get Single Customer Details (Full 360 View)
 exports.getCustomerDetails = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
     if (!customer) return res.status(404).json({ message: 'Customer not found' });
     
-    // Fetch Policies
-    const policies = await InsurancePolicy.find({ customer: customer._id }).sort({ policyEndDate: -1 });
+    const mobile = customer.mobile;
 
-    res.json({ ...customer.toObject(), policies }); // Return combined
+    // Parallel Fetch for "Grand Union" of Data
+    // We match by ID (Strong Link) OR Mobile (Weak Link/Imported)
+    const [
+        policies,
+        requirements,
+        sellRequests,
+        workshopBookings,
+        testDrives,
+        offers
+    ] = await Promise.all([
+        // Insurance
+        InsurancePolicy.find({ customer: customer._id }).sort({ policyEndDate: -1 }),
+        
+        // Buying (Requirements)
+        CarRequirement.find({ 
+            $or: [{ customer: customer._id }] // Requirements are usually linked by ID
+        }).sort({ createdAt: -1 }),
+
+        // Selling
+        SellRequest.find({ 
+            $or: [{ customer: customer._id }, { phoneNumber: mobile }] 
+        }).sort({ createdAt: -1 }),
+
+        // Service
+        WorkshopBooking.find({ 
+            $or: [{ customer: customer._id }, { mobileNumber: mobile }] 
+        }).sort({ createdAt: -1 }),
+
+        // Test Drives
+        TestDriveBooking.find({ 
+            $or: [{ customer: customer._id }, { mobileNumber: mobile }] 
+        }).sort({ createdAt: -1 }).populate('listing'),
+
+        // Offers
+        CustomerOffer.find({ 
+            $or: [{ customer: customer._id }, { mobile: mobile }] 
+        }).sort({ createdAt: -1 }).populate('listing')
+    ]);
+
+    res.json({ 
+        ...customer.toObject(), 
+        policies,
+        requirements,
+        sellRequests,
+        workshopBookings,
+        testDrives,
+        offers
+    }); 
   } catch (error) {
+    console.error('360 Fetch Error:', error);
     res.status(500).json({ message: 'Error fetching customer details' });
   }
 };

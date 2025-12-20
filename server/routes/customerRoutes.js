@@ -37,6 +37,7 @@ const customerController = require('../controllers/customerController');
 
 router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
 router.get('/:id', requireAuth, requireRole('admin'), customerController.getCustomerDetails);
+router.put('/:id', requireAuth, requireRole('admin'), customerController.updateCustomer);
 router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 
 // Requirements Routes
