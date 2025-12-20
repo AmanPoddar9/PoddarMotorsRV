@@ -26,7 +26,7 @@ const CustomersPage = () => {
         primeStatus: primeFilter === 'all' ? '' : primeFilter
       }
       
-      const response = await axios.get(`${API_URL}/api/customers/all`, { 
+      const response = await axios.get(`${API_URL}/api/customer/all`, { 
         params,
         withCredentials: true 
       })
