@@ -11,6 +11,13 @@ const adminSections = [
     color: 'bg-blue-600'
   },
   {
+    title: 'Unified Customers',
+    description: 'View 360° Profiles & Leads',
+    icon: <FiUsers className="w-8 h-8" />,
+    href: '/admin/customers',
+    color: 'bg-purple-700'
+  },
+  {
     title: 'Auctions',
     description: 'Manage live car auctions',
     icon: <FiDollarSign className="w-8 h-8" />,

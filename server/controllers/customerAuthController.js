@@ -316,8 +316,19 @@ exports.getAllCustomers = async (req, res) => {
       filter['$or'] = [
         { name: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
-        { mobile: { $regex: search, $options: 'i' } }
+        { mobile: { $regex: search, $options: 'i' } },
+        { customId: { $regex: search, $options: 'i' } } // Added CustomID search
       ];
+    }
+
+    // Source Filter
+    if (req.query.source) {
+      filter.source = req.query.source;
+    }
+
+    // Lifecycle Stage Filter
+    if (req.query.lifecycleStage) {
+      filter.lifecycleStage = req.query.lifecycleStage;
     }
 
     // Pagination
