@@ -31,6 +31,15 @@ const CustomerDetailPage = ({ params }) => {
   const [tempTags, setTempTags] = useState([])
   const [vehicleForm, setVehicleForm] = useState({})
   const [editingVehicleId, setEditingVehicleId] = useState(null) // New: Track editing vehicle
+  
+  // Service Record Form
+  const [serviceForm, setServiceForm] = useState({
+      regNumber: '',
+      serviceType: 'General Service',
+      cost: '',
+      description: '',
+      serviceDate: moment().format('YYYY-MM-DD')
+  })
 
   useEffect(() => {
     fetchCustomer()
@@ -158,6 +167,26 @@ const CustomerDetailPage = ({ params }) => {
           toast.error('Failed to delete lead')
       }
   }
+
+  const handleAddServiceRecord = async (e) => {
+      e.preventDefault();
+      try {
+          await axios.post(`${API_URL}/api/customer/${id}/service-records`, serviceForm, { withCredentials: true })
+          toast.success('Service record added')
+          setServiceForm({
+              regNumber: '',
+              serviceType: 'General Service',
+              cost: '',
+              description: '',
+              serviceDate: moment().format('YYYY-MM-DD')
+          })
+          toggleModal('addService', false)
+          fetchCustomer()
+      } catch (error) {
+          toast.error('Failed to add service record')
+      }
+  }
+
 
   // Tag Helpers
   const addTempTag = (e) => {
@@ -548,19 +577,53 @@ const SellingTab = ({ customer }) => (
     </div>
 )
 
-const ServiceTab = ({ customer }) => (
-     <div className="bg-custom-jet rounded-xl border border-white/10 overflow-hidden">
-            <div className="p-4 border-b border-white/10 bg-white/5"><h3 className="font-bold">Workshop History</h3></div>
+const ServiceTab = ({ customer, onAddService }) => (
+     <div className="space-y-6">
+        {/* Actual Service History */}
+        <div className="bg-custom-jet rounded-xl border border-white/10 overflow-hidden">
+             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                <h3 className="font-bold border-l-4 border-green-500 pl-2">Service History</h3>
+                <button onClick={onAddService} className="text-xs bg-custom-accent text-black px-3 py-1 rounded font-bold">+ Add Entry</button>
+            </div>
+             <div className="p-0">
+                {customer.serviceRecords?.length > 0 ? (
+                    <table className="w-full text-sm text-left">
+                            <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Date</th><th className="p-4">Car</th><th className="p-4">Service</th><th className="p-4">Cost</th></tr></thead>
+                        <tbody className="divide-y divide-white/5">
+                            {customer.serviceRecords.map((sr, i) => (
+                                <tr key={i}>
+                                    <td className="p-4">{moment(sr.serviceDate).format('DD MMM YYYY')}</td>
+                                    <td className="p-4 font-bold">{sr.regNumber}</td>
+                                    <td className="p-4">
+                                        <div>{sr.serviceType}</div>
+                                        <div className="text-xs text-gray-500">{sr.description}</div>
+                                    </td>
+                                    <td className="p-4">₹{sr.cost}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : <div className="p-8 text-center text-gray-500">No service history entries.</div>}
+            </div>
+        </div>
+
+        {/* Workshop Booking Requests */}
+         <div className="bg-custom-jet rounded-xl border border-white/10 overflow-hidden opacity-80">
+            <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                <h3 className="font-bold border-l-4 border-orange-500 pl-2">Booking Requests</h3>
+                <span className="text-xs text-gray-500">Online Requests</span>
+            </div>
              <div className="p-0">
                 {customer.workshopBookings?.length > 0 ? (
                     <table className="w-full text-sm text-left">
-                            <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Service</th><th className="p-4">Car</th><th className="p-4">Date</th></tr></thead>
+                            <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Service</th><th className="p-4">Car</th><th className="p-4">Requested Date</th></tr></thead>
                         <tbody className="divide-y divide-white/5">
                             {customer.workshopBookings.map(wb => (<tr key={wb._id}><td className="p-4 font-medium">{wb.serviceType}</td><td className="p-4">{wb.carModel}</td><td className="p-4">{wb.date}</td></tr>))}
                         </tbody>
                     </table>
-                ) : <div className="p-8 text-center text-gray-500">No service history.</div>}
+                ) : <div className="p-8 text-center text-gray-500">No booking requests.</div>}
             </div>
+     </div>
      </div>
 )
 

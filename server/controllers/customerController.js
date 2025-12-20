@@ -81,6 +81,7 @@ const SellRequest = require('../models/sellRequest');
 const WorkshopBooking = require('../models/workshopBooking');
 const TestDriveBooking = require('../models/testDriveBooking');
 const CustomerOffer = require('../models/CustomerOffer');
+const ServiceRecord = require('../models/ServiceRecord');
 
 // Get Single Customer Details (Full 360 View)
 exports.getCustomerDetails = async (req, res) => {
@@ -97,6 +98,7 @@ exports.getCustomerDetails = async (req, res) => {
         requirements,
         sellRequests,
         workshopBookings,
+        serviceRecords,
         testDrives,
         offers
     ] = await Promise.all([
@@ -113,10 +115,13 @@ exports.getCustomerDetails = async (req, res) => {
             $or: [{ customer: customer._id }, { phoneNumber: mobile }] 
         }).sort({ createdAt: -1 }),
 
-        // Service
+        // Service Bookings (Requests)
         WorkshopBooking.find({ 
             $or: [{ customer: customer._id }, { mobileNumber: mobile }] 
         }).sort({ createdAt: -1 }),
+
+        // Service History (Actual Records)
+        ServiceRecord.find({ customer: customer._id }).sort({ serviceDate: -1 }),
 
         // Test Drives
         TestDriveBooking.find({ 
@@ -135,6 +140,7 @@ exports.getCustomerDetails = async (req, res) => {
         requirements,
         sellRequests,
         workshopBookings,
+        serviceRecords, 
         testDrives,
         offers
     }); 
@@ -142,6 +148,33 @@ exports.getCustomerDetails = async (req, res) => {
     console.error('360 Fetch Error:', error);
     res.status(500).json({ message: 'Error fetching customer details' });
   }
+};
+
+// Add Service Record (Admin)
+exports.addServiceRecord = async (req, res) => {
+    try {
+        const { regNumber, serviceDate, serviceType, description, cost, mileage, nextServiceDue } = req.body;
+        
+        if (!regNumber) return res.status(400).json({ message: 'Registration number required' });
+
+        const serviceRecord = new ServiceRecord({
+            customer: req.params.id,
+            regNumber,
+            serviceDate: serviceDate || new Date(),
+            serviceType,
+            description,
+            cost,
+            mileage,
+            nextServiceDue,
+            enteredBy: req.user._id
+        });
+
+        await serviceRecord.save();
+        res.status(201).json(serviceRecord);
+    } catch (error) {
+        console.error('Add Service Record Error:', error);
+        res.status(500).json({ message: 'Error adding service record' });
+    }
 };
 // Update Customer (Admin)
 exports.updateCustomer = async (req, res) => {
