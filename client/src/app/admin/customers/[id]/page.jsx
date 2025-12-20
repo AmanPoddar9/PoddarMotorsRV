@@ -448,7 +448,7 @@ const CustomerDetailPage = ({ params }) => {
                                      </div>
                                      <div className="hidden group-hover:flex gap-2">
                                          <button onClick={() => handleEditVehicle(v)} className="text-gray-400 hover:text-white p-1"><FiEdit2 /></button>
-                                         <button onClick={() => handleDeleteVehicle(v._id)} className="text-gray-400 hover:text-red-500 p-1"><FiTrash2 /></button>
+                                         {/* <button onClick={() => handleDeleteVehicle(v._id)} className="text-gray-400 hover:text-red-500 p-1"><FiTrash2 /></button> */}
                                      </div>
                                  </div>
                              ))}
@@ -627,15 +627,18 @@ const ServiceTab = ({ customer, onAddService }) => (
      </div>
 )
 
-const InsuranceTab = ({ customer }) => (
+const InsuranceTab = ({ customer, onAddPolicy }) => (
      <div className="bg-custom-jet rounded-xl border border-white/10 overflow-hidden">
-             <div className="p-4 border-b border-white/10 bg-white/5"><h3 className="font-bold">Active Policies</h3></div>
+             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
+                 <h3 className="font-bold border-l-4 border-blue-500 pl-2">Active Policies</h3>
+                 <button onClick={onAddPolicy} className="text-xs bg-custom-accent text-black px-3 py-1 rounded font-bold">+ Add Policy</button>
+            </div>
              <div className="p-0">
                 {customer.policies?.length > 0 ? (
                     <table className="w-full text-sm text-left">
-                            <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Policy #</th><th className="p-4">Vehicle</th><th className="p-4">Expiry</th></tr></thead>
+                            <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Policy #</th><th className="p-4">Vehicle</th><th className="p-4">Insurer</th><th className="p-4">Expiry</th></tr></thead>
                         <tbody className="divide-y divide-white/5">
-                            {customer.policies.map(p => (<tr key={p._id}><td className="p-4 font-mono">{p.policyNumber}</td><td className="p-4">{p.vehicle?.regNumber}</td><td className="p-4 text-red-400">{moment(p.policyEndDate).format('DD MMM YYYY')}</td></tr>))}
+                            {customer.policies.map(p => (<tr key={p._id}><td className="p-4 font-mono">{p.policyNumber}</td><td className="p-4">{p.vehicle?.regNumber}</td><td className="p-4">{p.insurer}</td><td className="p-4 text-red-400">{moment(p.policyEndDate).format('DD MMM YYYY')}</td></tr>))}
                         </tbody>
                     </table>
                 ) : <div className="p-8 text-center text-gray-500">No active policies.</div>}
