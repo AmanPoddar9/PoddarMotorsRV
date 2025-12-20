@@ -44,6 +44,7 @@ router.post('/:id/vehicles', requireAuth, requireRole('admin'), customerControll
 router.put('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin'), customerController.updateCustomerVehicle);
 router.delete('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin'), customerController.deleteCustomerVehicle);
 router.post('/:id/service-records', requireAuth, requireRole('admin'), customerController.addServiceRecord);
+router.post('/:id/insurance', requireAuth, requireRole('admin'), customerController.addCustomerInsurance);
 
 router.delete('/admin/requirements/:id', requireAuth, requireRole('admin'), customerController.deleteRequirement); // New Admin Delete
 

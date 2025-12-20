@@ -415,8 +415,8 @@ const CustomerDetailPage = ({ params }) => {
                 {/* Other Tabs */}
                 {activeTab === 'buying' && <BuyingTab customer={customer} onDelete={handleDeleteRequirement} />}
                 {activeTab === 'selling' && <SellingTab customer={customer} />}
-                {activeTab === 'service' && <ServiceTab customer={customer} />}
-                {activeTab === 'insurance' && <InsuranceTab customer={customer} />}
+                {activeTab === 'service' && <ServiceTab customer={customer} onAddService={() => toggleModal('addService', true)} />}
+                {activeTab === 'insurance' && <InsuranceTab customer={customer} onAddPolicy={() => toggleModal('addInsurance', true)} />}
             
             </div>
 

@@ -176,6 +176,52 @@ exports.addServiceRecord = async (req, res) => {
         res.status(500).json({ message: 'Error adding service record' });
     }
 };
+
+// Add Insurance Policy (Admin)
+exports.addCustomerInsurance = async (req, res) => {
+    try {
+        const { regNumber, policyNumber, insurer, policyEndDate, idv, premiumAmount, policyType } = req.body;
+        
+        if (!regNumber || !policyNumber || !policyEndDate) {
+            return res.status(400).json({ message: 'Reg Number, Policy Number and End Date are required' });
+        }
+
+        const customer = await Customer.findById(req.params.id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        // Find vehicle in garage to get details
+        const garageVehicle = customer.vehicles.find(v => v.regNumber === regNumber);
+        
+        const vehicleSnapshot = {
+            regNumber,
+            make: garageVehicle?.make || 'Unknown',
+            model: garageVehicle?.model || 'Unknown',
+            variant: garageVehicle?.variant || 'Unknown',
+            year: garageVehicle?.yearOfManufacture || ''
+        };
+
+        // Optional: Check active policies for this regNumber and warn/update?
+        // For now, we trust the admin is adding the *current* active one or a history one.
+
+        const policy = new InsurancePolicy({
+            customer: customer._id,
+            vehicle: vehicleSnapshot,
+            policyNumber,
+            insurer,
+            policyEndDate,
+            idv,
+            premiumAmount,
+            policyType,
+            source: 'Dealer' // or 'Manual'
+        });
+
+        await policy.save();
+        res.status(201).json(policy);
+    } catch (error) {
+        console.error('Add Insurance Error:', error);
+        res.status(500).json({ message: 'Error adding insurance policy' });
+    }
+};
 // Update Customer (Admin)
 exports.updateCustomer = async (req, res) => {
   try {
