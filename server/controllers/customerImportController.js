@@ -401,73 +401,92 @@ exports.importChunk = async (req, res) => {
         const TargetModel = ModelMap[importType];
 
         if (TargetModel) {
-             validRows.forEach(item => {
-                const customer = customerMap.get(item.mobile);
-                if (!customer) {
-                    const specificReason = failedMobileMap.get(item.mobile) || 'Failed to create profile (Unknown DB Error)';
-                    errors.push({ row: item.originalRow, error: specificReason });
-                    return;
-                }
+                // Check for duplicates before inserting
+                const existingSpokes = await TargetModel.find({
+                     customer: { $in: Array.from(customerMap.values()).map(c => c._id) }
+                });
 
-                const row = item.originalRow;
-                let spokeDoc = null;
+                 validRows.forEach(item => {
+                    const customer = customerMap.get(item.mobile);
+                    if (!customer) {
+                        const specificReason = failedMobileMap.get(item.mobile) || 'Failed to create profile (Unknown DB Error)';
+                        errors.push({ row: item.originalRow, error: specificReason });
+                        return;
+                    }
 
-                if (importType === 'car_requirement') {
-                    spokeDoc = {
-                        customer: customer._id,
-                        brand: getValue(row, ['brand', 'make']) || 'Any',
-                        model: getValue(row, ['model']) || 'Any',
-                        budgetMin: 0,
-                        budgetMax: parseFloat(getValue(row, ['maximum budget', 'max budget', 'budget'])) || 10000000,
-                        yearMin: parseInt(getValue(row, ['minimum year', 'min year', 'year', 'minimum year of registration'])) || 2015,
-                        isActive: true
-                    };
-                } else if (importType === 'sell_request') {
-                     spokeDoc = {
-                        customer: customer._id,
-                        name: customer.name,
-                        phoneNumber: customer.mobile,
-                        location: item.city || 'Unknown',
-                        registrationNumber: item.regNumber || 'Unknown',
-                        brand: getValue(row, ['brand', 'make']) || 'Unknown',
-                        model: getValue(row, ['model']) || 'Unknown',
-                        manufactureYear: row.year || 2020,
-                        kilometers: row.km || 0
-                     };
-                } else if (importType === 'test_drive') {
-                    spokeDoc = {
-                       customer: customer._id,
-                       name: customer.name,
-                       mobileNumber: customer.mobile,
-                       listingId: 'General', 
-                       date: row.date || new Date().toISOString(),
-                       time: row.time || '10:00 AM'
-                    };
-               } else if (importType === 'inspection') {
-                     spokeDoc = {
-                       customer: customer._id,
-                       customerName: customer.name,
-                       customerPhone: customer.mobile,
-                       registrationNumber: item.regNumber || 'Unknown',
-                       brand: row.brand || 'Unknown',
-                       model: row.model || 'Unknown',
-                       year: row.year || 2020,
-                       kmDriven: row.km || 0,
-                       fuelType: row.fuelType || 'Petrol',
-                       transmissionType: row.transmission || 'Manual',
-                       appointmentDate: row.date || new Date().toISOString(),
-                       appointmentTimeSlot: row.timeSlot || '09:00-11:00',
-                       inspectionLocation: {
-                         address: row.address || 'Unknown',
-                         city: row.city || 'Ranchi',
-                         pincode: row.pincode || '834001'
-                       }
-                     };
-               } 
-               // Skipping insurance for complex reasons/limits in chunks
+                    const row = item.originalRow;
+                    let spokeDoc = null;
 
-                if (spokeDoc) spokesToInsert.push(spokeDoc);
-             });
+                    if (importType === 'car_requirement') {
+                        const brand = getValue(row, ['brand', 'make']) || 'Any';
+                        const model = getValue(row, ['model']) || 'Any';
+                        const budgetMax = parseFloat(getValue(row, ['maximum budget', 'max budget', 'budget'])) || 10000000;
+                        
+                        // Deduplicate: Check if this customer already has this exact requirement
+                        const isDuplicate = existingSpokes.some(s => 
+                            s.customer.toString() === customer._id.toString() &&
+                            s.brand === brand &&
+                            s.model === model &&
+                            s.budgetMax === budgetMax
+                        );
+
+                        if (!isDuplicate) {
+                            spokeDoc = {
+                                customer: customer._id,
+                                brand,
+                                model,
+                                budgetMin: 0,
+                                budgetMax,
+                                yearMin: parseInt(getValue(row, ['minimum year', 'min year', 'year', 'minimum year of registration'])) || 2015,
+                                isActive: true
+                            };
+                        }
+                    } else if (importType === 'sell_request') {
+                         spokeDoc = {
+                            customer: customer._id,
+                            name: customer.name,
+                            phoneNumber: customer.mobile,
+                            location: item.city || 'Unknown',
+                            registrationNumber: item.regNumber || 'Unknown',
+                            brand: getValue(row, ['brand', 'make']) || 'Unknown',
+                            model: getValue(row, ['model']) || 'Unknown',
+                            manufactureYear: row.year || 2020,
+                            kilometers: row.km || 0
+                         };
+                    } else if (importType === 'test_drive') {
+                        spokeDoc = {
+                           customer: customer._id,
+                           name: customer.name,
+                           mobileNumber: customer.mobile,
+                           listingId: 'General', 
+                           date: row.date || new Date().toISOString(),
+                           time: row.time || '10:00 AM'
+                        };
+                   } else if (importType === 'inspection') {
+                         spokeDoc = {
+                           customer: customer._id,
+                           customerName: customer.name,
+                           customerPhone: customer.mobile,
+                           registrationNumber: item.regNumber || 'Unknown',
+                           brand: row.brand || 'Unknown',
+                           model: row.model || 'Unknown',
+                           year: row.year || 2020,
+                           kmDriven: row.km || 0,
+                           fuelType: row.fuelType || 'Petrol',
+                           transmissionType: row.transmission || 'Manual',
+                           appointmentDate: row.date || new Date().toISOString(),
+                           appointmentTimeSlot: row.timeSlot || '09:00-11:00',
+                           inspectionLocation: {
+                             address: row.address || 'Unknown',
+                             city: row.city || 'Ranchi',
+                             pincode: row.pincode || '834001'
+                           }
+                         };
+                   } 
+                   // Skipping insurance for complex reasons/limits in chunks
+
+                    if (spokeDoc) spokesToInsert.push(spokeDoc);
+                 });
 
              if (spokesToInsert.length > 0) {
                 await TargetModel.insertMany(spokesToInsert);

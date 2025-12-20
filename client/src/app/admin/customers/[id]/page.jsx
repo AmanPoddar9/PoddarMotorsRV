@@ -115,6 +115,17 @@ const CustomerDetailPage = ({ params }) => {
           toast.error('Failed to add vehicle')
       }
   }
+  
+  const handleDeleteRequirement = async (reqId) => {
+      if(!confirm('Are you sure you want to delete this lead?')) return;
+      try {
+          await axios.delete(`${API_URL}/api/customer/admin/requirements/${reqId}`, { withCredentials: true })
+          toast.success('Lead deleted')
+          fetchCustomer()
+      } catch (error) {
+          toast.error('Failed to delete lead')
+      }
+  }
 
   // Tag Helpers
   const addTempTag = (e) => {
@@ -341,7 +352,7 @@ const CustomerDetailPage = ({ params }) => {
                 )}
 
                 {/* Other Tabs (Simplified for brevity, logic remains same as previous step just ensuring they render) */}
-                {activeTab === 'buying' && <BuyingTab customer={customer} />}
+                {activeTab === 'buying' && <BuyingTab customer={customer} onDelete={handleDeleteRequirement} />}
                 {activeTab === 'selling' && <SellingTab customer={customer} />}
                 {activeTab === 'service' && <ServiceTab customer={customer} />}
                 {activeTab === 'insurance' && <InsuranceTab customer={customer} />}
@@ -440,7 +451,7 @@ const StatCard = ({ label, value, color }) => {
 }
 
 // Reusing Tab Content Logic directly or keeping them as simple renders
-const BuyingTab = ({ customer }) => (
+const BuyingTab = ({ customer, onDelete }) => (
      <div className="space-y-6">
         <div className="bg-custom-jet rounded-xl border border-white/10 overflow-hidden">
             <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
@@ -450,10 +461,17 @@ const BuyingTab = ({ customer }) => (
             <div className="p-0">
                 {customer.requirements?.length > 0 ? (
                     <table className="w-full text-sm text-left">
-                        <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Looking For</th><th className="p-4">Budget</th><th className="p-4">Status</th></tr></thead>
+                        <thead className="text-gray-500 border-b border-white/10"><tr><th className="p-4">Looking For</th><th className="p-4">Budget</th><th className="p-4">Status</th><th className="p-4">Ref</th></tr></thead>
                         <tbody className="divide-y divide-white/5">
                             {customer.requirements.map(req => (
-                                <tr key={req._id}><td className="p-4"><div className="font-bold font-white">{req.brand} {req.model}</div><div className="text-xs text-gray-500">Min Year: {req.yearMin}</div></td><td className="p-4">₹{req.budgetMin} - {req.budgetMax}</td><td className="p-4">{req.isActive ? 'Active' : 'Closed'}</td></tr>
+                                <tr key={req._id}>
+                                    <td className="p-4"><div className="font-bold font-white">{req.brand} {req.model}</div><div className="text-xs text-gray-500">Min Year: {req.yearMin}</div></td>
+                                    <td className="p-4">₹{req.budgetMin} - {req.budgetMax}</td>
+                                    <td className="p-4">{req.isActive ? 'Active' : 'Closed'}</td>
+                                    <td className="p-4 text-right">
+                                        <button onClick={() => onDelete(req._id)} className="text-gray-500 hover:text-red-500 p-2"><FiTrash2 /></button>
+                                    </td>
+                                </tr>
                             ))}
                         </tbody>
                     </table>

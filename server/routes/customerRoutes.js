@@ -41,6 +41,7 @@ router.put('/:id', requireAuth, requireRole('admin'), customerController.updateC
 router.post('/:id/notes', requireAuth, requireRole('admin'), customerController.addCustomerNote);
 router.put('/:id/tags', requireAuth, requireRole('admin'), customerController.manageCustomerTags);
 router.post('/:id/vehicles', requireAuth, requireRole('admin'), customerController.addCustomerVehicle);
+router.delete('/admin/requirements/:id', requireAuth, requireRole('admin'), customerController.deleteRequirement); // New Admin Delete
 
 router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 

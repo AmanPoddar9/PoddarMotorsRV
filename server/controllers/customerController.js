@@ -239,3 +239,15 @@ exports.addCustomerVehicle = async (req, res) => {
         res.status(500).json({ message: 'Error adding vehicle' });
     }
 };
+
+// Delete Requirement (Admin)
+exports.deleteRequirement = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await CarRequirement.findByIdAndDelete(id);
+        if (!result) return res.status(404).json({ message: 'Requirement not found' });
+        res.json({ message: 'Requirement deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting requirement' });
+    }
+};
