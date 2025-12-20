@@ -147,7 +147,7 @@ exports.getCustomerDetails = async (req, res) => {
 exports.updateCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, mobile, email, alternatePhones } = req.body;
+    const { name, mobile, email, alternatePhones, areaCity, source, lifecycleStage } = req.body;
 
     // Check unique constraints if changing mobile/email
     if (mobile || email) {
@@ -165,6 +165,9 @@ exports.updateCustomer = async (req, res) => {
     if (mobile) updates.mobile = mobile;
     if (email) updates.email = email;
     if (alternatePhones) updates.alternatePhones = alternatePhones;
+    if (areaCity) updates.areaCity = areaCity;
+    if (source) updates.source = source;
+    if (lifecycleStage) updates.lifecycleStage = lifecycleStage;
 
     const customer = await Customer.findByIdAndUpdate(id, updates, { new: true });
     if (!customer) return res.status(404).json({ message: 'Customer not found' });
@@ -174,4 +177,65 @@ exports.updateCustomer = async (req, res) => {
     console.error('Update customer error:', error);
     res.status(500).json({ message: 'Error updating customer' });
   }
+};
+
+// Add Note
+exports.addCustomerNote = async (req, res) => {
+    try {
+        const { note } = req.body;
+        if (!note) return res.status(400).json({ message: 'Note content required' });
+
+        const customer = await Customer.findById(req.params.id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        customer.notes.push({
+            content: note,
+            addedBy: req.user._id, // Assuming auth middleware populates req.user
+            createdAt: new Date()
+        });
+
+        await customer.save();
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding note' });
+    }
+};
+
+// Manage Tags
+exports.manageCustomerTags = async (req, res) => {
+    try {
+        const { tags } = req.body; // Expects array of strings
+        if (!Array.isArray(tags)) return res.status(400).json({ message: 'Tags must be an array' });
+
+        const customer = await Customer.findByIdAndUpdate(
+            req.params.id, 
+            { tags }, 
+            { new: true }
+        );
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating tags' });
+    }
+};
+
+// Add Vehicle (Garage)
+exports.addCustomerVehicle = async (req, res) => {
+    try {
+        const { regNumber, make, model, variant, yearOfManufacture } = req.body;
+        if (!regNumber) return res.status(400).json({ message: 'Registration number required' });
+
+        const customer = await Customer.findById(req.params.id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        customer.vehicles.push({
+            regNumber, make, model, variant, yearOfManufacture
+        });
+
+        await customer.save();
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding vehicle' });
+    }
 };

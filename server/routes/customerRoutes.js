@@ -38,6 +38,10 @@ const customerController = require('../controllers/customerController');
 router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
 router.get('/:id', requireAuth, requireRole('admin'), customerController.getCustomerDetails);
 router.put('/:id', requireAuth, requireRole('admin'), customerController.updateCustomer);
+router.post('/:id/notes', requireAuth, requireRole('admin'), customerController.addCustomerNote);
+router.put('/:id/tags', requireAuth, requireRole('admin'), customerController.manageCustomerTags);
+router.post('/:id/vehicles', requireAuth, requireRole('admin'), customerController.addCustomerVehicle);
+
 router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
 
 // Requirements Routes
