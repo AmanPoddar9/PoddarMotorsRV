@@ -30,6 +30,7 @@ const CustomerDetailPage = ({ params }) => {
   const [tagInput, setTagInput] = useState('')
   const [tempTags, setTempTags] = useState([])
   const [vehicleForm, setVehicleForm] = useState({})
+  const [editingVehicleId, setEditingVehicleId] = useState(null) // New: Track editing vehicle
 
   useEffect(() => {
     fetchCustomer()
@@ -106,13 +107,44 @@ const CustomerDetailPage = ({ params }) => {
   const handleAddVehicle = async (e) => {
       e.preventDefault();
       try {
-          await axios.post(`${API_URL}/api/customer/${id}/vehicles`, vehicleForm, { withCredentials: true })
-          toast.success('Vehicle added to Garage')
+          if (editingVehicleId) {
+             // Update Existing
+             await axios.put(`${API_URL}/api/customer/${id}/vehicles/${editingVehicleId}`, vehicleForm, { withCredentials: true })
+             toast.success('Vehicle updated')
+          } else {
+             // Add New
+             await axios.post(`${API_URL}/api/customer/${id}/vehicles`, vehicleForm, { withCredentials: true })
+             toast.success('Vehicle added to Garage')
+          }
           setVehicleForm({})
+          setEditingVehicleId(null)
           toggleModal('addVehicle', false)
           fetchCustomer()
       } catch (error) {
-          toast.error('Failed to add vehicle')
+          toast.error('Failed to save vehicle')
+      }
+  }
+
+  const handleEditVehicle = (vehicle) => {
+      setVehicleForm({
+          regNumber: vehicle.regNumber,
+          make: vehicle.make,
+          model: vehicle.model,
+          variant: vehicle.variant,
+          yearOfManufacture: vehicle.yearOfManufacture
+      })
+      setEditingVehicleId(vehicle._id)
+      toggleModal('addVehicle', true)
+  }
+
+  const handleDeleteVehicle = async (vehicleId) => {
+      if(!confirm('Delete this vehicle from garage?')) return;
+      try {
+          await axios.delete(`${API_URL}/api/customer/${id}/vehicles/${vehicleId}`, { withCredentials: true })
+          toast.success('Vehicle removed')
+          fetchCustomer()
+      } catch (error) {
+          toast.error('Failed to remove vehicle')
       }
   }
   
@@ -239,20 +271,20 @@ const CustomerDetailPage = ({ params }) => {
           </Modal>
       )}
 
-      {/* 4. Add Vehicle (Garage) Modal */}
+      {/* 4. Add Vehicle (Garage) Modal -> UPDATED FOR EDIT */}
        {modals.addVehicle && (
-          <Modal title="Add Vehicle to Garage" onClose={() => toggleModal('addVehicle', false)}>
+          <Modal title={editingVehicleId ? "Edit Vehicle" : "Add Vehicle to Garage"} onClose={() => { toggleModal('addVehicle', false); setEditingVehicleId(null); setVehicleForm({}); }}>
               <form onSubmit={handleAddVehicle} className="space-y-4">
-                  <Input label="Reg Number" required onChange={e => setVehicleForm({...vehicleForm, regNumber: e.target.value})} />
+                  <Input label="Reg Number" required value={vehicleForm.regNumber || ''} onChange={e => setVehicleForm({...vehicleForm, regNumber: e.target.value})} />
                   <div className="grid grid-cols-2 gap-4">
-                    <Input label="Make" placeholder="e.g. Maruti" onChange={e => setVehicleForm({...vehicleForm, make: e.target.value})} />
-                    <Input label="Model" placeholder="e.g. Swift" onChange={e => setVehicleForm({...vehicleForm, model: e.target.value})} />
+                    <Input label="Make" placeholder="e.g. Maruti" value={vehicleForm.make || ''} onChange={e => setVehicleForm({...vehicleForm, make: e.target.value})} />
+                    <Input label="Model" placeholder="e.g. Swift" value={vehicleForm.model || ''} onChange={e => setVehicleForm({...vehicleForm, model: e.target.value})} />
                   </div>
                    <div className="grid grid-cols-2 gap-4">
-                     <Input label="Variant" placeholder="e.g. VXI" onChange={e => setVehicleForm({...vehicleForm, variant: e.target.value})} />
-                     <Input label="Year" placeholder="e.g. 2020" onChange={e => setVehicleForm({...vehicleForm, yearOfManufacture: e.target.value})} />
+                     <Input label="Variant" placeholder="e.g. VXI" value={vehicleForm.variant || ''} onChange={e => setVehicleForm({...vehicleForm, variant: e.target.value})} />
+                     <Input label="Year" placeholder="e.g. 2020" value={vehicleForm.yearOfManufacture || ''} onChange={e => setVehicleForm({...vehicleForm, yearOfManufacture: e.target.value})} />
                    </div>
-                  <Button type="submit" icon={<FiPlus />} text="Add Vehicle" />
+                  <Button type="submit" icon={editingVehicleId ? <FiSave /> : <FiPlus />} text={editingVehicleId ? "Save Changes" : "Add Vehicle"} />
               </form>
           </Modal>
       )}
@@ -351,7 +383,7 @@ const CustomerDetailPage = ({ params }) => {
                     </div>
                 )}
 
-                {/* Other Tabs (Simplified for brevity, logic remains same as previous step just ensuring they render) */}
+                {/* Other Tabs */}
                 {activeTab === 'buying' && <BuyingTab customer={customer} onDelete={handleDeleteRequirement} />}
                 {activeTab === 'selling' && <SellingTab customer={customer} />}
                 {activeTab === 'service' && <ServiceTab customer={customer} />}
@@ -371,18 +403,24 @@ const CustomerDetailPage = ({ params }) => {
                     </div>
                 </div>
 
-                {/* Garage */}
+                {/* Garage -> UPDATED */}
                  <div className="bg-custom-jet rounded-xl border border-white/10 p-6">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-sm uppercase tracking-wider text-gray-500 font-bold">Garage ({customer.vehicles?.length || 0})</h3>
-                        <button onClick={() => toggleModal('addVehicle', true)} className="text-custom-accent text-xs hover:underline">+ Add</button>
+                        <button onClick={() => { setEditingVehicleId(null); setVehicleForm({}); toggleModal('addVehicle', true); }} className="text-custom-accent text-xs hover:underline">+ Add</button>
                     </div>
                      {customer.vehicles && customer.vehicles.length > 0 ? (
                          <div className="space-y-3">
                              {customer.vehicles.map((v, i) => (
-                                 <div key={i} className="bg-black/20 p-3 rounded border border-white/5">
-                                     <div className="font-bold text-white">{v.regNumber}</div>
-                                     <div className="text-xs text-gray-400">{v.make} {v.model} ({v.yearOfManufacture || 'Year?'})</div>
+                                 <div key={i} className="bg-black/20 p-3 rounded border border-white/5 flex justify-between items-center group">
+                                     <div>
+                                         <div className="font-bold text-white">{v.regNumber}</div>
+                                         <div className="text-xs text-gray-400">{v.make} {v.model} ({v.yearOfManufacture || 'Year?'})</div>
+                                     </div>
+                                     <div className="hidden group-hover:flex gap-2">
+                                         <button onClick={() => handleEditVehicle(v)} className="text-gray-400 hover:text-white p-1"><FiEdit2 /></button>
+                                         <button onClick={() => handleDeleteVehicle(v._id)} className="text-gray-400 hover:text-red-500 p-1"><FiTrash2 /></button>
+                                     </div>
                                  </div>
                              ))}
                          </div>

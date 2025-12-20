@@ -251,3 +251,48 @@ exports.deleteRequirement = async (req, res) => {
         res.status(500).json({ message: 'Error deleting requirement' });
     }
 };
+
+// Update Vehicle (Garage)
+exports.updateCustomerVehicle = async (req, res) => {
+    try {
+        const { id, vehicleId } = req.params;
+        const { regNumber, make, model, variant, yearOfManufacture } = req.body;
+
+        const customer = await Customer.findById(id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        const vehicle = customer.vehicles.id(vehicleId);
+        if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
+
+        if (regNumber) vehicle.regNumber = regNumber;
+        if (make) vehicle.make = make;
+        if (model) vehicle.model = model;
+        if (variant) vehicle.variant = variant;
+        if (yearOfManufacture) vehicle.yearOfManufacture = yearOfManufacture;
+
+        await customer.save();
+        res.json(customer);
+    } catch (error) {
+        console.error('Update vehicle error:', error);
+        res.status(500).json({ message: 'Error updating vehicle' });
+    }
+};
+
+// Delete Vehicle (Garage)
+exports.deleteCustomerVehicle = async (req, res) => {
+    try {
+        const { id, vehicleId } = req.params;
+        
+        const customer = await Customer.findById(id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+
+        // Use pull to remove the subdocument
+        customer.vehicles.pull({ _id: vehicleId });
+        
+        await customer.save();
+        res.json(customer);
+    } catch (error) {
+        console.error('Delete vehicle error:', error);
+        res.status(500).json({ message: 'Error deleting vehicle' });
+    }
+};
