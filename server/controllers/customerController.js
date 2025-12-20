@@ -75,9 +75,10 @@ exports.createCustomer = async (req, res) => {
 
 // Get Single Customer Details (Full View)
 // Import all spoke models
+// Import all spoke models
 const CarRequirement = require('../models/CarRequirement');
-const SellRequest = require('../models/SellRequest');
-const WorkshopBooking = require('../models/WorkshopBooking');
+const SellRequest = require('../models/sellRequest');
+const WorkshopBooking = require('../models/workshopBooking');
 const TestDriveBooking = require('../models/testDriveBooking');
 const CustomerOffer = require('../models/CustomerOffer');
 
