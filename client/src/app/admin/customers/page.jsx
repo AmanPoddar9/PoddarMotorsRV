@@ -36,18 +36,27 @@ const CustomersPage = () => {
         source: sourceFilter,
         prime: primeFilter
       }
+      console.log('Fetching customers from:', `${API_URL}/api/customer/all`);
+      console.log('Params:', params);
+      
       const response = await axios.get(`${API_URL}/api/customer/all`, { 
         params,
         withCredentials: true,
-        timeout: 10000 // Added timeout
+        timeout: 10000 
       })
+
+      console.log('Response received:', response.status, response.data);
       
       setCustomers(response.data.customers)
       setPagination(response.data.pagination)
     } catch (error) {
-      console.error('Error fetching customers:', error)
-      toast.error('Failed to load customers. Server might be busy or down.') // Added toast error
+      console.error('Error fetching customers (Catch Block):', error)
+      if (error.code === 'ECONNABORTED') {
+          console.error('Request timed out');
+      }
+      toast.error(`Error: ${error.message || 'Server unreachable'}`)
     } finally {
+      console.log('Finally block: Setting loading false');
       setLoading(false)
     }
   }
