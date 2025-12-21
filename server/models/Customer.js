@@ -96,9 +96,20 @@ customerSchema.methods.validatePassword = async function (plain) {
   return bcrypt.compare(plain, this.passwordHash);
 };
 
-// Update timestamp on save
+// Update timestamp on save and Normalize Data
 customerSchema.pre('save', function(next) {
   this.updatedAt = new Date();
+
+  // Normalize Mobile: Remove non-digits, keep last 10
+  if (this.mobile) {
+      this.mobile = this.mobile.replace(/\D/g, '').slice(-10);
+  }
+
+  // Normalize Email: Lowercase and trim
+  if (this.email) {
+      this.email = this.email.toLowerCase().trim();
+  }
+
   next();
 });
 

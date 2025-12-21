@@ -40,8 +40,11 @@ exports.createCustomer = async (req, res) => {
     const { name, mobile, email, vehicle, address } = req.body;
 
     // 1. Duplicate Check
+    const normalizedMobile = mobile.replace(/\D/g, '').slice(-10);
+    const normalizedEmail = email ? email.toLowerCase().trim() : 'dummy_nomatch';
+
     const existing = await Customer.findOne({ 
-      $or: [{ mobile }, { email: email || 'dummy_nomatch' }] 
+      $or: [{ mobile: normalizedMobile }, { email: normalizedEmail }] 
     });
     
     if (existing) {
@@ -230,13 +233,19 @@ exports.updateCustomer = async (req, res) => {
 
     // Check unique constraints if changing mobile/email
     if (mobile || email) {
-        const existing = await Customer.findOne({
-            $and: [
-                { _id: { $ne: id } }, // Not self
-                { $or: [{ mobile }, { email: email || 'dummy_nomatch' }] }
-            ]
-        });
-        if (existing) return res.status(400).json({ message: 'Mobile or Email already in use by another customer' });
+        const normalizedMobile = mobile ? mobile.replace(/\D/g, '').slice(-10) : null;
+        const normalizedEmail = email ? email.toLowerCase().trim() : null;
+
+        const query = { $and: [{ _id: { $ne: id } }] };
+        const checks = [];
+        if (normalizedMobile) checks.push({ mobile: normalizedMobile });
+        if (normalizedEmail) checks.push({ email: normalizedEmail });
+        
+        if (checks.length > 0) {
+            query.$and.push({ $or: checks });
+            const existing = await Customer.findOne(query);
+            if (existing) return res.status(400).json({ message: 'Mobile or Email already in use by another customer' });
+        }
     }
 
     const updates = {};

@@ -8,12 +8,16 @@ const CarRequirement = require('../models/CarRequirement');
 const csv = require('csv-parser');
 const fs = require('fs');
 // Try to import ID generator, fallback if not found (though it should be there)
+// Try to import ID generator, fallback if not found (though it should be there)
 let generateCustomId;
+let generateBulkIds;
 try {
   const utils = require('../utils/idGenerator');
   generateCustomId = utils.generateCustomId;
+  generateBulkIds = utils.generateBulkIds;
 } catch (e) {
   generateCustomId = async () => 'CUST-' + Date.now();
+  generateBulkIds = async (count) => Array(count).fill(0).map((_, i) => 'CUST-' + Date.now() + '-' + i);
 }
 
 /**
@@ -70,7 +74,7 @@ exports.bulkImport = async (req, res) => {
                 originalRow: row,
                 mobile,
                 name: getValue(row, ['name', 'customer', 'customername', 'fullname']) || 'Unknown',
-                email: getValue(row, ['email', 'mail']) || undefined,
+                email: getValue(row, ['email', 'mail']) ? String(getValue(row, ['email', 'mail'])).toLowerCase().trim() : undefined,
                 regNumber: getValue(row, ['reg', 'registration', 'regno', 'vehicleno', 'numberplate']),
                 // Capture raw fields for spokes later
                 city: row.city || row.address, // simple fallback
@@ -110,7 +114,7 @@ exports.bulkImport = async (req, res) => {
                      const alreadyInBatch = newCustomerDocs.find(d => d.mobile === row.mobile);
                      if (!alreadyInBatch) {
                         newCustomerDocs.push({
-                            customId: 'IMP-' + Date.now() + '-' + (i + idxInChunk) + '-' + Math.floor(Math.random() * 1000),
+                            tempId: true, // Marker to assign real ID later
                             name: row.name,
                             mobile: row.mobile,
                             email: row.email,
@@ -129,6 +133,13 @@ exports.bulkImport = async (req, res) => {
 
             // C. Insert New Customers
             if (newCustomerDocs.length > 0) {
+                // Generate Batch IDs for the new docs
+                const ids = await generateBulkIds(newCustomerDocs.length);
+                newCustomerDocs.forEach((doc, idx) => {
+                    doc.customId = ids[idx];
+                    delete doc.tempId;
+                });
+
                 try {
                      // ordered: false ensures that if one doc fails (e.g. duplicate), others still get inserted
                      const createdDocs = await Customer.insertMany(newCustomerDocs, { ordered: false });
@@ -300,7 +311,7 @@ exports.importChunk = async (req, res) => {
                 originalRow: row,
                 mobile,
                 name: getValue(row, ['name', 'customer', 'customername', 'fullname']) || 'Unknown',
-                email: getValue(row, ['email', 'mail']) || undefined,
+                email: getValue(row, ['email', 'mail']) ? String(getValue(row, ['email', 'mail'])).toLowerCase().trim() : undefined,
                 regNumber: getValue(row, ['reg', 'registration', 'regno', 'vehicleno', 'numberplate']),
                 city: row.city || row.address,
                 rawSpokeData: row 
@@ -329,7 +340,7 @@ exports.importChunk = async (req, res) => {
                  const alreadyInBatch = newCustomerDocs.find(d => d.mobile === row.mobile);
                  if (!alreadyInBatch) {
                     newCustomerDocs.push({
-                        customId: `IMP-${timestamp}-${randomBatchId}-${idx}`,
+                        tempId: true, // Assign real ID later
                         name: row.name,
                         mobile: row.mobile,
                         email: row.email,
@@ -351,6 +362,13 @@ exports.importChunk = async (req, res) => {
         const failedMobileMap = new Map();
         
         if (newCustomerDocs.length > 0) {
+            // Generate Batch IDs for the new docs
+            const ids = await generateBulkIds(newCustomerDocs.length);
+            newCustomerDocs.forEach((doc, idx) => {
+                doc.customId = ids[idx];
+                delete doc.tempId;
+            });
+
             try {
                  const createdDocs = await Customer.insertMany(newCustomerDocs, { ordered: false });
                  createdDocs.forEach(c => customerMap.set(c.mobile, c));

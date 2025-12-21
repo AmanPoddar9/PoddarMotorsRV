@@ -49,3 +49,37 @@ exports.generateCustomId = async () => {
     const sequenceStr = counter.seq.toString().padStart(5, '0');
     return `${prefix}${sequenceStr}`;
 };
+
+/**
+ * Generates a batch of sequential custom IDs.
+ * Use this for bulk imports to avoid N database calls.
+ * @param {number} count - Number of IDs to generate
+ * @returns {Promise<string[]>} - Array of formatted IDs
+ */
+exports.generateBulkIds = async (count) => {
+    if (count < 1) return [];
+
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const prefix = `PM-${year}-`;
+    const counterId = `customer_${year}`;
+
+    // 1. Atomically increment by 'count'
+    // Returns the NEW value (e.g., if old was 10 and count is 5, returns 15)
+    // IDs reserved are: 11, 12, 13, 14, 15
+    const counter = await Counter.findByIdAndUpdate(
+        { _id: counterId },
+        { $inc: { seq: count } },
+        { new: true, upsert: true }
+    );
+
+    // Calculate the start of the range
+    const endSeq = counter.seq;
+    const startSeq = endSeq - count + 1;
+
+    const ids = [];
+    for (let i = startSeq; i <= endSeq; i++) {
+        ids.push(`${prefix}${i.toString().padStart(5, '0')}`);
+    }
+    return ids;
+};
