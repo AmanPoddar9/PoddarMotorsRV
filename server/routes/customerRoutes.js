@@ -36,6 +36,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const customerController = require('../controllers/customerController');
 
 router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
+router.post('/', requireAuth, requireRole('admin'), customerController.createCustomer); // Create Customer Route
 router.get('/:id', requireAuth, requireRole('admin'), customerController.getCustomerDetails);
 router.put('/:id', requireAuth, requireRole('admin'), customerController.updateCustomer);
 router.post('/:id/notes', requireAuth, requireRole('admin'), customerController.addCustomerNote);

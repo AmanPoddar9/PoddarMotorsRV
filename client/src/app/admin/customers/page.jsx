@@ -4,7 +4,8 @@ import axios from 'axios'
 import Link from 'next/link'
 import AdminNavbar from '../../components/AdminNavbar'
 import API_URL from '../../config/api'
-import { FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiTag, FiMoreHorizontal } from 'react-icons/fi'
+import { FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiTag, FiMoreHorizontal, FiPlus, FiX } from 'react-icons/fi'
+import toast, { Toaster } from 'react-hot-toast'
 
 const CustomersPage = () => {
   const [customers, setCustomers] = useState([])
@@ -16,48 +17,37 @@ const CustomersPage = () => {
   const [sourceFilter, setSourceFilter] = useState('')
   const [primeFilter, setPrimeFilter] = useState('')
 
-  const fetchCustomers = async (page = 1) => {
-    try {
-      setLoading(true)
-      const params = {
-        page,
-        limit: 20,
-        search,
-        source: sourceFilter,
-        primeStatus: primeFilter === 'all' ? '' : primeFilter
+  // Add Customer Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [newCustomerForm, setNewCustomerForm] = useState({
+      name: '',
+      mobile: '',
+      email: '',
+      source: 'Walk-in'
+  })
+
+  // ... (existing fetchCustomers)
+
+  const handleAddCustomer = async (e) => {
+      e.preventDefault();
+      try {
+          await axios.post(`${API_URL}/api/customer`, newCustomerForm, { withCredentials: true })
+          toast.success('Customer created successfully')
+          setIsAddModalOpen(false)
+          setNewCustomerForm({ name: '', mobile: '', email: '', source: 'Walk-in' })
+          fetchCustomers(1) // Refresh list
+      } catch (error) {
+          console.error(error);
+          toast.error(error.response?.data?.message || 'Failed to create customer')
       }
-      
-      const response = await axios.get(`${API_URL}/api/customer/all`, { 
-        params,
-        withCredentials: true 
-      })
-      
-      setCustomers(response.data.customers)
-      setPagination(response.data.pagination)
-    } catch (error) {
-      console.error('Error fetching customers:', error)
-    } finally {
-      setLoading(false)
-    }
   }
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchCustomers(1)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [search, sourceFilter, primeFilter])
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.totalPages) {
-      fetchCustomers(newPage)
-    }
-  }
+  // ... (existing useEffect, handlePageChange)
 
   return (
     <div className="min-h-screen bg-custom-black text-white">
       <AdminNavbar />
+      <Toaster />
       <div className="container mx-auto px-4 py-8">
         
         {/* Header */}
@@ -66,10 +56,15 @@ const CustomersPage = () => {
                 <h1 className="text-3xl font-bold text-white">All Customers</h1>
                 <p className="text-custom-platinum mt-1">Unified view of {pagination.total} customer profiles</p>
             </div>
-            <button className="bg-custom-accent text-custom-black px-4 py-2 rounded font-bold hover:bg-yellow-400 transition-colors">
-                + Add Customer
+            <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-custom-accent text-custom-black px-4 py-2 rounded font-bold hover:bg-yellow-400 transition-colors flex items-center gap-2"
+            >
+                <FiPlus /> Add Customer
             </button>
         </div>
+
+        {/* ... (Existing Controls & Table) ... */}
 
         {/* Controls */}
         <div className="bg-custom-jet p-4 rounded-lg border border-white/10 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -131,8 +126,10 @@ const CustomersPage = () => {
                     customers.map((c) => (
                         <tr key={c._id} className="hover:bg-white/5 transition-colors group">
                             <td className="p-4">
-                                <div className="font-semibold text-white">{c.name}</div>
-                                <div className="text-xs text-custom-platinum font-mono">{c.customId || 'No ID'}</div>
+                                <Link href={`/admin/customers/${c._id}`} className="block">
+                                    <div className="font-semibold text-white group-hover:text-custom-accent transition-colors">{c.name}</div>
+                                    <div className="text-xs text-custom-platinum font-mono">{c.customId || 'No ID'}</div>
+                                </Link>
                             </td>
                             <td className="p-4">
                                 <div className="flex items-center text-sm text-custom-platinum mb-1">
@@ -202,6 +199,71 @@ const CustomersPage = () => {
         </div>
 
       </div>
+
+      {/* ADD CUSTOMER MODAL */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <div className="bg-custom-jet w-full max-w-md p-6 rounded-xl border border-white/10 shadow-2xl">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-white">Add New Customer</h3>
+                    <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white"><FiX /></button>
+                </div>
+                <form onSubmit={handleAddCustomer} className="space-y-4">
+                    <div>
+                        <label className="block text-sm text-gray-400 mb-1">Full Name *</label>
+                        <input 
+                            required
+                            type="text"
+                            className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                            value={newCustomerForm.name}
+                            onChange={e => setNewCustomerForm({...newCustomerForm, name: e.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm text-gray-400 mb-1">Mobile Number *</label>
+                         <input 
+                            required
+                            type="text"
+                            maxLength="10"
+                            pattern="[0-9]{10}"
+                            placeholder="10 digit number"
+                            className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                            value={newCustomerForm.mobile}
+                            onChange={e => setNewCustomerForm({...newCustomerForm, mobile: e.target.value.replace(/\D/g, '')})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm text-gray-400 mb-1">Email (Optional)</label>
+                         <input 
+                            type="email"
+                            className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                            value={newCustomerForm.email}
+                            onChange={e => setNewCustomerForm({...newCustomerForm, email: e.target.value})}
+                        />
+                    </div>
+                     <div>
+                        <label className="block text-sm text-gray-400 mb-1">Source</label>
+                            <select 
+                            className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                            value={newCustomerForm.source}
+                            onChange={(e) => setNewCustomerForm({...newCustomerForm, source: e.target.value})}
+                            >
+                                {['Walk-in', 'TeleCRM', 'GoogleSheet', 'Website', 'Workshop', 'Facebook', 'Other'].map(s => (
+                                    <option key={s} value={s}>{s}</option>
+                                ))}
+                            </select>
+                    </div>
+                    <button 
+                        type="submit" 
+                        className="w-full bg-custom-accent hover:bg-yellow-400 text-black font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4"
+                    >
+                        <FiPlus /> Create Customer
+                    </button>
+                </form>
+            </div>
+        </div>
+      )}
+
     </div>
   )
 }
