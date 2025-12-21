@@ -5,14 +5,14 @@ import axios from 'axios'
 import API_URL from '@/app/config/api'
 import { FaSearch, FaTimes, FaSpinner, FaUserPlus, FaFileAlt } from 'react-icons/fa'
 
-export default function AddPolicyModal({ isOpen, onClose }) {
+export default function AddPolicyModal({ isOpen, onClose, preselectedCustomer = null }) {
   // Step 1: Customer Search
   // Step 2: Policy Details
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(preselectedCustomer ? 2 : 1)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
-  const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [selectedCustomer, setSelectedCustomer] = useState(preselectedCustomer)
   const [error, setError] = useState(null)
   
   // Step 2 Form
@@ -176,7 +176,7 @@ export default function AddPolicyModal({ isOpen, onClose }) {
                             <p className="text-sm text-blue-200">Adding policy for</p>
                             <p className="font-bold text-white">{selectedCustomer.name}</p>
                         </div>
-                        <button type="button" onClick={() => setStep(1)} className="ml-auto text-xs text-blue-400 underline">Change</button>
+                        {!preselectedCustomer && <button type="button" onClick={() => setStep(1)} className="ml-auto text-xs text-blue-400 underline">Change</button>}
                     </div>
                 ) : (
                     <div className="space-y-4">

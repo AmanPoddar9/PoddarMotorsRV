@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi'
 import moment from 'moment'
 import toast, { Toaster } from 'react-hot-toast'
+import AddPolicyModal from '../../../components/admin/insurance/AddPolicyModal'
 
 const CustomerDetailPage = ({ params }) => {
   const { id } = params
@@ -21,7 +22,9 @@ const CustomerDetailPage = ({ params }) => {
       editProfile: false,
       addNote: false,
       manageTags: false,
-      addVehicle: false
+      addVehicle: false,
+      addService: false,
+      addInsurance: false
   })
 
   // Form Data States
@@ -316,6 +319,65 @@ const CustomerDetailPage = ({ params }) => {
                   <Button type="submit" icon={editingVehicleId ? <FiSave /> : <FiPlus />} text={editingVehicleId ? "Save Changes" : "Add Vehicle"} />
               </form>
           </Modal>
+      )}
+
+      {/* 5. Add Service Record Modal */}
+      {modals.addService && (
+          <Modal title="Add Service Record" onClose={() => toggleModal('addService', false)}>
+              <form onSubmit={handleAddServiceRecord} className="space-y-4">
+                  <Input 
+                    label="Reg Number" 
+                    placeholder="e.g. WB02..." 
+                    value={serviceForm.regNumber} 
+                    onChange={e => setServiceForm({...serviceForm, regNumber: e.target.value})} 
+                    required
+                  />
+                  <div>
+                      <label className="block text-sm text-gray-400 mb-1">Service Type</label>
+                       <select 
+                          className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                          value={serviceForm.serviceType}
+                          onChange={(e) => setServiceForm({...serviceForm, serviceType: e.target.value})}
+                       >
+                           {['General Service', 'Repair', 'Inspection', 'Washing', 'Denting/Painting', 'Other'].map(s => (
+                               <option key={s} value={s}>{s}</option>
+                           ))}
+                       </select>
+                  </div>
+                  <Input 
+                    label="Cost (₹)" 
+                    type="number" 
+                    value={serviceForm.cost} 
+                    onChange={e => setServiceForm({...serviceForm, cost: e.target.value})} 
+                    required
+                  />
+                  <div>
+                      <label className="block text-sm text-gray-400 mb-1">Description</label>
+                      <textarea 
+                          className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none resize-none h-24"
+                          placeholder="Details..."
+                          value={serviceForm.description}
+                          onChange={e => setServiceForm({...serviceForm, description: e.target.value})}
+                      ></textarea>
+                  </div>
+                  <Input 
+                    label="Date" 
+                    type="date"
+                    value={serviceForm.serviceDate} 
+                    onChange={e => setServiceForm({...serviceForm, serviceDate: e.target.value})} 
+                  />
+                  <Button type="submit" icon={<FiSave />} text="Save Record" />
+              </form>
+          </Modal>
+      )}
+
+      {/* 6. Add Insurance Policy Modal - Reusing CRM Component */}
+      {modals.addInsurance && (
+          <AddPolicyModal 
+            isOpen={modals.addInsurance} 
+            onClose={() => { toggleModal('addInsurance', false); fetchCustomer(); }} 
+            preselectedCustomer={customer}
+          />
       )}
 
 
