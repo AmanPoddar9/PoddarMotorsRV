@@ -143,7 +143,7 @@ const CustomersPage = () => {
             </thead>
             <tbody className="divide-y divide-white/5">
                 {loading ? (
-                    <tr><td colSpan="6" className="text-center p-8 text-custom-platinum">Loading...</td></tr>
+                    <tr><td colSpan="6" className="text-center p-8 text-custom-platinum">Loading Customers...</td></tr>
                 ) : customers.length === 0 ? (
                     <tr><td colSpan="6" className="text-center p-8 text-custom-platinum">No customers found.</td></tr>
                 ) : (
