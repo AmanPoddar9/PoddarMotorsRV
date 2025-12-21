@@ -26,19 +26,43 @@ const CustomersPage = () => {
       source: 'Walk-in'
   })
 
-  // ... (existing fetchCustomers)
+  const fetchCustomers = async (page = pagination.page) => {
+    setLoading(true)
+    try {
+      const params = {
+        page,
+        limit: pagination.limit,
+        search,
+        source: sourceFilter,
+        prime: primeFilter
+      }
+      const response = await axios.get(`${API_URL}/api/customer/all`, { 
+        params,
+        withCredentials: true,
+        timeout: 10000 // Added timeout
+      })
+      
+      setCustomers(response.data.customers)
+      setPagination(response.data.pagination)
+    } catch (error) {
+      console.error('Error fetching customers:', error)
+      toast.error('Failed to load customers. Server might be busy or down.') // Added toast error
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleAddCustomer = async (e) => {
       e.preventDefault();
       try {
-          await axios.post(`${API_URL}/api/customer`, newCustomerForm, { withCredentials: true })
+          await axios.post(`${API_URL}/api/customer`, newCustomerForm, { withCredentials: true, timeout: 10000 })
           toast.success('Customer created successfully')
           setIsAddModalOpen(false)
           setNewCustomerForm({ name: '', mobile: '', email: '', source: 'Walk-in' })
           fetchCustomers(1) // Refresh list
       } catch (error) {
           console.error(error);
-          toast.error(error.response?.data?.message || 'Failed to create customer')
+          toast.error(error.response?.data?.message || 'Failed to create customer. Server might be busy or down.')
       }
   }
 
