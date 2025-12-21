@@ -14,6 +14,11 @@ export const CustomerProvider = ({ children }) => {
 
   // Check auth status on mount
   useEffect(() => {
+    // Skip customer auth check on admin, dealer, or workshop internal routes
+    if (window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/dealer')) {
+        setLoading(false);
+        return;
+    }
     checkAuth()
   }, [])
 
