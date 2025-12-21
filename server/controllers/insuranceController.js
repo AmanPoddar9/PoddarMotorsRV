@@ -655,6 +655,10 @@ exports.importPolicies = async (req, res) => {
                         return;
                     }
 
+                    // Normalize Data
+                    const normalizedMobile = row.mobile.toString().replace(/\D/g, '').slice(-10);
+                    const normalizedEmail = row.email ? row.email.toLowerCase().trim() : undefined;
+
                     const existingPolicy = await InsurancePolicy.findOne({ policyNumber: row.policyNumber });
                     if (existingPolicy) {
                         results.skipped++;
@@ -665,9 +669,9 @@ exports.importPolicies = async (req, res) => {
                     let customer;
                     // Optimization: We could cache recent customers in memory map for this batch but risk is low for 500 rows.
                     const matches = await findPotentialMatches({
-                        mobile: row.mobile,
+                        mobile: normalizedMobile,
                         vehicleReg: row.regNumber,
-                        email: row.email,
+                        email: normalizedEmail,
                         name: row.customerName
                     });
 
@@ -703,8 +707,8 @@ exports.importPolicies = async (req, res) => {
                         customer = new Customer({
                             customId,
                             name: row.customerName || 'Unknown',
-                            mobile: row.mobile,
-                            email: row.email || undefined, // Avoid saving null to prevent unique index error
+                            mobile: normalizedMobile,
+                            email: normalizedEmail, // Avoid saving null to prevent unique index error
                             areaCity: row.areaCity,
                             vehicles: row.regNumber ? [{
                                 regNumber: row.regNumber.toUpperCase(),
