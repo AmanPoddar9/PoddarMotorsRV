@@ -75,7 +75,17 @@ const CustomersPage = () => {
       }
   }
 
-  // ... (existing useEffect, handlePageChange)
+  /* Restored Logic */
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchCustomers(newPage)
+    }
+  }
+
+  useEffect(() => {
+    console.log('UseEffect triggered: Initial load or Filters changed');
+    fetchCustomers(1)
+  }, [search, sourceFilter, primeFilter])
 
   return (
     <div className="min-h-screen bg-custom-black text-white">
