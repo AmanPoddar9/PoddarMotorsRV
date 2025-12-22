@@ -6,7 +6,7 @@ const insurancePolicySchema = new mongoose.Schema({
   assignedAgent: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true }, // For "My Follow-ups"
   
   // Policy Details
-  policyNumber: { type: String, required: true, trim: true, index: true }, // Not unique strictly globally? Maybe unique.
+  policyNumber: { type: String, trim: true, index: true }, // Made Optional for loose data collection
   insurer: { type: String, required: true }, // e.g., HDFC Ergo
   policyType: { type: String }, // Comprehensive, Zero Dep, Third Party
   source: { type: String }, // e.g., "Dealer", "Walk-in"
@@ -138,9 +138,9 @@ const insurancePolicySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-// Compound index to prevent duplicate active policies for same vehicle? 
-// Optional, might want to allow it.
-// insurancePolicySchema.index({ 'vehicle.regNumber': 1, expiryDate: 1 });
+// Compound index to prevent duplicate active policies for same vehicle
+// This allows history (same regNumber, different end date) but prevents duplicate entries for the same year
+insurancePolicySchema.index({ 'vehicle.regNumber': 1, policyEndDate: 1 }, { unique: true });
 
 insurancePolicySchema.pre('save', function(next) {
   this.updatedAt = new Date();
