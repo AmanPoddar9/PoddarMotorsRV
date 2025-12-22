@@ -15,6 +15,8 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const [filter, setFilter] = useState(initialFilter || 'all') // all, today, week, month, expired, my_followups
   const [bucket, setBucket] = useState(initialBucket || null) // upcoming_month, 15_days, 7_days, overdue
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('expiry_asc') // expiry_asc, expiry_desc
+  const [stats, setStats] = useState({ today: 0, tomorrow: 0, renewed_month: 0, lost_month: 0 }) // Counts
   
   const [limit, setLimit] = useState(10) // Limit Rows
   
@@ -70,7 +72,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const fetchPolicies = async () => {
     setLoading(true)
     try {
-      const params = { page, limit, filter, search };
+      const params = { page, limit, filter, search, sort };
       if (bucket) params.bucket = bucket;
 
       const res = await axios.get(`${API_URL}/api/insurance/policies`, {
@@ -86,13 +88,23 @@ export default function PolicyList({ initialFilter, initialBucket }) {
     }
   }
 
+  const fetchStats = async () => {
+      try {
+          const res = await axios.get(`${API_URL}/api/insurance/policy-counts`, { withCredentials: true });
+          setStats(res.data);
+      } catch (error) {
+          console.error("Error fetching policy stats", error);
+      }
+  }
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchPolicies()
+      fetchStats() // Update stats on search/filter change too? Ideally separate but keeping sync is good
     }, 500) // Debounce search
 
     return () => clearTimeout(delayDebounceFn)
-  }, [page, filter, bucket, search, limit])
+  }, [page, filter, bucket, search, limit, sort])
 
   const handleOpenDetail = (customerId) => {
     setSelectedCustomer(customerId)
@@ -114,12 +126,12 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {[
             { id: 'all', label: 'All Policies' },
-            { id: 'today', label: 'Expiring Today', isBucket: true },
-            { id: 'tomorrow', label: 'Expiring Tomorrow', isBucket: true },
+            { id: 'today', label: `Expiring Today (${stats.today})`, isBucket: true },
+            { id: 'tomorrow', label: `Expiring Tomorrow (${stats.tomorrow})`, isBucket: true },
             { id: 'followups_done_today', label: 'Follow-ups Done Today' },
             { id: 'needs_fix', label: 'Needs Fix' },
-            { id: 'renewed_month', label: 'Renewed This Month' },
-            { id: 'lost_month', label: 'Lost This Month' }
+            { id: 'renewed_month', label: `Renewed This Month (${stats.renewed_month})` },
+            { id: 'lost_month', label: `Lost This Month (${stats.lost_month})` }
           ].map(f => (
             <button
               key={f.id}
@@ -164,7 +176,12 @@ export default function PolicyList({ initialFilter, initialBucket }) {
               <th className="px-6 py-4 rounded-tl-lg">Customer</th>
               <th className="px-6 py-4">Vehicle</th>
               <th className="px-6 py-4">Policy No</th>
-              <th className="px-6 py-4"><div className="flex items-center gap-1">Expiry <FaSort className="text-xs"/></div></th>
+              <th className="px-6 py-4 cursor-pointer hover:text-white transition" onClick={() => setSort(sort === 'expiry_asc' ? 'expiry_desc' : 'expiry_asc')}>
+                <div className="flex items-center gap-1">
+                    Expiry 
+                    <FaSort className={`text-xs ${sort === 'expiry_asc' ? 'rotate-180' : ''} transition-transform`}/>
+                </div>
+              </th>
               <th className="px-6 py-4">Stage</th>
               <th className="px-6 py-4">Follow-up</th>
               <th className="px-6 py-4">Agent</th>
@@ -206,7 +223,15 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                             <div className={`font-medium ${new Date(policy.policyEndDate) < new Date() && policy.renewalStatus !== 'Renewed' ? 'text-red-400' : 'text-white'}`}>
                             {new Date(policy.policyEndDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                             </div>
-                            <div className="text-xs text-gray-500">{new Date(policy.policyEndDate).getFullYear()}</div>
+                            <div className="flex gap-1 items-center">
+                                <div className="text-xs text-gray-500">{new Date(policy.policyEndDate).getFullYear()}</div>
+                                {/* Urgent Badge: Less than 3 days remaining and not renewed */}
+                                {(new Date(policy.policyEndDate) - new Date()) / (1000 * 60 * 60 * 24) < 3 && (new Date(policy.policyEndDate) > new Date()) && policy.renewalStatus !== 'Renewed' && (
+                                    <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold animate-pulse">
+                                        🔥 Urgent
+                                    </span>
+                                )}
+                            </div>
                         </>
                     ) : (
                         <span className="text-red-500 text-xs font-bold bg-red-500/10 px-2 py-1 rounded">Invalid Date</span>

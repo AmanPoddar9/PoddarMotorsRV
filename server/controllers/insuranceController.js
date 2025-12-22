@@ -64,6 +64,58 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
+exports.getPolicyCounts = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const endOfTomorrow = new Date(tomorrow);
+        endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
+
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        const [todayCount, tomorrowCount, renewedMonthCount, lostMonthCount] = await Promise.all([
+             // Today
+             InsurancePolicy.countDocuments({ 
+                policyEndDate: { $gte: today, $lt: tomorrow },
+                renewalStatus: { $in: ['Pending', 'InProgress', 'NotInterested'] } // Matching Bucket Logic
+             }),
+             // Tomorrow
+             InsurancePolicy.countDocuments({ 
+                policyEndDate: { $gte: tomorrow, $lt: endOfTomorrow },
+                renewalStatus: { $in: ['Pending', 'InProgress', 'NotInterested'] }
+             }),
+             // Renewed This Month
+             InsurancePolicy.countDocuments({ 
+                renewalStatus: 'Renewed',
+                $or: [
+                    { renewalDate: { $gte: startOfMonth, $lte: endOfMonth } },
+                    { updatedAt: { $gte: startOfMonth, $lte: endOfMonth } }
+                ]
+             }),
+             // Lost This Month
+             InsurancePolicy.countDocuments({ 
+                renewalStatus: { $in: ['Lost', 'NotInterested'] },
+                updatedAt: { $gte: startOfMonth, $lte: endOfMonth }
+             })
+        ]);
+
+        res.json({
+            today: todayCount,
+            tomorrow: tomorrowCount,
+            renewed_month: renewedMonthCount,
+            lost_month: lostMonthCount
+        });
+    } catch (error) {
+        console.error('Error fetching policy counts:', error);
+        res.status(500).json({ message: 'Error fetching counts' });
+    }
+};
+
 exports.getAnalytics = async (req, res) => {
     try {
         const today = new Date();
@@ -143,11 +195,17 @@ exports.getPolicies = async (req, res) => {
       filter = 'all', 
       bucket, // New param: 'upcoming_month', '15_days', '7_days', 'overdue'
       search,
+      sort, // New: 'expiry_asc', 'expiry_desc'
     } = req.query;
 
     const query = {};
     const today = new Date();
     today.setHours(0,0,0,0);
+    
+    // Sort Logic
+    let sortOptions = { policyEndDate: 1 }; // Default: Oldest First (Expiring soonest)
+    if (sort === 'expiry_desc') sortOptions = { policyEndDate: -1 };
+    if (sort === 'expiry_asc') sortOptions = { policyEndDate: 1 };
 
     // --- DEBUG ---
     console.log('GET /policies Params:', { page, limit, filter, bucket, search });
@@ -281,7 +339,7 @@ exports.getPolicies = async (req, res) => {
     const policies = await InsurancePolicy.find(query)
       .populate('customer', 'name mobile customId vehicles')
       .populate('assignedAgent', 'name')
-      .sort({ policyEndDate: 1 }) 
+      .sort(sortOptions) 
       .skip((page - 1) * limit)
       .limit(Number(limit));
 

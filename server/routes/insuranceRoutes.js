@@ -12,6 +12,7 @@ router.use(requireRole('admin', 'manager', 'insurance_agent'));
 
 // --- DASHBOARD ---
 router.get('/stats', insuranceController.getDashboardStats);
+router.get('/policy-counts', insuranceController.getPolicyCounts); // New
 router.get('/analytics', insuranceController.getAnalytics);
 
 // --- POLICIES ---
