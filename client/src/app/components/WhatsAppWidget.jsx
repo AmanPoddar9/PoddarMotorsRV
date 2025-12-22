@@ -9,8 +9,8 @@ const WhatsAppWidget = () => {
   const phoneNumber = '918709119090' // Added country code
   const message = "Hi, I'm interested in buying a car from Poddar Motors."
 
-  // Don't show on sell page as it has its own specific button
-  if (pathname === '/sell') return null
+  // Don't show on sell page or admin pages
+  if (pathname === '/sell' || pathname?.startsWith('/admin')) return null
 
   return (
     <Link

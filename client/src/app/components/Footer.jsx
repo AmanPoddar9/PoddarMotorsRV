@@ -15,8 +15,14 @@ import { SiGmail } from 'react-icons/si'
 import { FiMapPin, FiMessageSquare, FiArrowRight } from 'react-icons/fi'
 import { useLanguage } from '../contexts/LanguageContext'
 
+import { usePathname } from 'next/navigation'
+
 const Footer = () => {
   const { t } = useLanguage()
+  const pathname = usePathname()
+
+  if (pathname?.startsWith('/admin')) return null
+
   return (
     <footer className="bg-custom-black border-t border-white/10 text-custom-seasalt py-12 px-4">
       <div className="container mx-auto max-w-7xl">

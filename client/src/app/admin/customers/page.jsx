@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
-import AdminNavbar from '../../components/AdminNavbar'
+
 import API_URL from '../../config/api'
 import { FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiTag, FiMoreHorizontal, FiPlus, FiX } from 'react-icons/fi'
 import toast, { Toaster } from 'react-hot-toast'
@@ -80,7 +80,7 @@ const CustomersPage = () => {
 
   return (
     <div className="min-h-screen bg-custom-black text-white">
-      <AdminNavbar />
+
       <Toaster />
       <div className="container mx-auto px-4 py-8">
         

@@ -37,24 +37,57 @@ const AdminNavbar = () => {
     <nav className="bg-custom-black border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <Link className="font-semibold text-xl text-custom-accent hover:text-yellow-400 transition-colors" href="/admin/home">
-                Poddar Motors Admin
+              <Link className="font-semibold text-xl text-custom-accent hover:text-yellow-400 transition-colors" href="/admin/dashboard">
+                Poddar Admin
               </Link>
             </div>
-            <Link
-              href="/admin/home"
-              className="text-custom-platinum hover:bg-white/10 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/customers"
-              className="text-custom-platinum hover:bg-white/10 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              All Customers
-            </Link>
+            
+            <div className="hidden md:flex items-center space-x-2">
+                <Link href="/admin/dashboard" className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                  Dashboard
+                </Link>
+                
+                {/* Operations Dropdown */}
+                <div className="relative group">
+                    <button className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center">
+                        Operations
+                    </button>
+                    <div className="absolute left-0 mt-0 w-48 bg-custom-jet border border-white/10 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <Link href="/admin/inspections" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Inspections</Link>
+                        <Link href="/admin/auctions" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Auctions</Link>
+                        <Link href="/admin/dealers" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Dealers</Link>
+                        <Link href="/admin/listings" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Listings</Link>
+                        <Link href="/admin/workshopbooking" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Workshop</Link>
+                    </div>
+                </div>
+
+                {/* CRM Dropdown */}
+                 <div className="relative group">
+                    <button className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center">
+                        CRM
+                    </button>
+                    <div className="absolute left-0 mt-0 w-48 bg-custom-jet border border-white/10 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <Link href="/admin/customers" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Customers</Link>
+                        <Link href="/admin/insurance" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Insurance</Link>
+                        <Link href="/admin/sellRequests" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Sell Requests</Link>
+                        <Link href="/admin/test-drives" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Test Drives</Link>
+                    </div>
+                </div>
+
+                {/* Content Dropdown */}
+                 <div className="relative group">
+                    <button className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center">
+                        Content
+                    </button>
+                    <div className="absolute left-0 mt-0 w-48 bg-custom-jet border border-white/10 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <Link href="/admin/blogs" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Blogs</Link>
+                        <Link href="/admin/videos" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Videos</Link>
+                        <Link href="/admin/testimonials" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Testimonials</Link>
+                    </div>
+                </div>
+            </div>
 
           </div>
           <div className="flex items-center">

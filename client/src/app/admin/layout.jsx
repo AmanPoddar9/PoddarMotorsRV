@@ -9,6 +9,13 @@ export const metadata = {
   },
 };
 
+import AdminNavbar from '../components/AdminNavbar';
+
 export default function AdminLayout({ children }) {
-  return children;
+  return (
+    <>
+      <AdminNavbar />
+      {children}
+    </>
+  );
 }
