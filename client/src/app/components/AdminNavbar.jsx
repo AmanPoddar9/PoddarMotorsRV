@@ -1,11 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { useCurrentUser } from '../utils/useCurrentUser'
-
+import { usePathname } from 'next/navigation'
 import API_URL from '../config/api'
 
 const AdminNavbar = () => {
   const { user, loading } = useCurrentUser()
+  const pathname = usePathname()
 
   const handleLogout = async () => {
     await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' })
@@ -25,7 +26,8 @@ const AdminNavbar = () => {
   }
 
   if (!user) {
-    if (typeof window !== 'undefined') {
+    // Prevent infinite loop: Only redirect if NOT already on login page
+    if (typeof window !== 'undefined' && pathname !== '/admin/login') {
       window.location.href = '/admin/login'
     }
     return null
