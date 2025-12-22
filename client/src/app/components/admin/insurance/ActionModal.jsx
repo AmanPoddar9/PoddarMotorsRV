@@ -5,7 +5,7 @@ import API_URL from '@/app/config/api'
 import { FaTimes, FaSpinner, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa'
 import RenewalModal from './RenewalModal'
 
-export default function ActionModal({ isOpen, onClose, policyId, actionType, onSuccess }) {
+export default function ActionModal({ isOpen, onClose, policyId, actionType, mobile, onSuccess }) {
   const [outcome, setOutcome] = useState('')
   const [remark, setRemark] = useState('')
   const [nextFollowUp, setNextFollowUp] = useState('')
@@ -49,13 +49,11 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
   const handleSendAndLog = async (e) => {
       e.preventDefault();
       // 1. Open WhatsApp
-      // We need the mobile number. ActionModal gets 'policyId'. 
-      // It doesn't have customer mobile directly unless passed.
-      // Assuming we just Log here if we can't open WA, or we assume User already opened WA?
-      // "Smart Button" usually means it does BOTH.
-      // But we lack the mobile number in props.
-      // Let's rely on the user having opened it, OR we fetch policy details?
-      // Simpler: Just Log it as "Smart Log".
+      if (actionType === 'whatsapp' && mobile) {
+          const text = encodeURIComponent(remark);
+          const url = `https://wa.me/91${mobile}?text=${text}`;
+          window.open(url, '_blank');
+      }
       
       handleSubmit(e);
   }
@@ -205,7 +203,8 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
             </div>
 
             <button 
-                type="submit" 
+                onClick={actionType === 'whatsapp' ? handleSendAndLog : undefined}
+                type={actionType === 'whatsapp' ? 'button' : 'submit'} 
                 disabled={loading} 
                 className={`w-full font-bold py-3 rounded flex justify-center items-center gap-2 transition ${
                     isRenewed ? 'bg-green-600 hover:bg-green-700' :
@@ -214,7 +213,7 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
                 } text-white`}
             >
                 {loading ? <FaSpinner className="animate-spin" /> : (
-                    isRenewed ? 'Proceed to Renewal' : (actionType === 'whatsapp' ? 'Log WhatsApp Sent' : 'Save Log')
+                    isRenewed ? 'Proceed to Renewal' : (actionType === 'whatsapp' ? 'Send & Log Action' : 'Save Log')
                 )}
             </button>
         </form>

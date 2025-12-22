@@ -4,6 +4,7 @@ import API_URL from '@/app/config/api'
 import { FaSearch, FaEye, FaPhone, FaWhatsapp, FaSort, FaEdit, FaTrash } from 'react-icons/fa'
 import CustomerDetailModal from './CustomerDetailModal'
 import EditPolicyModal from './EditPolicyModal'
+import ActionModal from './ActionModal'
 
 export default function PolicyList({ initialFilter, initialBucket }) {
   const [policies, setPolicies] = useState([])
@@ -20,6 +21,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [editingPolicy, setEditingPolicy] = useState(null) // New Selection
+  const [actionPolicy, setActionPolicy] = useState(null) // For Smart Action
   const [agents, setAgents] = useState([])
 
   // ... (Keep existing effects)
@@ -264,25 +266,7 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                         <FaEye />
                         </button>
                         <button 
-                            onClick={() => {
-                                // Smart Action: Open Modal with WhatsApp type
-                                setIsDetailModalOpen(true);
-                                setTimeout(() => {
-                                    // Hacky way to trigger modal internal state if possible, 
-                                    // BUT better way: pass a prop or use a ref.
-                                    // Actually, PolicyList has 'handleOpenDetail'.
-                                    // Let's use the unified ActionModal directly if possible?
-                                    // PolicyList doesn't import ActionModal directly, it uses CustomerDetailModal.
-                                    // Wait, it DOES import ActionModal? No, it imports CustomerDetailModal and EditPolicyModal.
-                                    // LET'S OPEN CUSTOMER DETAIL MODAL FOR NOW, OR BETTER:
-                                    // We should open CustomerDetail and auto-trigger the action modal there.
-                                    // Or Refactor PolicyList to have its own ActionModal.
-                                    // To keep it simple: Open Customer Detail. User can click "Log Action".
-                                    // OR: Pass a query param/state to CustomerDetailModal to auto-open action.
-                                    // Let's just open CustomerDetailModal for now to avoid refactoring hell.
-                                    handleOpenDetail(policy.customer._id);
-                                }, 100);
-                            }}
+                            onClick={() => setActionPolicy(policy)}
                             className="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-lg text-green-400 transition"
                             title="Open Smart WhatsApp Action"
                         >
@@ -364,6 +348,15 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         isOpen={!!editingPolicy}
         policy={editingPolicy}
         onClose={() => setEditingPolicy(null)}
+        onSuccess={() => fetchPolicies()}
+      />
+
+      <ActionModal 
+        isOpen={!!actionPolicy}
+        policyId={actionPolicy?._id}
+        mobile={actionPolicy?.customer?.mobile}
+        actionType="whatsapp"
+        onClose={() => setActionPolicy(null)}
         onSuccess={() => fetchPolicies()}
       />
     </div>
