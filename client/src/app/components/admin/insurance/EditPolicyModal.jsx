@@ -21,7 +21,13 @@ export default function EditPolicyModal({ isOpen, onClose, policy, onSuccess }) 
               renewalStage: policy.renewalStage || 'New',
               renewalStatus: policy.renewalStatus || 'Pending',
               policyNumber: policy.policyNumber,
-              nextFollowUpDate: policy.nextFollowUpDate ? new Date(policy.nextFollowUpDate).toISOString().split('T')[0] : ''
+              nextFollowUpDate: policy.nextFollowUpDate ? new Date(policy.nextFollowUpDate).toISOString().split('T')[0] : '',
+              // New Fields
+              regNumber: policy.vehicle?.regNumber || '',
+              make: policy.vehicle?.make || '',
+              model: policy.vehicle?.model || '',
+              ncb: policy.ncb || 0,
+              claimDetails: policy.claimDetails || ''
           })
       }
   }, [policy])
@@ -30,13 +36,28 @@ export default function EditPolicyModal({ isOpen, onClose, policy, onSuccess }) 
       e.preventDefault()
       setLoading(true)
       try {
-          await axios.patch(`${API_URL}/api/insurance/policies/${policy._id}`, {
+          // Construct Payload
+          const payload = {
               policyEndDate: formData.policyEndDate,
               renewalStage: formData.renewalStage,
               renewalStatus: formData.renewalStatus,
               policyNumber: formData.policyNumber,
-              nextFollowUpDate: formData.nextFollowUpDate || null
-          }, { withCredentials: true })
+              nextFollowUpDate: formData.nextFollowUpDate || null,
+              ncb: Number(formData.ncb),
+              claimDetails: formData.claimDetails,
+              // Flatten vehicle updates for Mongoose (requires backend to handle dot notation or we send object carefully)
+              // Since controller uses req.body directly, we must be careful.
+              // SAFEST: Send dot notation keys if backend supports it directly via findByIdAndUpdate
+              // BUT express body parser gives objects.
+              // So we send 'vehicle': { ...merged }? No, that replaces.
+              // Let's rely on Mongoose's ability to handle what we send.
+              // Update: We will send "vehicle.regNumber": ...
+              "vehicle.regNumber": formData.regNumber,
+              "vehicle.make": formData.make,
+              "vehicle.model": formData.model
+          }
+          
+          await axios.patch(`${API_URL}/api/insurance/policies/${policy._id}`, payload, { withCredentials: true })
           
           alert('Policy Updated')
           onSuccess()
@@ -77,6 +98,62 @@ export default function EditPolicyModal({ isOpen, onClose, policy, onSuccess }) 
                     value={formData.policyNumber}
                     onChange={e => setFormData({...formData, policyNumber: e.target.value})}
                 />
+            </div>
+
+            {/* Vehicle Details */}
+            <div className="bg-gray-700/50 p-3 rounded border border-gray-600">
+                <label className="block text-xs font-bold text-gray-300 mb-2 uppercase">Vehicle Details</label>
+                <div className="grid grid-cols-2 gap-2">
+                     <div>
+                        <label className="block text-[10px] text-gray-500">Reg Number</label>
+                        <input 
+                            className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"
+                            value={formData.regNumber}
+                            onChange={e => setFormData({...formData, regNumber: e.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] text-gray-500">Make</label>
+                        <input 
+                            className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"
+                            value={formData.make}
+                            onChange={e => setFormData({...formData, make: e.target.value})}
+                        />
+                    </div>
+                    <div className="col-span-2">
+                        <label className="block text-[10px] text-gray-500">Model</label>
+                        <input 
+                            className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"
+                            value={formData.model}
+                            onChange={e => setFormData({...formData, model: e.target.value})}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Financials */}
+            <div className="bg-gray-700/50 p-3 rounded border border-gray-600">
+                <label className="block text-xs font-bold text-gray-300 mb-2 uppercase">Financials</label>
+                <div className="grid grid-cols-2 gap-2">
+                     <div>
+                        <label className="block text-[10px] text-gray-500">NCB (%)</label>
+                        <input 
+                            type="number"
+                            className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"
+                            value={formData.ncb}
+                            onChange={e => setFormData({...formData, ncb: e.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] text-gray-500">Claim History</label>
+                        <input 
+                            className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"
+                            placeholder="e.g. 1 Claim last year"
+                            value={formData.claimDetails}
+                            onChange={e => setFormData({...formData, claimDetails: e.target.value})}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

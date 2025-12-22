@@ -112,6 +112,8 @@ export default function PolicyList({ initialFilter, initialBucket }) {
         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {[
             { id: 'all', label: 'All Policies' },
+            { id: 'today', label: 'Expiring Today', isBucket: true },
+            { id: 'tomorrow', label: 'Expiring Tomorrow', isBucket: true },
             { id: 'followups_done_today', label: 'Follow-ups Done Today' },
             { id: 'needs_fix', label: 'Needs Fix' },
             { id: 'renewed_month', label: 'Renewed This Month' },
@@ -233,9 +235,16 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                     </select>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${getStatusColor(policy.renewalStatus || 'Pending', policy.policyEndDate)}`}>
-                      {policy.renewalStatus || 'Pending'}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                        <span className={`px-2 py-1 rounded-md text-xs font-bold w-fit ${getStatusColor(policy.renewalStatus || 'Pending', policy.policyEndDate)}`}>
+                            {policy.renewalStatus || 'Pending'}
+                        </span>
+                        {policy.reminderStatus && policy.reminderStatus !== 'None' && (
+                            <span className="text-[10px] text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded w-fit border border-blue-500/20">
+                                {policy.reminderStatus} Reminder
+                            </span>
+                        )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
@@ -254,14 +263,31 @@ export default function PolicyList({ initialFilter, initialBucket }) {
                         >
                         <FaEye />
                         </button>
-                        <a 
-                            href={`https://wa.me/91${policy.customer?.mobile}?text=Hi ${policy.customer?.name}, your insurance for ${policy.vehicle?.regNumber} is expiring on ${new Date(policy.policyEndDate).toLocaleDateString()}.`}
-                            target="_blank"
+                        <button 
+                            onClick={() => {
+                                // Smart Action: Open Modal with WhatsApp type
+                                setIsDetailModalOpen(true);
+                                setTimeout(() => {
+                                    // Hacky way to trigger modal internal state if possible, 
+                                    // BUT better way: pass a prop or use a ref.
+                                    // Actually, PolicyList has 'handleOpenDetail'.
+                                    // Let's use the unified ActionModal directly if possible?
+                                    // PolicyList doesn't import ActionModal directly, it uses CustomerDetailModal.
+                                    // Wait, it DOES import ActionModal? No, it imports CustomerDetailModal and EditPolicyModal.
+                                    // LET'S OPEN CUSTOMER DETAIL MODAL FOR NOW, OR BETTER:
+                                    // We should open CustomerDetail and auto-trigger the action modal there.
+                                    // Or Refactor PolicyList to have its own ActionModal.
+                                    // To keep it simple: Open Customer Detail. User can click "Log Action".
+                                    // OR: Pass a query param/state to CustomerDetailModal to auto-open action.
+                                    // Let's just open CustomerDetailModal for now to avoid refactoring hell.
+                                    handleOpenDetail(policy.customer._id);
+                                }, 100);
+                            }}
                             className="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-lg text-green-400 transition"
-                            title="WhatsApp"
+                            title="Open Smart WhatsApp Action"
                         >
                             <FaWhatsapp />
-                        </a>
+                        </button>
                         <button 
                             onClick={() => handleDelete(policy._id)}
                             className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition"

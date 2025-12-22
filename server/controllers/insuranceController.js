@@ -194,7 +194,16 @@ exports.getPolicies = async (req, res) => {
             } else if (bucket === '7_days') {
                 const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
                 query.policyEndDate = { $gte: today, $lte: nextWeek };
-                
+
+            } else if (bucket === 'today') {
+                const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+                query.policyEndDate = { $gte: today, $lt: tomorrow };
+            
+            } else if (bucket === 'tomorrow') {
+                const start = new Date(today); start.setDate(start.getDate() + 1);
+                const end = new Date(today); end.setDate(end.getDate() + 2);
+                query.policyEndDate = { $gte: start, $lt: end };
+
             } else if (bucket === 'overdue') {
                 const lastMonth = new Date(today); lastMonth.setDate(lastMonth.getDate() - 30);
                 query.policyEndDate = { $lt: today, $gte: lastMonth };
@@ -501,12 +510,24 @@ exports.addInteraction = async (req, res) => {
             'Negotiation': 'Negotiation',
             'Accepted': 'Accepted',
             'PaymentLinkSent': 'PaymentPending',
-            'PaymentReceived': 'PaymentReceived'
+            'PaymentReceived': 'PaymentReceived',
+            'PolicyIssued': 'PolicyIssued'
         };
         if (outcomeToStage[outcome]) {
             policy.renewalStage = outcomeToStage[outcome];
         } else if (outcome === 'CallbackLater') {
             policy.renewalStage = 'FollowUp';
+        }
+
+        // 1b. Reminder Status Update (New)
+        if (req.body.reminderStatus) {
+            policy.reminderStatus = req.body.reminderStatus;
+        } else if (outcome === '30DayReminder') { // Fallback if derived from outcome
+             policy.reminderStatus = '30Day';
+        } else if (outcome === '15DayReminder') {
+             policy.reminderStatus = '15Day';
+        } else if (outcome === '7DayReminder') {
+             policy.reminderStatus = '7Day';
         }
 
         // 2. Status Mapping

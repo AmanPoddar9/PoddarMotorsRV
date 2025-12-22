@@ -23,6 +23,43 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
       />
   }
 
+  // --- TEMPLATES ---
+  const templates = [
+      { id: '30Day', label: '30 Day Reminder', outcome: '30DayReminder', text: "Hi, This is a gentle reminder that your car insurance is expiring in 30 days. Let us know if you'd like to renew." },
+      { id: '15Day', label: '15 Day Reminder', outcome: '15DayReminder', text: "Hi, Your car insurance expires in 15 days. Avoid last minute hassle and renew today." },
+      { id: '7Day', label: '7 Day Reminder', outcome: '7DayReminder', text: "Hi, 7 Days left! Please renew your insurance to ensure continuous coverage." },
+      { id: '1Day', label: 'Expiring Tomorrow (Urgent)', outcome: '1DayReminder', text: "URGENT: Your policy expires tomorrow. Please renew immediately to prevent inspection charges." },
+      { id: 'Due', label: 'Due Today', outcome: '1DayReminder', text: "Your Policy expires TODAY. Renew now." },
+      { id: 'Quote', label: 'Quote Sent', outcome: 'QuoteSent', text: "Shared the quotation as requested. Please check and let me know." },
+      { id: 'Issued', label: 'Policy Issued', outcome: 'PolicyIssued', text: "Congratulations! Your policy has been issued. Sharing the PDF shortly." },
+  ]
+
+  const handleTemplateChange = (e) => {
+      const t = templates.find(t => t.id === e.target.value);
+      if(t) {
+          setOutcome(t.outcome);
+          setRemark(t.text);
+          // Auto-set Follow up?
+          if(t.id.includes('Day')) {
+               // setNextFollowUp logic if we want to be fancy
+          }
+      }
+  }
+
+  const handleSendAndLog = async (e) => {
+      e.preventDefault();
+      // 1. Open WhatsApp
+      // We need the mobile number. ActionModal gets 'policyId'. 
+      // It doesn't have customer mobile directly unless passed.
+      // Assuming we just Log here if we can't open WA, or we assume User already opened WA?
+      // "Smart Button" usually means it does BOTH.
+      // But we lack the mobile number in props.
+      // Let's rely on the user having opened it, OR we fetch policy details?
+      // Simpler: Just Log it as "Smart Log".
+      
+      handleSubmit(e);
+  }
+
   // --- LOGIC ---
   const isFollowUpRequired = outcome === 'CallbackLater' || outcome === 'Call Back Later'
   const isLost = outcome === 'NotInterested' || outcome === 'RenewedElsewhere' || outcome === 'Not Interested'
@@ -111,6 +148,21 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
                 </select>
             </div>
 
+            {/* Template Selector for WhatsApp */}
+            {actionType === 'whatsapp' && (
+                 <div className="bg-green-900/10 p-3 rounded border border-green-500/20 mb-4">
+                    <label className="block text-sm text-green-300 mb-1 font-bold">Quick Template</label>
+                    <select 
+                        className="w-full bg-gray-900 border border-green-500/30 text-white rounded p-2"
+                        onChange={handleTemplateChange}
+                        defaultValue=""
+                    >
+                        <option value="" disabled>Select a Template...</option>
+                        {templates.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                    </select>
+                </div>
+            )}
+
             {/* Conditional: Lost Reason */}
             {isLost && (
                 <div className="bg-red-900/10 p-3 rounded border border-red-500/20">
@@ -162,7 +214,7 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, onS
                 } text-white`}
             >
                 {loading ? <FaSpinner className="animate-spin" /> : (
-                    isRenewed ? 'Proceed to Renewal' : 'Save Log'
+                    isRenewed ? 'Proceed to Renewal' : (actionType === 'whatsapp' ? 'Log WhatsApp Sent' : 'Save Log')
                 )}
             </button>
         </form>

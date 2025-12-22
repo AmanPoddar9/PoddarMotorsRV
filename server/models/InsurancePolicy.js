@@ -42,7 +42,7 @@ const insurancePolicySchema = new mongoose.Schema({
   paymentReceivedDate: { type: Date },
   profitTag: { type: String }, // 'High', 'Low'
   
-  // Renewal Workflow
+  // Renewal Status & Workflow
   renewalStatus: { 
     type: String, 
     enum: ['Pending', 'InProgress', 'Renewed', 'Lost', 'NotInterested'], 
@@ -53,9 +53,16 @@ const insurancePolicySchema = new mongoose.Schema({
   // Granular Sales Stage
   renewalStage: {
       type: String, 
-      enum: ['New', 'Contacted', 'FollowUp', 'QuoteSent', 'Negotiation', 'Accepted', 'PaymentPending', 'PaymentReceived', 'PolicyIssued', 'Closed'],
+      enum: ['New', 'Contacted', 'FollowUp', 'QuoteSent', 'Reviewing', 'Negotiation', 'Accepted', 'PaymentPending', 'PaymentReceived', 'PolicyIssued', 'Closed'],
       default: 'New',
       index: true
+  },
+
+  // Reminder Tracking (New)
+  reminderStatus: {
+      type: String,
+      enum: ['None', '30Day', '15Day', '7Day', '1Day', 'Due', 'Overdue'],
+      default: 'None'
   },
 
   lostReason: {
@@ -78,6 +85,14 @@ const insurancePolicySchema = new mongoose.Schema({
       aadhaar: { type: Boolean, default: false },
       pan: { type: Boolean, default: false }
   },
+  
+  // New: Document Links & Details
+  documentLinks: {
+      policyPdf: { type: String },
+      proposalPdf: { type: String }
+  },
+  claimDetails: { type: String }, // History of claims
+
   complianceStatus: { type: String, enum: ['NotRequired', 'Pending', 'Completed'], default: 'Pending' },
   physicalFileCreated: { type: Boolean, default: false },
   fileLocation: { type: String },
@@ -92,6 +107,8 @@ const insurancePolicySchema = new mongoose.Schema({
       outcome: { type: String }, // Enum validated in controller/service layer
       remark: { type: String },
       nextFollowUpDate: { type: Date },
+      currStage: { type: String },
+      currStatus: { type: String },
       createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       createdAt: { type: Date, default: Date.now }
   }],
