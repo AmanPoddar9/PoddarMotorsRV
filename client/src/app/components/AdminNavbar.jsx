@@ -39,14 +39,17 @@ const AdminNavbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <Link className="font-semibold text-xl text-custom-accent hover:text-yellow-400 transition-colors" href="/admin/dashboard">
+              <Link className="font-semibold text-xl text-custom-accent hover:text-yellow-400 transition-colors" href="/admin/home">
                 Poddar Admin
               </Link>
             </div>
             
             <div className="hidden md:flex items-center space-x-2">
+                <Link href="/admin/home" className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                  Home
+                </Link>
                 <Link href="/admin/dashboard" className="text-custom-platinum hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                  Dashboard
+                  Inspections Analysis
                 </Link>
                 
                 {/* Operations Dropdown */}
