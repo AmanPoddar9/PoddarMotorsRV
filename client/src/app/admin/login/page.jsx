@@ -31,7 +31,8 @@ export default function AdminLogin() {
       }
 
       // Login successful - redirect to admin home
-      router.push('/admin/home')
+      // Use window.location.href to force a full page load and refresh local state/cookies
+      window.location.href = '/admin/home'
     } catch (err) {
       setError(err.message)
     } finally {
