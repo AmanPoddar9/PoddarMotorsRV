@@ -1,7 +1,7 @@
 import React from 'react'
 // import { TypewriterEffectSmooth } from './ui/typewriter-effect'
 import Image from 'next/image'
-import finance from '../../images/finance.png'
+import finance from '../../images/finance_hero.png'
 import { TypewriterEffectSmooth } from './ui/typewriter-effect'
 
 const FinanceHero = () => {
