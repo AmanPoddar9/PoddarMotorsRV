@@ -568,7 +568,7 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
             </div>
 
             <div className="flex justify-between text-base mt-8">
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-custom-accent">
                 EMI starts at ₹
                 {AmountWithCommas(EMICalcLite(carData.price * 0.7, 10, 60))}/month
               </p>
