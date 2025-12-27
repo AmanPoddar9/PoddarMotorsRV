@@ -937,6 +937,71 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
             <div className="w-[100%]">
               <EMICalculator indiPrincipal={carData.price} />
             </div>
+
+            {/* Exchange Widget */}
+            <div className="mt-10 rounded-2xl bg-gradient-to-r from-custom-jet to-custom-jet/50 border border-white/10 p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-custom-accent/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-custom-accent/20"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-start justify-between sm:items-center flex-col sm:flex-row gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-custom-accent">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+                      </svg>
+                      Exchange Your Old Car
+                    </h3>
+                    <p className="text-gray-300 mt-2 max-w-md">
+                      Upgrade to this {carData.model} easily! Get the best market price for your existing car with our hassle-free exchange process.
+                    </p>
+                  </div>
+                  <Link href="/sell" className="shrink-0">
+                    <button className="px-6 py-2.5 bg-white text-custom-black font-bold rounded-lg hover:bg-gray-100 transition shadow-lg whitespace-nowrap">
+                      Check Exchange Value
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="mt-12">
+               <h2 className="text-2xl font-display font-bold text-white mb-6">Frequently Asked Questions</h2>
+               <div className="space-y-4">
+                  {[
+                    {
+                      q: "Is the price negotiable?",
+                      a: "We believe in transparency. While our prices are competitive, we are open to reasonable discussions. You can use the 'Make Offer' button to submit your best price!"
+                    },
+                    {
+                      q: "Do you facilitate financing/Old Car Exchange?",
+                      a: "Yes! We offer up to 90% financing through our banking partners with flexible EMI options. We also offer the best exchange value for your old car."
+                    },
+                    {
+                      q: "Is there a warranty on this car?",
+                      a: "Absolutely. Every Poddar Motors certified car comes with a comprehensive warranty (engine & gearbox) for your peace of mind."
+                    },
+                    {
+                      q: "How long does RC transfer take?",
+                      a: "The RC transfer process generally takes 25-30 working days, handled entirely by our team."
+                    }
+                  ].map((faq, idx) => (
+                     <details key={idx} className="group bg-custom-jet/30 border border-white/10 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                        <summary className="flex cursor-pointer items-center justify-between p-4 text-white group-hover:bg-custom-jet/50 transition">
+                          <h3 className="font-semibold">{faq.q}</h3>
+                          <span className="shrink-0 ml-1.5 p-1.5 text-gray-400 bg-white/5 rounded-full group-open:bg-white/10 transition">
+                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 transition duration-300 group-open:-rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                          </span>
+                        </summary>
+                        <div className="px-4 pb-4 pt-2 text-gray-300 border-t border-white/5">
+                           <p>{faq.a}</p>
+                        </div>
+                     </details>
+                  ))}
+               </div>
+            </div>
           </div>
         </div>
 
