@@ -481,17 +481,43 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
                   ${carData.model}
                   ${carData.variant}`}
               </h1>
-              <button
-                onClick={toggleWishlist}
-                disabled={wishlistLoading}
-                className="p-3 rounded-full bg-custom-jet border border-white/10 hover:bg-white/5 transition"
-              >
-                {inWishlist ? (
-                  <FaHeart className="text-red-500 text-2xl" />
-                ) : (
-                  <FaRegHeart className="text-white text-2xl hover:text-red-500" />
-                )}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={async () => {
+                   if (navigator.share) {
+                     try {
+                        await navigator.share({
+                          title: `${carData.year} ${carData.brand} ${carData.model}`,
+                          text: `Check out this ${carData.brand} ${carData.model} on Poddar Motors!`,
+                          url: window.location.href,
+                        });
+                      } catch (error) {
+                        console.log('Error sharing:', error);
+                      }
+                    } else {
+                       // Fallback for desktop: Copy to clipboard
+                       navigator.clipboard.writeText(window.location.href);
+                       alert('Link copied to clipboard!');
+                    }
+                  }}
+                  className="p-3 rounded-full bg-custom-jet border border-white/10 hover:bg-white/5 transition text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-1.988 2.25 2.25 0 00-3.933 1.988z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
+                  className="p-3 rounded-full bg-custom-jet border border-white/10 hover:bg-white/5 transition"
+                >
+                  {inWishlist ? (
+                    <FaHeart className="text-red-500 text-2xl" />
+                  ) : (
+                    <FaRegHeart className="text-white text-2xl hover:text-red-500" />
+                  )}
+                </button>
+              </div>
             </div>
             <div
               className="mt-2"
@@ -559,19 +585,38 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
               Zero downpayment
             </p>
 
-            <button
-              className="mt-10 flex w-full items-center justify-center md:rounded-md border border-custom-accent text-custom-black bg-custom-accent px-8 py-3 text-base font-bold hover:bg-yellow-400 hover:border-transparent focus:outline-none focus:ring-2 focus:!ring-yellow-500 focus:ring-transparent fixed bottom-0 left-0 right-0 z-50 md:static rounded-none"
-              onClick={showModal}
-            >
-              Book Test Drive
-            </button>
-            
-            <button
-              className="mt-4 flex w-full items-center gap-2 justify-center md:rounded-md border border-white/20 text-white bg-custom-jet/50 px-8 py-3 text-base font-bold hover:bg-custom-jet hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50 md:static rounded-none"
-              onClick={() => setOfferOpen(true)}
-            >
-              Make an Offer
-            </button>
+            {/* Desktop Buttons */}
+            <div className="hidden md:block space-y-4 mt-10">
+              <button
+                className="flex w-full items-center justify-center rounded-md border border-custom-accent text-custom-black bg-custom-accent px-8 py-3 text-base font-bold hover:bg-yellow-400 hover:border-transparent focus:outline-none focus:ring-2 focus:!ring-yellow-500 focus:ring-transparent"
+                onClick={showModal}
+              >
+                Book Test Drive
+              </button>
+              
+              <button
+                className="flex w-full items-center gap-2 justify-center rounded-md border border-white/20 text-white bg-custom-jet/50 px-8 py-3 text-base font-bold hover:bg-custom-jet hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/50"
+                onClick={() => setOfferOpen(true)}
+              >
+                Make an Offer
+              </button>
+            </div>
+
+            {/* Mobile Sticky Bottom Bar */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex">
+              <button
+                className="flex-1 items-center justify-center border-t border-white/10 bg-custom-jet text-white px-4 py-4 text-base font-bold hover:bg-custom-jet/80 active:bg-custom-jet/60 transition-colors"
+                onClick={() => setOfferOpen(true)}
+              >
+                Make Offer
+              </button>
+              <button
+                className="flex-1 items-center justify-center bg-custom-accent text-custom-black px-4 py-4 text-base font-bold hover:bg-yellow-400 active:bg-yellow-500 transition-colors"
+                onClick={showModal}
+              >
+                Book Test Drive
+              </button>
+            </div>
 
             {/* Price Alerts */}
             <div className="mt-4">
