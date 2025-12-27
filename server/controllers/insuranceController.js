@@ -668,6 +668,21 @@ exports.importPolicies = async (req, res) => {
             return res.status(400).json({ message: 'Invalid data format. Expected array of policies.' });
         }
 
+        // Helper for Date Parsing
+        const parseDate = (dateStr) => {
+            if (!dateStr) return null;
+            if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                const [day, month, year] = dateStr.split('-');
+                return new Date(`${year}-${month}-${day}`);
+            }
+            if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                const [day, month, year] = dateStr.split('/');
+                return new Date(`${year}-${month}-${day}`);
+            }
+            const d = new Date(dateStr);
+            return isNaN(d.getTime()) ? null : d;
+        };
+
         const results = {
             total: rows.length,
             success: 0,
@@ -770,7 +785,7 @@ exports.importPolicies = async (req, res) => {
                                 variant: row.variant,
                                 fuelType: row.fuelType,
                                 yearOfManufacture: row.yearOfManufacture,
-                                registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                                registrationDate: parseDate(row.registrationDate)
                             });
                             needsSave = true;
                         }
@@ -796,26 +811,15 @@ exports.importPolicies = async (req, res) => {
                                 variant: row.variant,
                                 fuelType: row.fuelType,
                                 yearOfManufacture: row.yearOfManufacture,
-                                registrationDate: row.registrationDate ? new Date(row.registrationDate) : null
+                                yearOfManufacture: row.yearOfManufacture,
+                                registrationDate: parseDate(row.registrationDate)
                             }] : []
                         });
                         await customer.save();
                     }
 
                     // 3. Create Policy
-                    const parseDate = (dateStr) => {
-                        if (!dateStr) return null;
-                        if (typeof dateStr === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-                            const [day, month, year] = dateStr.split('-');
-                            return new Date(`${year}-${month}-${day}`);
-                        }
-                        if (typeof dateStr === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-                            const [day, month, year] = dateStr.split('/');
-                            return new Date(`${year}-${month}-${day}`);
-                        }
-                        const d = new Date(dateStr);
-                        return isNaN(d.getTime()) ? null : d;
-                    };
+                    // parseDate moved to top scope
 
                     const pEndDate = parseDate(row.expiryDate);
                     const pStartDate = parseDate(row.policyStartDate);
