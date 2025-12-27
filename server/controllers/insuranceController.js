@@ -430,12 +430,28 @@ exports.updatePolicy = async (req, res) => {
         const { id } = req.params;
         const updates = req.body;
         
-        // Sanitize Dates: Mongoose errors on "" for Date fields
+        // Sanitize Dates
         if (updates.policyEndDate === '') updates.policyEndDate = null;
         if (updates.nextFollowUpDate === '') updates.nextFollowUpDate = null;
         if (updates.policyStartDate === '') updates.policyStartDate = null;
 
         const policy = await InsurancePolicy.findByIdAndUpdate(id, updates, { new: true });
+
+        // SYNC: Vehicle details to Customer
+        if (policy.customer && policy.vehicle && policy.vehicle.regNumber) {
+             const customer = await Customer.findById(policy.customer);
+             if (customer) {
+                 const vehicleIndex = customer.vehicles.findIndex(v => v.regNumber === policy.vehicle.regNumber);
+                 if (vehicleIndex > -1) {
+                     // Update existing
+                     customer.vehicles[vehicleIndex].make = policy.vehicle.make || customer.vehicles[vehicleIndex].make;
+                     customer.vehicles[vehicleIndex].model = policy.vehicle.model || customer.vehicles[vehicleIndex].model;
+                     customer.vehicles[vehicleIndex].yearOfManufacture = policy.vehicle.year || customer.vehicles[vehicleIndex].yearOfManufacture;
+                     await customer.save();
+                 }
+             }
+        }
+
         res.json(policy);
     } catch (error) {
         console.error('Update Policy Error:', error);
@@ -520,12 +536,40 @@ exports.markLost = async (req, res) => {
     try {
         const { id } = req.params;
         const { reason, remark } = req.body;
+        const userId = req.user ? req.user._id : null;
+        const userName = req.user ? req.user.name : 'Unknown';
 
         const policy = await InsurancePolicy.findByIdAndUpdate(id, {
             renewalStatus: 'Lost',
             lostCaseReason: reason,
             lastRemark: remark
         }, { new: true });
+
+        // LOG INTERACTION (Consistency)
+        if (policy) {
+            // 1. Embedded
+            policy.interactions.push({
+                type: 'status_change',
+                outcome: 'Lost',
+                remark: `Marked as Lost. Reason: ${reason}. Remark: ${remark}`,
+                createdBy: userId
+            });
+            await policy.save();
+
+            // 2. Global
+            await Interaction.create({
+                customer: policy.customer,
+                policy: policy._id,
+                type: 'status_change',
+                agentName: userName,
+                agentId: userId,
+                data: {
+                    outcome: 'Lost',
+                    remark: remark,
+                    statusAfter: 'Lost'
+                }
+            });
+        }
 
         res.json(policy);
     } catch (error) {
@@ -600,6 +644,26 @@ exports.addInteraction = async (req, res) => {
         }
 
         await policy.save();
+
+        // 3. Global Interaction (Dual Write)
+        try {
+            await Interaction.create({
+                customer: policy.customer,
+                policy: policy._id,
+                type: type === 'Call' ? 'insurance_followup' : 'general', // Map to Interaction schema enums
+                agentName: req.user ? req.user.name : 'System',
+                agentId: userId,
+                data: {
+                    remark,
+                    outcome,
+                    nextFollowUpDate
+                },
+                date: new Date()
+            });
+        } catch (e) {
+            console.error('Failed to write global interaction:', e.message);
+        }
+
         res.json(policy);
 
     } catch (error) {

@@ -13,7 +13,7 @@ import InsurancePartners from '../components/workshop/InsurancePartners'
 
 export default function WorkshopPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-custom-black">
       <WorkshopHero />
       <WhyChoose />
       <ServicesGrid />

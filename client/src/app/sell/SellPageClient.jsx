@@ -110,7 +110,7 @@ const SellPageClient = () => {
                 Sell Your Car <br />
                 <span className="text-custom-yellow">In Minutes</span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl text-custom-platinum mb-8 max-w-2xl mx-auto lg:mx-0">
                 Get the best market price, instant payment, and free RC transfer. 
                 Experience the easiest way to sell your car today.
               </p>
@@ -143,7 +143,7 @@ const SellPageClient = () => {
         </div>
 
         {/* Choose Your Selling Plan Section */}
-        <div className="py-20 bg-gradient-to-b from-custom-black to-gray-900">
+        <div className="py-20 bg-gradient-to-b from-custom-black to-custom-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Choose Your Selling Plan</h2>
@@ -336,11 +336,11 @@ const SellPageClient = () => {
         </div>
 
         {/* How It Works Section */}
-        <div className="py-20 bg-custom-seasalt text-custom-black">
+        <div className="py-20 bg-custom-black text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-custom-platinum max-w-2xl mx-auto">
                 Selling your car has never been easier. Follow these simple steps to get the best deal.
               </p>
             </div>
@@ -353,7 +353,7 @@ const SellPageClient = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                  className="bg-custom-jet/50 border border-white/10 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
                 >
                   <div className="h-48 relative">
                     <Image
@@ -365,18 +365,18 @@ const SellPageClient = () => {
                   </div>
                   <div className="p-6">
                     <div className="text-custom-yellow font-bold text-xl mb-2">0{index + 1}</div>
-                    <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                    <p className="text-gray-600 text-sm">{step.description}</p>
+                    <h3 className="text-xl font-bold mb-2 text-white">{step.title}</h3>
+                    <p className="text-custom-platinum text-sm">{step.description}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
             {/* Documents Required Section */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div className="bg-custom-jet border border-white/10 rounded-2xl shadow-xl p-8 md:p-12">
               <div className="text-center mb-12">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4">Documents Required</h3>
-                <p className="text-gray-600">Keep these documents handy for a smooth selling experience.</p>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">Documents Required</h3>
+                <p className="text-custom-platinum">Keep these documents handy for a smooth selling experience.</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
@@ -387,11 +387,11 @@ const SellPageClient = () => {
                   { icon: <FaFileAlt />, title: 'Service History', desc: 'Service Record (Optional)' },
                 ].map((doc, idx) => (
                   <div key={idx} className="flex flex-col items-center text-center">
-                    <div className="w-16 h-16 bg-custom-gray rounded-full flex items-center justify-center text-custom-yellow text-2xl mb-4">
+                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-custom-yellow text-2xl mb-4 text-white">
                       {doc.icon}
                     </div>
-                    <h4 className="font-bold text-lg mb-1">{doc.title}</h4>
-                    <p className="text-sm text-gray-500">{doc.desc}</p>
+                    <h4 className="font-bold text-lg mb-1 text-white">{doc.title}</h4>
+                    <p className="text-sm text-custom-platinum">{doc.desc}</p>
                   </div>
                 ))}
               </div>
@@ -469,10 +469,10 @@ const SellPageClient = () => {
         </div>
 
         {/* Video Walkthrough Section */}
-        <div className="py-20 bg-custom-seasalt">
+        <div className="py-20 bg-custom-black border-t border-white/10">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-custom-black mb-4">See How Easy It Is</h2>
-            <p className="text-gray-600 mb-12">Watch our step-by-step guide on how to sell your car.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">See How Easy It Is</h2>
+            <p className="text-custom-platinum mb-12">Watch our step-by-step guide on how to sell your car.</p>
             
             <div className="relative pt-[56.25%] rounded-2xl overflow-hidden shadow-2xl bg-black">
               {/* Placeholder for YouTube Video - Replace 'VIDEO_ID' with actual ID */}
@@ -492,22 +492,22 @@ const SellPageClient = () => {
         <SellTestimonials />
 
         {/* FAQ Section */}
-        <div className="py-20 bg-custom-seasalt">
+        <div className="py-20 bg-custom-black border-t border-white/10">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-custom-black mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
               Frequently Asked Questions
             </h2>
             <div className="space-y-4">
               {sellFAQData.map((faq, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                  className="bg-custom-jet/50 border border-white/10 rounded-lg shadow-md overflow-hidden"
                 >
                   <button
                     onClick={() => toggleFaq(index)}
                     className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
                   >
-                    <span className="text-lg font-semibold text-custom-black">
+                    <span className="text-lg font-semibold text-white">
                       {faq.question}
                     </span>
                     {openFaqIndex === index ? (
@@ -524,7 +524,7 @@ const SellPageClient = () => {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <div className="px-6 pb-6 text-gray-600">
+                        <div className="px-6 pb-6 text-custom-platinum">
                           {faq.answer}
                         </div>
                       </motion.div>

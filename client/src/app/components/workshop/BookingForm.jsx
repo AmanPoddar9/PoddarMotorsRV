@@ -73,7 +73,7 @@ const BookingForm = () => {
   }
 
   return (
-    <section id="book-service" className="py-16 md:py-24 bg-white border-t border-gray-50">
+    <section id="book-service" className="py-16 md:py-24 bg-custom-black border-t border-white/10">
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-24 right-4 z-50 animate-slide-in">
@@ -93,7 +93,7 @@ const BookingForm = () => {
       )}
 
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        <div className="max-w-4xl mx-auto bg-custom-jet rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-white/10">
           {/* Left Side - Info */}
           <div className="md:w-1/3 bg-workshop-blue p-10 text-white flex flex-col justify-between">
             <div>
@@ -127,26 +127,26 @@ const BookingForm = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-custom-platinum mb-2">Full Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white placeholder-custom-platinum/50 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                     placeholder="John Doe"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-custom-platinum mb-2">Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white placeholder-custom-platinum/50 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                     placeholder="+91 98765 43210"
                   />
                 </div>
@@ -154,13 +154,13 @@ const BookingForm = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Car Model</label>
+                  <label className="block text-sm font-medium text-custom-platinum mb-2">Car Model</label>
                   <select
                     name="carModel"
                     value={formData.carModel}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                   >
                     <option value="">Select Model</option>
                     <option value="Alto">Alto</option>
@@ -174,13 +174,13 @@ const BookingForm = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
+                  <label className="block text-sm font-medium text-custom-platinum mb-2">Service Type</label>
                   <select
                     name="serviceType"
                     value={formData.serviceType}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                   >
                     <option value="">Select Service</option>
                     <option value="Periodic Maintenance">Periodic Maintenance</option>
@@ -194,25 +194,25 @@ const BookingForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                <label className="block text-sm font-medium text-custom-platinum mb-2">Preferred Date</label>
                 <input
                   type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
+                <label className="block text-sm font-medium text-custom-platinum mb-2">Message (Optional)</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
+                  className="w-full px-4 py-3 rounded-lg bg-custom-black border border-white/10 text-white placeholder-custom-platinum/50 focus:border-workshop-blue focus:ring-2 focus:ring-workshop-blue/20 outline-none transition-all"
                   placeholder="Any specific issues or requirements..."
                 ></textarea>
               </div>
