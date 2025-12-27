@@ -114,7 +114,7 @@ const FeaturedCard = ({ car }) => {
               <div className="text-right">
                 <p className="text-custom-platinum text-xs mb-1">EMI starts at</p>
                 <div className="text-custom-accent font-bold text-lg">
-                  ₹{AmountWithCommas(EMICalcLite(car.price, 10, 36))}
+                  ₹{AmountWithCommas(EMICalcLite(car.price * 0.70, 10, 60))}
                   <span className="text-xs font-normal text-custom-platinum">/mo</span>
                 </div>
               </div>
