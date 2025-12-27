@@ -9,11 +9,13 @@ import {
   Pagination,
   Thumbs,
   Controller,
+  FreeMode,
 } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/thumbs'
+import 'swiper/css/free-mode'
 import Image from 'next/image'
 import Link from 'next/link'
 import Head from 'next/head'
@@ -393,42 +395,80 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
           </ol>
         </nav>
 
-        <Swiper
-          modules={[Navigation, Pagination, Controller, Autoplay]}
-          className="myIndividualCarSwiper"
-          onSwiper={setMainSwiper}
-          controller={{ control: thumbsSwiper }}
-          //   thumbs={{ swiper: thumbsSwiper }}
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 2000, disableOnInteraction: false }}
-          navigation
-          centeredSlides={false}
-          breakpoints={{
-            640: { slidesPerView: 1, spaceBetween: 5 },
-            768: { slidesPerView: 2, spaceBetween: 5 },
-            1024: { slidesPerView: 4, spaceBetween: 5 },
-          }}
-        >
-          {carData.images &&
-            carData.images.map((carImage, i) => (
-              <SwiperSlide key={i} style={{ paddingBottom: '40px' }}>
-                {carImage && (
-                  <Image
-                    src={carImage}
-                    alt="car-img"
-                    width={600}
-                    height={400}
-                    style={{
-                      borderRadius: '15px',
-                      width: '27rem',
-                      height: '18rem',
-                      objectFit: 'cover',
-                    }}
-                  />
-                )}
-              </SwiperSlide>
-            ))}
-        </Swiper>
+        <div className="mb-8 select-none">
+          <Swiper
+            style={{
+              '--swiper-navigation-color': '#fff',
+              '--swiper-pagination-color': '#fff',
+            }}
+            loop={true}
+            spaceBetween={10}
+            navigation={true}
+            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+            modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+            className="myCarSwiper2 w-full rounded-2xl mb-4"
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+          >
+            {carData.images &&
+              carData.images.map((carImage, i) => (
+                <SwiperSlide key={i}>
+                  <div className="relative w-full aspect-video bg-custom-jet/50 rounded-2xl overflow-hidden">
+                    {carImage && (
+                      <Image
+                        src={carImage}
+                        alt={`${carData.brand} ${carData.model} - View ${i + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                        priority={i === 0}
+                      />
+                    )}
+                  </div>
+                </SwiperSlide>
+              ))}
+          </Swiper>
+
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            loop={true}
+            spaceBetween={10}
+            slidesPerView={4}
+            freeMode={true}
+            watchSlidesProgress={true}
+            modules={[FreeMode, Navigation, Thumbs]}
+            className="myCarSwiperThumbs thumbs-gallery"
+            breakpoints={{
+              320: { slidesPerView: 3, spaceBetween: 8 },
+              640: { slidesPerView: 4, spaceBetween: 10 },
+              1024: { slidesPerView: 5, spaceBetween: 12 },
+            }}
+          >
+            {carData.images &&
+              carData.images.map((carImage, i) => (
+                <SwiperSlide key={i}>
+                  {({ isActive }) => (
+                    <div
+                      className={`relative w-full aspect-video bg-custom-jet/50 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
+                        isActive
+                          ? 'opacity-100 ring-2 ring-custom-accent scale-95'
+                          : 'opacity-50 hover:opacity-100'
+                      }`}
+                    >
+                      {carImage && (
+                        <Image
+                          src={carImage}
+                          alt={`Thumbnail ${i + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="160px"
+                        />
+                      )}
+                    </div>
+                  )}
+                </SwiperSlide>
+              ))}
+          </Swiper>
+        </div>
 
 
         {/* <!-- Product info --> */}
