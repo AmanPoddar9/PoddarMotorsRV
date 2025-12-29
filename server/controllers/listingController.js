@@ -419,33 +419,31 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // Headers: "Shotgun Approach" - Include ALL aliases to ensure Meta finds what it needs
+    // STRICT Meta Automotive Data Feed Headers (No Aliases)
     const headers = [
-      // IDs
-      'vehicle_offer_id', 'vehicle_id', 'id',
-      // Titles & Description
-      'title', 'offer_description', 'description',
-      // Availability & Condition
-      'availability', 'condition', 'state_of_vehicle',
-      // Price
-      'price',
-      // Links
-      'url', 'link',
-      // Images
-      'image', 'image_url', 'image_link',
-      // Vehicle Details
-      'brand', 'make',
+      'vehicle_id',
+      'title',
+      'description',
+      'url',
+      'image_url',
+      'make',
       'model',
       'year',
-      'color', 'exterior_color',
-      'mileage.value', 'mileage.unit',
+      'mileage.value',
+      'mileage.unit',
+      'fuel_type',
       'transmission',
       'body_style',
-      'fuel_type',
-      'fb_page_id'
+      'drivetrain',
+      'vin',
+      'price',
+      'exterior_color',
+      'state_of_vehicle',
+      'availability',
+      'address.city' 
     ];
 
-    // Helper: Map Fuel Type to Meta Standard
+    // Helper: Map Fuel Type
     const mapFuelType = (fuel) => {
       if (!fuel) return 'other';
       const cleanFuel = fuel.toLowerCase().trim();
@@ -453,10 +451,10 @@ exports.getFacebookCatalog = async (req, res) => {
       if (cleanFuel.includes('diesel')) return 'diesel';
       if (cleanFuel.includes('electric') || cleanFuel.includes('ev')) return 'electric';
       if (cleanFuel.includes('hybrid')) return 'hybrid';
-      return 'other'; // CNG, LPG -> other
+      return 'other';
     };
 
-    // Helper: Map Transmission to Meta Standard
+    // Helper: Map Transmission
     const mapTransmission = (trans) => {
       if (!trans) return 'manual';
       const cleanTrans = trans.toLowerCase().trim();
@@ -464,11 +462,10 @@ exports.getFacebookCatalog = async (req, res) => {
       return 'manual';
     };
 
-    // Helper: Map Body Style to Meta Standard
+    // Helper: Map Body Style
     const mapBodyStyle = (type) => {
       if (!type) return 'other';
       const cleanType = type.toLowerCase().trim();
-      
       if (cleanType.includes('suv')) return 'suv';
       if (cleanType.includes('sedan')) return 'sedan';
       if (cleanType.includes('hatch')) return 'hatchback';
@@ -477,7 +474,6 @@ exports.getFacebookCatalog = async (req, res) => {
       if (cleanType.includes('coupe')) return 'coupe';
       if (cleanType.includes('convert') || cleanType.includes('cabrio')) return 'convertible';
       if (cleanType.includes('wagon')) return 'wagon';
-      
       return 'other';
     };
 
@@ -486,7 +482,6 @@ exports.getFacebookCatalog = async (req, res) => {
       if (field === null || field === undefined) return '';
       const stringField = String(field).trim(); 
       const cleanString = stringField.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
-      
       if (cleanString.includes(',') || cleanString.includes('"')) {
         return `"${cleanString.replace(/"/g, '""')}"`;
       }
@@ -495,7 +490,7 @@ exports.getFacebookCatalog = async (req, res) => {
 
     const csvRows = listings.map(listing => {
       const availability = 'in stock'; 
-      const condition = 'used';
+      const state_of_vehicle = 'used';
 
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
       
@@ -505,38 +500,32 @@ exports.getFacebookCatalog = async (req, res) => {
           `Color: ${listing.color}. Located in ${listing.location}.`;
 
       const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
-      const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+      const image_url = listing.images && listing.images.length > 0 ? listing.images[0] : '';
       
       const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
       const formattedPrice = `${priceValue} INR`;
 
-      const mappedFuel = mapFuelType(listing.fuelType);
-      const mappedTrans = mapTransmission(listing.transmissionType);
-      const mappedBody = mapBodyStyle(listing.type);
-
       return [
-        // IDs
-        listing._id, listing._id, listing._id,
-        // Titles & Description
-        title, description, description,
-        // Availability & Condition
-        availability, condition, condition,
-        // Price
-        formattedPrice,
-        // Links
-        link, link,
-        // Images
-        image_link, image_link, image_link,
-        // Vehicle Details
-        listing.brand, listing.brand, // brand, make
-        listing.model,
-        listing.year,
-        listing.color, listing.color, // color, exterior_color
-        listing.kmDriven, 'km',
-        mappedTrans,
-        mappedBody,
-        mappedFuel,
-        '' // fb_page_id
+        listing._id,          // vehicle_id
+        title,                // title
+        description,          // description
+        link,                 // url
+        image_url,            // image_url
+        listing.brand,        // make
+        listing.model,        // model
+        listing.year,         // year
+        listing.kmDriven,     // mileage.value
+        'km',                 // mileage.unit
+        mapFuelType(listing.fuelType),     // fuel_type
+        mapTransmission(listing.transmissionType), // transmission
+        mapBodyStyle(listing.type),         // body_style
+        '',                   // drivetrain (optional)
+        '',                   // vin (optional)
+        formattedPrice,       // price
+        listing.color,        // exterior_color
+        state_of_vehicle,     // state_of_vehicle
+        availability,         // availability
+        listing.location || 'Ranchi' // address.city
       ].map(escapeCsv).join(',');
     });
 
