@@ -419,13 +419,14 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // STRICT Meta Automotive Data Feed Headers (No Aliases)
+    // Headers: Mixed approach to satisfy both "Automotive" and "Vehicles" parsers
     const headers = [
       'vehicle_id',
       'title',
       'description',
       'url',
-      'image_url',
+      'image', // Requested by Meta UI
+      'image_url', // Standard Auto
       'make',
       'model',
       'year',
@@ -440,6 +441,13 @@ exports.getFacebookCatalog = async (req, res) => {
       'exterior_color',
       'state_of_vehicle',
       'availability',
+      // Flat Address Fields (Requested by Meta UI)
+      'street_address',
+      'city',
+      'region',
+      'country',
+      'postal_code',
+      // Nested Address Fields (Standard Auto)
       'address.street_address',
       'address.city',
       'address.region',
@@ -509,12 +517,19 @@ exports.getFacebookCatalog = async (req, res) => {
       const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
       const formattedPrice = `${priceValue} INR`;
 
+      const street = 'Poddar Motors, Kokar industrial Area';
+      const city = 'Ranchi';
+      const region = 'Jharkhand';
+      const country = 'IN';
+      const zip = '834001';
+
       return [
         listing._id,          // vehicle_id
         title,                // title
         description,          // description
         link,                 // url
-        image_url,            // image_url
+        image_url,            // image (Flat)
+        image_url,            // image_url (Auto)
         listing.brand,        // make
         listing.model,        // model
         listing.year,         // year
@@ -523,17 +538,24 @@ exports.getFacebookCatalog = async (req, res) => {
         mapFuelType(listing.fuelType),     // fuel_type
         mapTransmission(listing.transmissionType), // transmission
         mapBodyStyle(listing.type),         // body_style
-        '',                   // drivetrain (optional)
-        '',                   // vin (optional)
+        '',                   // drivetrain
+        '',                   // vin
         formattedPrice,       // price
         listing.color,        // exterior_color
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        'Poddar Motors, Kokar industrial Area', // address.street_address
-        'Ranchi',             // address.city
-        'Jharkhand',          // address.region
-        'IN',                 // address.country
-        '834001'              // address.postal_code
+        // Flat Address
+        street,
+        city,
+        region,
+        country,
+        zip,
+        // Nested Address
+        street,
+        city,
+        region,
+        country,
+        zip
       ].map(escapeCsv).join(',');
     });
 
