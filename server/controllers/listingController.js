@@ -419,17 +419,17 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // Headers required by Meta/Facebook Commerce Manager
+    // Headers matched to Facebook Commerce Manager "Vehicle Offers" expectations
     const headers = [
-      'id',
+      'vehicle_offer_id', // Was 'id'
       'title',
-      'description',
-      'availability',
-      'condition',
+      'offer_description', // Was 'description'
+      'availability', // in stock, out of stock
+      'condition', // new, used
       'price',
-      'link',
-      'image_link',
-      'brand',
+      'url', // Was 'link'
+      'image', // Was 'image_link'
+      'brand', // Standard auto matching
       'model',
       'year',
       'color',
@@ -438,7 +438,8 @@ exports.getFacebookCatalog = async (req, res) => {
       'transmission',
       'body_style',
       'fuel_type',
-      'fb_page_id' // Optional: Add if known, otherwise leave blank
+      'fb_page_id', 
+      'make' // Adding alias for brand as 'make' is often standard
     ];
 
     // Helper to escape CSV fields
@@ -452,44 +453,39 @@ exports.getFacebookCatalog = async (req, res) => {
     };
 
     const csvRows = listings.map(listing => {
-      // Logic to determine availability - assuming all fetched are available unless specific logic exists
-      // If you implement a 'sold' status, update this.
       const availability = 'in stock'; 
 
-      // Construct title
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
       
-      // Construct description with details
       const description = `Used ${listing.year} ${listing.brand} ${listing.model} ${listing.variant}. ` +
           `Driven ${listing.kmDriven} kms. Fuel: ${listing.fuelType}. ` +
           `Transmission: ${listing.transmissionType}. ` +
           `Color: ${listing.color}. Located in ${listing.location}.`;
 
-      // Absolute URL to the listing
       const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
       
-      // Main image URL
       const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
 
       return [
-        listing._id,
-        title,
-        description,
-        availability,
-        'used', // condition
-        `${listing.price} INR`,
-        link,
-        image_link,
-        listing.brand,
-        listing.model,
-        listing.year,
-        listing.color,
-        listing.kmDriven,
-        'km',
-        listing.transmissionType,
-        listing.type, // body_style
-        listing.fuelType,
-        '' // fb_page_id (add if you have it)
+        listing._id,          // vehicle_offer_id
+        title,                // title
+        description,          // offer_description
+        availability,         // availability
+        'used',               // condition
+        `${listing.price} INR`, // price
+        link,                 // url
+        image_link,           // image
+        listing.brand,        // brand
+        listing.model,        // model
+        listing.year,         // year
+        listing.color,        // color
+        listing.kmDriven,     // mileage.value
+        'km',                 // mileage.unit
+        listing.transmissionType, // transmission
+        listing.type,         // body_style
+        listing.fuelType,     // fuel_type
+        '',                   // fb_page_id
+        listing.brand         // make (duplicate of brand for compatibility)
       ].map(escapeCsv).join(',');
     });
 
