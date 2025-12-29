@@ -419,27 +419,30 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // Headers matched to Facebook Commerce Manager "Vehicle Offers" expectations
+    // Headers: "Shotgun Approach" - Include ALL aliases to ensure Meta finds what it needs
     const headers = [
-      'vehicle_offer_id', 
-      'title',
-      'offer_description', 
-      'availability', 
-      'condition', 
+      // IDs
+      'vehicle_offer_id', 'vehicle_id', 'id',
+      // Titles & Description
+      'title', 'offer_description', 'description',
+      // Availability & Condition
+      'availability', 'condition', 'state_of_vehicle',
+      // Price
       'price',
-      'url', 
-      'image', 
-      'brand', 
+      // Links
+      'url', 'link',
+      // Images
+      'image', 'image_url', 'image_link',
+      // Vehicle Details
+      'brand', 'make',
       'model',
       'year',
-      'color',
-      'mileage.value',
-      'mileage.unit',
+      'color', 'exterior_color',
+      'mileage.value', 'mileage.unit',
       'transmission',
       'body_style',
       'fuel_type',
-      'fb_page_id', 
-      'make' 
+      'fb_page_id'
     ];
 
     // Helper: Map Fuel Type to Meta Standard
@@ -449,15 +452,15 @@ exports.getFacebookCatalog = async (req, res) => {
       if (cleanFuel.includes('petrol')) return 'gasoline';
       if (cleanFuel.includes('diesel')) return 'diesel';
       if (cleanFuel.includes('electric') || cleanFuel.includes('ev')) return 'electric';
-      if (cleanFuel.includes('hybrid')) return 'hybrid'; // Only if supported, else 'other'
-      return 'other'; // CNG, LPG often fall here or need specific check if Meta supports
+      if (cleanFuel.includes('hybrid')) return 'hybrid';
+      return 'other'; // CNG, LPG -> other
     };
 
     // Helper: Map Transmission to Meta Standard
     const mapTransmission = (trans) => {
-      if (!trans) return 'manual'; // Default to manual if missing
+      if (!trans) return 'manual';
       const cleanTrans = trans.toLowerCase().trim();
-      if (cleanTrans.includes('auto')) return 'automatic';
+      if (cleanTrans.includes('auto') || cleanTrans.includes('amt')) return 'automatic';
       return 'manual';
     };
 
@@ -481,8 +484,7 @@ exports.getFacebookCatalog = async (req, res) => {
     // Helper to escape CSV fields
     const escapeCsv = (field) => {
       if (field === null || field === undefined) return '';
-      const stringField = String(field).trim(); // Trim whitespace
-      // Remove newlines and excess whitespace from description/title
+      const stringField = String(field).trim(); 
       const cleanString = stringField.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
       
       if (cleanString.includes(',') || cleanString.includes('"')) {
@@ -493,6 +495,7 @@ exports.getFacebookCatalog = async (req, res) => {
 
     const csvRows = listings.map(listing => {
       const availability = 'in stock'; 
+      const condition = 'used';
 
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
       
@@ -502,33 +505,38 @@ exports.getFacebookCatalog = async (req, res) => {
           `Color: ${listing.color}. Located in ${listing.location}.`;
 
       const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
-      
       const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
       
-      // Strict Price Formatting: "120000 INR" (No commas)
       const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
       const formattedPrice = `${priceValue} INR`;
 
+      const mappedFuel = mapFuelType(listing.fuelType);
+      const mappedTrans = mapTransmission(listing.transmissionType);
+      const mappedBody = mapBodyStyle(listing.type);
+
       return [
-        listing._id,          // vehicle_offer_id
-        title,                // title
-        description,          // offer_description
-        availability,         // availability
-        'used',               // condition
-        formattedPrice,       // price
-        link,                 // url
-        image_link,           // image
-        listing.brand,        // brand
-        listing.model,        // model
-        listing.year,         // year
-        listing.color,        // color
-        listing.kmDriven,     // mileage.value
-        'km',                 // mileage.unit
-        mapTransmission(listing.transmissionType), // transmission
-        mapBodyStyle(listing.type),         // body_style
-        mapFuelType(listing.fuelType),     // fuel_type
-        '',                   // fb_page_id
-        listing.brand         // make
+        // IDs
+        listing._id, listing._id, listing._id,
+        // Titles & Description
+        title, description, description,
+        // Availability & Condition
+        availability, condition, condition,
+        // Price
+        formattedPrice,
+        // Links
+        link, link,
+        // Images
+        image_link, image_link, image_link,
+        // Vehicle Details
+        listing.brand, listing.brand, // brand, make
+        listing.model,
+        listing.year,
+        listing.color, listing.color, // color, exterior_color
+        listing.kmDriven, 'km',
+        mappedTrans,
+        mappedBody,
+        mappedFuel,
+        '' // fb_page_id
       ].map(escapeCsv).join(',');
     });
 
