@@ -425,7 +425,7 @@ exports.getFacebookCatalog = async (req, res) => {
       'title',
       'description',
       'url',
-      'image',
+      'image_url', // Changed from 'image' to standard 'image_url' to fix "Invalid Value"
       'make',
       'model',
       'year',
@@ -438,7 +438,7 @@ exports.getFacebookCatalog = async (req, res) => {
       'exterior_color',
       'state_of_vehicle',
       'availability',
-      'addr1', // Canonical Automotive Address Header
+      'address', // Changed from 'addr1' to 'address' as requested by User
       'city',
       'region',
       'country',
@@ -512,7 +512,7 @@ exports.getFacebookCatalog = async (req, res) => {
         title,                // title
         description,          // description
         link,                 // url
-        image_link,           // image
+        image_link,           // image_url
         listing.brand,        // make
         listing.model,        // model
         listing.year,         // year
@@ -525,7 +525,7 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.color,        // exterior_color
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        'Poddar Motors, Kokar industrial Area', // addr1
+        'Poddar Motors, Kokar industrial Area', // address
         'Ranchi',             // city
         'Jharkhand',          // region
         'IN',                 // country
