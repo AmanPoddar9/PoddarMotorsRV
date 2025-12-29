@@ -419,14 +419,19 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // Headers: STRICT ESSENTIALS (22 Fields)
+    // Headers: UNIVERSAL STRATEGY - Provide ALL common variations to pass validation
     const headers = [
       'vehicle_id',
       'title',
       'description',
       'url',
-      'image_url', // Changed from 'image' to standard 'image_url' to fix "Invalid Value"
+      // Image Variations (Universal)
+      'image',       // Requested by Meta UI Error
+      'image_url',   // Standard Vehicle Feed
+      'image_link',  // Google Merchant Center Standard
+      // Make Variations
       'make',
+      'brand',
       'model',
       'year',
       'mileage.value',
@@ -438,7 +443,10 @@ exports.getFacebookCatalog = async (req, res) => {
       'exterior_color',
       'state_of_vehicle',
       'availability',
-      'address', // Changed from 'addr1' to 'address' as requested by User
+      // Address Variations (Universal)
+      'addr1',          // Canonical Automotive Standard
+      'street_address', // Common Standard
+      'address',        // Requested by User
       'city',
       'region',
       'country',
@@ -491,7 +499,7 @@ exports.getFacebookCatalog = async (req, res) => {
     };
 
     const csvRows = listings.map(listing => {
-      const availability = 'AVAILABLE'; // Fixed Enum: Uppercase required
+      const availability = 'AVAILABLE'; 
       const state_of_vehicle = 'used';
 
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
@@ -507,13 +515,20 @@ exports.getFacebookCatalog = async (req, res) => {
       const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
       const formattedPrice = `${priceValue} INR`;
 
+      const street = 'Poddar Motors, Kokar industrial Area';
+
       return [
         listing._id,          // vehicle_id
         title,                // title
         description,          // description
         link,                 // url
+        // Image Variations
+        image_link,           // image
         image_link,           // image_url
+        image_link,           // image_link
+        // Make Variations
         listing.brand,        // make
+        listing.brand,        // brand
         listing.model,        // model
         listing.year,         // year
         listing.kmDriven,     // mileage.value
@@ -525,7 +540,10 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.color,        // exterior_color
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        'Poddar Motors, Kokar industrial Area', // address
+        // Address Variations
+        street,               // addr1 (Canonical)
+        street,               // street_address
+        street,               // address (Requested by User)
         'Ranchi',             // city
         'Jharkhand',          // region
         'IN',                 // country
