@@ -414,3 +414,93 @@ const deleteSingleImage = async (publicId) => {
     console.error("Error deleting image:", error);
   }
 };
+
+exports.getFacebookCatalog = async (req, res) => {
+  try {
+    const listings = await Listing.find();
+    
+    // Headers required by Meta/Facebook Commerce Manager
+    const headers = [
+      'id',
+      'title',
+      'description',
+      'availability',
+      'condition',
+      'price',
+      'link',
+      'image_link',
+      'brand',
+      'model',
+      'year',
+      'color',
+      'mileage.value',
+      'mileage.unit',
+      'transmission',
+      'body_style',
+      'fuel_type',
+      'fb_page_id' // Optional: Add if known, otherwise leave blank
+    ];
+
+    // Helper to escape CSV fields
+    const escapeCsv = (field) => {
+      if (field === null || field === undefined) return '';
+      const stringField = String(field);
+      if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+        return `"${stringField.replace(/"/g, '""')}"`;
+      }
+      return stringField;
+    };
+
+    const csvRows = listings.map(listing => {
+      // Logic to determine availability - assuming all fetched are available unless specific logic exists
+      // If you implement a 'sold' status, update this.
+      const availability = 'in stock'; 
+
+      // Construct title
+      const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
+      
+      // Construct description with details
+      const description = `Used ${listing.year} ${listing.brand} ${listing.model} ${listing.variant}. ` +
+          `Driven ${listing.kmDriven} kms. Fuel: ${listing.fuelType}. ` +
+          `Transmission: ${listing.transmissionType}. ` +
+          `Color: ${listing.color}. Located in ${listing.location}.`;
+
+      // Absolute URL to the listing
+      const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
+      
+      // Main image URL
+      const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+
+      return [
+        listing._id,
+        title,
+        description,
+        availability,
+        'used', // condition
+        `${listing.price} INR`,
+        link,
+        image_link,
+        listing.brand,
+        listing.model,
+        listing.year,
+        listing.color,
+        listing.kmDriven,
+        'km',
+        listing.transmissionType,
+        listing.type, // body_style
+        listing.fuelType,
+        '' // fb_page_id (add if you have it)
+      ].map(escapeCsv).join(',');
+    });
+
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'inline; filename="poddar-motors-catalog.csv"');
+    res.status(200).send(csvContent);
+
+  } catch (error) {
+    console.error('Error generating Facebook catalog:', error);
+    res.status(500).send('Error generating catalog');
+  }
+};
