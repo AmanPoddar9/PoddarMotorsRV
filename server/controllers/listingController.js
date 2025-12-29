@@ -421,15 +421,15 @@ exports.getFacebookCatalog = async (req, res) => {
     
     // Headers matched to Facebook Commerce Manager "Vehicle Offers" expectations
     const headers = [
-      'vehicle_offer_id', // Was 'id'
+      'vehicle_offer_id', 
       'title',
-      'offer_description', // Was 'description'
-      'availability', // in stock, out of stock
-      'condition', // new, used
+      'offer_description', 
+      'availability', 
+      'condition', 
       'price',
-      'url', // Was 'link'
-      'image', // Was 'image_link'
-      'brand', // Standard auto matching
+      'url', 
+      'image', 
+      'brand', 
       'model',
       'year',
       'color',
@@ -439,17 +439,56 @@ exports.getFacebookCatalog = async (req, res) => {
       'body_style',
       'fuel_type',
       'fb_page_id', 
-      'make' // Adding alias for brand as 'make' is often standard
+      'make' 
     ];
+
+    // Helper: Map Fuel Type to Meta Standard
+    const mapFuelType = (fuel) => {
+      if (!fuel) return 'other';
+      const cleanFuel = fuel.toLowerCase().trim();
+      if (cleanFuel.includes('petrol')) return 'gasoline';
+      if (cleanFuel.includes('diesel')) return 'diesel';
+      if (cleanFuel.includes('electric') || cleanFuel.includes('ev')) return 'electric';
+      if (cleanFuel.includes('hybrid')) return 'hybrid'; // Only if supported, else 'other'
+      return 'other'; // CNG, LPG often fall here or need specific check if Meta supports
+    };
+
+    // Helper: Map Transmission to Meta Standard
+    const mapTransmission = (trans) => {
+      if (!trans) return 'manual'; // Default to manual if missing
+      const cleanTrans = trans.toLowerCase().trim();
+      if (cleanTrans.includes('auto')) return 'automatic';
+      return 'manual';
+    };
+
+    // Helper: Map Body Style to Meta Standard
+    const mapBodyStyle = (type) => {
+      if (!type) return 'other';
+      const cleanType = type.toLowerCase().trim();
+      
+      if (cleanType.includes('suv')) return 'suv';
+      if (cleanType.includes('sedan')) return 'sedan';
+      if (cleanType.includes('hatch')) return 'hatchback';
+      if (cleanType.includes('pickup')) return 'pickup';
+      if (cleanType.includes('van') || cleanType.includes('muv') || cleanType.includes('mpv')) return 'van';
+      if (cleanType.includes('coupe')) return 'coupe';
+      if (cleanType.includes('convert') || cleanType.includes('cabrio')) return 'convertible';
+      if (cleanType.includes('wagon')) return 'wagon';
+      
+      return 'other';
+    };
 
     // Helper to escape CSV fields
     const escapeCsv = (field) => {
       if (field === null || field === undefined) return '';
-      const stringField = String(field);
-      if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
-        return `"${stringField.replace(/"/g, '""')}"`;
+      const stringField = String(field).trim(); // Trim whitespace
+      // Remove newlines and excess whitespace from description/title
+      const cleanString = stringField.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
+      
+      if (cleanString.includes(',') || cleanString.includes('"')) {
+        return `"${cleanString.replace(/"/g, '""')}"`;
       }
-      return stringField;
+      return cleanString;
     };
 
     const csvRows = listings.map(listing => {
@@ -465,6 +504,10 @@ exports.getFacebookCatalog = async (req, res) => {
       const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
       
       const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+      
+      // Strict Price Formatting: "120000 INR" (No commas)
+      const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
+      const formattedPrice = `${priceValue} INR`;
 
       return [
         listing._id,          // vehicle_offer_id
@@ -472,7 +515,7 @@ exports.getFacebookCatalog = async (req, res) => {
         description,          // offer_description
         availability,         // availability
         'used',               // condition
-        `${listing.price} INR`, // price
+        formattedPrice,       // price
         link,                 // url
         image_link,           // image
         listing.brand,        // brand
@@ -481,11 +524,11 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.color,        // color
         listing.kmDriven,     // mileage.value
         'km',                 // mileage.unit
-        listing.transmissionType, // transmission
-        listing.type,         // body_style
-        listing.fuelType,     // fuel_type
+        mapTransmission(listing.transmissionType), // transmission
+        mapBodyStyle(listing.type),         // body_style
+        mapFuelType(listing.fuelType),     // fuel_type
         '',                   // fb_page_id
-        listing.brand         // make (duplicate of brand for compatibility)
+        listing.brand         // make
       ].map(escapeCsv).join(',');
     });
 
