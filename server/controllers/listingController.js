@@ -431,7 +431,7 @@ exports.getFacebookCatalog = async (req, res) => {
       'model',
       'year',
       'mileage.value',
-      'mileage.unit',
+      'mileage.unit', // Start Strict: KM
       'fuel_type',
       'transmission',
       'body_style',
@@ -443,6 +443,7 @@ exports.getFacebookCatalog = async (req, res) => {
       'availability',
       // Flat Address Fields (Requested by Meta UI)
       'street_address',
+      'addr1', // Standard Facebook Address Field
       'city',
       'region',
       'country',
@@ -534,7 +535,7 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.model,        // model
         listing.year,         // year
         listing.kmDriven,     // mileage.value
-        'km',                 // mileage.unit
+        'KM',                 // mileage.unit (FIXED: Upper Case)
         mapFuelType(listing.fuelType),     // fuel_type
         mapTransmission(listing.transmissionType), // transmission
         mapBodyStyle(listing.type),         // body_style
@@ -545,7 +546,8 @@ exports.getFacebookCatalog = async (req, res) => {
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
         // Flat Address
-        street,
+        street,               // street_address
+        street,               // addr1 (Added)
         city,
         region,
         country,
