@@ -440,7 +440,11 @@ exports.getFacebookCatalog = async (req, res) => {
       'exterior_color',
       'state_of_vehicle',
       'availability',
-      'address.city' 
+      'address.street_address',
+      'address.city',
+      'address.region',
+      'address.country',
+      'address.postal_code'
     ];
 
     // Helper: Map Fuel Type
@@ -525,7 +529,11 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.color,        // exterior_color
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        listing.location || 'Ranchi' // address.city
+        'Poddar Motors, Kokar industrial Area', // address.street_address
+        'Ranchi',             // address.city
+        'Jharkhand',          // address.region
+        'IN',                 // address.country
+        '834001'              // address.postal_code
       ].map(escapeCsv).join(',');
     });
 
