@@ -438,7 +438,7 @@ exports.getFacebookCatalog = async (req, res) => {
       'exterior_color',
       'state_of_vehicle',
       'availability',
-      'street_address',
+      'addr1', // Canonical Automotive Address Header
       'city',
       'region',
       'country',
@@ -491,7 +491,7 @@ exports.getFacebookCatalog = async (req, res) => {
     };
 
     const csvRows = listings.map(listing => {
-      const availability = 'in stock'; 
+      const availability = 'AVAILABLE'; // Fixed Enum: Uppercase required
       const state_of_vehicle = 'used';
 
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
@@ -525,7 +525,7 @@ exports.getFacebookCatalog = async (req, res) => {
         listing.color,        // exterior_color
         state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        'Poddar Motors, Kokar industrial Area', // street_address
+        'Poddar Motors, Kokar industrial Area', // addr1
         'Ranchi',             // city
         'Jharkhand',          // region
         'IN',                 // country
