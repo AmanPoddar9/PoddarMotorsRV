@@ -419,65 +419,65 @@ exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
     
-    // Headers: STRICT OFFICIAL STANDARD (Automotive Inventory Ads)
-    // Reference: https://www.facebook.com/business/help/120325381656392
+    // Headers: STRICT TEMPLATE MATCH (Based on User provided Excel sample)
+    // Uses dot/bracket notation for nested objects
     const headers = [
       'vehicle_id',
       'title',
       'description',
+      'price',
+      'image[0].url', // Correct nested header for images
       'url',
-      'image_url',   // Standard (Not 'image')
+      'body_style',
+      'mileage.unit',
+      'mileage.value',
+      'address.addr1', // Correct nested header for street address
+      'address.city',
+      'address.country',
+      'address.region',
+      'address.postal_code',
+      'state_of_vehicle',
       'make',
       'model',
       'year',
-      'mileage.value',
-      'mileage.unit',
-      'fuel_type',
-      'transmission',
-      'body_style',
-      'price',
-      'exterior_color',
-      'state_of_vehicle',
       'availability',
-      'addr1',          // Standard (Not 'address' or 'street_address')
-      'city',
-      'region',
-      'country',
-      'postal_code'
+      'transmission',
+      'fuel_type',
+      'exterior_color'
     ];
 
-    // Helper: Map Fuel Type
+    // Helper: Map Fuel Type (Uppercase Enums)
     const mapFuelType = (fuel) => {
-      if (!fuel) return 'other';
+      if (!fuel) return 'OTHER';
       const cleanFuel = fuel.toLowerCase().trim();
-      if (cleanFuel.includes('petrol')) return 'gasoline';
-      if (cleanFuel.includes('diesel')) return 'diesel';
-      if (cleanFuel.includes('electric') || cleanFuel.includes('ev')) return 'electric';
-      if (cleanFuel.includes('hybrid')) return 'hybrid';
-      return 'other';
+      if (cleanFuel.includes('petrol')) return 'GASOLINE'; // 'GASOLINE' is standard for petrol
+      if (cleanFuel.includes('diesel')) return 'DIESEL';
+      if (cleanFuel.includes('electric') || cleanFuel.includes('ev')) return 'ELECTRIC';
+      if (cleanFuel.includes('hybrid')) return 'HYBRID';
+      return 'OTHER';
     };
 
-    // Helper: Map Transmission
+    // Helper: Map Transmission (Uppercase Enums)
     const mapTransmission = (trans) => {
-      if (!trans) return 'manual';
+      if (!trans) return 'MANUAL';
       const cleanTrans = trans.toLowerCase().trim();
-      if (cleanTrans.includes('auto') || cleanTrans.includes('amt')) return 'automatic';
-      return 'manual';
+      if (cleanTrans.includes('auto') || cleanTrans.includes('amt')) return 'AUTOMATIC';
+      return 'MANUAL';
     };
 
-    // Helper: Map Body Style
+    // Helper: Map Body Style (Uppercase Enums)
     const mapBodyStyle = (type) => {
-      if (!type) return 'other';
+      if (!type) return 'OTHER';
       const cleanType = type.toLowerCase().trim();
-      if (cleanType.includes('suv')) return 'suv';
-      if (cleanType.includes('sedan')) return 'sedan';
-      if (cleanType.includes('hatch')) return 'hatchback';
-      if (cleanType.includes('pickup')) return 'pickup';
-      if (cleanType.includes('van') || cleanType.includes('muv') || cleanType.includes('mpv')) return 'van';
-      if (cleanType.includes('coupe')) return 'coupe';
-      if (cleanType.includes('convert') || cleanType.includes('cabrio')) return 'convertible';
-      if (cleanType.includes('wagon')) return 'wagon';
-      return 'other';
+      if (cleanType.includes('suv')) return 'SUV';
+      if (cleanType.includes('sedan')) return 'SEDAN';
+      if (cleanType.includes('hatch')) return 'HATCHBACK';
+      if (cleanType.includes('pickup')) return 'PICKUP';
+      if (cleanType.includes('van') || cleanType.includes('muv') || cleanType.includes('mpv')) return 'VAN';
+      if (cleanType.includes('coupe')) return 'COUPE';
+      if (cleanType.includes('convert') || cleanType.includes('cabrio')) return 'CONVERTIBLE';
+      if (cleanType.includes('wagon')) return 'WAGON';
+      return 'OTHER';
     };
 
     // Helper to escape CSV fields
@@ -493,7 +493,7 @@ exports.getFacebookCatalog = async (req, res) => {
 
     const csvRows = listings.map(listing => {
       const availability = 'AVAILABLE'; 
-      const state_of_vehicle = 'used';
+      const state_of_vehicle = 'USED'; // Uppercase per sample
 
       const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
       
@@ -512,25 +512,25 @@ exports.getFacebookCatalog = async (req, res) => {
         listing._id,          // vehicle_id
         title,                // title
         description,          // description
+        formattedPrice,       // price
+        image_link,           // image[0].url
         link,                 // url
-        image_link,           // image_url
+        mapBodyStyle(listing.type),         // body_style
+        'KM',                 // mileage.unit
+        listing.kmDriven,     // mileage.value
+        'Poddar Motors, Kokar industrial Area', // address.addr1
+        'Ranchi',             // address.city
+        'India',              // address.country
+        'Jharkhand',          // address.region
+        '834001',             // address.postal_code
+        state_of_vehicle,     // state_of_vehicle
         listing.brand,        // make
         listing.model,        // model
         listing.year,         // year
-        listing.kmDriven,     // mileage.value
-        'KM',                 // mileage.unit
-        mapFuelType(listing.fuelType),     // fuel_type
-        mapTransmission(listing.transmissionType), // transmission
-        mapBodyStyle(listing.type),         // body_style
-        formattedPrice,       // price
-        listing.color,        // exterior_color
-        state_of_vehicle,     // state_of_vehicle
         availability,         // availability
-        'Poddar Motors, Kokar industrial Area', // addr1
-        'Ranchi',             // city
-        'Jharkhand',          // region
-        'India',              // country (Explicit full name to be safe)
-        '834001'              // postal_code
+        mapTransmission(listing.transmissionType), // transmission
+        mapFuelType(listing.fuelType),     // fuel_type
+        listing.color         // exterior_color
       ].map(escapeCsv).join(',');
     });
 
