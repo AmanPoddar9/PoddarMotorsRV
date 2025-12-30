@@ -525,10 +525,12 @@ const CustomerDetailPage = ({ params }) => {
                         <button onClick={() => toggleModal('manageTags', true)} className="text-custom-accent text-xs hover:underline">Manage</button>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {customer.tags && customer.tags.map((tag, i) => (
-                            <span key={i} className="px-2 py-1 bg-gray-800 text-gray-300 rounded text-xs border border-gray-700">{tag}</span>
+                        {(customer.tags || []).map((tag, i) => (
+                            <span key={i} className="px-2 py-1 bg-blue-900/30 text-blue-200 rounded text-xs border border-blue-800 flex items-center gap-1">
+                                {tag}
+                            </span>
                         ))}
-                         <button onClick={() => toggleModal('manageTags', true)} className="px-2 py-1 bg-white/5 text-gray-400 rounded text-xs border border-dashed border-gray-600 hover:text-white">+</button>
+                         <button onClick={() => toggleModal('manageTags', true)} className="px-2 py-1 bg-white/5 text-gray-400 rounded text-xs border border-dashed border-gray-600 hover:text-white hover:border-white transition-colors">+</button>
                     </div>
                 </div>
 
