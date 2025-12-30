@@ -109,7 +109,7 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
         window.fbq('track', 'AddToWishlist', {
           content_name: `${carData.brand} ${carData.model}`,
           content_ids: [carData._id],
-          content_type: 'product',
+          content_type: 'vehicle',
           value: carData.price,
           currency: 'INR',
         })
@@ -231,7 +231,7 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
       window.fbq('track', 'ViewContent', {
         content_name: `${carData.brand} ${carData.model} ${carData.variant}`,
         content_ids: [carData._id],
-        content_type: 'product',
+        content_type: 'vehicle',
         value: carData.price,
         currency: 'INR',
       })
