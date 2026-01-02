@@ -149,6 +149,8 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
             window.fbq('track', 'Lead', {
                 content_name: 'Make Offer',
                 content_category: 'Offer',
+                content_type: 'vehicle',
+                content_ids: [carData._id],
                 value: data.offerPrice,
                 currency: 'INR'
             })
@@ -207,6 +209,8 @@ const CarListingClient = ({ carData, similarCars, testimonials, slug }) => {
             window.fbq('track', 'Lead', {
                 content_name: 'Test Drive Booking',
                 content_category: 'Test Drive',
+                content_type: 'vehicle',
+                content_ids: [carData._id],
                 value: 0,
                 currency: 'INR'
             })
