@@ -335,7 +335,13 @@ exports.getListingById = async (req, res) => {
 exports.getListingBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const listing = await Listing.findOne({ slug });
+    // Use findOneAndUpdate to atomically increment views
+    const listing = await Listing.findOneAndUpdate(
+      { slug },
+      { $inc: { views: 1 } },
+      { new: true } // Return the updated document so UI gets new count immediately
+    );
+    
     if (!listing) {
       return res.status(404).json({ error: "Listing not found" });
     }
