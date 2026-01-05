@@ -32,6 +32,7 @@ router.get('/fuel', cacheMiddleware(600), listingController.getAllFuelTypes)
 router.get('/transmission', cacheMiddleware(600), listingController.getAllTransmissionTypes)
 
 router.get('/facebook-catalog.csv', listingController.getFacebookCatalog)
+router.get('/google-merchant.csv', listingController.getGoogleCatalog)
 
 router.get('/seats', cacheMiddleware(600), listingController.getAllSeats)
 
