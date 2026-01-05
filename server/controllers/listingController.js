@@ -545,3 +545,85 @@ exports.getFacebookCatalog = async (req, res) => {
     res.status(500).send('Error generating catalog');
   }
 };
+
+exports.getGoogleCatalog = async (req, res) => {
+  try {
+    const listings = await Listing.find();
+    
+    // Headers: GOOGLE MERCHANT CENTER VEHICLE ADS SPEC (2025)
+    const headers = [
+      'id',                   // Unique ID (same as vehicle_id)
+      'store_code',           // Links to GBP (Must match user's GMB code)
+      'title',
+      'description',
+      'link',                 // Link to VDP
+      'image_link',           // Main image
+      'condition',            // new/used
+      'brand',
+      'model',
+      'year',
+      'mileage',              // value + unit (e.g., "50000 km")
+      'color',
+      'price',                // value + currency (e.g., "500000 INR")
+      'availability',         // in_stock
+      'vehicle_fulfillment(option:store_code)' // REQUIRED: "in_store:CODE"
+    ];
+
+    // Helpers (Reusing logic but adapting return values if needed)
+    const escapeCsv = (field) => {
+      if (field === null || field === undefined) return '';
+      const stringField = String(field).trim(); 
+      const cleanString = stringField.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
+      if (cleanString.includes(',') || cleanString.includes('"')) {
+        return `"${cleanString.replace(/"/g, '""')}"`;
+      }
+      return cleanString;
+    };
+
+    const STORE_CODE = 'REAL_VALUE_RANCHI'; // Must be set by user in GBP
+
+    const csvRows = listings.map(listing => {
+      const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
+      
+      const description = `Used ${listing.year} ${listing.brand} ${listing.model} ${listing.variant}. ` +
+          `Driven ${listing.kmDriven} kms. Fuel: ${listing.fuelType}. ` +
+          `Transmission: ${listing.transmissionType}. ` +
+          `Color: ${listing.color}. Located in Ranchi.`;
+
+      const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
+      const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+      
+      const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
+      const formattedPrice = `${priceValue} INR`;
+      const mileage = `${listing.kmDriven} km`;
+
+      return [
+        listing._id,                  // id
+        STORE_CODE,                   // store_code
+        title,                        // title
+        description,                  // description
+        link,                         // link
+        image_link,                   // image_link
+        'used',                       // condition (lowercase for Google preference)
+        listing.brand,                // brand
+        listing.model,                // model
+        listing.year,                 // year
+        mileage,                      // mileage
+        listing.color,                // color
+        formattedPrice,               // price
+        'in_stock',                   // availability (Google uses 'in_stock')
+        `in_store:${STORE_CODE}`      // vehicle_fulfillment
+      ].map(escapeCsv).join(',');
+    });
+
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'inline; filename="google-merchant-catalog.csv"');
+    res.status(200).send(csvContent);
+
+  } catch (error) {
+    console.error('Error generating Google catalog:', error);
+    res.status(500).send('Error generating Google catalog');
+  }
+};
