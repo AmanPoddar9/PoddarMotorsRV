@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function ImageGallery({ photos }) {
   // Flatten all photos into a single array with categories
@@ -28,21 +29,24 @@ export default function ImageGallery({ photos }) {
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden border border-gray-700 group">
-        <img 
+        <Image 
           src={allPhotos[currentIndex].url} 
-          alt="Car View" 
-          className="w-full h-full object-contain"
+          alt="Car View"
+          fill
+          className="object-contain"
+          priority={true}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
         />
         
         {/* Category Badge */}
-        <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+        <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm z-10">
           {allPhotos[currentIndex].category}
         </div>
 
         {/* Navigation Arrows */}
         <button 
           onClick={() => setCurrentIndex(prev => (prev === 0 ? allPhotos.length - 1 : prev - 1))}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all z-10"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -50,7 +54,7 @@ export default function ImageGallery({ photos }) {
         </button>
         <button 
           onClick={() => setCurrentIndex(prev => (prev === allPhotos.length - 1 ? 0 : prev + 1))}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all z-10"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -64,11 +68,17 @@ export default function ImageGallery({ photos }) {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+            className={`flex-shrink-0 w-20 h-20 relative rounded-lg overflow-hidden border-2 transition-all ${
               currentIndex === index ? 'border-blue-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
             }`}
           >
-            <img src={photo.url} alt={`Thumbnail ${index}`} className="w-full h-full object-cover" />
+            <Image 
+              src={photo.url} 
+              alt={`Thumbnail ${index}`} 
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
           </button>
         ))}
       </div>

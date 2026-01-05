@@ -161,8 +161,8 @@ export default function RootLayout({ children }) {
           `}
         </Script>
         
-        {/* Microsoft Clarity */}
-        <Script id="clarity-script" strategy="afterInteractive">
+        {/* Microsoft Clarity - Defer loading for better INP */}
+        <Script id="clarity-script" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

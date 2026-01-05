@@ -34,6 +34,7 @@ const listingSchema = new mongoose.Schema({
   dealEndDate: { type: Date, required: false },
   originalPrice: { type: Number, required: false },
   emiStarting: { type: Number, required: false },
+  views: { type: Number, default: 0 },
 })
 
 // Indexes for frequently queried fields
