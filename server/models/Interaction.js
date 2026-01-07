@@ -6,7 +6,7 @@ const interactionSchema = new mongoose.Schema({
   
   type: { 
     type: String, 
-    enum: ['insurance_followup', 'sales_call', 'service_reminder', 'status_change', 'import_note', 'general'], 
+    enum: ['insurance_followup', 'sales_call', 'service_reminder', 'status_change', 'import_note', 'general', 'Call', 'WhatsApp'], 
     default: 'general' 
   },
   

@@ -722,7 +722,7 @@ exports.addInteraction = async (req, res) => {
             await Interaction.create({
                 customer: policy.customer,
                 policy: policy._id,
-                type: type === 'Call' ? 'insurance_followup' : 'general', // Map to Interaction schema enums
+                type: type || 'general', // Use provided type (Call/WhatsApp) directly
                 agentName: req.user ? req.user.name : 'System',
                 agentId: userId,
                 data: {
