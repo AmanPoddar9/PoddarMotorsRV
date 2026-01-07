@@ -48,14 +48,37 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
 
   const handleSendAndLog = async (e) => {
       e.preventDefault();
+      
+      let finalOutcome = outcome;
+      if (actionType === 'whatsapp') {
+          finalOutcome = 'WhatsApp Message Sent'; // Force default
+          setOutcome(finalOutcome); // Update state for handleSubmit
+      }
+
       // 1. Open WhatsApp
       if (actionType === 'whatsapp' && mobile) {
-          const text = encodeURIComponent(remark);
-          const url = `https://wa.me/91${mobile}?text=${text}`;
-          window.open(url, '_blank');
+          // Sanitize mobile: remove country code +91 if present to avoid double, remove spaces
+          let cleanMobile = mobile.replace(/\s+/g, '').replace(/^\+91/, '').replace(/^91/, '');
+          
+          if (cleanMobile.length === 10) {
+              const text = encodeURIComponent(remark);
+              const url = `https://wa.me/91${cleanMobile}?text=${text}`;
+              
+              // Open in new tab
+              const win = window.open(url, '_blank');
+              if (win) {
+                  win.focus();
+              } else {
+                  alert('Please allow popups for WhatsApp');
+              }
+          } else {
+              alert('Invalid Mobile Number for WhatsApp');
+              return; // Don't log if invalid? Or log anyway? Let's log anyway but warn user.
+          }
       }
       
-      handleSubmit(e);
+      // Delay submit slightly to allow window.open to fire? No need if sync.
+      handleSubmit(e, finalOutcome); 
   }
 
   // --- LOGIC ---
@@ -63,9 +86,11 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
   const isLost = outcome === 'NotInterested' || outcome === 'RenewedElsewhere' || outcome === 'Not Interested'
   const isRenewed = outcome === 'Renewed'
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, forcedOutcome = null) => {
     e.preventDefault()
     
+    const submitOutcome = forcedOutcome || outcome; // Use forced or state
+
     // Validation
     if (isFollowUpRequired && !nextFollowUp) {
         alert('Please select a Follow-up Date')
@@ -85,7 +110,7 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
     try {
         await axios.post(`${API_URL}/api/insurance/policies/${policyId}/interaction`, {
             type: actionType === 'call' ? 'Call' : 'WhatsApp',
-            outcome,
+            outcome: submitOutcome,
             remark,
             nextFollowUpDate: nextFollowUp || null,
             lostReason: isLost ? lostReason : null
@@ -133,18 +158,21 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-                <label className="block text-sm text-gray-400 mb-1">Outcome <span className="text-red-400">*</span></label>
-                <select 
-                    required 
-                    className="w-full bg-gray-900 border border-gray-700 text-white rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" 
-                    value={outcome} 
-                    onChange={e => setOutcome(e.target.value)}
-                >
-                    <option value="">Select Outcome...</option>
-                    {outcomes.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-            </div>
+            {/* Outcome Selector (Hidden for WhatsApp) */}
+            {actionType !== 'whatsapp' && (
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">Outcome <span className="text-red-400">*</span></label>
+                    <select 
+                        required 
+                        className="w-full bg-gray-900 border border-gray-700 text-white rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none" 
+                        value={outcome} 
+                        onChange={e => setOutcome(e.target.value)}
+                    >
+                        <option value="">Select Outcome...</option>
+                        {outcomes.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                </div>
+            )}
 
             {/* Template Selector for WhatsApp */}
             {actionType === 'whatsapp' && (
@@ -161,7 +189,9 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
                 </div>
             )}
 
-            {/* Conditional: Lost Reason */}
+            {/* ... (Lost Reason & Follow Up - specific conditions) ... */}
+
+            {/* Conditional: Lost Reason (Only if explicitly Lost selected in dropdown, usually via Call) */}
             {isLost && (
                 <div className="bg-red-900/10 p-3 rounded border border-red-500/20">
                     <label className="block text-sm text-red-300 mb-1">Lost Reason</label>
@@ -196,7 +226,7 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
                 <textarea 
                     required 
                     className="w-full bg-gray-900 border border-gray-700 text-white rounded p-2 h-20 focus:ring-2 focus:ring-blue-500" 
-                    placeholder="Brief notes about the conversation..." 
+                    placeholder={actionType === 'whatsapp' ? "Message preview..." : "Brief notes about the conversation..."}
                     value={remark} 
                     onChange={e => setRemark(e.target.value)} 
                 />
@@ -209,11 +239,12 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
                 className={`w-full font-bold py-3 rounded flex justify-center items-center gap-2 transition ${
                     isRenewed ? 'bg-green-600 hover:bg-green-700' :
                     isLost ? 'bg-red-600 hover:bg-red-700' :
+                    actionType === 'whatsapp' ? 'bg-green-600 hover:bg-green-700' : 
                     'bg-blue-600 hover:bg-blue-700'
                 } text-white`}
             >
                 {loading ? <FaSpinner className="animate-spin" /> : (
-                    isRenewed ? 'Proceed to Renewal' : (actionType === 'whatsapp' ? 'Send & Log Action' : 'Save Log')
+                    isRenewed ? 'Proceed to Renewal' : (actionType === 'whatsapp' ? 'Open WhatsApp & Log' : 'Save Log')
                 )}
             </button>
         </form>
