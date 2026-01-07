@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '../../components/AdminNavbar'
 import API_URL from '../../config/api'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
@@ -123,8 +122,7 @@ const ScrapRequestsPage = () => {
 
   return (
     <div>
-      <AdminNavbar />
-      <div className="container mx-auto min-h-[70vh]">
+      <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold my-4">Scrap Requests</h1>
         <div className="text-center my-4">
           <button

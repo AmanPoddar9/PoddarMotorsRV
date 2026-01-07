@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import AdminNavbar from '../../components/AdminNavbar'
 import JSZip, { file } from 'jszip'
 import { Spin } from 'antd'
 
@@ -279,8 +278,7 @@ const CreateListing = () => {
 
   return (
     <div className="min-h-screen bg-custom-black text-white">
-      <AdminNavbar />
-      <div className="max-w-3xl mx-auto py-8 px-4">
+      <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-white">Create Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="mb-6">

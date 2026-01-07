@@ -20,24 +20,24 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="py-16 md:py-24 bg-custom-black border-t border-white/10">
+    <section id="testimonials" className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Customer Testimonials</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Customer Testimonials</h2>
           <div className="w-20 h-1 bg-workshop-red mx-auto"></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-custom-jet p-8 rounded-xl border border-white/10 relative">
-              <FaQuoteLeft className="text-4xl text-white/10 absolute top-6 left-6" />
-              <p className="text-custom-platinum mb-6 relative z-10 pt-4 italic">"{testimonial.text}"</p>
+            <div key={index} className="bg-white p-8 rounded-xl border border-gray-100 shadow-lg relative">
+              <FaQuoteLeft className="text-4xl text-gray-200 absolute top-6 left-6" />
+              <p className="text-gray-600 mb-6 relative z-10 pt-4 italic">"{testimonial.text}"</p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-workshop-blue rounded-full flex items-center justify-center text-white font-bold text-xl">
                   {testimonial.name.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-white">{testimonial.name}</h4>
+                  <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
                   <p className="text-sm text-workshop-red">{testimonial.car}</p>
                 </div>
               </div>

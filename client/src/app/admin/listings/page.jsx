@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
 import { Button, Input, Spin, Select, Slider, Modal } from 'antd'
 import { FiFilter, FiX } from 'react-icons/fi'
@@ -192,9 +191,7 @@ const Listings = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
-
-      <div className="container mx-auto mt-8 px-4 pb-8">
+      <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-white">Listings</h1>
           <Link

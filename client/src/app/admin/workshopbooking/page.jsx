@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import AdminNavbar from '../../components/AdminNavbar'
 import API_URL from '../../config/api'
 import { FiTrash2, FiArchive } from 'react-icons/fi'
 
@@ -98,7 +97,6 @@ const WorkshopBookings = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
       <div className="container mx-auto px-4 py-8 min-h-[70vh]">
         <h1 className="text-3xl font-bold text-white mb-6">Workshop Bookings</h1>
         

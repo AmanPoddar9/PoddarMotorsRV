@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '../../../components/AdminNavbar'
 import API_URL from '../../../config/api'
 import { 
     FiUser, FiPhone, FiMail, FiMapPin, FiTag, FiClock, FiShield, 
@@ -219,7 +218,6 @@ const CustomerDetailPage = ({ params }) => {
 
   return (
     <div className="min-h-screen bg-custom-black text-white font-sans relative">
-      <AdminNavbar />
       <Toaster />
       
       {/* --- MODALS --- */}

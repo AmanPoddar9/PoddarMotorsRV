@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '../../components/AdminNavbar'
+import Link from 'next/link'
 
 import API_URL from '../../config/api'
 
@@ -45,8 +45,7 @@ const Features = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
-      <div className="max-w-3xl mx-auto py-8 px-4 min-h-[70vh]">
+      <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-white">Manage Features</h1>
         <div className="mb-6 bg-custom-jet p-6 rounded-lg border border-white/10">
           <input

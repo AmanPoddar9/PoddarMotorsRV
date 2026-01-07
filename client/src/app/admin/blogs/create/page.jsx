@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import AdminNavbar from '../../../components/AdminNavbar';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
@@ -95,7 +94,6 @@ const CreateBlog = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Create New Blog</h1>

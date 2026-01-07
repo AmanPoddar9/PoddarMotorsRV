@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import AdminNavbar from '../../components/AdminNavbar'
 import { Oval } from 'react-loader-spinner'
 
 const CustomerOffers = () => {
@@ -95,8 +94,7 @@ const CustomerOffers = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
-      <div className="max-w-7xl mx-auto py-8 px-4">
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Customer Offers</h1>
           <p className="text-custom-platinum">

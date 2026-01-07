@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminNavbar from '../../../../components/AdminNavbar';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
@@ -108,7 +107,7 @@ const EditBlog = () => {
   if (fetching) {
     return (
       <div className="min-h-screen bg-custom-black">
-        <AdminNavbar />
+
         <div className="flex items-center justify-center h-96">
           <p className="text-custom-platinum">Loading blog...</p>
         </div>
@@ -118,7 +117,6 @@ const EditBlog = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Edit Blog</h1>

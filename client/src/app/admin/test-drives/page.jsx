@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import AdminNavbar from '../../components/AdminNavbar'
 import API_URL from '../../config/api'
 import * as XLSX from 'xlsx'
 import moment from 'moment'
@@ -98,9 +97,7 @@ const BookingsPage = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
-
-      <div className="container mx-auto mb-8 min-h-[70vh] px-4">
+      <div className="container mx-auto px-4 py-8 min-h-[70vh]">
         <h1 className="text-3xl font-semibold mb-6 text-white pt-8">Test Drive Bookings</h1>
         <div className="text-center my-4">
           <button

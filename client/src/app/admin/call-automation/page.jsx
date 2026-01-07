@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import AdminNavbar from '../../components/AdminNavbar'
 import { 
   PhoneIcon, 
   ChatBubbleLeftRightIcon, 
@@ -121,8 +120,6 @@ const CallAutomationPage = () => {
 
   return (
     <div className="min-h-screen bg-custom-black">
-      <AdminNavbar />
-
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-6">Call Automation Dashboard</h1>
 
