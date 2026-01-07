@@ -233,9 +233,9 @@ exports.getPolicies = async (req, res) => {
                 { dataQuality: null }
             ];
             
-            // Status: Generally we want active items for buckets
+            // Status: General 'all' active view should exclude Renewed and Lost
             // But if user wants to see 'renewed' in buckets, we might need a separate toggle.
-            // For now, default to Active (Pending/InProgress) as per request.
+            // For now, default to Active (Pending/InProgress/NotInterested) as per request.
             query.renewalStatus = { $in: ['Pending', 'InProgress', 'NotInterested'] }; 
 
             if (bucket === 'upcoming_month') {
@@ -569,6 +569,19 @@ exports.markLost = async (req, res) => {
                     statusAfter: 'Lost'
                 }
             });
+
+            // 3. CUSTOMER 360 SYNC
+            const noteContent = `[Insurance LOST] Status: Lost \nReason: ${reason} \nRemark: ${remark}`;
+            await Customer.findByIdAndUpdate(policy.customer, {
+                $push: {
+                    notes: {
+                        content: noteContent,
+                        addedBy: userId,
+                        createdAt: new Date()
+                    }
+                }
+            });
+
         }
 
         res.json(policy);
@@ -660,8 +673,23 @@ exports.addInteraction = async (req, res) => {
                 },
                 date: new Date()
             });
+
+            // 4. CUSTOMER 360 SYNC: Push to Customer Notes
+            // This ensures looking at the main Customer Profile shows this interaction
+            const noteContent = `[Insurance ${type || 'Log'}] Outcome: ${outcome} \nRemark: ${remark} \nNext Follow-up: ${nextFollowUpDate ? new Date(nextFollowUpDate).toLocaleDateString() : 'N/A'}`;
+            
+            await Customer.findByIdAndUpdate(policy.customer, {
+                $push: {
+                    notes: {
+                        content: noteContent,
+                        addedBy: userId,
+                        createdAt: new Date()
+                    }
+                }
+            });
+
         } catch (e) {
-            console.error('Failed to write global interaction:', e.message);
+            console.error('Failed to sync global interaction/notes:', e.message);
         }
 
         res.json(policy);
