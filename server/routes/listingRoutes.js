@@ -31,6 +31,9 @@ router.get('/types', cacheMiddleware(600), listingController.getAllTypes)
 router.get('/fuel', cacheMiddleware(600), listingController.getAllFuelTypes)
 router.get('/transmission', cacheMiddleware(600), listingController.getAllTransmissionTypes)
 
+
+router.get('/agent-knowledge', listingController.getAgentKnowledgeBase)
+
 router.get('/facebook-catalog.csv', listingController.getFacebookCatalog)
 router.get('/google-merchant.csv', listingController.getGoogleCatalog)
 

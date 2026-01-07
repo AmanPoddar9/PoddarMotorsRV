@@ -421,6 +421,47 @@ const deleteSingleImage = async (publicId) => {
   }
 };
 
+exports.getAgentKnowledgeBase = async (req, res) => {
+  try {
+    const listings = await Listing.find({ 
+      // Optionally filter for available cars only, but for knowledge base maybe even sold ones are useful? 
+      // Let's stick to generally available or likely to be queried. 
+      // For now, let's return all, or maybe filter out sold ones if 'ownership' implies current owner count? 
+      // 'ownership' is likely number of owners.
+      // Let's just return all listings as per request.
+    });
+
+    let textResponse = "# Poddar Motors Used Car Inventory Knowledge Base\n\n";
+    textResponse += "use this document to answer questions about available cars. Each section describes a specific car in our inventory.\n\n";
+
+    listings.forEach(car => {
+        textResponse += `## ${car.year} ${car.brand} ${car.model} ${car.variant}\n`;
+        textResponse += `- **Price**: ₹${car.price.toLocaleString('en-IN')}\n`;
+        textResponse += `- **Mileage**: ${car.kmDriven} km\n`;
+        textResponse += `- **Fuel Type**: ${car.fuelType}\n`;
+        textResponse += `- **Transmission**: ${car.transmissionType}\n`;
+        textResponse += `- **Color**: ${car.color}\n`;
+        textResponse += `- **Location**: ${car.location}\n`;
+        textResponse += `- **Key Features**: ${car.features ? car.features.join(', ') : 'Standard features'}\n`;
+        
+        if (car.isFeaturedDeal) {
+            textResponse += `- **SPECIAL DEAL**: This is a featured deal!\n`;
+        }
+        
+        textResponse += `- **Description**: This is a used ${car.year} ${car.brand} ${car.model} ${car.variant} with ${car.ownership} previous owner(s). It is a ${car.type} body type.\n`;
+        textResponse += `- **Link**: https://www.poddarmotors.com/buy/${car.slug}\n\n`;
+        textResponse += "---\n\n";
+    });
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(textResponse);
+
+  } catch (error) {
+    console.error('Error generating agent knowledge base:', error);
+    res.status(500).send('Error generating knowledge base');
+  }
+};
+
 exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
