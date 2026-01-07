@@ -128,6 +128,8 @@ export default function PolicyList({ initialFilter, initialBucket }) {
             { id: 'all', label: 'All Policies' },
             { id: 'today', label: `Expiring Today (${stats.today})`, isBucket: true },
             { id: 'tomorrow', label: `Expiring Tomorrow (${stats.tomorrow})`, isBucket: true },
+            { id: 'followups_today', label: 'Follow-ups Today' },
+            { id: 'followups_overdue', label: 'Overdue Follow-ups' },
             { id: 'followups_done_today', label: 'Follow-ups Done Today' },
             { id: 'needs_fix', label: 'Needs Fix' },
             { id: 'renewed_month', label: `Renewed This Month (${stats.renewed_month})` },

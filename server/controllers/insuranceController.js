@@ -118,65 +118,97 @@ exports.getPolicyCounts = async (req, res) => {
 
 exports.getAnalytics = async (req, res) => {
     try {
-        const today = new Date();
-        const startOfYear = new Date(today.getFullYear(), 0, 1);
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const { startDate, endDate } = req.query;
 
-        // 1. Overall Stats
-        const totalRevenueResult = await InsurancePolicy.aggregate([
-            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfYear } } },
-            { $group: { _id: null, total: { $sum: "$totalPremiumPaid" }, count: { $sum: 1 } } }
-        ]);
-        
-        const monthlyRevenueResult = await InsurancePolicy.aggregate([
-             { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfMonth } } },
-             { $group: { _id: null, total: { $sum: "$totalPremiumPaid" } } }
-        ]);
+        // Date Range Logic
+        const start = startDate ? new Date(startDate) : new Date(new Date().getFullYear(), new Date().getMonth(), 1); // Default: Start of Month
+        const end = endDate ? new Date(endDate) : new Date(); // Default: Now
+        end.setHours(23, 59, 59, 999); // End of the day
 
-        // 2. Revenue Trend (Last 6 Months)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        const revenueTrend = await InsurancePolicy.aggregate([
-            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: sixMonthsAgo } } },
-            { $group: { 
-                _id: { $month: "$policyStartDate" }, 
-                revenue: { $sum: "$totalPremiumPaid" },
-                count: { $sum: 1 }
-            }},
-            { $sort: { "_id": 1 } }
-        ]);
+        console.log(`Analytics Range: ${start.toISOString()} to ${end.toISOString()}`);
 
-        // 3. Conversion Rate (Based on Expiry Date in current month)
-        // Expired in current month vs Renewed in current month (Approximation)
-        // Better: Policies Expiring this month -> Status check
-        const conversionStats = await InsurancePolicy.aggregate([
-            { $match: { policyEndDate: { $gte: startOfMonth } } },
-            { $group: { 
-                _id: "$renewalStatus", 
-                count: { $sum: 1 } 
-            }}
-        ]);
-
-        // 4. Agent Performance (From Interactions or Assignment?)
-        // Let's use Assigned Agent on Closed Policies
-        const agentPerformance = await InsurancePolicy.aggregate([
-            { $match: { renewalStatus: 'Renewed', policyStartDate: { $gte: startOfYear } } },
-            { $group: {
-                _id: "$assignedAgent",
-                revenue: { $sum: "$totalPremiumPaid" },
-                policiesSold: { $sum: 1 }
-            }},
+        // 1. Agent Activity (Interactions)
+        // Count Calls, WhatsApps, Remarks logged by each agent
+        const agentActivity = await Interaction.aggregate([
+            { 
+                $match: { 
+                    date: { $gte: start, $lte: end },
+                    agentId: { $exists: true }
+                } 
+            },
+            {
+                $group: {
+                    _id: "$agentId",
+                    calls: { 
+                        $sum: { $cond: [{ $eq: ["$type", "Call"] }, 1, 0] }
+                    },
+                    whatsapp: { 
+                        $sum: { $cond: [{ $eq: ["$type", "WhatsApp"] }, 1, 0] }
+                    },
+                    remarks: { 
+                        $sum: { $cond: [{ $eq: ["$type", "Remark"] }, 1, 0] } // Or general
+                    },
+                    totalInteractions: { $sum: 1 }
+                }
+            },
             { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'agent' } },
             { $unwind: { path: "$agent", preserveNullAndEmptyArrays: true } },
-            { $project: { name: "$agent.name", revenue: 1, policiesSold: 1 } }
+            {
+                $project: {
+                    name: "$agent.name",
+                    email: "$agent.email",
+                    calls: 1,
+                    whatsapp: 1,
+                    totalInteractions: 1
+                }
+            }
         ]);
 
+        // 2. Conversion/Sales Performance
+        // Policies Renewed by Agent in this period
+        const conversionStats = await InsurancePolicy.aggregate([
+            { 
+                $match: { 
+                    renewalStatus: 'Renewed',
+                    renewalDate: { $gte: start, $lte: end } // Use exact renewal date
+                } 
+            },
+            {
+                $group: {
+                    _id: "$assignedAgent",
+                    policiesSold: { $sum: 1 },
+                    totalPremium: { $sum: "$totalPremiumPaid" },
+                    revenue: { $sum: "$commissionAmount" } // Actual earnings
+                }
+            },
+            { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'agent' } },
+            { $unwind: { path: "$agent", preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    name: "$agent.name",
+                    email: "$agent.email",
+                    policiesSold: 1,
+                    totalPremium: 1
+                }
+            }
+        ]);
+        
+        // 3. Follow-ups Taken (Explicit 'insurance_followup' type)
+        // This overlaps with 'calls' if logged as such, but let's count specifically if type is set
+        const followupsTaken = await Interaction.countDocuments({
+             date: { $gte: start, $lte: end },
+             type: 'insurance_followup'
+        });
+
         res.json({
-            totalRevenue: totalRevenueResult[0]?.total || 0,
-            monthlyRevenue: monthlyRevenueResult[0]?.total || 0,
-            revenueTrend,
+            meta: { start, end },
+            agentActivity,
             conversionStats,
-            agentPerformance
+            summary: {
+                totalInteractions: agentActivity.reduce((acc, curr) => acc + curr.totalInteractions, 0),
+                policiesRenewed: conversionStats.reduce((acc, curr) => acc + curr.policiesSold, 0),
+                totalPremium: conversionStats.reduce((acc, curr) => acc + curr.totalPremium, 0)
+            }
         });
 
     } catch (error) {
@@ -275,6 +307,21 @@ exports.getPolicies = async (req, res) => {
     }
 
     // Existing Filters & New Requests
+    if (filter === 'followups_today') {
+        // "Follow-ups Pending/Due Today"
+        if (req.user) query.assignedAgent = req.user._id; // My followups
+        const startOfDay = new Date(today.setHours(0,0,0,0));
+        const endOfDay = new Date(today.setHours(23,59,59,999));
+        query.nextFollowUpDate = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    if (filter === 'followups_overdue') {
+        // "Missed Follow-ups"
+        if (req.user) query.assignedAgent = req.user._id;
+        query.nextFollowUpDate = { $lt: new Date() }; // In the past
+        query.renewalStatus = { $nin: ['Renewed', 'Lost', 'NotInterested'] }; // Still active
+    }
+
     if (filter === 'followups_done_today') {
         // "Track what agent has done today"
         // Based on lastInteractionDate being >= today start
@@ -404,8 +451,20 @@ exports.createPolicy = async (req, res) => {
     }
 
     // 2. Create Policy
+    
+    // Default Assignment: Admin
+    const User = require('../models/User'); // Ensure User model is imported or available
+    let assignedTo = null;
+    if (req.user && req.user.role === 'insurance_agent') {
+        assignedTo = req.user._id;
+    } else {
+        const adminUser = await User.findOne({ email: 'admin@poddarmotors.com' });
+        assignedTo = adminUser ? adminUser._id : req.user?._id; 
+    }
+
     const policy = new InsurancePolicy({
         customer: customerId,
+        assignedAgent: assignedTo, // Default Assignment
         policyNumber,
         insurer,
         policyEndDate: expiryDate, // Mapped from form expiryDate
