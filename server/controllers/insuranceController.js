@@ -239,10 +239,8 @@ exports.getPolicies = async (req, res) => {
     if (sort === 'expiry_desc') sortOptions = { policyEndDate: -1 };
     if (sort === 'expiry_asc') sortOptions = { policyEndDate: 1 };
 
-    // --- DEBUG ---
-    console.log('GET /policies Params:', { page, limit, filter, bucket, search });
-
     // --- BUCKET LOGIC (Priority Timeline) ---
+
     // Ensure bucket is a valid string and not 'null' or 'undefined'
     // --- BUCKET LOGIC (Priority Timeline) ---
     // Ensure bucket is a valid string
@@ -309,15 +307,20 @@ exports.getPolicies = async (req, res) => {
     // Existing Filters & New Requests
     if (filter === 'followups_today') {
         // "Follow-ups Pending/Due Today"
-        if (req.user) query.assignedAgent = req.user._id; // My followups
-        const startOfDay = new Date(today.setHours(0,0,0,0));
-        const endOfDay = new Date(today.setHours(23,59,59,999));
+        if (req.user && req.user.role !== 'admin') query.assignedAgent = req.user._id; 
+        
+        const startOfDay = new Date(today);
+        startOfDay.setHours(0,0,0,0);
+        
+        const endOfDay = new Date(today);
+        endOfDay.setHours(23,59,59,999);
+        
         query.nextFollowUpDate = { $gte: startOfDay, $lte: endOfDay };
     }
 
     if (filter === 'followups_overdue') {
         // "Missed Follow-ups"
-        if (req.user) query.assignedAgent = req.user._id;
+        if (req.user && req.user.role !== 'admin') query.assignedAgent = req.user._id;
         query.nextFollowUpDate = { $lt: new Date() }; // In the past
         query.renewalStatus = { $nin: ['Renewed', 'Lost', 'NotInterested'] }; // Still active
     }
@@ -325,8 +328,13 @@ exports.getPolicies = async (req, res) => {
     if (filter === 'followups_done_today') {
         // "Track what agent has done today"
         // Based on lastInteractionDate being >= today start
-        if (req.user) query.assignedAgent = req.user._id;
-        query.lastInteractionDate = { $gte: today };
+        if (req.user && req.user.role !== 'admin') query.assignedAgent = req.user._id;
+        
+        // Ensure we use the Start of Today 
+        const startOfToday = new Date(today);
+        startOfToday.setHours(0,0,0,0);
+        
+        query.lastInteractionDate = { $gte: startOfToday };
     } else if (filter === 'renewed_month') {
         // Renewed in current month
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -356,15 +364,14 @@ exports.getPolicies = async (req, res) => {
 
     // Search Logic (Preserve existing regex logic)
     if (search) {
-        // ... (keep search logic below)
         const regex = new RegExp(search, 'i');
         const customers = await Customer.find({
             $or: [{ name: regex }, { mobile: regex }, { 'vehicles.regNumber': regex }]
         }).select('_id');
         
         const customerIds = customers.map(c => c._id);
-        delete query.assignedAgent; // Allow global search? Or keep restricted? 
-        delete query.nextFollowUpDate; // Search overrides filters usually
+        delete query.assignedAgent; 
+        delete query.nextFollowUpDate;
         
         if (Object.keys(query).length > 0) {
              query.$and = [
@@ -450,24 +457,28 @@ exports.createPolicy = async (req, res) => {
         customerId = customer._id;
     }
 
-    // 2. Create Policy
-    
-    // Default Assignment: Admin
-    const User = require('../models/User'); // Ensure User model is imported or available
-    let assignedTo = null;
-    if (req.user && req.user.role === 'insurance_agent') {
+    // 2. Create Policy with Default Assignment
+    let assignedTo = req.body.assignedAgent || null;
+
+    // If still null, try to assign to logged-in user if they are an agent
+    if (!assignedTo && req.user && req.user.role === 'insurance_agent') {
         assignedTo = req.user._id;
-    } else {
-        const adminUser = await User.findOne({ email: 'admin@poddarmotors.com' });
-        assignedTo = adminUser ? adminUser._id : req.user?._id; 
+    }
+    
+    // If STILL null (e.g. created by generic API or unassigned), assign to an Admin
+    if (!assignedTo) {
+        // Find ANY admin. Ideally the "Main" admin, but any with role 'admin' works as fallback.
+        const User = require('../models/User'); 
+        const adminUser = await User.findOne({ role: 'admin' }).sort({ _id: 1 }); // stable sort
+        if (adminUser) assignedTo = adminUser._id;
     }
 
     const policy = new InsurancePolicy({
         customer: customerId,
-        assignedAgent: assignedTo, // Default Assignment
+        assignedAgent: assignedTo, 
         policyNumber,
         insurer,
-        policyEndDate: expiryDate, // Mapped from form expiryDate
+        policyEndDate: expiryDate, 
         premiumAmount,
         idv: previousIDV,
         coverageType,

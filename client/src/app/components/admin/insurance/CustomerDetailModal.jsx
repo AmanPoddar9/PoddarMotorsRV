@@ -165,10 +165,19 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
                             <FaPhone className="text-green-400" />
                             <span>{customer.mobile}</span>
                         </a>
-                        <a href={`https://wa.me/91${customer.mobile}`} target="_blank" className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition">
+                        <button 
+                            onClick={() => {
+                                // Robust Sanitization for Quick Link
+                                let clean = customer.mobile.toString().replace(/\D/g, '');
+                                if (clean.length > 10 && clean.startsWith('91')) clean = clean.substring(2);
+                                if (clean.length === 11 && clean.startsWith('0')) clean = clean.substring(1);
+                                window.open(`https://wa.me/91${clean}`, '_blank');
+                            }}
+                            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 p-3 rounded-lg text-white transition"
+                        >
                             <FaWhatsapp className="text-green-500" />
                             <span>WhatsApp</span>
-                        </a>
+                        </button>
                     </div>
                 )}
 
@@ -231,13 +240,19 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
                                         onClick={() => openActionInput(policy._id, 'call')}
                                         className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded flex items-center justify-center gap-1"
                                      >
-                                         <FaPhone size={10} /> Log Action
+                                         <FaPhone size={10} /> Call Log
+                                     </button>
+                                     <button 
+                                        onClick={() => openActionInput(policy._id, 'whatsapp')}
+                                        className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 rounded flex items-center justify-center gap-1"
+                                     >
+                                         <FaWhatsapp size={12} /> WhatsApp
                                      </button>
                                      <button 
                                         onClick={() => { setSelectedPolicyId(policy._id); setShowRenewalModal(true); }}
-                                        className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 rounded"
+                                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded col-span-2"
                                      >
-                                        Renew Policy
+                                        Renew Policy Area
                                      </button>
                                 </div>
                             </div>

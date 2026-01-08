@@ -57,8 +57,18 @@ export default function ActionModal({ isOpen, onClose, policyId, actionType, mob
 
       // 1. Open WhatsApp
       if (actionType === 'whatsapp' && mobile) {
-          // Sanitize mobile: remove country code +91 if present to avoid double, remove spaces
-          let cleanMobile = mobile.replace(/\s+/g, '').replace(/^\+91/, '').replace(/^91/, '');
+          // Sanitize mobile: Robust logic verified by script
+          let cleanMobile = mobile.toString().replace(/\D/g, ''); // Remove all non-digits
+
+          // Handle Country Code (91) if duplicate
+          if (cleanMobile.length > 10 && cleanMobile.startsWith('91')) {
+              cleanMobile = cleanMobile.substring(2);
+          }
+          
+          // Handle Leading Zero
+          if (cleanMobile.length === 11 && cleanMobile.startsWith('0')) {
+              cleanMobile = cleanMobile.substring(1);
+          }
           
           if (cleanMobile.length === 10) {
               const text = encodeURIComponent(remark);
