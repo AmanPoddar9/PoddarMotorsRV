@@ -462,6 +462,55 @@ exports.getAgentKnowledgeBase = async (req, res) => {
   }
 };
 
+
+exports.getBusinessContext = async (req, res) => {
+  try {
+    const businessContext = `
+# Poddar Motors - Business Context & Standard Operating Procedures
+
+## About Us
+**Poddar Motors** is a premium used car dealership located in Ranchi, Jharkhand. We specialize in quality used cars, certified inspections, and transparent dealing.
+
+## Location & Contact
+- **Address**: Kokar Industrial Area, Ranchi, Jharkhand 834001.
+- **Landmarks**: Near the Old H.B Road.
+- **Showroom Hours**: 10:00 AM - 7:00 PM (Monday to Saturday), 11:00 AM - 5:00 PM (Sunday).
+- **Contact Number**: +91-XXXXXXXXXX (General Enquiry).
+
+## Financial Services (Loans)
+- **Partners**: We work with HDFC Bank, SBI, Mahindra Finance, and IDFC First Bank.
+- **Interest Rates**: Starting from **8.5%** for premium profiles (Civil > 750). Standard used car rates are 10-12%.
+- **Down Payment**: Minimum 20-30% of the car value is required.
+- **Documents Required**: Aadhar Card, PAN Card, Salary Slips (3 months) or ITR (2 years), Bank Statement (6 months), Rent Agreement/Electricity Bill.
+
+## Warranty & Certification
+- **Certification**: All our "Certified" cars go through a 120-point inspection check.
+- **Warranty**: We offer a **6-month engine and gearbox warranty** on certified vehicles.
+- **No Meter Tampering**: We guarantee genuine mileage on all our cars.
+- **Accidental**: We do NOT sell accidentally damaged or total-loss vehicles.
+
+## Exchange Policy (Trade-in)
+- Customers can exchange their old car for a new one.
+- We offer **instant valuation** and spot payment adjustment.
+- Free RC transfer assistance is provided for the old car.
+
+## Return Policy
+- All sales are final. However, if a major undisclosed mechanical fault (engine/gearbox) is found within 7 days, we offer free repair or buy-back at management discretion.
+
+## Workshop & After-Sales
+- We have our own authorized workshop next to the showroom.
+- First service is often free (labor only) for premium cars (mention only if specifically asked).
+`;
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(businessContext.trim());
+
+  } catch (error) {
+    console.error('Error generating business context:', error);
+    res.status(500).send('Error generating business context');
+  }
+};
+
 exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();
