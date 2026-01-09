@@ -511,6 +511,61 @@ exports.getBusinessContext = async (req, res) => {
   }
 };
 
+
+exports.getPronunciationDictionary = async (req, res) => {
+  try {
+    // 1. Aggregating all unique terms from Brand, Model, and Variant
+    const brands = await Listing.distinct("brand");
+    const models = await Listing.distinct("model");
+    const variants = await Listing.distinct("variant");
+    
+    // 2. Merge and deduplicate
+    const allTerms = [...new Set([...brands, ...models, ...variants])];
+    
+    // 3. Sort alphabetically for easier editing
+    allTerms.sort();
+
+    // 4. Filter out empty or non-string values
+    const cleanTerms = allTerms.filter(term => term && typeof term === 'string' && term.trim().length > 0);
+
+    // 5. Construct PLS XML
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<lexicon version="1.0"
+    xmlns="http://www.w3.org/2005/01/pronunciation-lexicon"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.w3.org/2005/01/pronunciation-lexicon
+        http://www.w3.org/TR/2007/CR-pronunciation-lexicon-20071212/pls.xsd"
+    alphabet="ipa" xml:lang="en-US">
+`;
+
+    cleanTerms.forEach(term => {
+      // Basic XML escaping just in case
+      const escapedTerm = term.replace(/&/g, '&amp;')
+                              .replace(/</g, '&lt;')
+                              .replace(/>/g, '&gt;')
+                              .replace(/"/g, '&quot;')
+                              .replace(/'/g, '&apos;');
+      
+      xmlContent += `  <lexeme>
+    <grapheme>${escapedTerm}</grapheme>
+    <alias>${escapedTerm}</alias>
+  </lexeme>
+`;
+    });
+
+    xmlContent += `</lexicon>`;
+
+    // 6. Send Response
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Disposition', 'attachment; filename="poddar-motors-dictionary.pls"');
+    res.send(xmlContent);
+
+  } catch (error) {
+    console.error('Error generating pronunciation dictionary:', error);
+    res.status(500).send('Error generating dictionary');
+  }
+};
+
 exports.getFacebookCatalog = async (req, res) => {
   try {
     const listings = await Listing.find();

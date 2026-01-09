@@ -34,6 +34,7 @@ router.get('/transmission', cacheMiddleware(600), listingController.getAllTransm
 
 router.get('/agent-knowledge', listingController.getAgentKnowledgeBase)
 router.get('/agent-business-context', listingController.getBusinessContext)
+router.get('/agent-pronunciation-dictionary', listingController.getPronunciationDictionary)
 
 router.get('/facebook-catalog.csv', listingController.getFacebookCatalog)
 router.get('/google-merchant.csv', listingController.getGoogleCatalog)
