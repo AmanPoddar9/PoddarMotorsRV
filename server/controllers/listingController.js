@@ -512,6 +512,7 @@ exports.getBusinessContext = async (req, res) => {
 };
 
 
+
 exports.getPronunciationDictionary = async (req, res) => {
   try {
     // 1. Aggregating all unique terms from Brand, Model, and Variant
@@ -527,6 +528,28 @@ exports.getPronunciationDictionary = async (req, res) => {
 
     // 4. Filter out empty or non-string values
     const cleanTerms = allTerms.filter(term => term && typeof term === 'string' && term.trim().length > 0);
+
+    // 5. Smart Aliases - Pre-fill difficult Indian words
+    // Based on Pronunciation Guide
+    const phoneticMap = {
+      "Poddar": "Poh-dar",
+      "Ranchi": "Raan-chee",
+      "Kokar": "Ko-kar",
+      "Jharkhand": "Jhar-khand",
+      "Dzire": "De-zire",
+      "Scorpio": "Scor-pi-o",
+      "Fortuner": "For-chu-ner",
+      "Celerio": "Ce-ler-i-o",
+      "Ertiga": "Er-ti-ga",
+      "Innova Crysta": "In-no-va Kris-ta",
+      "Hyundai": "Hyun-dai",
+      "Renault": "Re-no",
+      "Kwid": "Quid",
+      "Maruti": "Ma-ru-ti",
+      "Suzuki": "Su-zu-ki",
+      "Mahindra": "Ma-hin-dra",
+      "Toyota": "Toy-o-ta"
+    };
 
     // 5. Construct PLS XML
     let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
@@ -546,9 +569,14 @@ exports.getPronunciationDictionary = async (req, res) => {
                               .replace(/"/g, '&quot;')
                               .replace(/'/g, '&apos;');
       
+      // Check if we have a known pronunciation, otherwise use the term itself (ElevenLabs default)
+      // We check case-insensitive match for the map keys
+      const knownKey = Object.keys(phoneticMap).find(key => key.toLowerCase() === term.toLowerCase());
+      const alias = knownKey ? phoneticMap[knownKey] : escapedTerm;
+
       xmlContent += `  <lexeme>
     <grapheme>${escapedTerm}</grapheme>
-    <alias>${escapedTerm}</alias>
+    <alias>${alias}</alias>
   </lexeme>
 `;
     });
@@ -565,6 +593,7 @@ exports.getPronunciationDictionary = async (req, res) => {
     res.status(500).send('Error generating dictionary');
   }
 };
+
 
 exports.getFacebookCatalog = async (req, res) => {
   try {
