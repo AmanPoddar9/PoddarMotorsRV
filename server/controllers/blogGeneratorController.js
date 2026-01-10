@@ -90,7 +90,7 @@ exports.generateBlogText = async (req, res) => {
         { role: "user", content: `Topic: ${topic}` }
       ],
       response_format: { type: "json_object" },
-      max_tokens: 1500,
+      max_tokens: 1000,
     });
 
     const blogData = JSON.parse(response.choices[0].message.content);
