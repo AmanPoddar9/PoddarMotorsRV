@@ -93,4 +93,7 @@ router.delete('/templates/:id', async (req, res) => {
   }
 });
 
+// Agent Tools
+router.post('/agent-send-link', twilioController.sendAgentCarLink);
+
 module.exports = router;

@@ -524,6 +524,43 @@ const getDefaultWhatsAppTemplate = (serviceType) => {
   }
 };
 
+/**
+ * Agent Tool: Send specific car link via SMS
+ */
+const sendAgentCarLink = async (req, res) => {
+  try {
+    const { phone_number, car_link, car_name } = req.body;
+    
+    // Validate inputs
+    if (!phone_number || !car_link) {
+      return res.status(400).json({ error: "Missing phone_number or car_link" });
+    }
+
+    const messageBody = `🚗 Poddar Motors Update\n\n` +
+                        `Hi! Here is the link for the ${car_name || 'car'} you asked about:\n` +
+                        `${car_link}\n\n` +
+                        `Check the photos and 120-point report. Visit us at Kokar for a test drive!`;
+
+    // Reuse existing sendSms logic
+    await sendSms(phone_number, 'agent-tool');
+    const client = getClient();
+    
+    // Direct send to override template logic of generic sendSms
+    await client.messages.create({
+      body: messageBody,
+      from: twilioConfig.phoneNumber,
+      to: phone_number,
+    });
+
+    console.log(`✅ Agent sent link to ${phone_number}`);
+    res.json({ success: true, message: "Link sent successfully" });
+
+  } catch (error) {
+    console.error('Error in agent car link tool:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   handleIncomingCall,
   handleIvrResponse,
@@ -533,4 +570,5 @@ module.exports = {
   getCallLogs,
   getCallAnalytics,
   updateCallLog,
+  sendAgentCarLink
 };
