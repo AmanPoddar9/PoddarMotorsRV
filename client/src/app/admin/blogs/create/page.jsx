@@ -6,12 +6,14 @@ import axios from 'axios';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import API_URL from '../../../config/api';
+import AIBlogGenerator from '../../../components/admin/blog/AIBlogGenerator';
 
 // Import ReactQuill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const CreateBlog = () => {
   const router = useRouter();
+  const [showAIModal, setShowAIModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -92,13 +94,46 @@ const CreateBlog = () => {
     }
   };
 
+  const handleAIContent = (aiData) => {
+    setFormData(prev => ({
+      ...prev,
+      title: aiData.title || prev.title,
+      content: aiData.content || prev.content,
+      excerpt: aiData.excerpt || prev.excerpt,
+      metaTitle: aiData.metaTitle || aiData.title || prev.metaTitle,
+      metaDescription: aiData.metaDescription || aiData.excerpt || prev.metaDescription,
+      metaKeywords: aiData.metaKeywords || prev.metaKeywords,
+      category: aiData.category || prev.category,
+      readTime: aiData.readTime || prev.readTime
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-custom-black">
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Create New Blog</h1>
-          <p className="text-lg text-custom-platinum">Write and publish a new blog post</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">Create New Blog</h1>
+              <p className="text-lg text-custom-platinum">Write and publish a new blog post</p>
+            </div>
+            <button
+              onClick={() => setShowAIModal(true)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all"
+            >
+              <span>✨</span> Auto-Fill with AI
+            </button>
+          </div>
         </div>
+
+        {showAIModal && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <AIBlogGenerator 
+              onBlogGenerated={handleAIContent}
+              onClose={() => setShowAIModal(false)}
+            />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bg-custom-jet rounded-lg shadow-md p-8 space-y-6 border border-white/10">
           {/* Title */}
