@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FiCpu, FiLoader, FiCheck, FiRefreshCw } from 'react-icons/fi';
+import { FiCpu, FiLoader, FiCheck, FiRefreshCw, FiImage } from 'react-icons/fi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
-  const [step, setStep] = useState(1); // 1: Input, 2: Select Topic, 3: Generating
+  const [step, setStep] = useState(1); // 1: Input, 2: Select Topic, 3: Writing Text, 4: Generating Image
   const [category, setCategory] = useState('General Used Cars');
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // New state to hold partial results
+  const [partialBlogData, setPartialBlogData] = useState(null);
 
   const categories = [
     'General Used Cars',
@@ -32,7 +35,7 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
       setStep(2);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to generate topics. Please try again.');
+      toast.error('Failed to generate topics.');
     } finally {
       setLoading(false);
     }
@@ -41,21 +44,48 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
   const handleGenerateContent = async (topic) => {
     setLoading(true);
     setSelectedTopic(topic);
-    setStep(3);
+    setStep(3); // Start with Text Generation
+    
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-content`, {
+      // 1. Generate Text (Fast)
+      const textResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-text`, {
         topic
       }, {
         withCredentials: true
       });
       
-      onBlogGenerated(response.data);
+      const blogData = textResponse.data;
+      setPartialBlogData(blogData);
+      
+      // 2. Move to Image Generation
+      setStep(4);
+      
+      // 3. Generate Image (Slow)
+      try {
+        const imageResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-image`, {
+          title: blogData.title // Use the generated title for better context
+        }, {
+          withCredentials: true
+        });
+        
+        // Success: Add image to data
+        blogData.featuredImage = imageResponse.data.featuredImage;
+        
+      } catch (imgError) {
+        console.error("Image generation failed:", imgError);
+        toast.error("Image generation failed, but content is ready.");
+        // Continue without image
+      }
+
+      // 4. Finalize
+      onBlogGenerated(blogData);
       toast.success('Blog content generated successfully!');
       onClose();
+
     } catch (error) {
       console.error(error);
-      toast.error('Failed to generate content. Please try again.');
-      setStep(2); // Go back to topic selection
+      toast.error(error.response?.data?.message || 'Failed to generate content. Please try again.');
+      setStep(2); // Go back on critical failure
     } finally {
       setLoading(false);
     }
@@ -127,15 +157,29 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
         </div>
       )}
 
-      {/* STEP 3: LOADING STATE */}
+      {/* STEP 3: WRITING TEXT */}
       {step === 3 && (
         <div className="text-center py-12">
           <div className="flex justify-center mb-4">
             <FiLoader className="animate-spin text-4xl text-custom-orange" />
           </div>
-          <h4 className="text-lg font-medium text-white mb-2">Writing your blog...</h4>
-          <p className="text-gray-400 text-sm">The AI is researching "{selectedTopic}", writing content, and optimizing for SEO.</p>
-          <p className="text-gray-500 text-xs mt-4">This usually takes about 20-30 seconds.</p>
+          <h4 className="text-lg font-medium text-white mb-2">Writing article...</h4>
+          <p className="text-gray-400 text-sm">The AI is researching "{selectedTopic}" and writing the content.</p>
+        </div>
+      )}
+
+      {/* STEP 4: GENERATING IMAGE */}
+      {step === 4 && (
+        <div className="text-center py-12">
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <FiImage className="text-4xl text-purple-500 animate-pulse" />
+              <FiLoader className="animate-spin absolute -top-2 -right-2 text-custom-orange" />
+            </div>
+          </div>
+          <h4 className="text-lg font-medium text-white mb-2">Designing visual...</h4>
+          <p className="text-gray-400 text-sm">Generating a unique, copyright-free image for your blog.</p>
+          <p className="text-gray-500 text-xs mt-4">This takes about 20-30 seconds.</p>
         </div>
       )}
 

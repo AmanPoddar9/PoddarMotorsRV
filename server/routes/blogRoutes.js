@@ -23,10 +23,11 @@ router.get('/:id', requireAuth, requireRole('admin', 'blogEditor'), getBlogById)
 router.put('/:id', requireAuth, requireRole('admin', 'blogEditor'), updateBlog);
 router.delete('/:id', requireAuth, requireRole('admin', 'blogEditor'), deleteBlog);
 
-const { generateTopics, generateBlogContent } = require('../controllers/blogGeneratorController');
+const { generateTopics, generateBlogText, generateBlogImage } = require('../controllers/blogGeneratorController');
 
 // AI Generator Routes
 router.post('/generate-topics', requireAuth, requireRole('admin', 'blogEditor'), generateTopics);
-router.post('/generate-content', requireAuth, requireRole('admin', 'blogEditor'), generateBlogContent);
+router.post('/generate-text', requireAuth, requireRole('admin', 'blogEditor'), generateBlogText);
+router.post('/generate-image', requireAuth, requireRole('admin', 'blogEditor'), generateBlogImage);
 
 module.exports = router;
