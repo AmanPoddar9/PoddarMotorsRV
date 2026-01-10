@@ -57,62 +57,83 @@ exports.generateTopics = async (req, res) => {
   }
 };
 
-exports.generateBlogText = async (req, res) => {
+// Step 1: Generate Metadata only (Fast)
+exports.generateBlogMetadata = async (req, res) => {
   try {
-    if (!openai) {
-      return res.status(503).json({ 
-        message: "AI service is currently unavailable.",
-        error: "OpenAI not configured"
-      });
-    }
+    if (!openai) return res.status(503).json({ message: "AI not configured" });
 
     const { topic } = req.body;
 
-    const systemPrompt = `You are an expert automotive content writer for 'Poddar Motors', a trusted used car dealership.
-    Write a complete, high-quality blog post on the given topic.
-    
-    Response format must be a valid JSON object with these fields:
-    - title: (Refined string)
-    - content: (HTML string, use <h2>, <p>, <ul>, <li>. NO markdown, just HTML tags. Keep it professional yet engaging.)
-    - excerpt: (Short summary, max 250 chars)
+    const systemPrompt = `You are an expert automotive content writer.
+    For the topic: "${topic}", generate ONLY the following metadata in JSON format:
+    - title: (Refined SEO title)
+    - excerpt: (Short summary, max 200 chars)
     - metaTitle: (SEO optimized title)
     - metaDescription: (SEO optimized description)
     - metaKeywords: (Comma separated string)
-    - category: (One of: 'Company', 'New Launches', 'Service Tips', 'Industry News')
-    - readTime: (e.g. '5 min read')
+    - category: (Best fit enum: 'Company', 'New Launches', 'Service Tips', 'Industry News')
+    - readTime: (Estimate, e.g. '5 min read')
     
-    Ensure the content is tailored to the Indian market (mention Rs, Indian road conditions, etc).`;
+    Keep it concise. Tailor for Indian market.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `Topic: ${topic}` }
-      ],
+      messages: [{ role: "system", content: systemPrompt }],
       response_format: { type: "json_object" },
-      max_tokens: 1000,
+      max_tokens: 500, // Reduced tokens for speed
     });
 
-    const blogData = JSON.parse(response.choices[0].message.content);
-    res.json(blogData);
+    const data = JSON.parse(response.choices[0].message.content);
+    res.json(data);
 
   } catch (error) {
-    console.error('AI Blog Text Gen Error:', error);
-    res.status(500).json({ message: "Failed to generate blog text." });
+    console.error('AI Metadata Gen Error:', error);
+    res.status(500).json({ message: "Failed to generate metadata." });
+  }
+};
+
+// Step 2: Generate Body only (Fast-ish)
+exports.generateBlogBody = async (req, res) => {
+  try {
+    if (!openai) return res.status(503).json({ message: "AI not configured" });
+
+    const { topic, title } = req.body;
+
+    const systemPrompt = `You are an expert automotive content writer.
+    Write the HTML BODY content for a blog post titled: "${title}" (Topic: ${topic}).
+    
+    Rules:
+    - valid HTML only (use <h2>, <p>, <ul>, <li>).
+    - NO <html>, <head>, or <body> tags. Just the inner content.
+    - NO markdown (No \`\`\`).
+    - Keep it CONCISE (approx 400-600 words) to ensure fast generation.
+    - Tailor to Indian audience (Rs., kms, road conditions).
+    - Return JSON: { "content": "..." }`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "system", content: systemPrompt }],
+      response_format: { type: "json_object" },
+      max_tokens: 1000, // Strictly limited
+    });
+
+    const data = JSON.parse(response.choices[0].message.content);
+    res.json(data);
+
+  } catch (error) {
+    console.error('AI Body Gen Error:', error);
+    res.status(500).json({ message: "Failed to generate blog body." });
   }
 };
 
 exports.generateBlogImage = async (req, res) => {
   try {
-    if (!openai) {
-      return res.status(503).json({ 
-        message: "AI service is currently unavailable.",
-        error: "OpenAI not configured"
-      });
-    }
+    if (!openai) return res.status(503).json({ message: "AI not configured" });
 
     const { title } = req.body;
 
+    // DALL-E 3 takes ~15s. This MIGHT timeout on Vercel Hobby (10s limit).
+    // If it does, we just return empty image or handle error in frontend.
     const imageResponse = await openai.images.generate({
       model: "dall-e-3",
       prompt: `A realistic, high-quality, professional photo for a blog post about: ${title}. The image should be suitable for a car dealership in India. No text in the image.`,
@@ -147,6 +168,7 @@ exports.generateBlogImage = async (req, res) => {
 
   } catch (error) {
     console.error('AI Image Gen Error:', error);
-    res.status(500).json({ message: "Failed to generate image." });
+    // Return 200 with empty image to avoid frontend breaking entirely
+    res.json({ featuredImage: '', message: 'Image generation took too long or failed.' });
   }
 };

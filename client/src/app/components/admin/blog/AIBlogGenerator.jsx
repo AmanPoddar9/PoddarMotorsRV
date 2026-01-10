@@ -1,20 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FiCpu, FiLoader, FiCheck, FiRefreshCw, FiImage } from 'react-icons/fi';
+import { FiCpu, FiLoader, FiCheck, FiRefreshCw, FiImage, FiFileText, FiTag } from 'react-icons/fi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
-  const [step, setStep] = useState(1); // 1: Input, 2: Select Topic, 3: Writing Text, 4: Generating Image
+  const [step, setStep] = useState(1); // 1: Input, 2: Select Topic, 3: Metadata, 4: Content, 5: Image
   const [category, setCategory] = useState('General Used Cars');
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // New state to hold partial results
-  const [partialBlogData, setPartialBlogData] = useState(null);
-
   const categories = [
     'General Used Cars',
     'Car Maintenance & Service',
@@ -44,48 +41,53 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
   const handleGenerateContent = async (topic) => {
     setLoading(true);
     setSelectedTopic(topic);
-    setStep(3); // Start with Text Generation
     
+    let blogData = {};
+
     try {
-      // 1. Generate Text (Fast)
-      const textResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-text`, {
+      // STEP 1: METADATA
+      setStep(3); // Researching...
+      const metaResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-metadata`, {
         topic
-      }, {
-        withCredentials: true
-      });
+      }, { withCredentials: true });
       
-      const blogData = textResponse.data;
-      setPartialBlogData(blogData);
+      blogData = { ...metaResponse.data }; // Title, Excerpt, SEO
       
-      // 2. Move to Image Generation
-      setStep(4);
+      // STEP 2: BODY TEXT
+      setStep(4); // Writing...
+      const bodyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-body`, {
+        topic,
+        title: blogData.title
+      }, { withCredentials: true });
       
-      // 3. Generate Image (Slow)
+      blogData.content = bodyResponse.data.content;
+      
+      // STEP 3: IMAGE
+      setStep(5); // Drawing...
       try {
         const imageResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-image`, {
-          title: blogData.title // Use the generated title for better context
-        }, {
-          withCredentials: true
-        });
+          title: blogData.title
+        }, { withCredentials: true });
         
-        // Success: Add image to data
-        blogData.featuredImage = imageResponse.data.featuredImage;
-        
+        if (imageResponse.data.featuredImage) {
+          blogData.featuredImage = imageResponse.data.featuredImage;
+        } else {
+          toast('Image generation skipped (timeout or error).', { icon: '⚠️' });
+        }
       } catch (imgError) {
         console.error("Image generation failed:", imgError);
-        toast.error("Image generation failed, but content is ready.");
         // Continue without image
       }
 
-      // 4. Finalize
+      // DONE
       onBlogGenerated(blogData);
-      toast.success('Blog content generated successfully!');
+      toast.success('Blog created successfully!');
       onClose();
 
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || 'Failed to generate content. Please try again.');
-      setStep(2); // Go back on critical failure
+      setStep(2); // Go back
     } finally {
       setLoading(false);
     }
@@ -157,19 +159,36 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
         </div>
       )}
 
-      {/* STEP 3: WRITING TEXT */}
+      {/* STEP 3: METADATA */}
       {step === 3 && (
         <div className="text-center py-12">
           <div className="flex justify-center mb-4">
-            <FiLoader className="animate-spin text-4xl text-custom-orange" />
+            <div className="relative">
+              <FiTag className="text-4xl text-blue-500 animate-pulse" />
+              <FiLoader className="animate-spin absolute -top-2 -right-2 text-custom-orange" />
+            </div>
           </div>
-          <h4 className="text-lg font-medium text-white mb-2">Writing article...</h4>
-          <p className="text-gray-400 text-sm">The AI is researching "{selectedTopic}" and writing the content.</p>
+          <h4 className="text-lg font-medium text-white mb-2">Researching Topic...</h4>
+          <p className="text-gray-400 text-sm">Generating SEO titles, keywords, and summary.</p>
         </div>
       )}
 
-      {/* STEP 4: GENERATING IMAGE */}
+      {/* STEP 4: WRITING CONTENT */}
       {step === 4 && (
+        <div className="text-center py-12">
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <FiFileText className="text-4xl text-green-500 animate-pulse" />
+              <FiLoader className="animate-spin absolute -top-2 -right-2 text-custom-orange" />
+            </div>
+          </div>
+          <h4 className="text-lg font-medium text-white mb-2">Writing Article...</h4>
+          <p className="text-gray-400 text-sm">Drafting the main content (~500 words).</p>
+        </div>
+      )}
+
+      {/* STEP 5: GENERATING IMAGE */}
+      {step === 5 && (
         <div className="text-center py-12">
           <div className="flex justify-center mb-4">
             <div className="relative">
@@ -177,9 +196,9 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
               <FiLoader className="animate-spin absolute -top-2 -right-2 text-custom-orange" />
             </div>
           </div>
-          <h4 className="text-lg font-medium text-white mb-2">Designing visual...</h4>
-          <p className="text-gray-400 text-sm">Generating a unique, copyright-free image for your blog.</p>
-          <p className="text-gray-500 text-xs mt-4">This takes about 20-30 seconds.</p>
+          <h4 className="text-lg font-medium text-white mb-2">Creating Visuals...</h4>
+          <p className="text-gray-400 text-sm">Generating a unique DALL-E image.</p>
+          <p className="text-gray-500 text-xs mt-4">Note: This may take up to 20 seconds.</p>
         </div>
       )}
 
