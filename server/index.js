@@ -152,20 +152,26 @@ app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools
 app.use(errorHandler);
 
 // Start Server
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Start Server only if NOT running on Vercel (Vercel handles listening automatically)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 
-// Initialize WebSocket
-const websocket = require('./websocket');
-websocket.init(server);
+  // Initialize WebSocket (Note: WebSockets won't work standardly on Vercel Serverless)
+  const websocket = require('./websocket');
+  websocket.init(server);
 
-// Handle Unhandled Promise Rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`);
-  // Close server & exit process
-  server.close(() => process.exit(1));
-});
+  // Handle Unhandled Promise Rejections
+  process.on('unhandledRejection', (err, promise) => {
+    console.log(`Error: ${err.message}`);
+    // Close server & exit process
+    server.close(() => process.exit(1));
+  });
+} else {
+  // Can log or handle export differently if needed
+  console.log('Running in Vercel/Production mode - Server listener skipped');
+}
 
 // Vercel Build Trigger: Pro Plan Activated
 console.log('Backend rebuilt after Pro plan upgrade');
