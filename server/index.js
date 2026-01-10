@@ -167,7 +167,8 @@ process.on('unhandledRejection', (err, promise) => {
   server.close(() => process.exit(1));
 });
 
-// Force Backend Redeploy: Fix Vercel not picking up changes
+// Vercel Build Trigger: Pro Plan Activated
+console.log('Backend rebuilt after Pro plan upgrade');
 
 
 module.exports = app;
