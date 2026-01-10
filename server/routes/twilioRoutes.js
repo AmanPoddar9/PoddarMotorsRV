@@ -9,6 +9,7 @@ const {
   getCallLogs,
   getCallAnalytics,
   updateCallLog,
+  sendAgentCarLink
 } = require('../controllers/twilioController');
 const MessageTemplate = require('../models/MessageTemplate');
 
@@ -94,6 +95,6 @@ router.delete('/templates/:id', async (req, res) => {
 });
 
 // Agent Tools
-router.post('/agent-send-link', twilioController.sendAgentCarLink);
+router.post('/agent-send-link', sendAgentCarLink);
 
 module.exports = router;
