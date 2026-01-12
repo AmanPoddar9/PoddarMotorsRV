@@ -14,7 +14,7 @@ const customerSchema = new mongoose.Schema({
   // Source & Classification (Unified System)
   source: { 
     type: String, 
-    enum: ['Walk-in', 'TeleCRM', 'GoogleSheet', 'Website', 'Workshop', 'Facebook', 'Import', 'Other'],
+    enum: ['Walk-in', 'TeleCRM', 'GoogleSheet', 'Website', 'Workshop', 'Facebook', 'Import', 'Other', 'Voice Agent'],
     default: 'Other'
   },
   lifecycleStage: {
