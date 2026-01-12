@@ -7,9 +7,7 @@ const verifySignature = (req) => {
   const secret = process.env.ELEVENLABS_AGENT_SECRET;
   if (!secret) {
     console.warn('[ElevenLabs] Warning: ELEVENLABS_AGENT_SECRET not set. Skipping signature verification.');
-    return true; // Fail open if no secret set (or fail closed? Plan says verify. Let's warn but maybe allow for now unless strict)
-    // Actually, for security, if secret is supposed to be there, we should probably fail. 
-    // But user might not have set it yet. Let's fail secure if header is present.
+    return true; 
   }
 
   const signatureHeader = req.headers['elevenlabs-signature'];
@@ -24,6 +22,7 @@ const verifySignature = (req) => {
   const timestamp = timestampPart.split('=')[1];
   const receivedSignature = signaturePart.split('=')[1];
 
+  // Logic: timestamp + "." + raw_body
   const message = `${timestamp}.${req.rawBody}`;
   const hmac = crypto.createHmac('sha256', secret);
   const digest = hmac.update(message).digest('hex');
@@ -40,6 +39,10 @@ exports.handleTranscriptWebhook = async (req, res) => {
        return res.status(401).json({ message: 'Unauthorized: Invalid signature' });
     }
 
+    // New Format: { type: 'post_call_transcription', data: { ... } }
+    // Legacy/Simple: { conversation_id: ... }
+    const payload = req.body.data || req.body; 
+    
     const { 
       conversation_id, 
       agent_id, 
@@ -47,18 +50,36 @@ exports.handleTranscriptWebhook = async (req, res) => {
       transcript, 
       metadata, 
       analysis 
-    } = req.body;
+    } = payload;
 
     console.log(`[ElevenLabs] Received webhook for conversation: ${conversation_id}`);
+    
+    // Log metadata for debugging phone number location
+    if (metadata) { // Avoid logging PII if possible, but structure is needed
+         console.log('[ElevenLabs] Metadata keys:', Object.keys(metadata));
+    }
 
     // 1. Extract Phone Number
-    // Note: Structure depends on ElevenLabs payload. Usually in metadata.phone_call.external_number
-    // It might come in as "+919876543210" or similar.
-    const rawPhone = metadata?.phone_call?.number || metadata?.phone_call?.external_number || metadata?.caller_id; 
+    // Priority: 
+    // 1. metadata.phone_call.number (Standard Telephony)
+    // 2. metadata.phone_call.external_number (Some legacy flows)
+    // 3. metadata.caller_id (Sometimes used)
+    // 4. conversation_initiation_client_data.dynamic_variables.user_phone (If passed manually)
+    let rawPhone = 
+      metadata?.phone_call?.number || 
+      metadata?.phone_call?.external_number || 
+      metadata?.caller_id; 
+
+    // Fallback: Check if it was passed as a dynamic variable
+    if (!rawPhone && analysis?.conversation_initiation_client_data?.dynamic_variables?.user_phone) {
+        rawPhone = analysis.conversation_initiation_client_data.dynamic_variables.user_phone;
+    }
     
     if (!rawPhone) {
-      console.warn('[ElevenLabs] No phone number found in webhook metadata');
-      return res.status(200).json({ message: 'No phone number, skipped' });
+      console.warn('[ElevenLabs] No phone number found in webhook metadata. Payload might be from a web call or internal test.');
+      // Proceeding without phone might be useful for logging sake, but we can't link to a Customer easily.
+      // Let's create an "Unknown" customer or skip. Plan says skip to avoid junk.
+      return res.status(200).json({ message: 'No phone number, interaction skipped' });
     }
 
     // 2. Normalize Mobile (Last 10 digits)
@@ -74,9 +95,9 @@ exports.handleTranscriptWebhook = async (req, res) => {
       
       customer = new Customer({
         customId,
-        name: 'Unknown Agent Contact', // Placeholder
+        name: 'Voice Agent Lead', 
         mobile: mobile,
-        source: 'Facebook', // As per user context (Ads -> WhatsApp -> Agent)
+        source: 'Voice Agent', 
         lifecycleStage: 'Lead',
         notes: [{
             content: `Auto-created from ElevenLabs Voice Agent call. Conversation ID: ${conversation_id}`,
@@ -89,22 +110,29 @@ exports.handleTranscriptWebhook = async (req, res) => {
 
     // 5. Create Interaction
     // Construct a summary from analysis or transcript
-    const summary = analysis?.summary || analysis?.evaluation?.summary || 'No summary provided by agent';
+    const summary = analysis?.transcript_summary || analysis?.summary || 'No summary provided';
     
-    // Create a readable transcript string (optional, just first few lines or full blob)
+    // Create a readable transcript string
     const transcriptText = transcript && Array.isArray(transcript) 
       ? transcript.map(t => `${t.role}: ${t.message}`).join('\n')
       : 'No transcript available';
+
+    // Outcome Analysis
+    let outcome = 'General';
+    if (analysis?.call_successful === 'success') outcome = 'Interested';
+    // Check for specific keywords in summary if needed
 
     const interaction = new Interaction({
       customer: customer._id,
       type: 'VoiceAgent',
       agentName: 'ElevenLabs AI',
       data: {
-        remark: `[Voice Agent Call]\nSummary: ${summary}\n\nTranscript Snippet:\n${transcriptText.substring(0, 500)}...`, // Truncate if too long
-        outcome: analysis?.success ? 'Interested' : 'General', // Simple logic, refine later
+        remark: `[Voice Agent Call]\nSummary: ${summary}\n\nTranscript Snippet:\n${transcriptText.substring(0, 500)}...`, 
+        outcome: outcome,
+        conversation_id: conversation_id,
+        duration: metadata?.call_duration_secs
       },
-      date: new Date() // Use current time or metadata.start_time
+      date: new Date() 
     });
 
     await interaction.save();
@@ -115,7 +143,6 @@ exports.handleTranscriptWebhook = async (req, res) => {
 
   } catch (error) {
     console.error('[ElevenLabs] Webhook Error:', error);
-    // Return 200 to prevent ElevenLabs from retrying endlessly if it's a code error
     res.status(500).json({ message: 'Error processing webhook' });
   }
 };

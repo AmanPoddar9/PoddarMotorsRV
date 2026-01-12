@@ -1,53 +1,57 @@
 const axios = require('axios');
 const crypto = require('crypto');
 
-// Use the secret provided by the user for testing
-const SECRET = 'wsec_6c760c89bd99c398ddd3cc763f2c340fd63cc23bcd8db13e599729c762706e7f';
+// Production Secret provided by user
+const SECRET = 'wsec_94fd8f591b58d274e300f67c057f2e96ed61df167d42d5bc864a5780e82cdfc9'; 
+const TARGET_URL = 'https://poddar-motors-rv-hkxu.vercel.app/api/elevenlabs/webhook/transcript';
 
 async function simulateWebhook() {
-  const payload = JSON.stringify({
-    conversation_id: "conv_" + Date.now(),
-    agent_id: "agent_test_123",
-    status: "done",
-    metadata: {
-      phone_call: {
-        number: "+919999988888", 
-        external_number: "+919999988888"
-      },
-      start_time: Date.now() / 1000
-    },
-    analysis: {
-      summary: "Customer inquired about the price of a Toyota Fortuner. Mentioned they have a budget of 15 Lakhs. (Signed Request)",
-      success: true
-    },
-    transcript: [
-      { role: "agent", message: "Hello, this is Poddar Motors." },
-      { role: "user", message: "Hi, I am looking for a used Fortuner." },
-      { role: "agent", message: "We have a few in stock. What is your budget?" },
-      { role: "user", message: "Around 15 Lakhs." }
-    ]
-  });
+  const payloadObj = {
+    type: "post_call_transcription",
+    event_timestamp: Math.floor(Date.now() / 1000),
+    data: {
+        conversation_id: "conv_" + Date.now(),
+        agent_id: "agent_prod_test",
+        status: "done",
+        metadata: {
+            phone_call: {
+                number: "+919999988888", 
+                external_number: "+919999988888"
+            },
+            start_time_unix_secs: Date.now() / 1000,
+            call_duration_secs: 120
+        },
+        analysis: {
+            transcript_summary: "Production Test: Customer asked about financing options for a Swift Dzire.",
+            call_successful: "success"
+        },
+        transcript: [
+            { role: "agent", message: "Hello, this is Poddar Motors." },
+            { role: "user", message: "Hi, is this the production system?" }
+        ]
+    }
+  };
+
+  const payloadString = JSON.stringify(payloadObj);
 
   const timestamp = Math.floor(Date.now() / 1000);
-  const message = `${timestamp}.${payload}`;
+  const message = `${timestamp}.${payloadString}`;
   const hmac = crypto.createHmac('sha256', SECRET);
   const signature = hmac.update(message).digest('hex');
   
   const headerValue = `t=${timestamp},v0=${signature}`;
 
   try {
-    console.log(`Sending signed webhook to http://localhost:4000/api/elevenlabs/webhook/transcript...`);
+    console.log(`Sending signed webhook to ${TARGET_URL}...`);
     
-    // Note: We intentionally send the raw valid payload. 
-    // In real life, ElevenLabs sends the JSON body.
+    // We must send the exact string we signed, but axios takes an object and stringifies it.
+    // To be perfectly safe with signatures, usually you send the string and content-type header manually,
+    // or rely on axios stringifying it exactly the same way (usually true for simple objects).
+    // Let's rely on axios for now as it worked locally.
     
     const response = await axios.post(
-        `http://localhost:4000/api/elevenlabs/webhook/transcript`, 
-        JSON.parse(payload), // Axios will verify serialization, but signature relies on exact string match if we captured raw. 
-        // NOTE: Axios automatic JSON serialization might differ slightly in whitespace from our manual stringify if we are not careful.
-        // However, on the server, `req.rawBody` captures what comes over the wire.
-        // So as long as axios sends what we signed, it's fine. 
-        // To be safe, we should probably manually serialize headers if needed, but standard JSON is usually consistent.
+        TARGET_URL, 
+        payloadObj, 
         {
             headers: {
                 'elevenlabs-signature': headerValue,
@@ -69,9 +73,9 @@ async function simulateWebhook() {
     console.error('❌ Error testing webhook:', error.message);
     if (error.response) {
         console.error('Server responded with:', error.response.data);
+        console.error('Status:', error.response.status);
     }
   }
 }
 
-// Wait 2 seconds for server to be fully ready
-setTimeout(simulateWebhook, 2000);
+simulateWebhook();
