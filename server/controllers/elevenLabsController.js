@@ -62,19 +62,23 @@ exports.handleTranscriptWebhook = async (req, res) => {
     }
 
     // 1. Extract Phone Number
-    // Priority: 
+    // Priority:
+    // 0. metadata.whatsapp.whatsapp_user_id (WhatsApp Integration)
     // 1. metadata.phone_call.number (Standard Telephony)
     // 2. metadata.phone_call.external_number (Some legacy flows)
     // 3. metadata.caller_id (Sometimes used)
-    // 4. conversation_initiation_client_data.dynamic_variables.user_phone (If passed manually)
+    
     let rawPhone = 
+      metadata?.whatsapp?.whatsapp_user_id || 
       metadata?.phone_call?.number || 
       metadata?.phone_call?.external_number || 
       metadata?.caller_id; 
 
-    // Fallback: Check if it was passed as a dynamic variable
-    if (!rawPhone && analysis?.conversation_initiation_client_data?.dynamic_variables?.user_phone) {
-        rawPhone = analysis.conversation_initiation_client_data.dynamic_variables.user_phone;
+    // Fallback: Check dynamic variables (common in some agent setups)
+    if (!rawPhone) {
+         rawPhone = 
+            analysis?.conversation_initiation_client_data?.dynamic_variables?.user_phone || 
+            analysis?.conversation_initiation_client_data?.dynamic_variables?.system__caller_id;
     }
     
     if (!rawPhone) {
