@@ -39,6 +39,8 @@ exports.handleTranscriptWebhook = async (req, res) => {
        return res.status(401).json({ message: 'Unauthorized: Invalid signature' });
     }
 
+    console.log('[ElevenLabs] DEBUG PAYLOAD:', JSON.stringify(req.body, null, 2));
+
     // New Format: { type: 'post_call_transcription', data: { ... } }
     // Legacy/Simple: { conversation_id: ... }
     const payload = req.body.data || req.body; 
