@@ -130,7 +130,7 @@ export const ViewCounter = ({ listingId, initialCount = 0 }) => {
     // Get current viewers
     const fetchViewers = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/listings/${listingId}/viewers`)
+        const response = await axios.get(`${API_URL}/api/activities/viewers/${listingId}`)
         setCurrentViewers(response.data.currentViewers || 0)
         setViewCount(response.data.totalViews || initialCount)
       } catch (error) {
@@ -147,7 +147,7 @@ export const ViewCounter = ({ listingId, initialCount = 0 }) => {
 
   const trackView = async () => {
     try {
-      await axios.post(`${API_URL}/api/listings/${listingId}/view`)
+      await axios.post(`${API_URL}/api/activities/view/${listingId}`)
     } catch (error) {
       console.error('Error tracking view:', error)
     }
