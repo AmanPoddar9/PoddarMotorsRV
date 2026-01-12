@@ -114,6 +114,23 @@ exports.handleTranscriptWebhook = async (req, res) => {
       await customer.save();
     }
 
+    // 4.5 Data Collection - Update Customer Details (Name, etc.)
+    const collectedData = analysis?.data_collection_results;
+    if (collectedData?.customer_name) {
+        const newName = collectedData.customer_name.value || collectedData.customer_name; // Support both object (value check) and direct string
+        
+        // Update name if it's currently a placeholder
+        if (newName && (customer.name === 'Voice Agent Lead' || customer.name === 'New Customer')) {
+             console.log(`[ElevenLabs] Updating Customer Name from "${customer.name}" to "${newName}"`);
+             customer.name = newName;
+             customer.notes.push({ 
+                 content: `[System] Updated Name to "${newName}" via Voice Agent`, 
+                 createdAt: new Date() 
+             });
+             await customer.save();
+        }
+    }
+
     // 5. Create Interaction
     // Construct a summary from analysis or transcript
     const summary = analysis?.transcript_summary || analysis?.summary || 'No summary provided';
