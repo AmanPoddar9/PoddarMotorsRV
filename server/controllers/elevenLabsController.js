@@ -116,18 +116,82 @@ exports.handleTranscriptWebhook = async (req, res) => {
 
     // 4.5 Data Collection - Update Customer Details (Name, etc.)
     const collectedData = analysis?.data_collection_results;
-    if (collectedData?.customer_name) {
-        const newName = collectedData.customer_name.value || collectedData.customer_name; // Support both object (value check) and direct string
-        
-        // Update name if it's currently a placeholder
+    if (collectedData) {
+        let updates = [];
+
+        // Name
+        const newName = collectedData.customer_name?.value || collectedData.customer_name; 
         if (newName && (customer.name === 'Voice Agent Lead' || customer.name === 'New Customer')) {
-             console.log(`[ElevenLabs] Updating Customer Name from "${customer.name}" to "${newName}"`);
              customer.name = newName;
+             updates.push(`Name: ${newName}`);
+        }
+
+        // Email
+        const newEmail = collectedData.customer_email?.value || collectedData.customer_email;
+        if (newEmail && !customer.email) {
+            customer.email = newEmail.toLowerCase().trim();
+            updates.push(`Email: ${newEmail}`);
+        }
+
+        // City
+        const newCity = collectedData.customer_city?.value || collectedData.customer_city;
+        if (newCity) {
+            customer.areaCity = newCity;
+            updates.push(`City: ${newCity}`);
+        }
+
+        // Budget
+        const newBudget = collectedData.customer_budget?.value || collectedData.customer_budget;
+        if (newBudget) {
+            // Try to parse number if possible, or store as string in notes if schema is strict
+            // Schema has budgetRange { min, max }. Let's assume max.
+            const budgetNum = parseInt(newBudget.toString().replace(/[^0-9]/g, ''));
+            if (!isNaN(budgetNum)) {
+                if (!customer.preferences) customer.preferences = {};
+                if (!customer.preferences.budgetRange) customer.preferences.budgetRange = {};
+                customer.preferences.budgetRange.max = budgetNum;
+                updates.push(`Budget: ${newBudget}`);
+            }
+        }
+
+        // Save if any updates
+        if (updates.length > 0) {
+             console.log(`[ElevenLabs] Updated Customer ${customer.mobile}: ${updates.join(', ')}`);
              customer.notes.push({ 
-                 content: `[System] Updated Name to "${newName}" via Voice Agent`, 
+                 content: `[System] Voice Agent captured details: ${updates.join(', ')}`, 
                  createdAt: new Date() 
              });
              await customer.save();
+        }
+    }
+
+    // 4.6 Success Evaluation & Tagging
+    const evalResults = analysis?.evaluation_criteria_results;
+    if (evalResults) {
+        let tagsToAdd = [];
+        
+        // Check for Appointment Request
+        if (evalResults['appointment_requested'] === 'success' || evalResults['appointment_requested'] === 'pass') {
+            tagsToAdd.push('Appointment Requested');
+        }
+
+        // Check for High Intent
+        if (evalResults['high_intent'] === 'success' || evalResults['high_intent'] === 'pass') {
+            tagsToAdd.push('Hot Lead');
+            if (customer.lifecycleStage === 'Lead') {
+                customer.lifecycleStage = 'Prospect'; // Upgrade stage
+            }
+        }
+
+        if (tagsToAdd.length > 0) {
+            // Add unique tags
+            if (!customer.tags) customer.tags = [];
+            let newTags = tagsToAdd.filter(t => !customer.tags.includes(t));
+            if (newTags.length > 0) {
+                customer.tags.push(...newTags);
+                console.log(`[ElevenLabs] Added tags to ${customer.mobile}: ${newTags.join(', ')}`);
+                await customer.save();
+            }
         }
     }
 
