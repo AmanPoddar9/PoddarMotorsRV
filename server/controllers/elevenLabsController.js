@@ -142,8 +142,14 @@ exports.handleTranscriptWebhook = async (req, res) => {
     });
 
     await interaction.save();
-
     console.log(`[ElevenLabs] Interaction saved for customer ${customer.name} (${mobile})`);
+
+    // 5. Also push to Customer Notes (so it appears in UI Timeline)
+    customer.notes.push({
+      content: `[Voice AI] ${interaction.data.outcome === 'Interested' ? '✅' : ''} ${analysis?.call_summary_title || 'Conversation'}\n\nSummary: ${summary}`,
+      createdAt: new Date()
+    });
+    await customer.save();
     
     res.status(200).json({ message: 'Webhook processed successfully' });
 
