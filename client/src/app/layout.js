@@ -68,20 +68,17 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://connect.facebook.net" />
-        <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://realvaluestorage.s3.ap-south-1.amazonaws.com" />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://connect.facebook.net" />
         
         <meta
           name="google-site-verification"
           content="uL--6MiSuQXVZ6-5v0W39EvGPd7r4cPjvjMWa-EBrKE"
         />
 
-        {/* Facebook meta code */}
+        {/* Facebook meta code - Deferred */}
         <Script
           id="meta-pixel-code"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
           !function(f,b,e,v,n,t,s)
@@ -107,9 +104,9 @@ export default function RootLayout({ children }) {
         </noscript>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-W72KKBE49S"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

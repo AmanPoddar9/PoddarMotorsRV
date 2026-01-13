@@ -66,6 +66,7 @@ const FeaturedCard = ({ car }) => {
                 width={300}
                 height={300}
                 alt={`${car.brand} ${car.model}`}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             ) : (
               <div className="w-full h-full bg-custom-black flex items-center justify-center">

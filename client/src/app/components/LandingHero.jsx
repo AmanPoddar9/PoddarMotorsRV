@@ -87,6 +87,7 @@ const LandingHero = () => {
           alt="Premium Used Cars"
           fill
           className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-custom-black/70 via-custom-black/50 to-custom-black"></div>
