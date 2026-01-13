@@ -19,7 +19,7 @@ import API_URL from './config/api'
 
 
 export const metadata = {
-  title: 'Home',
+  title: 'Used Cars in Ranchi | Poddar Motors Real Value | Best Deals',
   description:
     'Discover the best deals on used cars with Poddar Motors Real Value. Browse our featured cars and enjoy top-notch services.',
   keywords: [
@@ -31,6 +31,11 @@ export const metadata = {
     'Ranchi',
     'Jharkhand',
   ],
+  openGraph: {
+    title: 'Used Cars in Ranchi | Poddar Motors Real Value | Best Deals',
+    description: 'Discover the best deals on used cars with Poddar Motors Real Value. Browse our featured cars and enjoy top-notch services.',
+    images: ['https://poddarmotors.com/og-image.jpeg'],
+  }
 }
 
 export default async function Home() {

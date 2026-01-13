@@ -27,8 +27,19 @@ export const metadata = {
       'Second hand car dealership in Ranchi Jharkhand, Used car finance, used cars for sale',
     url: 'https://poddarmotors.com',
     siteName: 'Poddar Motors Real Value',
+    images: [
+      {
+        url: 'https://poddarmotors.com/og-image.jpeg', // Must be an absolute URL
+        width: 1200,
+        height: 630,
+        alt: 'Poddar Motors Real Value',
+      },
+    ],
     locale: 'en_US',
     type: 'website',
+  },
+  alternates: {
+    canonical: './',
   },
   twitter: {
     card: 'summary_large_image',
