@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 
 const WhatsAppWidget = () => {
   const pathname = usePathname()
-  const phoneNumber = '918709119090' // Added country code
+  const phoneNumber = '15558769313' // Added country code
   const message = "Hi, I'm interested in buying a car from Poddar Motors."
 
   // Don't show on sell page or admin pages
