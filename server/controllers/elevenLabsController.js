@@ -31,6 +31,7 @@ const verifySignature = (req) => {
 };
 
 // Handle Post-Call Transcript Webhook
+// Handle Post-Call Transcript Webhook
 exports.handleTranscriptWebhook = async (req, res) => {
   try {
     // 0. Verify Signature
@@ -41,8 +42,6 @@ exports.handleTranscriptWebhook = async (req, res) => {
 
     console.log('[ElevenLabs] DEBUG PAYLOAD:', JSON.stringify(req.body, null, 2));
 
-    // New Format: { type: 'post_call_transcription', data: { ... } }
-    // Legacy/Simple: { conversation_id: ... }
     const payload = req.body.data || req.body; 
     
     const { 
@@ -57,24 +56,18 @@ exports.handleTranscriptWebhook = async (req, res) => {
     console.log(`[ElevenLabs] Received webhook for conversation: ${conversation_id}`);
     
     // Log metadata for debugging phone number location
-    if (metadata) { // Avoid logging PII if possible, but structure is needed
+    if (metadata) { 
          console.log('[ElevenLabs] Metadata keys:', Object.keys(metadata));
     }
 
     // 1. Extract Phone Number
-    // Priority:
-    // 0. metadata.whatsapp.whatsapp_user_id (WhatsApp Integration)
-    // 1. metadata.phone_call.number (Standard Telephony)
-    // 2. metadata.phone_call.external_number (Some legacy flows)
-    // 3. metadata.caller_id (Sometimes used)
-    
     let rawPhone = 
       metadata?.whatsapp?.whatsapp_user_id || 
       metadata?.phone_call?.number || 
       metadata?.phone_call?.external_number || 
       metadata?.caller_id; 
 
-    // Fallback: Check dynamic variables (common in some agent setups)
+    // Fallback: Check dynamic variables
     if (!rawPhone) {
          rawPhone = 
             analysis?.conversation_initiation_client_data?.dynamic_variables?.user_phone || 
@@ -83,8 +76,6 @@ exports.handleTranscriptWebhook = async (req, res) => {
     
     if (!rawPhone) {
       console.warn('[ElevenLabs] No phone number found in webhook metadata. Payload might be from a web call or internal test.');
-      // Proceeding without phone might be useful for logging sake, but we can't link to a Customer easily.
-      // Let's create an "Unknown" customer or skip. Plan says skip to avoid junk.
       return res.status(200).json({ message: 'No phone number, interaction skipped' });
     }
 
@@ -114,27 +105,52 @@ exports.handleTranscriptWebhook = async (req, res) => {
       await customer.save();
     }
 
-    // 4.5 Data Collection - Update Customer Details (Name, etc.)
+    // 4.5 Data Collection - Dynamic & Upgrade
     const collectedData = analysis?.data_collection_results;
+    let explicitNotes = []; // To store dynamic data string
+
     if (collectedData) {
         let updates = [];
+        const dataKeys = Object.keys(collectedData);
+        console.log('[ElevenLabs] Collected Data Keys:', dataKeys);
 
-        // Name
-        const newName = collectedData.customer_name?.value || collectedData.customer_name; 
-        if (newName && (customer.name === 'Voice Agent Lead' || customer.name === 'New Customer')) {
-             customer.name = newName;
-             updates.push(`Name: ${newName}`);
+        // Iterate through ALL collected data for efficient dynamic storage
+        dataKeys.forEach(key => {
+            const val = collectedData[key]?.value || collectedData[key];
+            if (val) {
+                // Formatting: customer_name -> Customer Name
+                const readableKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                explicitNotes.push(`[Data] ${readableKey}: ${val}`);
+            }
+        });
+
+        // Specific Logic for Core Fields (Name, Email, City)
+        // Name - Try multiple common variations
+        const newName = 
+            collectedData.customer_name?.value || collectedData.customer_name ||
+            collectedData.name?.value || collectedData.name ||
+            collectedData.user_name?.value || collectedData.user_name ||
+            collectedData.client_name?.value || collectedData.client_name ||
+            collectedData.customerName?.value || collectedData.customerName;
+
+        if (newName) {
+             console.log(`[ElevenLabs] Name detected: '${newName}'`);
+             // Update if generic or new
+             if (customer.name === 'Voice Agent Lead' || customer.name === 'New Customer' || customer.name === 'Unknown') {
+                  customer.name = newName;
+                  updates.push(`Name: ${newName}`);
+             }
         }
 
         // Email
-        const newEmail = collectedData.customer_email?.value || collectedData.customer_email;
+        const newEmail = collectedData.customer_email?.value || collectedData.customer_email || collectedData.email?.value || collectedData.email;
         if (newEmail && !customer.email) {
             customer.email = newEmail.toLowerCase().trim();
             updates.push(`Email: ${newEmail}`);
         }
 
         // City
-        const newCity = collectedData.customer_city?.value || collectedData.customer_city;
+        const newCity = collectedData.customer_city?.value || collectedData.customer_city || collectedData.city?.value || collectedData.city;
         if (newCity) {
             customer.areaCity = newCity;
             updates.push(`City: ${newCity}`);
@@ -143,8 +159,6 @@ exports.handleTranscriptWebhook = async (req, res) => {
         // Budget
         const newBudget = collectedData.customer_budget?.value || collectedData.customer_budget;
         if (newBudget) {
-            // Try to parse number if possible, or store as string in notes if schema is strict
-            // Schema has budgetRange { min, max }. Let's assume max.
             const budgetNum = parseInt(newBudget.toString().replace(/[^0-9]/g, ''));
             if (!isNaN(budgetNum)) {
                 if (!customer.preferences) customer.preferences = {};
@@ -154,7 +168,7 @@ exports.handleTranscriptWebhook = async (req, res) => {
             }
         }
 
-        // Save if any updates
+        // Save if any Core updates
         if (updates.length > 0) {
              console.log(`[ElevenLabs] Updated Customer ${customer.mobile}: ${updates.join(', ')}`);
              customer.notes.push({ 
@@ -165,23 +179,29 @@ exports.handleTranscriptWebhook = async (req, res) => {
         }
     }
 
-    // 4.6 Success Evaluation & Tagging
+    // 4.6 Success Evaluation & Tagging (Dynamic)
     const evalResults = analysis?.evaluation_criteria_results;
     if (evalResults) {
         let tagsToAdd = [];
+        const criteriaKeys = Object.keys(evalResults);
         
-        // Check for Appointment Request
-        if (evalResults['appointment_requested'] === 'success' || evalResults['appointment_requested'] === 'pass') {
-            tagsToAdd.push('Appointment Requested');
-        }
-
-        // Check for High Intent
-        if (evalResults['high_intent'] === 'success' || evalResults['high_intent'] === 'pass') {
-            tagsToAdd.push('Hot Lead');
-            if (customer.lifecycleStage === 'Lead') {
-                customer.lifecycleStage = 'Prospect'; // Upgrade stage
-            }
-        }
+        criteriaKeys.forEach(key => {
+             const result = evalResults[key];
+             if (result === 'success' || result === 'pass' || result === true) {
+                 // Format: appointment_requested -> VoiceAI: Appointment Requested
+                 const readableTag = 'VoiceAI: ' + key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                 tagsToAdd.push(readableTag);
+                 
+                 // Specific Business Logic
+                 if (key.includes('high_intent')) {
+                     tagsToAdd.push('Hot Lead');
+                     if (customer.lifecycleStage === 'Lead') customer.lifecycleStage = 'Prospect';
+                 }
+                 if (key.includes('appointment')) {
+                     tagsToAdd.push('Appointment Requested'); 
+                 }
+             }
+        });
 
         if (tagsToAdd.length > 0) {
             // Add unique tags
@@ -196,10 +216,9 @@ exports.handleTranscriptWebhook = async (req, res) => {
     }
 
     // 5. Create Interaction
-    // Construct a summary from analysis or transcript
     const summary = analysis?.transcript_summary || analysis?.summary || 'No summary provided';
     
-    // Create a readable transcript string
+    // Create a readable transcript string (Length limited to avoid bloat in Remarks, full recording in metadata)
     const transcriptText = transcript && Array.isArray(transcript) 
       ? transcript.map(t => `${t.role}: ${t.message}`).join('\n')
       : 'No transcript available';
@@ -207,18 +226,33 @@ exports.handleTranscriptWebhook = async (req, res) => {
     // Outcome Analysis
     let outcome = 'General';
     if (analysis?.call_successful === 'success') outcome = 'Interested';
-    // Check for specific keywords in summary if needed
+
+    // Append Collected Data to Remarks for Agent Visibility
+    let finalRemark = `[Voice Agent Call]\nSummary: ${summary}`;
+    if (explicitNotes.length > 0) {
+        finalRemark += `\n\n📌 Collected Data:\n${explicitNotes.join('\n')}`;
+    }
+    finalRemark += `\n\nTranscript Snippet:\n${transcriptText.substring(0, 500)}...`;
+
+    // Interaction Metadata (Efficient Storage)
+    const interactionMetadata = {
+        recording_url: payload.recording_url || analysis?.recording_url,
+        call_duration_secs: metadata?.call_duration_secs,
+        data_collection: collectedData,       // Store the raw object if small enough, or rely on notes
+        evaluation_results: evalResults
+    };
 
     const interaction = new Interaction({
       customer: customer._id,
       type: 'VoiceAgent',
       agentName: 'ElevenLabs AI',
       data: {
-        remark: `[Voice Agent Call]\nSummary: ${summary}\n\nTranscript Snippet:\n${transcriptText.substring(0, 500)}...`, 
+        remark: finalRemark, 
         outcome: outcome,
         conversation_id: conversation_id,
         duration: metadata?.call_duration_secs
       },
+      metadata: interactionMetadata, // New Field
       date: new Date() 
     });
 
@@ -226,10 +260,24 @@ exports.handleTranscriptWebhook = async (req, res) => {
     console.log(`[ElevenLabs] Interaction saved for customer ${customer.name} (${mobile})`);
 
     // 5. Also push to Customer Notes (so it appears in UI Timeline)
+    // We already pushed core updates. Let's push a summary note if lots of data was collected? 
+    // Actually, the Interaction log is usually enough for the timeline if the system UI shows interactions.
+    // But let's keep the legacy behavior of adding a note for the call summary.
     customer.notes.push({
       content: `[Voice AI] ${interaction.data.outcome === 'Interested' ? '✅' : ''} ${analysis?.call_summary_title || 'Conversation'}\n\nSummary: ${summary}`,
       createdAt: new Date()
     });
+    
+    // If we have explicit data notes that weren't "Core updates" (like Favorite Color), we should add them too?
+    // The previous loop only added Core updates to System Notes.
+    // Let's add the FULL data dump to notes for visibility if not empty.
+    if (explicitNotes.length > 0) {
+         customer.notes.push({
+             content: `[Voice AI] Data Collected:\n${explicitNotes.join('\n')}`,
+             createdAt: new Date()
+         });
+    }
+
     await customer.save();
     
     res.status(200).json({ message: 'Webhook processed successfully' });

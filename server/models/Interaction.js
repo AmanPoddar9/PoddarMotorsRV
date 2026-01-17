@@ -25,6 +25,9 @@ const interactionSchema = new mongoose.Schema({
     statusAfter: { type: String }
   },
 
+  // Flexible Metadata for integration specifics (ElevenLabs, Twilio, etc.)
+  metadata: { type: mongoose.Schema.Types.Mixed },
+
   createdAt: { type: Date, default: Date.now }
 });
 
