@@ -115,25 +115,34 @@ exports.handleTranscriptWebhook = async (req, res) => {
         console.log('[ElevenLabs] Collected Data Keys:', dataKeys);
 
         // Iterate through ALL collected data for efficient dynamic storage
-        dataKeys.forEach(key => {
-            const val = collectedData[key]?.value || collectedData[key];
-            if (val) {
-                // Formatting: customer_name -> Customer Name
-                const readableKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                explicitNotes.push(`[Data] ${readableKey}: ${val}`);
+        Object.entries(collectedData).forEach(([key, value]) => {
+            if (['customer_name', 'customer_id', 'customer_city'].includes(key)) return;
+            const readableKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            // correctly handle { value: null } cases
+            let displayValue = value;
+            if (value && typeof value === 'object' && 'value' in value) {
+                 displayValue = value.value;
             }
+            if (displayValue === null || displayValue === undefined) displayValue = 'Not provided';
+            
+            explicitNotes.push(`[Data] ${readableKey}: ${displayValue}`);
         });
 
         // Specific Logic for Core Fields (Name, Email, City)
         // Name - Try multiple common variations
-        const newName = 
+        let newName = 
             collectedData.customer_name?.value || collectedData.customer_name ||
             collectedData.name?.value || collectedData.name ||
             collectedData.user_name?.value || collectedData.user_name ||
             collectedData.client_name?.value || collectedData.client_name ||
             collectedData.customerName?.value || collectedData.customerName;
 
-        if (newName) {
+        // Ensure name is a string (handle case where ElevenLabs returns object with rationale)
+        if (newName && typeof newName === 'object') {
+             newName = newName.value || null;
+        }
+
+        if (newName && typeof newName === 'string') {
              console.log(`[ElevenLabs] Name detected: '${newName}'`);
              // Update if generic or new
              if (customer.name === 'Voice Agent Lead' || customer.name === 'New Customer' || customer.name === 'Unknown') {
@@ -143,21 +152,27 @@ exports.handleTranscriptWebhook = async (req, res) => {
         }
 
         // Email
-        const newEmail = collectedData.customer_email?.value || collectedData.customer_email || collectedData.email?.value || collectedData.email;
-        if (newEmail && !customer.email) {
-            customer.email = newEmail.toLowerCase().trim();
-            updates.push(`Email: ${newEmail}`);
+        let newEmail = collectedData.customer_email?.value || collectedData.customer_email;
+        if (newEmail && typeof newEmail === 'object') newEmail = newEmail.value;
+
+        if (newEmail && typeof newEmail === 'string' && (customer.email === 'No Email' || !customer.email)) {
+             customer.email = newEmail.toLowerCase();
+             updates.push(`Email: ${newEmail}`);
         }
 
         // City
-        const newCity = collectedData.customer_city?.value || collectedData.customer_city || collectedData.city?.value || collectedData.city;
-        if (newCity) {
+        let newCity = collectedData.customer_city?.value || collectedData.customer_city || collectedData.city?.value || collectedData.city;
+        if (newCity && typeof newCity === 'object') newCity = newCity.value;
+
+        if (newCity && typeof newCity === 'string') {
             customer.areaCity = newCity;
             updates.push(`City: ${newCity}`);
         }
 
         // Budget
-        const newBudget = collectedData.customer_budget?.value || collectedData.customer_budget;
+        let newBudget = collectedData.customer_budget?.value || collectedData.customer_budget;
+        if (newBudget && typeof newBudget === 'object') newBudget = newBudget.value;
+
         if (newBudget) {
             const budgetNum = parseInt(newBudget.toString().replace(/[^0-9]/g, ''));
             if (!isNaN(budgetNum)) {
