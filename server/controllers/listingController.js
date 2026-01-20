@@ -807,3 +807,81 @@ exports.getGoogleCatalog = async (req, res) => {
     res.status(500).send('Error generating Google catalog');
   }
 };
+
+exports.getWhatsappCatalog = async (req, res) => {
+  try {
+    const listings = await Listing.find();
+    
+    // Headers: GENERIC (E-COMMERCE) CATALOG TEMPLATE
+    // Suitable for WhatsApp Business Profile (Shop)
+    const headers = [
+      'id',
+      'title',
+      'description',
+      'availability',
+      'condition',
+      'price',
+      'link',
+      'image_link',
+      'brand',
+      'google_product_category',
+      'fb_product_category',
+      'quantity',
+      'sale_price',
+      'item_group_id'
+    ];
+
+    // Helper to escape CSV fields
+    const escapeCsv = (field) => {
+      if (field === null || field === undefined) return '';
+      const stringField = String(field).trim(); 
+      const cleanString = stringField.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
+      if (cleanString.includes(',') || cleanString.includes('"')) {
+        return `"${cleanString.replace(/"/g, '""')}"`;
+      }
+      return cleanString;
+    };
+
+    const csvRows = listings.map(listing => {
+        const title = `${listing.year} ${listing.brand} ${listing.model} ${listing.variant}`;
+        
+        const description = `Used ${listing.year} ${listing.brand} ${listing.model} ${listing.variant}. ` +
+            `Driven ${listing.kmDriven} kms. Fuel: ${listing.fuelType}. ` +
+            `Transmission: ${listing.transmissionType}. ` +
+            `Color: ${listing.color}. Located in Ranchi.`;
+  
+        const link = `https://www.poddarmotors.com/buy/${listing.slug || listing._id}`;
+        const image_link = listing.images && listing.images.length > 0 ? listing.images[0] : '';
+        
+        const priceValue = listing.price ? listing.price.toString().replace(/,/g, '') : '0';
+        const formattedPrice = `${priceValue} INR`;
+  
+        return [
+          listing._id,          // id
+          title,                // title
+          description,          // description
+          'in stock',           // availability (generic format: in stock, out of stock)
+          'used',               // condition
+          formattedPrice,       // price
+          link,                 // link
+          image_link,           // image_link
+          listing.brand,        // brand
+          'Vehicles & Parts > Vehicles > Motor Vehicles > Cars, Trucks & Vans', // google_product_category
+          'vehicles',           // fb_product_category
+          1,                    // quantity
+          formattedPrice,       // sale_price (same as price if no discount logic)
+          listing.model         // item_group_id (grouping variants of same model)
+        ].map(escapeCsv).join(',');
+      });
+  
+      const csvContent = [headers.join(','), ...csvRows].join('\n');
+  
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'inline; filename="whatsapp-generic-catalog.csv"');
+      res.status(200).send(csvContent);
+
+  } catch (error) {
+    console.error('Error generating WhatsApp catalog:', error);
+    res.status(500).send('Error generating WhatsApp catalog');
+  }
+};
