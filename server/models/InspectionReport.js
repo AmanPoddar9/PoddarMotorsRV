@@ -110,7 +110,8 @@ const inspectionReportSchema = new mongoose.Schema({
   engine: {
     engineSound: checkItemSchema,
     blowBy: checkItemSchema,
-    exhaustSmoke: checkItemSchema,
+    exhaustSmoke: checkItemSchema, // White/Black/Blue
+    engineOilFillerCapCondition: checkItemSchema, // Sludge/Creamy/Good
     engineOilLeaking: checkItemSchema,
     coolantLevel: checkItemSchema,
     coolantContamination: checkItemSchema,
@@ -265,20 +266,33 @@ const inspectionReportSchema = new mongoose.Schema({
   // ==================== 14. INTERIOR & CONTROLS (20 fields) ====================
   interiorControls: {
     doorPads: checkItemSchema,
+    doorInnerPanels: checkItemSchema,
     seatCovers: checkItemSchema,
     dashboard: checkItemSchema,
+    
+    // Seat Conditions (Individual)
+    driverSeatCondition: checkItemSchema,
+    passengerSeatCondition: checkItemSchema,
+    rearSeatCondition: checkItemSchema,
+    thirdRowSeatCondition: checkItemSchema, // For 7-seaters
+    
     seatBeltsAll: checkItemSchema,
     steeringWheelCover: checkItemSchema,
     seatInclineDecline: checkItemSchema,
     seatSlider: checkItemSchema,
     floorMats: checkItemSchema,
+    
+    // Functional Checks
+    powerWindowsWorking: checkItemSchema,
+    sunroofWorking: checkItemSchema,
+    musicSystemWorking: checkItemSchema, // Android/Music system working
+    
     acGrillsVents: checkItemSchema,
     musicSystem: checkItemSchema,
     acKnobRegulator: checkItemSchema,
     ceilingLights: checkItemSchema,
     headlinerCeilingCondition: checkItemSchema,
     windshieldFrame: checkItemSchema,
-    doorInnerPanels: checkItemSchema
   },
   
   // ==================== 15. MIRRORS, WINDOWS & WIPERS (20 fields) ====================
@@ -425,6 +439,23 @@ const inspectionReportSchema = new mongoose.Schema({
     tyreLRCloseUp: String,
     tyreRRCloseUp: String,
     spareTyre: String,
+    
+    // Interior Photos
+    dashboard: String,
+    frontSeats: String,
+    rearSeats: String,
+    thirdRowSeats: String,
+    roofHeader: String,
+    doorPanelFR: String,
+    doorPanelFL: String,
+    doorPanelRR: String,
+    doorPanelRL: String,
+    sunroof: String,
+    musicSystem: String,
+    
+    // Engine Detail
+    engineOilFillerCap: String, // Mobil compartment
+    
     damages: [String], // Multiple damage photos
     rcFront: String,
     insurance: String,

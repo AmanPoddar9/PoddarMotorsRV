@@ -118,7 +118,18 @@ function CreateReportForm() {
     },
     paintGlass: {},
     exteriorLights: {},
-    interiorControls: {},
+    interiorControls: {
+      // Functional Checks
+      powerWindowsWorking: '',
+      sunroofWorking: '',
+      musicSystemWorking: '',
+      
+      // Seat Conditions
+      driverSeatCondition: '',
+      passengerSeatCondition: '',
+      rearSeatCondition: '',
+      thirdRowSeatCondition: '',
+    },
     mirrorsWindowsWipers: {},
     latchesLocks: {},
     hvacPerformance: {
@@ -145,6 +156,22 @@ function CreateReportForm() {
       warningLampsCluster: '',
       vinEmbossingCloseUp: '',
       engineBay: '',
+      
+      // Interior Photos (NEW)
+      dashboard: '',
+      frontSeats: '',
+      rearSeats: '',
+      thirdRowSeats: '',
+      roofHeader: '',
+      doorPanelFR: '',
+      doorPanelFL: '',
+      doorPanelRR: '',
+      doorPanelRL: '',
+      sunroof: '',
+      musicSystem: '',
+      
+      engineOilFillerCap: '', // Mobil compartment
+      
       lowerCrossMemberUnderBumper: '',
       apronLHPhoto: '',
       apronRHPhoto: '',
@@ -667,7 +694,8 @@ function CreateReportForm() {
                 <div className="grid grid-cols-2 gap-6">
                   <CheckItem label="Engine Sound" name="engineSound" value={formData.engine.engineSound} onChange={(val) => updateCheckItem('engine', 'engineSound', val)} />
                   <CheckItem label="Blow-by" name="blowBy" value={formData.engine.blowBy} onChange={(val) => updateCheckItem('engine', 'blowBy', val)} />
-                  <CheckItem label="Exhaust Smoke" name="exhaustSmoke" value={formData.engine.exhaustSmoke} onChange={(val) => updateCheckItem('engine', 'exhaustSmoke', val)} />
+                  <CheckItem label="Exhaust Smoke (Blue/Black/White)" name="exhaustSmoke" value={formData.engine.exhaustSmoke} onChange={(val) => updateCheckItem('engine', 'exhaustSmoke', val)} />
+                  <CheckItem label="Oil Filler Cap (Sludge?)" name="engineOilFillerCapCondition" value={formData.engine.engineOilFillerCapCondition} onChange={(val) => updateCheckItem('engine', 'engineOilFillerCapCondition', val)} />
                   <CheckItem label="Engine Oil Leaking" name="engineOilLeaking" value={formData.engine.engineOilLeaking} onChange={(val) => updateCheckItem('engine', 'engineOilLeaking', val)} />
                   <CheckItem label="Coolant Level" name="coolantLevel" value={formData.engine.coolantLevel} onChange={(val) => updateCheckItem('engine', 'coolantLevel', val)} />
                   <CheckItem label="Turbo Condition" name="turboCondition" value={formData.engine.turboCondition} onChange={(val) => updateCheckItem('engine', 'turboCondition', val)} />
@@ -818,6 +846,17 @@ function CreateReportForm() {
                   <CheckItem label="Music System" name="musicSystem" value={formData.interiorControls.musicSystem} onChange={(val) => updateCheckItem('interiorControls', 'musicSystem', val)} />
                   <CheckItem label="AC Knob/Regulator" name="acKnobRegulator" value={formData.interiorControls.acKnobRegulator} onChange={(val) => updateCheckItem('interiorControls', 'acKnobRegulator', val)} />
                   <CheckItem label="Headliner/Ceiling" name="headlinerCeilingCondition" value={formData.interiorControls.headlinerCeilingCondition} onChange={(val) => updateCheckItem('interiorControls', 'headlinerCeilingCondition', val)} />
+                  
+                  {/* Detailed Seat Conditions */}
+                  <CheckItem label="Driver Seat" name="driverSeatCondition" value={formData.interiorControls.driverSeatCondition} onChange={(val) => updateCheckItem('interiorControls', 'driverSeatCondition', val)} />
+                  <CheckItem label="Passenger Seat" name="passengerSeatCondition" value={formData.interiorControls.passengerSeatCondition} onChange={(val) => updateCheckItem('interiorControls', 'passengerSeatCondition', val)} />
+                  <CheckItem label="Rear Seat Bench" name="rearSeatCondition" value={formData.interiorControls.rearSeatCondition} onChange={(val) => updateCheckItem('interiorControls', 'rearSeatCondition', val)} />
+                  <CheckItem label="3rd Row Seats" name="thirdRowSeatCondition" value={formData.interiorControls.thirdRowSeatCondition} onChange={(val) => updateCheckItem('interiorControls', 'thirdRowSeatCondition', val)} />
+                  
+                  {/* Functional Checks */}
+                  <CheckItem label="Power Windows Working" name="powerWindowsWorking" value={formData.interiorControls.powerWindowsWorking} onChange={(val) => updateCheckItem('interiorControls', 'powerWindowsWorking', val)} required />
+                  <CheckItem label="Sunroof Working" name="sunroofWorking" value={formData.interiorControls.sunroofWorking} onChange={(val) => updateCheckItem('interiorControls', 'sunroofWorking', val)} />
+                  <CheckItem label="Music System Working" name="musicSystemWorking" value={formData.interiorControls.musicSystemWorking} onChange={(val) => updateCheckItem('interiorControls', 'musicSystemWorking', val)} />
                   
                   {/* Added missing interior fields */}
                   <CheckItem label="Door Pads" name="doorPads" value={formData.interiorControls.doorPads} onChange={(val) => updateCheckItem('interiorControls', 'doorPads', val)} />
@@ -1083,11 +1122,25 @@ function CreateReportForm() {
                     { key: 'frontHeadOn', label: 'Front Head On' },
                     { key: 'rearStraight', label: 'Rear Straight' },
                     
-                    // Interior & Details
+                    // Interior & Features
+                    { key: 'dashboard', label: 'Dashboard View' },
+                    { key: 'frontSeats', label: 'Front Seats' },
+                    { key: 'rearSeats', label: 'Rear Seats' },
+                    { key: 'thirdRowSeats', label: '3rd Row Seats (if any)' },
+                    { key: 'doorPanelFR', label: 'Door Panel Front Right' },
+                    { key: 'doorPanelFL', label: 'Door Panel Front Left' },
+                    { key: 'doorPanelRR', label: 'Door Panel Rear Right' },
+                    { key: 'doorPanelRL', label: 'Door Panel Rear Left' },
+                    { key: 'roofHeader', label: 'Roof / Headliner' },
+                    { key: 'sunroof', label: 'Sunroof' },
+                    { key: 'musicSystem', label: 'Music System' },
+                    
+                    // Detail Close-ups
                     { key: 'odometerIGNON', label: 'Odometer (IGN ON)' },
                     { key: 'warningLampsCluster', label: 'Warning Lamps Cluster' },
                     { key: 'vinEmbossingCloseUp', label: 'VIN Embossing' },
                     { key: 'engineBay', label: 'Engine Bay' },
+                    { key: 'engineOilFillerCap', label: 'Oil Filler Cap' },
                     { key: 'bootFloorSpareWell', label: 'Boot Floor / Spare Well' },
                     
                     // Undercarriage
