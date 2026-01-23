@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const sharp = require('sharp');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 // Configure multer for memory storage
@@ -119,17 +120,37 @@ router.post('/', uploadImages.array('images', 20), async (req, res) => {
         throw new Error(`Invalid file ${file.originalname}: ${validation.errors.join(', ')}`);
       }
 
+      // Compress and optimize image with sharp
+      let imageBuffer = file.buffer;
+      try {
+        imageBuffer = await sharp(file.buffer)
+          .resize(1920, 1920, { 
+            fit: 'inside', 
+            withoutEnlargement: true 
+          })
+          .jpeg({ 
+            quality: 85,
+            progressive: true 
+          })
+          .toBuffer();
+        
+        console.log(`Server compression: ${(file.size / 1024).toFixed(0)}KB → ${(imageBuffer.length / 1024).toFixed(0)}KB`);
+      } catch (compressionError) {
+        console.error('Sharp compression failed, using original:', compressionError);
+        imageBuffer = file.buffer; // Fallback to original
+      }
+
       // Sanitize filename
       const safeFilename = sanitizeFilename(file.originalname);
       const timestamp = Date.now();
-      const filename = `inspection-images/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
+      const filename = `inspection-images/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename.replace(/\.[^/.]+$/, '.jpg')}`; // Force .jpg extension
 
       // Upload to S3
       const params = {
         Bucket: bucketName,
         Key: filename,
-        Body: file.buffer,
-        ContentType: validation.mime,
+        Body: imageBuffer,
+        ContentType: 'image/jpeg',
         ACL: 'public-read',
       };
 

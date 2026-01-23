@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import imageCompression from 'browser-image-compression'
 import API_URL from '../../config/api'
 
 export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles = 5, maxImages }) {
@@ -24,10 +25,35 @@ export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles 
     }
 
     setUploading(true)
-    const formData = new FormData()
-    files.forEach(file => formData.append('images', file))
-
+    
     try {
+      // Compression options
+      const options = {
+        maxSizeMB: 0.8, // Target 800KB per image
+        maxWidthOrHeight: 1920, // Max dimension
+        useWebWorker: true,
+        fileType: 'image/jpeg' // Convert all to JPEG for consistency
+      }
+      
+      // Compress all images
+      const compressedFiles = await Promise.all(
+        files.map(async (file) => {
+          try {
+            console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)}MB`)
+            const compressed = await imageCompression(file, options)
+            console.log(`Compressed size: ${(compressed.size / 1024 / 1024).toFixed(2)}MB`)
+            return compressed
+          } catch (error) {
+            console.error('Compression failed for', file.name, error)
+            return file // Fallback to original if compression fails
+          }
+        })
+      )
+      
+      // Upload compressed images
+      const formData = new FormData()
+      compressedFiles.forEach(file => formData.append('images', file))
+
       const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
         body: formData
