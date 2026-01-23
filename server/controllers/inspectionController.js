@@ -498,6 +498,30 @@ exports.deleteReport = async (req, res) => {
   }
 }
 
+// Delete booking
+exports.deleteBooking = async (req, res) => {
+  try {
+    const booking = await InspectionBooking.findById(req.params.id)
+    
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' })
+    }
+    
+    // If there's an associated report, delete it first
+    if (booking.inspectionReportId) {
+      await InspectionReport.findByIdAndDelete(booking.inspectionReportId)
+    }
+    
+    // Delete the booking
+    await InspectionBooking.findByIdAndDelete(req.params.id)
+    
+    res.json({ message: 'Booking deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting booking:', error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
 // Get booking by inspector token (public route)
 exports.getBookingByToken = async (req, res) => {
   try {

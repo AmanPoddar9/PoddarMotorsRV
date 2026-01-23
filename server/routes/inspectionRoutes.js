@@ -9,6 +9,7 @@ router.get('/bookings/:id', inspectionController.getBookingById)
 router.put('/bookings/:id/status', inspectionController.updateBookingStatus)
 router.put('/bookings/:id/assign-inspector', inspectionController.assignInspector)
 router.put('/bookings/:id/payment', inspectionController.updatePaymentStatus)
+router.delete('/bookings/:id', inspectionController.deleteBooking)
 router.get('/slots/available', inspectionController.getAvailableSlots)
 
 // Inspector token routes
