@@ -45,9 +45,8 @@ function InspectorReportForm() {
       setBooking(data)
       setLoading(false)
       
-      // For now, redirect to admin create page with bookingId
-      // In future, this will be a dedicated mobile-optimized inspector form
-      router.push(`/admin/inspections/report/create?bookingId=${data._id}&inspectorMode=true`)
+      // Redirect to admin form with token for authentication
+      router.push(`/admin/inspections/report/create?bookingId=${data._id}&inspectorMode=true&token=${token}`)
       
     } catch (err) {
       console.error('Error verifying token:', err)

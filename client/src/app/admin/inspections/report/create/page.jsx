@@ -51,6 +51,8 @@ function CreateReportForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const bookingId = searchParams.get('bookingId')
+  const inspectorMode = searchParams.get('inspectorMode') === 'true'
+  const inspectorToken = searchParams.get('token')
   
   const [currentStep, setCurrentStep] = useState(1)
   // ... rest of the component logic ...
@@ -187,20 +189,39 @@ function CreateReportForm() {
     setLoading(true)
     
     try {
-      const token = localStorage.getItem('token')
+      // Use inspector token if in inspector mode, otherwise use admin token
+      const authToken = inspectorMode && inspectorToken ? inspectorToken : localStorage.getItem('token')
+      
+      const headers = {
+        'Content-Type': 'application/json'
+      }
+      
+      // Add authentication header
+      if (inspectorMode && inspectorToken) {
+        // For inspector mode, send token as custom header for backend to validate
+        headers['X-Inspector-Token'] = inspectorToken
+      } else {
+        headers['Authorization'] = `Bearer ${authToken}`
+      }
+      
       const res = await fetch(`${API_URL}/api/inspections/reports`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify(formData)
       })
       
       if (res.ok) {
         const data = await res.json()
         alert('Inspection report created successfully!')
-        router.push(`/admin/inspections/report/${data.report._id}`)
+        
+        // Redirect based on mode
+        if (inspectorMode) {
+          // Show success message for inspector
+          alert('Thank you! Your inspection report has been submitted successfully.')
+          window.location.href = '/' // Redirect to home or thank you page
+        } else {
+          router.push(`/admin/inspections/report/${data.report._id}`)
+        }
       } else {
         const error = await res.json()
         alert(`Error: ${error.message}`)

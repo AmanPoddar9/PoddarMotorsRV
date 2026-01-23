@@ -278,12 +278,32 @@ exports.getAvailableSlots = async (req, res) => {
 exports.createReport = async (req, res) => {
   try {
     const reportData = req.body
+    const inspectorToken = req.headers['x-inspector-token']
     
     // Verify booking exists
     const booking = await InspectionBooking.findById(reportData.bookingId)
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' })
     }
+    
+    // If inspector token provided, validate it
+    if (inspectorToken) {
+      // Verify the token matches the booking
+      if (booking.inspectorToken !== inspectorToken) {
+        return res.status(401).json({ error: 'Invalid inspector token' })
+      }
+      
+      // Check if token has expired
+      if (new Date() > new Date(booking.inspectorTokenExpiry)) {
+        return res.status(401).json({ error: 'Inspector token has expired' })
+      }
+      
+      // Check if token was already used
+      if (booking.inspectorTokenUsed) {
+        return res.status(410).json({ error: 'This token has already been used' })
+      }
+    }
+    // If no inspector token, assume admin authentication (handled by middleware)
     
     const report = new InspectionReport(reportData)
     
@@ -298,7 +318,7 @@ exports.createReport = async (req, res) => {
     booking.completedAt = new Date()
     
     // Mark inspector token as used (if it was used)
-    if (booking.inspectorToken) {
+    if (inspectorToken && booking.inspectorToken) {
       booking.inspectorTokenUsed = true
     }
     
