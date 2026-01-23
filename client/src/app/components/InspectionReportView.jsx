@@ -162,7 +162,7 @@ export default function InspectionReportView({
         </div>
 
         {/* Tabs - Hidden in print */}
-        <div className="no-print flex gap-2 mb-6 overflow-x-auto pb-2">
+        <div className="no-print print:hidden flex gap-2 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all text-sm md:text-base ${
@@ -348,7 +348,7 @@ export default function InspectionReportView({
 
         {/* Actions */}
         {showActions && (
-          <div className="no-print mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <div className="no-print print:hidden mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
             {onBack && (
               <button
                 onClick={onBack}

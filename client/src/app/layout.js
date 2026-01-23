@@ -183,11 +183,16 @@ export default function RootLayout({ children }) {
       <body className="w-full overflow-x-hidden bg-custom-black text-custom-seasalt font-sans antialiased selection:bg-custom-accent selection:text-custom-black">
         <AntdRegistry>
           <Providers>
-            <Navbar />
+            <div className="print:hidden">
+              <Navbar />
+            </div>
             {children}
-            <Footer />
-            <WhatsAppWidget />
-
+            <div className="print:hidden">
+              <Footer />
+            </div>
+            <div className="print:hidden">
+              <WhatsAppWidget />
+            </div>
           </Providers>
         </AntdRegistry>
       </body>

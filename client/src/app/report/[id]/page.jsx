@@ -82,7 +82,7 @@ export default function PublicReportPage({ params }) {
   return (
     <div>
       {/* Sticky header with logo and CTA */}
-      <div className="no-print sticky top-0 z-50 bg-gray-800 border-b border-gray-700 p-4 shadow-lg">
+      <div className="no-print print:hidden sticky top-0 z-50 bg-gray-800 border-b border-gray-700 p-4 shadow-lg">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Real Value Masters" className="h-8 w-auto" />
