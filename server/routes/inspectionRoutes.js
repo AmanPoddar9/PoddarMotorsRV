@@ -11,6 +11,11 @@ router.put('/bookings/:id/assign-inspector', inspectionController.assignInspecto
 router.put('/bookings/:id/payment', inspectionController.updatePaymentStatus)
 router.get('/slots/available', inspectionController.getAvailableSlots)
 
+// Inspector token routes
+router.get('/booking-by-token/:token', inspectionController.getBookingByToken) // Public route
+router.post('/bookings/:id/regenerate-token', inspectionController.regenerateInspectorToken) // Admin only
+
+
 // Report routes
 router.post('/reports', inspectionController.createReport)
 router.get('/reports', inspectionController.getAllReports)

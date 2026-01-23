@@ -12,7 +12,9 @@ export default function AdminInspectionsPage() {
   const [inspectorName, setInspectorName] = useState('')
   const [inspectorPhone, setInspectorPhone] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState(null) // {type: 'booking'|'report', id, name}
+  const [deleteTarget, setDeleteTarget] = useState(null) //  {type: 'booking'|'report', id, name}
+  const [copiedLink, setCopiedLink] = useState(null) // booking ID when link is copied
+  const [regenerating, setRegenerating] = useState(null) // booking ID being regenerated
 
   useEffect(() => {
     fetchBookings()
@@ -131,6 +133,77 @@ export default function AdminInspectionsPage() {
     }
   }
 
+  // Copy inspector link to clipboard
+  const copyInspectorLink = async (booking) => {
+    if (!booking.inspectorToken) {
+      alert('No inspector link available. Please assign an inspector first.')
+      return
+    }
+    
+    const link = `${window.location.origin}/inspector/report/create?token=${booking.inspectorToken}`
+    
+    try {
+      await navigator.clipboard.writeText(link)
+      setCopiedLink(booking._id)
+      setTimeout(() => setCopiedLink(null), 2000) // Reset after 2s
+    } catch (err) {
+      alert('Failed to copy link. Please try again.')
+    }
+  }
+  
+  // Share inspector link via WhatsApp
+  const shareViaWhatsApp = (booking) => {
+    if (!booking.inspectorToken) {
+      alert('No inspector link available. Please assign an inspector first.')
+      return
+    }
+    
+    const link = `${window.location.origin}/inspector/report/create?token=${booking.inspectorToken}`
+    const expiry = new Date(booking.inspectorTokenExpiry).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+    
+    const message = `Hi ${booking.assignedInspector.name},\n\nHere's your inspection link for *${booking.brand} ${booking.model}* (${booking.registrationNumber}):\n\n${link}\n\n📍 Location: ${booking.inspectionLocation.address}, ${booking.inspectionLocation.city}\n📅 Appointment: ${new Date(booking.appointmentDate).toLocaleDateString()} ${booking.appointmentTimeSlot}\n⏰ Valid until: ${expiry}\n\nPlease complete the inspection and submit the report through this link.\n\nThank you!`
+    
+    const whatsappUrl = `https://wa.me/${booking.assignedInspector.phone}?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+  }
+  
+  // Regenerate inspector token
+  const regenerateToken = async (bookingId) => {
+    if (!confirm('Regenerate inspector link? The old link will become invalid.')) {
+      return
+    }
+    
+    setRegenerating(bookingId)
+    try {
+      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingId}/regenerate-token`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      if (res.ok) {
+        alert('New inspector link generated successfully!')
+        fetchBookings()
+      } else {
+        alert('Failed to regenerate link')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Error regenerating link')
+    } finally {
+      setRegenerating(null)
+    }
+  }
+  
+  // Check if token is expired
+  const isTokenExpired = (booking) => {
+    if (!booking.inspectorTokenExpiry) return false
+    return new Date() > new Date(booking.inspectorTokenExpiry)
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
@@ -193,7 +266,26 @@ export default function AdminInspectionsPage() {
                   <p><strong className="text-white">Appointment:</strong> {new Date(booking.appointmentDate).toLocaleDateString()} {booking.appointmentTimeSlot}</p>
                   <p><strong className="text-white">Location:</strong> {booking.inspectionLocation.city}</p>
                   {booking.assignedInspector?.name && (
-                    <p><strong className="text-white">Inspector:</strong> {booking.assignedInspector.name}</p>
+                    <div>
+                      <p><strong className="text-white">Inspector:</strong> {booking.assignedInspector.name}</p>
+                      {booking.inspectorToken && (
+                        <div className="mt-1 flex items-center gap-2">
+                          {booking.inspectorTokenUsed ? (
+                            <span className="text-xs px-2 py-1 bg-green-900/50 text-green-400 rounded border border-green-700">
+                              ✓ Report Submitted
+                            </span>
+                          ) : isTokenExpired(booking) ? (
+                            <span className="text-xs px-2 py-1 bg-red-900/50 text-red-400 rounded border border-red-700">
+                              ⏰ Link Expired
+                            </span>
+                          ) : (
+                            <span className="text-xs px-2 py-1 bg-blue-900/50 text-blue-400 rounded border border-blue-700">
+                              ✓ Link Active (valid till {new Date(booking.inspectorTokenExpiry).toLocaleDateString()})
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -212,12 +304,47 @@ export default function AdminInspectionsPage() {
                   )}
                   
                   {booking.status === 'Inspector Assigned' && (
-                    <button
-                      onClick={() => updateStatus(booking._id, 'In Progress')}
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
-                    >
-                      Mark In Progress
-                    </button>
+                    <>
+                      <button
+                        onClick={() => updateStatus(booking._id, 'In Progress')}
+                        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                      >
+                        Mark In Progress
+                      </button>
+                      
+                      {/* Inspector Link Actions */}
+                      {booking.inspectorToken && (
+                        <>
+                          <button
+                            onClick={() => copyInspectorLink(booking)}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                              copiedLink === booking._id
+                                ? 'bg-green-600 text-white'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
+                          >
+                            {copiedLink === booking._id ? '✓ Copied!' : '📋 Copy Link'}
+                          </button>
+                          
+                          <button
+                            onClick={() => shareViaWhatsApp(booking)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                          >
+                            💬 WhatsApp
+                          </button>
+                          
+                          {isTokenExpired(booking) && (
+                            <button
+                              onClick={() => regenerateToken(booking._id)}
+                              disabled={regenerating === booking._id}
+                              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+                            >
+                              {regenerating === booking._id ? '🔄 Regenerating...' : '🔄 Regenerate Link'}
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
 
                   {booking.status === 'Completed' && booking.inspectionReportId && (

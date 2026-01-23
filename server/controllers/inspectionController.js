@@ -1,5 +1,6 @@
 const InspectionBooking = require('../models/InspectionBooking')
 const InspectionReport = require('../models/InspectionReport')
+const crypto = require('crypto')
 
 // Create a new inspection booking
 exports.createBooking = async (req, res) => {
@@ -128,6 +129,11 @@ exports.assignInspector = async (req, res) => {
     const { id } = req.params
     const { inspectorName, inspectorPhone } = req.body
     
+    // Generate secure inspector token
+    const inspectorToken = crypto.randomBytes(32).toString('hex')
+    const inspectorTokenExpiry = new Date()
+    inspectorTokenExpiry.setDate(inspectorTokenExpiry.getDate() + 7) // 7 days validity
+    
     const booking = await InspectionBooking.findByIdAndUpdate(
       id,
       {
@@ -136,6 +142,9 @@ exports.assignInspector = async (req, res) => {
           phone: inspectorPhone,
           assignedAt: new Date()
         },
+        inspectorToken,
+        inspectorTokenExpiry,
+        inspectorTokenUsed: false,
         status: 'Inspector Assigned'
       },
       { new: true }
@@ -145,7 +154,15 @@ exports.assignInspector = async (req, res) => {
       return res.status(404).json({ error: 'Booking not found' })
     }
     
-    res.json({ message: 'Inspector assigned successfully', booking })
+    // Generate inspector link
+    const inspectorLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/inspector/report/create?token=${inspectorToken}`
+    
+    res.json({ 
+      message: 'Inspector assigned successfully', 
+      booking,
+      inspectorLink,
+      tokenExpiry: inspectorTokenExpiry
+    })
   } catch (error) {
     console.error('Error assigning inspector:', error)
     res.status(500).json({ error: error.message })
@@ -279,7 +296,14 @@ exports.createReport = async (req, res) => {
     booking.inspectionReportId = report._id
     booking.status = 'Completed'
     booking.completedAt = new Date()
+    
+    // Mark inspector token as used (if it was used)
+    if (booking.inspectorToken) {
+      booking.inspectorTokenUsed = true
+    }
+    
     await booking.save()
+
     
     res.status(201).json({ 
       message: 'Inspection report created successfully', 
@@ -450,6 +474,98 @@ exports.deleteReport = async (req, res) => {
     res.json({ message: 'Report deleted successfully' })
   } catch (error) {
     console.error('Error deleting report:', error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// Get booking by inspector token (public route)
+exports.getBookingByToken = async (req, res) => {
+  try {
+    const { token } = req.params
+    
+    const booking = await InspectionBooking.findOne({ inspectorToken: token })
+    
+    if (!booking) {
+      return res.status(404).json({ error: 'Invalid token. Booking not found.' })
+    }
+    
+    // Check if token has expired
+    if (new Date() > new Date(booking.inspectorTokenExpiry)) {
+      return res.status(401).json({ 
+        error: 'Token has expired. Please contact admin for a new link.',
+        expired: true
+      })
+    }
+    
+    // Check if token has already been used
+    if (booking.inspectorTokenUsed) {
+      return res.status(410).json({ 
+        error: 'This link has already been used. Report has been submitted.',
+        used: true
+      })
+    }
+    
+    // Return booking data (without sensitive fields)
+    res.json({
+      _id: booking._id,
+      customerName: booking.customerName,
+      customerPhone: booking.customerPhone,
+      registrationNumber: booking.registrationNumber,
+      brand: booking.brand,
+      model: booking.model,
+      variant: booking.variant,
+      year: booking.year,
+      kmDriven: booking.kmDriven,
+      fuelType: booking.fuelType,
+      transmissionType: booking.transmissionType,
+      appointmentDate: booking.appointmentDate,
+      appointmentTimeSlot: booking.appointmentTimeSlot,
+      inspectionLocation: booking.inspectionLocation,
+      assignedInspector: booking.assignedInspector,
+      status: booking.status
+    })
+  } catch (error) {
+    console.error('Error fetching booking by token:', error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+// Regenerate inspector token (admin only)
+exports.regenerateInspectorToken = async (req, res) => {
+  try {
+    const { id } = req.params
+    
+    const booking = await InspectionBooking.findById(id)
+    
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' })
+    }
+    
+    if (!booking.assignedInspector?.name) {
+      return res.status(400).json({ error: 'No inspector assigned to this booking' })
+    }
+    
+    // Generate new token
+    const inspectorToken = crypto.randomBytes(32).toString('hex')
+    const inspectorTokenExpiry = new Date()
+    inspectorTokenExpiry.setDate(inspectorTokenExpiry.getDate() + 7)
+    
+    booking.inspectorToken = inspectorToken
+    booking.inspectorTokenExpiry = inspectorTokenExpiry
+    booking.inspectorTokenUsed = false
+    
+    await booking.save()
+    
+    const inspectorLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/inspector/report/create?token=${inspectorToken}`
+    
+    res.json({
+      message: 'Inspector token regenerated successfully',
+      booking,
+      inspectorLink,
+      tokenExpiry: inspectorTokenExpiry
+    })
+  } catch (error) {
+    console.error('Error regenerating token:', error)
     res.status(500).json({ error: error.message })
   }
 }

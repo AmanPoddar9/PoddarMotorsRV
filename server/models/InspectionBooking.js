@@ -86,6 +86,21 @@ const inspectionBookingSchema = new mongoose.Schema({
     assignedAt: { type: Date }
   },
   
+  // Inspector Access Token (for secure link-based report submission)
+  inspectorToken: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows null values to not conflict with unique constraint
+    index: true
+  },
+  inspectorTokenExpiry: {
+    type: Date
+  },
+  inspectorTokenUsed: {
+    type: Boolean,
+    default: false
+  },
+  
   // Payment Details
   inspectionFee: {
     type: Number,

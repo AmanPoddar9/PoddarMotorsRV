@@ -289,7 +289,7 @@ export default function InspectionReportView({
 
           {/* Full Details Tab */}
           {(activeTab === 'details' || typeof window !== 'undefined') && (
-            <div className={`space-y-6 ${activeTab !== 'details' ? 'hidden print:hidden' : ''}`}>
+            <div className={`space-y-6 ${activeTab !== 'details' ? 'hidden print:block' : ''}`}>
               {categories.slice(1).map(category => {
                 try {
                   const data = report[category.id]
@@ -322,7 +322,7 @@ export default function InspectionReportView({
 
           {/* Photos Tab */}
           {(activeTab === 'photos' || typeof window !== 'undefined') && (
-            <div className={`space-y-6 ${activeTab !== 'photos' ? 'hidden print:hidden' : ''}`}>
+            <div className={`space-y-6 ${activeTab !== 'photos' ? 'hidden print:block' : ''}`}>
               <div className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 print-section print:bg-white print:border-gray-300">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-4 print:text-black">📸 Inspection Photos</h2>
                 {report.photos && Object.keys(report.photos).length > 0 ? (
