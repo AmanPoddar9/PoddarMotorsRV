@@ -160,6 +160,19 @@ export default function InspectionReportView({
             </div>
           </div>
         </div>
+        
+        {/* Featured Image for Print - First Page */}
+        {report.photos?.front34 && (
+          <div className="hidden print:block mb-8 break-inside-avoid">
+            <div className="w-full h-96 overflow-hidden rounded-xl border border-gray-300">
+              <img 
+                src={report.photos.front34} 
+                alt="Vehicle Front View" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Tabs - Hidden in print */}
         <div className="no-print print:hidden flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -284,6 +297,9 @@ export default function InspectionReportView({
                   </div>
                 )}
               </div>
+              
+              {/* Force Page Break After Overview */}
+              <div className="break-before-page" />
             </div>
           )}
 
@@ -379,6 +395,17 @@ export default function InspectionReportView({
             margin: 1cm;
           }
           
+          
+          .break-before-page {
+            page-break-before: always;
+            break-before: page;
+          }
+          
+          .break-inside-avoid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;

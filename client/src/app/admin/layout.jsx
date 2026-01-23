@@ -14,7 +14,9 @@ import AdminNavbar from '../components/AdminNavbar';
 export default function AdminLayout({ children }) {
   return (
     <>
-      <AdminNavbar />
+      <div className="print:hidden">
+        <AdminNavbar />
+      </div>
       {children}
     </>
   );
