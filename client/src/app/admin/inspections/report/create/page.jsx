@@ -818,6 +818,18 @@ function CreateReportForm() {
                   <CheckItem label="Music System" name="musicSystem" value={formData.interiorControls.musicSystem} onChange={(val) => updateCheckItem('interiorControls', 'musicSystem', val)} />
                   <CheckItem label="AC Knob/Regulator" name="acKnobRegulator" value={formData.interiorControls.acKnobRegulator} onChange={(val) => updateCheckItem('interiorControls', 'acKnobRegulator', val)} />
                   <CheckItem label="Headliner/Ceiling" name="headlinerCeilingCondition" value={formData.interiorControls.headlinerCeilingCondition} onChange={(val) => updateCheckItem('interiorControls', 'headlinerCeilingCondition', val)} />
+                  
+                  {/* Added missing interior fields */}
+                  <CheckItem label="Door Pads" name="doorPads" value={formData.interiorControls.doorPads} onChange={(val) => updateCheckItem('interiorControls', 'doorPads', val)} />
+                  <CheckItem label="Door Inner Panels" name="doorInnerPanels" value={formData.interiorControls.doorInnerPanels} onChange={(val) => updateCheckItem('interiorControls', 'doorInnerPanels', val)} />
+                  <CheckItem label="Seat Covers/Upholstery" name="seatCovers" value={formData.interiorControls.seatCovers} onChange={(val) => updateCheckItem('interiorControls', 'seatCovers', val)} />
+                  <CheckItem label="Seat Incline/Decline" name="seatInclineDecline" value={formData.interiorControls.seatInclineDecline} onChange={(val) => updateCheckItem('interiorControls', 'seatInclineDecline', val)} />
+                  <CheckItem label="Seat Slider" name="seatSlider" value={formData.interiorControls.seatSlider} onChange={(val) => updateCheckItem('interiorControls', 'seatSlider', val)} />
+                  <CheckItem label="Floor Mats" name="floorMats" value={formData.interiorControls.floorMats} onChange={(val) => updateCheckItem('interiorControls', 'floorMats', val)} />
+                  <CheckItem label="Steering Wheel Cover" name="steeringWheelCover" value={formData.interiorControls.steeringWheelCover} onChange={(val) => updateCheckItem('interiorControls', 'steeringWheelCover', val)} />
+                  <CheckItem label="AC Grills/Vents" name="acGrillsVents" value={formData.interiorControls.acGrillsVents} onChange={(val) => updateCheckItem('interiorControls', 'acGrillsVents', val)} />
+                  <CheckItem label="Ceiling Lights" name="ceilingLights" value={formData.interiorControls.ceilingLights} onChange={(val) => updateCheckItem('interiorControls', 'ceilingLights', val)} />
+                  <CheckItem label="Windshield Frame" name="windshieldFrame" value={formData.interiorControls.windshieldFrame} onChange={(val) => updateCheckItem('interiorControls', 'windshieldFrame', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: Seat covers, Door pads, Floor mats, Steering wheel, etc.</p>
               </div>
