@@ -1,31 +1,29 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import API_URL from '../../../config/api'
+import CreateReportForm from '../../../components/admin/CreateReportForm'
+
+// ... imports remain the same
 
 // This component will load the booking data and render the form
 function InspectorReportForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [booking, setBooking] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
   
-  // Simplified form redirect to admin create page with token verification
+  // Verify token on load
   useEffect(() => {
     if (token) {
-      verifyTokenAndRedirect()
+      verifyToken()
     } else {
       setError('No token provided. Please use the link sent to you.')
       setLoading(false)
     }
   }, [token])
   
-  const verifyTokenAndRedirect = async () => {
+  const verifyToken = async () => {
     try {
       const res = await fetch(`${API_URL}/api/inspections/booking-by-token/${token}`)
       const data = await res.json()
@@ -44,9 +42,6 @@ function InspectorReportForm() {
       
       setBooking(data)
       setLoading(false)
-      
-      // Redirect to admin form with token for authentication
-      router.push(`/admin/inspections/report/create?bookingId=${data._id}&inspectorMode=true&token=${token}`)
       
     } catch (err) {
       console.error('Error verifying token:', err)
@@ -97,14 +92,14 @@ function InspectorReportForm() {
     )
   }
   
-  // This won't show as we're redirecting, but keeping for safety
+  // Render Form directly instead of redirecting
   if (booking) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div className="text-center text-white">
-          <p>Loading inspection form...</p>
-        </div>
-      </div>
+      <CreateReportForm 
+        bookingIdProp={booking._id} 
+        inspectorModeProp={true} 
+        tokenProp={token} 
+      />
     )
   }
   
