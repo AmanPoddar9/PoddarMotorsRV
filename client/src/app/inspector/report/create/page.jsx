@@ -1,8 +1,9 @@
 'use client'
 
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import API_URL from '../../../config/api'
 import CreateReportForm from '../../../components/admin/CreateReportForm'
-
-// ... imports remain the same
 
 // This component will load the booking data and render the form
 function InspectorReportForm() {
