@@ -13,18 +13,18 @@ const CheckItem = ({ label, name, value, onChange, required = false }) => {
       <label className="block text-sm font-medium text-gray-200">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-3">
         {['Pass', 'Fail', 'Warning', 'N/A'].map((status) => (
-          <label key={status} className="flex items-center gap-2 cursor-pointer">
+          <label key={status} className="flex items-center gap-2 cursor-pointer min-h-[44px] bg-gray-700/30 px-3 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors">
             <input
               type="radio"
               name={name}
               value={status}
               checked={value?.status === status}
               onChange={(e) => onChange({ status: e.target.value, notes: value?.notes || '' })}
-              className="w-4 h-4"
+              className="w-5 h-5 text-blue-600 focus:ring-blue-500"
             />
-            <span className={`text-sm ${
+            <span className={`text-sm font-medium ${
               status === 'Pass' ? 'text-green-400' :
               status === 'Fail' ? 'text-red-400' :
               status === 'Warning' ? 'text-yellow-400' :
@@ -40,7 +40,7 @@ const CheckItem = ({ label, name, value, onChange, required = false }) => {
         placeholder="Notes (optional)"
         value={value?.notes || ''}
         onChange={(e) => onChange({ status: value?.status || 'N/A', notes: e.target.value })}
-        className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
+        className="w-full px-3 py-3 md:py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
       />
     </div>
   )
@@ -290,11 +290,11 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
     <div className="min-h-screen bg-gray-900 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">Create Inspection Report</h1>
-          <div className="flex items-center gap-4">
+        <div className="bg-gray-800 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
+          <h1 className="text-xl md:text-3xl font-bold text-white mb-2">Create Inspection Report</h1>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <div className="text-sm text-gray-400">
-              Booking ID: <span className="text-white font-mono">{bookingId}</span>
+              Booking ID: <span className="text-white font-mono break-all">{bookingId}</span>
             </div>
             <div className="text-sm text-gray-400">
               Step {currentStep} of 8
@@ -313,18 +313,18 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
         <form onSubmit={handleSubmit}>
           {/* Step 1: Basic Info & Vehicle Details */}
           {currentStep === 1 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 1: Basic Information & Vehicle Details</h2>
               
               {/* Inspector Details */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Inspector Name *</label>
                   <input
                     type="text"
                     value={formData.inspectorName}
                     onChange={(e) => setFormData({...formData, inspectorName: e.target.value})}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     required
                   />
                 </div>
@@ -334,7 +334,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="text"
                     value={formData.inspectorID}
                     onChange={(e) => setFormData({...formData, inspectorID: e.target.value})}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
               </div>
@@ -345,7 +345,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   type="date"
                   value={formData.inspectionDate}
                   onChange={(e) => setFormData({...formData, inspectionDate: e.target.value})}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   required
                 />
               </div>
@@ -355,14 +355,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Vehicle Information */}
               <h3 className="text-xl font-semibold text-white">Vehicle Information</h3>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Make / Model / Variant *</label>
                   <input
                     type="text"
                     value={formData.vehicleInfo.makeModelVariant}
                     onChange={(e) => updateField('vehicleInfo', 'makeModelVariant', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="e.g., Maruti Swift VXI"
                     required
                   />
@@ -373,21 +373,21 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="text"
                     value={formData.vehicleInfo.registrationNo}
                     onChange={(e) => updateField('vehicleInfo', 'registrationNo', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
                     placeholder="MH01AB1234"
                     required
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">VIN / Chassis No. *</label>
                   <input
                     type="text"
                     value={formData.vehicleInfo.vinChassisNo}
                     onChange={(e) => updateField('vehicleInfo', 'vinChassisNo', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
                     required
                   />
                 </div>
@@ -397,19 +397,19 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="text"
                     value={formData.vehicleInfo.engineNo}
                     onChange={(e) => updateField('vehicleInfo', 'engineNo', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white uppercase"
                     required
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Fuel Type *</label>
                   <select
                     value={formData.vehicleInfo.fuelType}
                     onChange={(e) => updateField('vehicleInfo', 'fuelType', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     required
                   >
                     <option value="">Select</option>
@@ -425,7 +425,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <select
                     value={formData.vehicleInfo.transmission}
                     onChange={(e) => updateField('vehicleInfo', 'transmission', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     required
                   >
                     <option value="">Select</option>
@@ -442,19 +442,19 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="text"
                     value={formData.vehicleInfo.colour}
                     onChange={(e) => updateField('vehicleInfo', 'colour', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Manufacturing Year *</label>
                   <input
                     type="number"
                     value={formData.vehicleInfo.manufacturingYear}
                     onChange={(e) => updateField('vehicleInfo', 'manufacturingYear', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     min="1990"
                     max={new Date().getFullYear()}
                     required
@@ -466,7 +466,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="number"
                     value={formData.vehicleInfo.registrationYear}
                     onChange={(e) => updateField('vehicleInfo', 'registrationYear', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     min="1990"
                     max={new Date().getFullYear()}
                   />
@@ -477,7 +477,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="number"
                     value={formData.vehicleInfo.ownershipNo}
                     onChange={(e) => updateField('vehicleInfo', 'ownershipNo', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     min="1"
                     max="9"
                   />
@@ -490,7 +490,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   type="number"
                   value={formData.vehicleInfo.carOdometer}
                   onChange={(e) => updateField('vehicleInfo', 'carOdometer', e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   placeholder="50000"
                   required
                 />
@@ -500,11 +500,11 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 2: Documentation - Will be added in next file due to length */}
           {currentStep === 2 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-4">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-4">
               <h2 className="text-2xl font-bold text-white mb-4">Step 2: Documentation Check</h2>
               <p className="text-gray-400 text-sm mb-6">Check all required documents and mark their status.</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                 <CheckItem label="RC Copy" name="rcCopy" value={formData.documentation.rcCopy} onChange={(val) => updateCheckItem('documentation', 'rcCopy', val)} required />
                 <CheckItem label="Insurance Policy" name="insurancePolicy" value={formData.documentation.insurancePolicy} onChange={(val) => updateCheckItem('documentation', 'insurancePolicy', val)} required />
                 <CheckItem label="Form 29" name="form29" value={formData.documentation.form29} onChange={(val) => updateCheckItem('documentation', 'form29', val)} />
@@ -528,14 +528,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                 <CheckItem label="On Road Fine/Challan Check" name="onRoadFineChallan" value={formData.documentation.onRoadFineChallan} onChange={(val) => updateCheckItem('documentation', 'onRoadFineChallan', val)} />
               </div>
               
-              <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Fitness Upto (Date)</label>
                   <input
                     type="date"
                     value={formData.documentation.fitnessUpto || ''}
                     onChange={(e) => updateField('documentation', 'fitnessUpto', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
                 <div>
@@ -544,7 +544,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="date"
                     value={formData.documentation.insuranceExpiryDate || ''}
                     onChange={(e) => updateField('documentation', 'insuranceExpiryDate', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
                 <div>
@@ -553,7 +553,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="date"
                     value={formData.documentation.roadTaxValidTill || ''}
                     onChange={(e) => updateField('documentation', 'roadTaxValidTill', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   />
                 </div>
                 <div>
@@ -561,7 +561,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <select
                     value={formData.documentation.hypothecationStatus || ''}
                     onChange={(e) => updateField('documentation', 'hypothecationStatus', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   >
                     <option value="">Select</option>
                     <option value="Active">Active</option>
@@ -574,7 +574,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <select
                     value={formData.documentation.insuranceType || ''}
                     onChange={(e) => updateField('documentation', 'insuranceType', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                   >
                     <option value="">Select</option>
                     <option value="Comprehensive">Comprehensive</option>
@@ -587,20 +587,20 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 3: Features & Warning Lamps */}
           {currentStep === 3 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 3: Features & Warning Lamps</h2>
               
               {/* Features */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Features & Equipment</h3>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-200 mb-2">No. of Airbags</label>
                     <input
                       type="number"
                       value={formData.features.noOfAirbags}
                       onChange={(e) => updateField('features', 'noOfAirbags', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       min="0"
                       max="10"
                     />
@@ -611,7 +611,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="number"
                       value={formData.features.powerWindowsCount}
                       onChange={(e) => updateField('features', 'powerWindowsCount', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       min="0"
                       max="4"
                     />
@@ -622,13 +622,13 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="number"
                       value={formData.features.parkingSensorsCount}
                       onChange={(e) => updateField('features', 'parkingSensorsCount', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       min="0"
                       max="8"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="ABS Present" name="absPresent" value={formData.features.absPresent} onChange={(val) => updateCheckItem('features', 'absPresent', val)} />
                   <CheckItem label="Rear Defogger" name="rearDefogger" value={formData.features.rearDefogger} onChange={(val) => updateCheckItem('features', 'rearDefogger', val)} />
                   <CheckItem label="Reverse Camera" name="reverseCamera" value={formData.features.reverseCamera} onChange={(val) => updateCheckItem('features', 'reverseCamera', val)} />
@@ -645,14 +645,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Warning Lamps */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Warning Lamps & Diagnostics</h3>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-200 mb-2">Charging Voltage (idle)</label>
                     <input
                       type="text"
                       value={formData.warningLamps.chargingVoltageIdle}
                       onChange={(e) => updateField('warningLamps', 'chargingVoltageIdle', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="14.2V"
                     />
                   </div>
@@ -662,12 +662,12 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.warningLamps.crankingVoltageMin}
                       onChange={(e) => updateField('warningLamps', 'crankingVoltageMin', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="10.5V"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Engine MIL" name="engineMIL" value={formData.warningLamps.engineMIL} onChange={(val) => updateCheckItem('warningLamps', 'engineMIL', val)} />
                   <CheckItem label="ABS Light" name="absLight" value={formData.warningLamps.absLight} onChange={(val) => updateCheckItem('warningLamps', 'absLight', val)} />
                   <CheckItem label="Airbag Light" name="airbagLight" value={formData.warningLamps.airbagLight} onChange={(val) => updateCheckItem('warningLamps', 'airbagLight', val)} />
@@ -686,14 +686,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 4: Mechanical Inspection */}
           {currentStep === 4 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 4: Mechanical Inspection</h2>
               <p className="text-gray-400 text-sm">Check engine, transmission, suspension, steering, and brakes.</p>
               
               {/* Engine */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Engine & Powertrain</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Engine Sound" name="engineSound" value={formData.engine.engineSound} onChange={(val) => updateCheckItem('engine', 'engineSound', val)} />
                   <CheckItem label="Blow-by" name="blowBy" value={formData.engine.blowBy} onChange={(val) => updateCheckItem('engine', 'blowBy', val)} />
                   <CheckItem label="Exhaust Smoke (Blue/Black/White)" name="exhaustSmoke" value={formData.engine.exhaustSmoke} onChange={(val) => updateCheckItem('engine', 'exhaustSmoke', val)} />
@@ -710,7 +710,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Transmission */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Transmission & Clutch</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="1st Gear Shift" name="gear1Shift" value={formData.transmission.gear1Shift} onChange={(val) => updateCheckItem('transmission', 'gear1Shift', val)} />
                   <CheckItem label="2nd Gear Shift" name="gear2Shift" value={formData.transmission.gear2Shift} onChange={(val) => updateCheckItem('transmission', 'gear2Shift', val)} />
                   <CheckItem label="3rd Gear Shift" name="gear3Shift" value={formData.transmission.gear3Shift} onChange={(val) => updateCheckItem('transmission', 'gear3Shift', val)} />
@@ -726,7 +726,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Suspension & Steering */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Suspension & Steering</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Overall Suspension" name="overallSuspension" value={formData.suspensionSteering.overallSuspension} onChange={(val) => updateCheckItem('suspensionSteering', 'overallSuspension', val)} />
                   <CheckItem label="Ball Joints" name="ballJoints" value={formData.suspensionSteering.ballJoints} onChange={(val) => updateCheckItem('suspensionSteering', 'ballJoints', val)} />
                   <CheckItem label="Rack & Pinion" name="rackPinionPlayBootTear" value={formData.suspensionSteering.rackPinionPlayBootTear} onChange={(val) => updateCheckItem('suspensionSteering', 'rackPinionPlayBootTear', val)} />
@@ -742,7 +742,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Brakes */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Brakes</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Overall Brakes" name="overallBrakes" value={formData.brakes.overallBrakes} onChange={(val) => updateCheckItem('brakes', 'overallBrakes', val)} />
                   <CheckItem label="Front RH Disc" name="frontRHDisc" value={formData.brakes.frontRHDisc} onChange={(val) => updateCheckItem('brakes', 'frontRHDisc', val)} />
                   <CheckItem label="Front LH Disc" name="frontLHDisc" value={formData.brakes.frontLHDisc} onChange={(val) => updateCheckItem('brakes', 'frontLHDisc', val)} />
@@ -757,14 +757,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 5: Body & Structure */}
           {currentStep === 5 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 5: Body & Structure</h2>
               <p className="text-gray-400 text-sm">Check body panels, structural integrity, paint, and glass.</p>
               
               {/* Body Panels */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Body Panels</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Bonnet" name="bonnet" value={formData.bodyPanels.bonnet} onChange={(val) => updateCheckItem('bodyPanels', 'bonnet', val)} />
                   <CheckItem label="Front Bumper" name="frontBumper" value={formData.bodyPanels.frontBumper} onChange={(val) => updateCheckItem('bodyPanels', 'frontBumper', val)} />
                   <CheckItem label="Rear Bumper" name="rearBumper" value={formData.bodyPanels.rearBumper} onChange={(val) => updateCheckItem('bodyPanels', 'rearBumper', val)} />
@@ -780,7 +780,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Structural Integrity */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Structural Integrity</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Chassis" name="chassis" value={formData.structuralIntegrity.chassis} onChange={(val) => updateCheckItem('structuralIntegrity', 'chassis', val)} />
                   <CheckItem label="A/B/C Pillars" name="abcPillars" value={formData.structuralIntegrity.abcPillars} onChange={(val) => updateCheckItem('structuralIntegrity', 'abcPillars', val)} />
                   <CheckItem label="Floor Pan" name="floorPan" value={formData.structuralIntegrity.floorPan} onChange={(val) => updateCheckItem('structuralIntegrity', 'floorPan', val)} />
@@ -794,7 +794,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="text"
                     value={formData.structuralIntegrity.paintThickness}
                     onChange={(e) => updateField('structuralIntegrity', 'paintThickness', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="e.g., 100-120 microns"
                   />
                 </div>
@@ -806,7 +806,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Paint & Glass */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Paint & Glass</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Front Windshield" name="frontWindshield" value={formData.paintGlass.frontWindshield} onChange={(val) => updateCheckItem('paintGlass', 'frontWindshield', val)} />
                   <CheckItem label="Rear Windshield" name="rearWindshield" value={formData.paintGlass.rearWindshield} onChange={(val) => updateCheckItem('paintGlass', 'rearWindshield', val)} />
                   <CheckItem label="Front RH Door Glass" name="frontRHDoorGlass" value={formData.paintGlass.frontRHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'frontRHDoorGlass', val)} />
@@ -819,14 +819,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 6: Electrical & Interior */}
           {currentStep === 6 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 6: Electrical & Interior</h2>
               <p className="text-gray-400 text-sm">Check all lights, interior components, HVAC, and controls.</p>
               
               {/* Exterior Lights */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Exterior Lights</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="RH Headlamp" name="rhHeadlamp" value={formData.exteriorLights.rhHeadlamp} onChange={(val) => updateCheckItem('exteriorLights', 'rhHeadlamp', val)} />
                   <CheckItem label="LH Headlamp" name="lhHeadlamp" value={formData.exteriorLights.lhHeadlamp} onChange={(val) => updateCheckItem('exteriorLights', 'lhHeadlamp', val)} />
                   <CheckItem label="RH Tail Lamp" name="rhTailLamp" value={formData.exteriorLights.rhTailLamp} onChange={(val) => updateCheckItem('exteriorLights', 'rhTailLamp', val)} />
@@ -842,7 +842,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Interior & Controls */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Interior & Controls</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Dashboard" name="dashboard" value={formData.interiorControls.dashboard} onChange={(val) => updateCheckItem('interiorControls', 'dashboard', val)} />
                   <CheckItem label="Seat Belts (all)" name="seatBeltsAll" value={formData.interiorControls.seatBeltsAll} onChange={(val) => updateCheckItem('interiorControls', 'seatBeltsAll', val)} />
                   <CheckItem label="Music System" name="musicSystem" value={formData.interiorControls.musicSystem} onChange={(val) => updateCheckItem('interiorControls', 'musicSystem', val)} />
@@ -880,14 +880,14 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* HVAC */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">HVAC Performance</h3>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-200 mb-2">Vent Temp at Idle (°C)</label>
                     <input
                       type="text"
                       value={formData.hvacPerformance.ventTempAtIdle}
                       onChange={(e) => updateField('hvacPerformance', 'ventTempAtIdle', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="8°C"
                     />
                   </div>
@@ -897,12 +897,12 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.hvacPerformance.ventTempAt1500rpm}
                       onChange={(e) => updateField('hvacPerformance', 'ventTempAt1500rpm', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="6°C"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="AC Compressor" name="acCompressor" value={formData.hvacPerformance.acCompressor} onChange={(val) => updateCheckItem('hvacPerformance', 'acCompressor', val)} />
                   <CheckItem label="Blower" name="blower" value={formData.hvacPerformance.blower} onChange={(val) => updateCheckItem('hvacPerformance', 'blower', val)} />
                   <CheckItem label="Refrigerant Level" name="refrigerantGasLevel" value={formData.hvacPerformance.refrigerantGasLevel} onChange={(val) => updateCheckItem('hvacPerformance', 'refrigerantGasLevel', val)} />
@@ -915,7 +915,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 7: Underbody, Tyres & Road Test */}
           {currentStep === 7 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 7: Underbody, Tyres & Road Test</h2>
               <p className="text-gray-400 text-sm">Check tyres, underbody, driveline, and perform road test.</p>
               
@@ -929,7 +929,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreLFTread}
                       onChange={(e) => updateField('tyresWheels', 'tyreLFTread', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="5.0"
                     />
                   </div>
@@ -939,7 +939,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreRFTread}
                       onChange={(e) => updateField('tyresWheels', 'tyreRFTread', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="5.0"
                     />
                   </div>
@@ -949,7 +949,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreLRTread}
                       onChange={(e) => updateField('tyresWheels', 'tyreLRTread', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="5.0"
                     />
                   </div>
@@ -959,7 +959,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreRRTread}
                       onChange={(e) => updateField('tyresWheels', 'tyreRRTread', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="5.0"
                     />
                   </div>
@@ -969,7 +969,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreSpareTread}
                       onChange={(e) => updateField('tyresWheels', 'tyreSpareTread', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="7.0"
                     />
                   </div>
@@ -981,7 +981,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreLFDOT}
                       onChange={(e) => updateField('tyresWheels', 'tyreLFDOT', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="15-2022"
                     />
                   </div>
@@ -991,7 +991,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreRFDOT}
                       onChange={(e) => updateField('tyresWheels', 'tyreRFDOT', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="15-2022"
                     />
                   </div>
@@ -1001,7 +1001,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreLRDOT}
                       onChange={(e) => updateField('tyresWheels', 'tyreLRDOT', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="15-2022"
                     />
                   </div>
@@ -1011,7 +1011,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       type="text"
                       value={formData.tyresWheels.tyreRRDOT}
                       onChange={(e) => updateField('tyresWheels', 'tyreRRDOT', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                       placeholder="15-2022"
                     />
                   </div>
@@ -1024,7 +1024,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Underbody */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Underbody & Exhaust</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Subframe Bent/Impact" name="subframeBentImpact" value={formData.underbodyExhaust.subframeBentImpact} onChange={(val) => updateCheckItem('underbodyExhaust', 'subframeBentImpact', val)} />
                   <CheckItem label="Exhaust Leaks" name="exhaustLeaks" value={formData.underbodyExhaust.exhaustLeaks} onChange={(val) => updateCheckItem('underbodyExhaust', 'exhaustLeaks', val)} />
                   <CheckItem label="Catalyst/DPF Intact" name="catalystDPFIntact" value={formData.underbodyExhaust.catalystDPFIntact} onChange={(val) => updateCheckItem('underbodyExhaust', 'catalystDPFIntact', val)} />
@@ -1039,7 +1039,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Driveline */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Driveline & Axles</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="FR RH Wheel Bearing" name="frRHWheelBearing" value={formData.drivelineAxles.frRHWheelBearing} onChange={(val) => updateCheckItem('drivelineAxles', 'frRHWheelBearing', val)} />
                   <CheckItem label="FR LH Wheel Bearing" name="frLHWheelBearing" value={formData.drivelineAxles.frLHWheelBearing} onChange={(val) => updateCheckItem('drivelineAxles', 'frLHWheelBearing', val)} />
                   <CheckItem label="Propeller Shaft/CV Boots" name="propellerShaftCVBoots" value={formData.drivelineAxles.propellerShaftCVBoots} onChange={(val) => updateCheckItem('drivelineAxles', 'propellerShaftCVBoots', val)} />
@@ -1052,7 +1052,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Road Test */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Road Test</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Straight-line Pull" name="straightLinePull" value={formData.roadTest.straightLinePull} onChange={(val) => updateCheckItem('roadTest', 'straightLinePull', val)} />
                   <CheckItem label="Steering On-Centre" name="steeringOnCentre" value={formData.roadTest.steeringOnCentre} onChange={(val) => updateCheckItem('roadTest', 'steeringOnCentre', val)} />
                   <CheckItem label="Vibration at 40 km/h" name="vibrationAt40" value={formData.roadTest.vibrationAt40} onChange={(val) => updateCheckItem('roadTest', 'vibrationAt40', val)} />
@@ -1068,7 +1068,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
               {/* Flood/Fire Detection */}
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4">Flood/Fire Detection</h3>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Water Line Marks" name="waterLineMarks" value={formData.floodFireDetection.waterLineMarks} onChange={(val) => updateCheckItem('floodFireDetection', 'waterLineMarks', val)} />
                   <CheckItem label="Silt Under Carpets" name="siltUnderCarpets" value={formData.floodFireDetection.siltUnderCarpets} onChange={(val) => updateCheckItem('floodFireDetection', 'siltUnderCarpets', val)} />
                   <CheckItem label="Musty Smell" name="mustySmell" value={formData.floodFireDetection.mustySmell} onChange={(val) => updateCheckItem('floodFireDetection', 'mustySmell', val)} />
@@ -1088,12 +1088,12 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="number"
                     value={formData.accessoriesTools.duplicateKeyCount}
                     onChange={(e) => updateField('accessoriesTools', 'duplicateKeyCount', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     min="0"
                     max="5"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Remote Lock Working" name="remoteLockWorking" value={formData.accessoriesTools.remoteLockWorking} onChange={(val) => updateCheckItem('accessoriesTools', 'remoteLockWorking', val)} />
                   <CheckItem label="Jack" name="jack" value={formData.accessoriesTools.jack} onChange={(val) => updateCheckItem('accessoriesTools', 'jack', val)} />
                   <CheckItem label="Wheel Wrench" name="wheelWrench" value={formData.accessoriesTools.wheelWrench} onChange={(val) => updateCheckItem('accessoriesTools', 'wheelWrench', val)} />
@@ -1105,7 +1105,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           
           {/* Step 8: Photos & Final Assessment */}
           {currentStep === 8 && (
-            <div className="bg-gray-800 rounded-lg p-6 space-y-6">
+            <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-6">
               <h2 className="text-2xl font-bold text-white mb-4">Step 8: Photos & Final Assessment</h2>
               
               {/* Photo Uploads */}
@@ -1114,7 +1114,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                 <h3 className="text-xl font-semibold text-white">required Photos (25 total)</h3>
                 
                 {/* Main Photos Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {[
                     // Exterior
                     { key: 'front34', label: 'Front 3/4 View' },
@@ -1234,7 +1234,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       newPositives[idx] = e.target.value
                       updateField('finalAssessment', 'topPositives', newPositives)
                     }}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
                     placeholder={`Positive point ${idx + 1}`}
                   />
                 ))}
@@ -1262,7 +1262,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       newIssues[idx] = e.target.value
                       updateField('finalAssessment', 'topIssues', newIssues)
                     }}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
                     placeholder={`Issue ${idx + 1}`}
                   />
                 ))}
@@ -1278,13 +1278,13 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                 </button>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Overall Grade *</label>
                   <select
                     value={formData.finalAssessment.overallGrade}
                     onChange={(e) => updateField('finalAssessment', 'overallGrade', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     required
                   >
                     <option value="">Select</option>
@@ -1300,7 +1300,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="number"
                     value={formData.finalAssessment.reconditioningEstimateLow}
                     onChange={(e) => updateField('finalAssessment', 'reconditioningEstimateLow', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="₹10,000"
                   />
                 </div>
@@ -1310,7 +1310,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     type="number"
                     value={formData.finalAssessment.reconditioningEstimateHigh}
                     onChange={(e) => updateField('finalAssessment', 'reconditioningEstimateHigh', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                    className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="₹20,000"
                   />
                 </div>
@@ -1343,7 +1343,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           )}
           
           {/* Navigation Buttons */}
-          <div className="flex gap-4 mt-6">
+          <div className="flex flex-wrap gap-3 mt-6">
             {currentStep > 1 && (
               <button
                 type="button"
