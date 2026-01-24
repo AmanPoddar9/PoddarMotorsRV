@@ -50,30 +50,30 @@ export default function InspectionReportView({
     
     if (typeof item !== 'object') {
       return (
-        <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700">
+        <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700 print:bg-transparent print:border-b print:border-gray-300 print:rounded-none print:p-2 print:border-0 print:border-b-[1px] print:border-gray-200">
           <div className="flex justify-between items-center">
-            <span className="text-gray-300 text-sm font-medium">{label}</span>
-            <span className="text-white text-sm">{String(item)}</span>
+            <span className="text-gray-300 text-sm font-medium print:text-gray-700">{label}</span>
+            <span className="text-white text-sm print:text-black font-semibold">{String(item)}</span>
           </div>
         </div>
       )
     }
     
     return (
-      <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700">
+      <div key={label} className="bg-gray-900/50 p-3 rounded border border-gray-700 print:bg-transparent print:border-b print:border-gray-300 print:rounded-none print:p-2 print:border-0 print:border-b-[1px] print:border-gray-200">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-gray-300 text-sm font-medium">{label}</span>
-          <span className={`px-2 py-1 rounded text-xs font-bold ${
-            item.status === 'Pass' ? 'bg-green-900 text-green-300' :
-            item.status === 'Fail' ? 'bg-red-900 text-red-300' :
-            item.status === 'Warning' ? 'bg-yellow-900 text-yellow-300' :
-            'bg-gray-700 text-gray-400'
+          <span className="text-gray-300 text-sm font-medium print:text-gray-700">{label}</span>
+          <span className={`px-2 py-1 rounded text-xs font-bold print:bg-transparent print:p-0 ${
+            item.status === 'Pass' ? 'bg-green-900 text-green-300 print:text-green-700' :
+            item.status === 'Fail' ? 'bg-red-900 text-red-300 print:text-red-600' :
+            item.status === 'Warning' ? 'bg-yellow-900 text-yellow-300 print:text-yellow-600' :
+            'bg-gray-700 text-gray-400 print:text-gray-500'
           }`}>
             {item.status || 'N/A'}
           </span>
         </div>
-        {item.notes && <p className="text-gray-500 text-xs mt-1">{item.notes}</p>}
-        {item.value && <p className="text-blue-400 text-xs mt-1">Value: {item.value}</p>}
+        {item.notes && <p className="text-gray-500 text-xs mt-1 print:text-gray-600 italic">Note: {item.notes}</p>}
+        {item.value && <p className="text-blue-400 text-xs mt-1 print:text-blue-700">Value: {item.value}</p>}
       </div>
     )
   }
@@ -120,33 +120,53 @@ export default function InspectionReportView({
     <div className="min-h-screen bg-gray-900 p-4 md:p-6 print:p-0 print:bg-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 mb-6 print:border-gray-300 print:bg-white">
+        {/* Professional Print Header */}
+        <div className="hidden print:flex mb-8 justify-between items-end border-b-2 border-black pb-4">
+          <div className="flex items-center gap-4">
+            {/* Logo Placeholder - You can replace src with actual logo URL */}
+            <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xl">
+              PM
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-black uppercase tracking-wider">Poddar Motors</h1>
+              <p className="text-sm text-gray-600 font-medium">Premium Configured Used Cars</p>
+            </div>
+          </div>
+          <div className="text-right text-sm text-gray-600">
+            <p className="font-bold text-black">Inspection Report</p>
+            <p>ID: {report._id?.slice(-8).toUpperCase()}</p>
+            <p>{new Date(report.inspectionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          </div>
+        </div>
+
+        {/* Existing Screen Header - Hidden in Print */}
+        <div className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 mb-6 print:hidden">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 print:text-black">
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Professional Inspection Report
               </h1>
-              <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-gray-400 print:text-gray-600">
-                <p>Report ID: <span className="text-white font-mono print:text-black">{report._id}</span></p>
-                <p>Booking: <span className="text-white font-mono print:text-black">
+              <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-gray-400">
+                <p>Report ID: <span className="text-white font-mono">{report._id}</span></p>
+                <p>Booking: <span className="text-white font-mono">
                   {typeof report.bookingId === 'object' ? report.bookingId?._id : report.bookingId}
                 </span></p>
-                <p>Inspector: <span className="text-white print:text-black">{report.inspectorName}</span></p>
-                <p>Date: <span className="text-white print:text-black">
+                <p>Inspector: <span className="text-white">{report.inspectorName}</span></p>
+                <p>Date: <span className="text-white">
                   {new Date(report.inspectionDate).toLocaleDateString()}
                 </span></p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="text-center bg-blue-600/20 border-2 border-blue-500 rounded-lg p-3 md:p-4 print:border-blue-300">
-                <div className="text-3xl md:text-4xl font-bold text-blue-400 print:text-blue-600">
+              <div className="text-center bg-blue-600/20 border-2 border-blue-500 rounded-lg p-3 md:p-4">
+                <div className="text-3xl md:text-4xl font-bold text-blue-400">
                   {report.overallScore || 0}/100
                 </div>
-                <div className="text-sm md:text-lg font-semibold text-white mt-1 print:text-black">
+                <div className="text-sm md:text-lg font-semibold text-white mt-1">
                   Grade {report.finalAssessment?.overallGrade || 'N/A'}
                 </div>
               </div>
-              {/* Download PDF Button - Hidden in print */}
+              {/* Download PDF Button */}
               <button
                 onClick={handleDownloadPDF}
                 className="no-print bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors"
@@ -312,11 +332,11 @@ export default function InspectionReportView({
                   if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) return null
 
                   return (
-                    <div key={category.id} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 print-section print:bg-white print:border-gray-300">
-                      <div className="bg-gray-700 px-4 md:px-6 py-3 md:py-4 print:bg-gray-100">
-                        <h3 className="text-base md:text-lg font-bold text-white print:text-black">{category.title}</h3>
+                    <div key={category.id} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 print:bg-white print:border-2 print:border-black print:rounded-none print:mb-6 break-inside-avoid shadow-sm print:shadow-none">
+                      <div className="bg-gray-700 px-4 md:px-6 py-3 md:py-4 print:bg-gray-100 print:border-b-2 print:border-black">
+                        <h3 className="text-base md:text-lg font-bold text-white print:text-black uppercase tracking-wide">{category.title}</h3>
                       </div>
-                      <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                      <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 print:grid-cols-2 print:gap-x-8 print:gap-y-2">
                         {Object.entries(data).map(([key, value]) => {
                           try {
                             return renderCheckItem(key.replace(/([A-Z])/g, ' $1').trim(), value)
@@ -342,12 +362,19 @@ export default function InspectionReportView({
               <div className="bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-700 print-section print:bg-white print:border-gray-300">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-4 print:text-black">📸 Inspection Photos</h2>
                 {report.photos && Object.keys(report.photos).length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 print:grid-cols-2 print:gap-6">
                     {Object.entries(report.photos).filter(([_, url]) => url &&url !== '').map(([key, url]) => (
-                      <div key={key} className="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-700 print:bg-white print:border-gray-300">
-                        <img src={url} alt={key} className="w-full h-32 md:h-48 object-cover" loading="lazy" />
-                        <div className="p-2">
-                          <p className="text-gray-400 text-xs capitalize print:text-gray-600">
+                      <div key={key} className="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-700 print:bg-white print:border-2 print:border-gray-200 break-inside-avoid">
+                        <div className="relative h-32 md:h-48 print:h-64 overflow-hidden">
+                          <img 
+                            src={url} 
+                            alt={key} 
+                            className="w-full h-full object-cover" 
+                            loading="lazy" 
+                          />
+                        </div>
+                        <div className="p-2 print:p-3 print:bg-gray-50 print:border-t print:border-gray-200">
+                          <p className="text-gray-400 text-xs capitalize print:text-black print:font-bold print:text-sm">
                             {key.replace(/([A-Z])/g, ' $1').trim()}
                           </p>
                         </div>
