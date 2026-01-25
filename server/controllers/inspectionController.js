@@ -1,6 +1,7 @@
 const InspectionBooking = require('../models/InspectionBooking')
 const InspectionReport = require('../models/InspectionReport')
 const crypto = require('crypto')
+const sendEmail = require('../utils/email')
 
 // Create a new inspection booking
 exports.createBooking = async (req, res) => {
@@ -30,6 +31,45 @@ exports.createBooking = async (req, res) => {
 
     const booking = new InspectionBooking(bookingData)
     await booking.save()
+
+    // Send Email Notification to Dealership
+    const message = `
+      🔔 New Inspection Booking!
+
+      Customer: ${booking.customerName}
+      Phone: ${booking.customerPhone}
+      Email: ${booking.customerEmail || 'N/A'}
+      
+      Vehicle Details:
+      Brand: ${booking.brand}
+      Model: ${booking.model}
+      Variant: ${booking.variant || 'N/A'}
+      Year: ${booking.year}
+      Reg Number: ${booking.registrationNumber}
+      Fuel: ${booking.fuelType}
+      Transmission: ${booking.transmissionType}
+      access
+      Appointment Details:
+      Date: ${new Date(booking.appointmentDate).toISOString().split('T')[0]}
+      Time Slot: ${booking.appointmentTimeSlot}
+      Location: ${booking.inspectionLocation.address}, ${booking.inspectionLocation.city}, ${booking.inspectionLocation.pincode}
+      
+      Payment Status: ${booking.paymentStatus}
+      
+      Please log in to the admin panel to manage this booking.
+    `;
+
+    try {
+      await sendEmail({
+        email: 'amanpoddar9@gmail.com',
+        subject: `🔍 New Inspection Booking: ${booking.customerName} - ${booking.brand} ${booking.model}`,
+        message: message
+      });
+      console.log('Inspection booking email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send inspection notification email:', emailError);
+      // We do not fail the request if email fails, just log it.
+    }
     
     res.status(201).json({ 
       message: 'Booking created successfully', 
