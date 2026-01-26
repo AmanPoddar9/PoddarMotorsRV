@@ -42,12 +42,13 @@ exports.signup = async (req, res) => {
             const isProduction = process.env.NODE_ENV === 'production';
             const cookieOptions = {
                 httpOnly: true,
-                sameSite: isProduction ? 'none' : 'lax', // 'lax' is better for local dev than 'none'
+                sameSite: isProduction ? 'lax' : 'lax', // Use Lax for better First-Party compatibility
                 secure: isProduction, // Secure only in production
                 maxAge: 30 * 24 * 60 * 60 * 1000,
-                path: '/'
+                path: '/',
+                // Explicitly set domain to root to allow sharing between api.poddarmotors.com and poddarmotors.com
+                domain: isProduction ? '.poddarmotors.com' : undefined 
             };
-            // Do NOT set domain explicitly if backend URL differs from frontend
             res.cookie('customer_auth', token, cookieOptions);
 
             return res.status(201).json({
@@ -88,10 +89,11 @@ exports.signup = async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
+      sameSite: isProduction ? 'lax' : 'lax',
       secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      path: '/'
+      path: '/',
+      domain: isProduction ? '.poddarmotors.com' : undefined
     };
     
     res.cookie('customer_auth', token, cookieOptions);
@@ -129,10 +131,11 @@ exports.login = async (req, res) => {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions = {
       httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
+      sameSite: isProduction ? 'lax' : 'lax',
       secure: isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      path: '/'
+      path: '/',
+      domain: isProduction ? '.poddarmotors.com' : undefined
     };
     
     res.cookie('customer_auth', token, cookieOptions);
@@ -159,9 +162,10 @@ exports.logout = (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
   const cookieOptions = {
     httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: isProduction ? 'lax' : 'lax',
     secure: isProduction,
-    path: '/'
+    path: '/',
+    domain: isProduction ? '.poddarmotors.com' : undefined
   };
   
   res.clearCookie('customer_auth', cookieOptions);

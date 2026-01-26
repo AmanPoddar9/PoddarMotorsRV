@@ -30,15 +30,13 @@ router.post('/login', loginValidation, async (req, res) => {
 
     const cookieOptions = {
       httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
+      sameSite: isProduction ? 'lax' : 'lax',
       secure: isProduction,
-      path: '/'
-      // domain: cookieDomain // Remove domain in dev to rely on host
+      path: '/',
+      domain: isProduction ? '.poddarmotors.com' : undefined
     };
 
-    if (isProduction && cookieDomain) {
-        cookieOptions.domain = cookieDomain;
-    }
+    // Removed manual check for cookieDomain env var to enforce .poddarmotors.com strategy
 
     // Clear any existing dealer/customer auth cookies
     res.clearCookie('dealer_auth', cookieOptions);
@@ -65,14 +63,11 @@ router.post('/logout', (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',
+    sameSite: isProduction ? 'lax' : 'lax',
     secure: isProduction,
-    path: '/'
+    path: '/',
+    domain: isProduction ? '.poddarmotors.com' : undefined
   };
-
-  if (isProduction && cookieDomain) {
-      cookieOptions.domain = cookieDomain;
-  }
 
   // Clear all auth cookies
   res.clearCookie('auth', cookieOptions);
