@@ -27,12 +27,13 @@ export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles 
     setUploading(true)
     
     try {
-      // Compression options
+      // Compression options - optimized for quality vs file size
       const options = {
-        maxSizeMB: 0.8, // Target 800KB per image
+        maxSizeMB: 1.5, // Target 1.5MB per image (better quality)
         maxWidthOrHeight: 1920, // Max dimension
         useWebWorker: true,
-        fileType: 'image/jpeg' // Convert all to JPEG for consistency
+        fileType: 'image/jpeg', // Convert all to JPEG for consistency
+        quality: 0.92 // High quality compression (0-1 scale)
       }
       
       // Compress all images

@@ -2,17 +2,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import JSZip, { file } from 'jszip'
-import { Spin } from 'antd'
+import ImageUpload from '../components/admin/ImageUpload'
 
 const CreateListing = () => {
   const [features, setFeatures] = useState([])
-  const [imageFile, setImageFile] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [images, setImages] = useState([])
-  const [imagesLength, setImagesLength] = useState(null)
-  const [imagesDone, setImagesDone] = useState(0)
   const [error, setError] = useState(null)
   // let url = 'https://poddar-motors-rv-hkxu.vercel.app/'
 
@@ -43,141 +38,8 @@ const CreateListing = () => {
     images: [],
   })
 
-  const uploadImagesToCloudinary = async (images) => {
-    let tempArr = []
-    const NAME_OF_UPLOAD_PRESET = 'hnm31bqf'
-    const YOUR_ID = 'djyvxi14o'
-    const API_KEY = '969818645141645'
-
-    // Loop through each extracted image and upload to Cloudinary
-    for (let i = 0; i < images.length; i++) {
-      let image = images[i]
-      const data = new FormData()
-      data.append('file', image)
-      data.append('upload_preset', NAME_OF_UPLOAD_PRESET)
-      data.append('api_key', API_KEY)
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${YOUR_ID}/image/upload`,
-        {
-          method: 'POST',
-          body: data,
-        },
-      )
-      const img = await res.json()
-      // You can handle the Cloudinary response here as needed
-      tempArr.push(img.secure_url)
-      setImages(tempArr)
-      console.log('Uploaded image:', img.secure_url)
-    }
-  }
-
-  const getFileName = (path) => {
-    return path.split('/').pop()
-  }
-
-  const handleImageChange = async (e) => {
-    setImageFile(e.target.files[0])
-    const form = new FormData()
-    const file = e.target.files[0]
-    if (
-      file.type !== 'application/zip' &&
-      file.type !== 'zip' &&
-      file.type !== 'application/x-zip-compressed' &&
-      file.type !== 'application/x-zip'
-    ) {
-      alert('Please upload zip file only')
-      return
-    }
-    try {
-      setUploading(true)
-      const file = e.target.files[0]
-      const zip = new JSZip()
-
-      // Read the uploaded file
-      const zipData = await file.arrayBuffer()
-
-      // Load the ZIP file
-      await zip.loadAsync(zipData)
-
-      const extractedImages = []
-
-      // Extract images from the ZIP file
-      await Promise.all(
-        Object.keys(zip.files).map(async (filename) => {
-          const file = zip.files[filename]
-          if (
-            file.dir ||
-            !file.name.match(/\.(jpg|jpeg|png)$/i) ||
-            filename.includes('__MACOSX')
-          )
-            return
-
-          // Read the image file
-          const imageData = await file.async('base64')
-
-          const image = {
-            name: filename,
-            data: imageData,
-          }
-
-          extractedImages.push(image)
-        }),
-      )
-
-      // Sort the file.
-      extractedImages.sort((a, b) => a.name.localeCompare(b.name))
-
-      setImagesLength(extractedImages.length)
-      const [part1, part2, part3] = splitArrayIntoThree(extractedImages);
-      console.log(part1, part2, part3)
-      const imageURLs1 = await uploadImagesToS3(part1)
-      const imageURLs2 = await uploadImagesToS3(part2)
-      const imageURLs3 = await uploadImagesToS3(part3)
-      console.log(imageURLs1, imageURLs2, imageURLs3)
-      const imageURLs = [...imageURLs1, ...imageURLs2, ...imageURLs3]
-      console.log(imageURLs)
-      if (images.length === 0) setImages(imageURLs)
-      setUploading(false)
-    } catch (error) {
-      setUploading(false)
-      console.error('Error uploading image:', error.message)
-    }
-  }
-
-  function splitArrayIntoThree(arr) {
-    const len = arr.length;
-    console.log(len)
-    const partSize = Math.ceil(len / 3);
-    console.log("PArt size:", partSize)
-    const part1 = arr.slice(0, partSize);
-    const part2 = arr.slice(partSize, partSize * 2);
-    const part3 = arr.slice(partSize * 2);
-
-    return [part1, part2, part3];
-}
-
-  const uploadImagesToS3 = async (imagesArray) => {
-    const res = await fetch('/api', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(imagesArray),
-    })
-
-    if (!res.ok) {
-      setError('Error uploading images! Please try uploading file again.')
-    }
-
-    try {
-      const data = await res.json()
-      const urls = data.urls
-      console.log(urls)
-      setImages(urls)
-      return urls
-    } catch (err) {
-      setError('Error uploading images! Please try uploading file again.')
-    }
+  const handleImagesChange = (newImages) => {
+    setImages(newImages)
   }
 
   useEffect(() => {
@@ -281,19 +143,12 @@ const CreateListing = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-white">Create Listing</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="mb-6">
-            <input
-              type="file"
-              onChange={handleImageChange}
-              className="border border-white/10 rounded-md py-2 px-4 mb-2 bg-custom-jet text-white"
-            />
-            {uploading && imagesLength && (
-              <div>
-                <Spin size="small" /> Uploading...
-              </div>
-            )}
-            {error && <div className="text-red-500">{error}</div>}
-          </div>
+          <ImageUpload
+            label="Car Images"
+            onImagesChange={handleImagesChange}
+            maxImages={20}
+          />
+          {error && <div className="text-red-500">{error}</div>}
           <div>
             <label htmlFor="brand" className="block font-medium text-gray-700">
               Brand
@@ -672,7 +527,7 @@ const CreateListing = () => {
           </div>
           <button
             type="submit"
-            disabled={loading || uploading}
+            disabled={loading}
             className="bg-custom-accent hover:bg-yellow-400 text-custom-black font-bold py-2 px-4 rounded-md transition-colors"
           >
             {loading ? 'Creating...' : 'Create Listing'}

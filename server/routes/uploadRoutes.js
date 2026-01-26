@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const sharp = require('sharp');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { requireAuth } = require('../middleware/auth'); // Import auth middleware
 
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
@@ -47,7 +48,7 @@ const bucketName = process.env.AWS_S3_BUCKET || 'realvaluestorage';
 const { validateFile, sanitizeFilename } = require('../utils/fileValidation');
 
 // Upload single image/video endpoint (for testimonials)
-router.post('/single', uploadMedia.single('image'), async (req, res) => {
+router.post('/single', requireAuth, uploadMedia.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -104,7 +105,7 @@ router.post('/single', uploadMedia.single('image'), async (req, res) => {
 });
 
 // Upload multiple images endpoint (for inspections)
-router.post('/', uploadImages.array('images', 20), async (req, res) => {
+router.post('/', requireAuth, uploadImages.array('images', 20), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -120,25 +121,11 @@ router.post('/', uploadImages.array('images', 20), async (req, res) => {
         throw new Error(`Invalid file ${file.originalname}: ${validation.errors.join(', ')}`);
       }
 
-      // Compress and optimize image with sharp
-      let imageBuffer = file.buffer;
-      try {
-        imageBuffer = await sharp(file.buffer)
-          .resize(1920, 1920, { 
-            fit: 'inside', 
-            withoutEnlargement: true 
-          })
-          .jpeg({ 
-            quality: 85,
-            progressive: true 
-          })
-          .toBuffer();
-        
-        console.log(`Server compression: ${(file.size / 1024).toFixed(0)}KB → ${(imageBuffer.length / 1024).toFixed(0)}KB`);
-      } catch (compressionError) {
-        console.error('Sharp compression failed, using original:', compressionError);
-        imageBuffer = file.buffer; // Fallback to original
-      }
+      // Use file buffer directly (compression handled client-side)
+      // This saves Vercel execution time and costs
+      const imageBuffer = file.buffer;
+      
+      console.log(`Uploading client-compressed image: ${(file.size / 1024).toFixed(0)}KB`);
 
       // Sanitize filename
       const safeFilename = sanitizeFilename(file.originalname);
