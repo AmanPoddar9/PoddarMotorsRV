@@ -27,12 +27,12 @@ I've secured your AWS credentials by:
 
 #### 3. **Find the Compromised User**
    - Click "Users" in the left sidebar
-   - Look for the user with access key: `AKIAZQ3DNQ6CJUV7YGIH`
+   - Look for the user with access key: `[REDACTED]`
    - Click on the username
 
 #### 4. **Delete the Old Access Key**
    - Click on "Security credentials" tab
-   - Find the access key `AKIAZQ3DNQ6CJUV7YGIH`
+   - Find the access key `[REDACTED]`
    - Click "Actions" → "Delete"
    - Confirm deletion
 

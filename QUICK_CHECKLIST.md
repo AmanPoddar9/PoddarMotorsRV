@@ -24,7 +24,7 @@
 
 **Steps:**
 1. Sign in to AWS Console: https://console.aws.amazon.com/iam/
-2. Go to IAM → Users → Find user with key `AKIAZQ3DNQ6CJUV7YGIH`
+2. Go to IAM → Users → Find user with key `[REDACTED]`
 3. Delete the old access key
 4. Create NEW access key
 5. Download/copy the new credentials

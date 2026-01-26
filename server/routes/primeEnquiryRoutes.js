@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const PrimeEnquiry = require('../models/PrimeEnquiry');
+const { sendEvent } = require('../services/facebookCAPIService');
 
 const { requireAuth, requireRole } = require('../middleware/auth');
 
@@ -26,6 +27,20 @@ router.post('/', async (req, res) => {
       carModel,
       registrationNumber,
       selectedPlan
+    });
+
+    // [Meta CAPI] Fire Lead Event
+    sendEvent('Lead', {
+        name: name,
+        email: email,
+        phone: phone,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent']
+    }, {
+        content_name: 'Prime Membership Enquiry',
+        content_category: 'Membership',
+        value: selectedPlan === 'Gold' ? 4999 : 999, // Estimated Value logic
+        currency: 'INR'
     });
 
     res.status(201).json({

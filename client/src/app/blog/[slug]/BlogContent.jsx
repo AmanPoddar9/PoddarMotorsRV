@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import DOMPurify from 'isomorphic-dompurify';
 
 export default function BlogContent({ content, shareUrl, shareTitle }) {
   const [activeSection, setActiveSection] = useState('');
@@ -159,7 +160,7 @@ export default function BlogContent({ content, shareUrl, shareTitle }) {
               prose-th:bg-custom-accent/20 prose-th:text-white prose-th:font-bold prose-th:p-3 prose-th:border prose-th:border-white/10
               prose-td:p-3 prose-td:border prose-td:border-white/10 prose-td:text-custom-seasalt
             "
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
           />
 
           {/* Call to Action */}

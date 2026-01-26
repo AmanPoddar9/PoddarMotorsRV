@@ -3,12 +3,18 @@ const router = express.Router();
 const multer = require('multer');
 const os = require('os');
 const upload = multer({ dest: os.tmpdir() });
-const { bulkImport } = require('../controllers/customerImportController');
+const { bulkImport, importChunk } = require('../controllers/customerImportController');
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+// Protect all routes in this file
+router.use(requireAuth);
+router.use(requireRole('admin'));
 
 // POST /api/import/bulk
 router.post('/bulk', upload.single('file'), bulkImport);
 
 // POST /api/import/chunk (Client-side Chunking)
-router.post('/chunk', require('../controllers/customerImportController').importChunk);
+// Note: importChunk was required inline before, now imported at top for cleaner code
+router.post('/chunk', importChunk);
 
 module.exports = router;

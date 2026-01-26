@@ -3,6 +3,7 @@ const { VoiceResponse } = twilio.twiml;
 const { getClient, twilioConfig, isTwilioConfigured } = require('../config/twilioConfig');
 const CallLog = require('../models/CallLog');
 const MessageTemplate = require('../models/MessageTemplate');
+const { sendEvent } = require('../services/facebookCAPIService');
 
 /**
  * Handle incoming voice call - Initial IVR greeting
@@ -125,6 +126,16 @@ const handleIvrResponse = async (req, res) => {
         { callSid: CallSid },
         { serviceType }
       );
+
+      // [Meta CAPI] Fire Contact Event for Inbound Call with Intent
+      sendEvent('Contact', {
+          phone: From,
+          // No IP/Email for phone calls
+      }, {
+          content_name: 'Inbound Call Sales',
+          status: serviceType, // car-buying, workshop, or speak-to-team
+          content_type: 'ivr_interaction'
+      });
     }
 
     // Send messages asynchronously (don't wait for completion)
@@ -494,6 +505,18 @@ const getDefaultSmsTemplate = (serviceType) => {
            `📍 ${twilioConfig.businessAddress}\n` +
            `📞 ${twilioConfig.businessPhone}\n\n` +
            `Visit us today for test drives!`;
+  } else if (serviceType === 'voice-ai-sales') {
+    return `🚗 Hi! Great speaking with you on our AI line.\n\n` +
+           `You can browse our 120-point inspected cars here: ${twilioConfig.websiteUrl}/buy\n` +
+           `We update stock daily!`;
+  } else if (serviceType === 'voice-ai-service') {
+    return `🛠️ Hi! Thanks for speaking with us.\n\n` +
+           `Based on your request, here is the link to book your workshop slot: ${twilioConfig.websiteUrl}/poddarmotors\n` +
+           `See you soon!`;
+  } else if (serviceType === 'voice-ai-general') {
+    return `👋 Hi! Thanks for calling ${twilioConfig.businessName}.\n\n` +
+           `Save this number for any future queries regarding Buying, Selling, or Service.\n` +
+           `Visit us at: ${twilioConfig.websiteUrl}`;
   } else {
     return `🔧 Thank you for calling ${twilioConfig.businessName} Workshop!\n\n` +
            `Book service: ${twilioConfig.websiteUrl}/poddarmotors\n` +
@@ -514,6 +537,26 @@ const getDefaultWhatsAppTemplate = (serviceType) => {
            `📍 *Visit Our Showroom*\n${twilioConfig.businessAddress}\n\n` +
            `💬 *Questions?*\nReply to this message!\n\n` +
            `Website: ${twilioConfig.websiteUrl}`;
+  } else if (serviceType === 'voice-ai-sales') {
+    return `Hi! 👋\n\n` +
+           `Great speaking with you! 🚗\n\n` +
+           `As discussed, you can browse our latest *120-point inspected cars* here:\n` +
+           `${twilioConfig.websiteUrl}/buy\n\n` +
+           `We update our stock daily. Come visit us for a test drive!`;
+  } else if (serviceType === 'voice-ai-service') {
+    return `Hi! 👋\n\n` +
+           `Thanks for speaking with us. 🛠️\n\n` +
+           `Based on our call, you were looking for *service/repair*.\n\n` +
+           `📅 *Book Your Slot Instantly*\n${twilioConfig.websiteUrl}/poddarmotors\n\n` +
+           `Let us know if you need help with the booking!`;
+  } else if (serviceType === 'voice-ai-general') {
+    return `Hi! 👋\n\n` +
+           `Thanks for calling *${twilioConfig.businessName}*!\n\n` +
+           `Plese save this number for any future queries regarding:\n` +
+           `✅ Buying a Car\n` +
+           `✅ Selling a Car\n` +
+           `✅ Workshop Service\n\n` +
+           `🌐 ${twilioConfig.websiteUrl}`;
   } else {
     return `Hi! 👋\n\n` +
            `Thanks for choosing ${twilioConfig.businessName} Workshop.\n\n` +

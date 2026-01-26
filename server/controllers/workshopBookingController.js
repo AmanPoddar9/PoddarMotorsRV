@@ -1,11 +1,23 @@
 const WorkshopBooking = require('../models/workshopBooking')
 const sendEmail = require('../utils/email')
+const { sendEvent } = require('../services/facebookCAPIService');
 
 // Create a workshop booking
 exports.createWorkshopBooking = async (req, res) => {
   try {
     const newBooking = new WorkshopBooking(req.body)
     await newBooking.save()
+
+    // [Meta CAPI] Fire Schedule Event
+    sendEvent('Schedule', {
+        phone: newBooking.mobileNumber,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent']
+    }, {
+        content_name: 'Workshop Service Booking',
+        content_type: 'service',
+        status: newBooking.serviceType
+    });
 
     // Send Email Notification to Dealership
     const message = `

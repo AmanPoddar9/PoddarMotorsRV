@@ -1,5 +1,6 @@
 const CustomerOffer = require('../models/CustomerOffer')
 const Listing = require('../models/listing')
+const { sendEvent } = require('../services/facebookCAPIService');
 
 // Create a new customer offer
 exports.createCustomerOffer = async (req, res) => {
@@ -29,6 +30,21 @@ exports.createCustomerOffer = async (req, res) => {
     })
 
     await customerOffer.save()
+
+    // [Meta CAPI] Fire Lead Event (Buyer Offer)
+    sendEvent('Lead', {
+        name: name,
+        email: email,
+        phone: mobile,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent']
+    }, {
+        content_name: 'Make an Offer',
+        content_category: 'Buyer',
+        content_ids: [listingId],
+        value: offerPrice,
+        currency: 'INR'
+    });
 
     res.status(201).json({
       message: 'Offer submitted successfully',

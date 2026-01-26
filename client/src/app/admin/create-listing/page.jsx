@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import API_URL from '../../config/api'
-import ImageUpload from '../components/admin/ImageUpload'
+import ImageUpload from '../../components/admin/ImageUpload'
 
 const CreateListing = () => {
   const [features, setFeatures] = useState([])

@@ -27,7 +27,7 @@
 
 ### 1. **Rotate AWS Credentials (DO THIS NOW)** 🚨
 
-The old credentials `AKIAZQ3DNQ6CJUV7YGIH` were exposed in your code. You MUST:
+The old credentials `[REDACTED]` were exposed in your code. You MUST:
 
 1. **Go to AWS IAM Console:** https://console.aws.amazon.com/iam/
 2. **Delete the compromised access key**

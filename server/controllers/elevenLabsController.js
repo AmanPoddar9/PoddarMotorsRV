@@ -2,6 +2,7 @@ const Interaction = require('../models/Interaction');
 const Customer = require('../models/Customer');
 const { generateCustomId } = require('../utils/idGenerator');
 const crypto = require('crypto');
+const { sendEvent } = require('../services/facebookCAPIService');
 
 const verifySignature = (req) => {
   const secret = process.env.ELEVENLABS_AGENT_SECRET;
@@ -103,6 +104,15 @@ exports.handleTranscriptWebhook = async (req, res) => {
       });
 
       await customer.save();
+
+      // [Meta CAPI] Fire Lead Event for New Customer
+      sendEvent('Lead', {
+          phone: mobile,
+          // IP/UserAgent not available in webhook usually, but we send what we have
+      }, {
+          content_name: 'Voice Agent Lead',
+          source: 'ElevenLabs'
+      });
     }
 
     // 4.5 Data Collection - Dynamic & Upgrade
@@ -226,6 +236,18 @@ exports.handleTranscriptWebhook = async (req, res) => {
                 customer.tags.push(...newTags);
                 console.log(`[ElevenLabs] Added tags to ${customer.mobile}: ${newTags.join(', ')}`);
                 await customer.save();
+
+                // [Meta CAPI] Fire Contact Event for High Intent/Appointment
+                if (newTags.includes('Hot Lead') || newTags.includes('Appointment Requested')) {
+                    sendEvent('Contact', {
+                        phone: mobile,
+                        email: customer.email !== 'No Email' ? customer.email : undefined,
+                        city: customer.areaCity
+                    }, {
+                        content_name: 'Qualified Voice Lead',
+                        status: newTags.join(', ')
+                    });
+                }
             }
         }
     }
@@ -293,8 +315,48 @@ exports.handleTranscriptWebhook = async (req, res) => {
          });
     }
 
-    await customer.save();
-    
+    // 6. Automated Follow-up (Instant WhatsApp via Meta Cloud)
+    try {
+        const { sendIntentBasedMessage } = require('./metaController'); // Lazy load
+        
+        let intent = 'voice-ai-general';
+        
+        // Determine Intent based on Eval Results
+        if (evalResults) {
+             const keys = Object.keys(evalResults);
+             const isSuccess = (k) => ['success', 'pass', 'true', true].includes(evalResults[k]);
+
+             // Check for Service/Workshop
+             if (keys.some(k => (k.includes('appointment') || k.includes('service') || k.includes('repair')) && isSuccess(k))) {
+                 intent = 'voice-ai-service';
+             }
+             // Check for Sales/Buying (Override Service if specifically High Intent Sales)
+             else if (keys.some(k => (k.includes('buy') || k.includes('inventory') || k.includes('price')) && isSuccess(k))) {
+                 intent = 'voice-ai-sales';
+             }
+             // Check High Intent Generic -> Sales
+             else if (keys.some(k => k.includes('high_intent') && isSuccess(k))) {
+                 intent = 'voice-ai-sales';
+             }
+        }
+
+        console.log(`[ElevenLabs] Detected Intent: ${intent} for ${mobile}`);
+
+        // Send WhatsApp via Meta
+        const waResult = await sendIntentBasedMessage(mobile, intent);
+        
+        if (waResult.success) {
+            console.log(`[ElevenLabs] Follow-up WhatsApp sent to ${mobile}`);
+        } else {
+             console.warn(`[ElevenLabs] WhatsApp failed for ${mobile}:`, waResult.error);
+             // No SMS fallback configured for now as per Meta pivot
+        }
+
+    } catch (followUpError) {
+        console.error('[ElevenLabs] Automated Follow-up Failed:', followUpError);
+        // Don't fail the webhook because of this
+    }
+
     res.status(200).json({ message: 'Webhook processed successfully' });
 
   } catch (error) {

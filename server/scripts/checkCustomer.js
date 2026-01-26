@@ -18,7 +18,7 @@ const checkCustomer = async () => {
     await mongoose.connect(mongoURI);
     console.log("Connected to DB");
 
-    const mobile = '9234147075';
+    const mobile = '6203213200';
     // The controller uses slice(-10), so let's match that logic just in case, 
     // but here we are explicit.
     const customer = await Customer.findOne({ mobile: { $regex: mobile + '$' } });
@@ -31,6 +31,8 @@ const checkCustomer = async () => {
         console.log(`Mobile: '${customer.mobile}'`);
         console.log(`Source: '${customer.source}'`);
         console.log(`Lifecycle Stage: '${customer.lifecycleStage}'`);
+        console.log("Notes:");
+        console.log(JSON.stringify(customer.notes, null, 2));
         console.log("-------------------------------------------------");
     } else {
         console.log("Customer NOT Found with mobile ending in " + mobile);

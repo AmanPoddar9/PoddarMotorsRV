@@ -2,8 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { FaArrowLeft, FaClock, FaCalendar, FaUser, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaEye } from 'react-icons/fa';
+
+import { FaArrowLeft, FaClock, FaCalendar, FaUser, FaEye } from 'react-icons/fa';
 import BlogContent from './BlogContent';
+import SocialShare from '../../components/SocialShare';
 import API_URL from '../../config/api';
 
 // Generate metadata for SEO
@@ -260,6 +262,14 @@ export default async function BlogPost({ params }) {
                 <span>{blog.readTime}</span>
               </div>
             </div>
+            
+            {/* Social Share Top */}
+            <div className="mb-8">
+              <SocialShare 
+                url={shareUrl} 
+                title={blog.title} 
+              />
+            </div>
 
             {/* Featured Image */}
             {blog.featuredImage && (
@@ -288,44 +298,11 @@ export default async function BlogPost({ params }) {
                 <span className="w-1 h-6 bg-gradient-to-b from-custom-accent to-yellow-400 rounded-full" />
                 Share this article
               </h3>
-              <div className="flex flex-wrap gap-4">
-                <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:scale-105 transition-all shadow-lg font-semibold"
-                  aria-label="Share on Facebook"
-                >
-                  <FaFacebook size={20} /> Facebook
-                </a>
-                <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(blog.title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-sky-500 text-white rounded-xl hover:bg-sky-600 hover:scale-105 transition-all shadow-lg font-semibold"
-                  aria-label="Share on Twitter"
-                >
-                  <FaTwitter size={20} /> Twitter
-                </a>
-                <a
-                  href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(blog.title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-xl hover:bg-blue-800 hover:scale-105 transition-all shadow-lg font-semibold"
-                  aria-label="Share on LinkedIn"
-                >
-                  <FaLinkedin size={20} /> LinkedIn
-                </a>
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(blog.title + ' ' + shareUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 hover:scale-105 transition-all shadow-lg font-semibold"
-                  aria-label="Share on WhatsApp"
-                >
-                  <FaWhatsapp size={20} /> WhatsApp
-                </a>
-              </div>
+              <SocialShare 
+                url={shareUrl} 
+                title={blog.title} 
+                className="gap-4"
+              />
             </div>
 
             {/* Back to Blog */}

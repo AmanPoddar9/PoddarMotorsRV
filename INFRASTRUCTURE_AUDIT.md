@@ -13,7 +13,7 @@
 
 **Issue:**
 ```javascript
-accessKeyId: 'AKIAZQ3DNQ6CJUV7YGIH',
+accessKeyId: '[REDACTED]',
 secretAccessKey: 'YbuXKOh95Dm7FeAxgnVoZQyQep366YRuW9a6D2/l',
 ```
 

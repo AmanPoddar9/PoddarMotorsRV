@@ -32,6 +32,9 @@ exports.getOverview = async (req, res) => {
     const paidBookings = await InspectionBooking.find({ paymentStatus: 'Paid' });
     const totalRevenue = paidBookings.reduce((sum, booking) => sum + (booking.amount || 0), 0);
 
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
+
     res.json({
       inspections: {
         thisMonth: inspectionsThisMonth,
@@ -70,6 +73,9 @@ exports.getFunnel = async (req, res) => {
     const sentToAuction = await InspectionReport.countDocuments({ sentToAuction: true });
     const activeAuctions = await Auction.countDocuments({ status: { $in: ['Active', 'Completed'] } });
     const wonAuctions = await Auction.countDocuments({ winnerId: { $exists: true, $ne: null } });
+
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
 
     res.json({
       funnel: [
@@ -154,6 +160,9 @@ exports.getDealerAnalytics = async (req, res) => {
       }
     ]);
 
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
+
     res.json({
       topBidders,
       topWinners
@@ -194,6 +203,9 @@ exports.getRevenueAnalytics = async (req, res) => {
       { $match: { paymentStatus: 'Paid' } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
+
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
 
     res.json({
       dailyRevenue,
@@ -251,6 +263,9 @@ exports.getCarAnalytics = async (req, res) => {
       { $sort: { count: -1 } },
       { $limit: 10 }
     ]);
+
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
 
     res.json({
       avgPriceByBrand,
@@ -316,6 +331,10 @@ exports.getRecentActivity = async (req, res) => {
     activity.sort((a, b) => b.timestamp - a.timestamp);
 
     res.json({ activity: activity.slice(0, parseInt(limit)) });
+    
+    // Cache for 60 seconds
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120');
+    res.json({activity: activity.slice(0, parseInt(limit))});
   } catch (error) {
     console.error('Error fetching recent activity:', error);
     res.status(500).json({ error: error.message });

@@ -1,10 +1,24 @@
 const SellRequest = require('../models/sellRequest')
+const { sendEvent } = require('../services/facebookCAPIService');
 
 // Create a new sell request
 exports.createSellRequest = async (req, res) => {
   try {
     const sellRequest = new SellRequest(req.body)
     await sellRequest.save()
+
+    // [Meta CAPI] Fire Lead Event (Seller)
+    sendEvent('Lead', {
+        phone: sellRequest.phoneNumber,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent']
+    }, {
+        content_name: 'Car Sell Request',
+        content_category: 'Seller',
+        value: sellRequest.expectedPrice, // If available
+        currency: 'INR'
+    });
+
     res
       .status(201)
       .json({ message: 'Sell request created successfully', sellRequest })

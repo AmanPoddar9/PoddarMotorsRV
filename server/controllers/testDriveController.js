@@ -1,5 +1,6 @@
 const TestDriveBooking = require('../models/testDriveBooking')
 const Listing = require('../models/listing')
+const { sendEvent } = require('../services/facebookCAPIService');
 
 // Create a booking
 exports.createBooking = async (req, res) => {
@@ -7,6 +8,20 @@ exports.createBooking = async (req, res) => {
     const { listingId, date, email, time, name, mobileNumber } = req.body
     const booking = new TestDriveBooking({ listingId, email, date, time, name, mobileNumber })
     await booking.save()
+
+    // [Meta CAPI] Fire Schedule Event
+    sendEvent('Schedule', {
+        email: email,
+        phone: mobileNumber,
+        ip_address: req.ip,
+        user_agent: req.headers['user-agent']
+    }, {
+        content_name: 'Test Drive Booking',
+        content_ids: [listingId],
+        content_type: 'product',
+        status: 'Scheduled'
+    });
+
     res.status(201).json({ message: 'Booking created successfully', booking })
   } catch (error) {
     res.status(400).json({ error: error.message })
