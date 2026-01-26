@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import API_URL from '../../config/api';
 
 export default function BulkImportPage() {
   const [file, setFile] = useState(null);
@@ -60,7 +61,7 @@ export default function BulkImportPage() {
              const chunk = rows.slice(start, end);
 
              try {
-                const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/import/chunk`, {
+                const { data } = await axios.post(`${API_URL}/api/import/chunk`, {
                     rows: chunk,
                     importType,
                     defaultSource: 'Bulk Import Tool'

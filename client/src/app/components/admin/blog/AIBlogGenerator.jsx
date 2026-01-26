@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FiCpu, FiLoader, FiCheck, FiRefreshCw, FiImage, FiFileText, FiTag } from 'react-icons/fi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import API_URL from '../../../config/api';
 
 export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
   const [step, setStep] = useState(1); // 1: Input, 2: Select Topic, 3: Metadata, 4: Content, 5: Image
@@ -23,7 +24,7 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
   const handleGenerateTopics = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-topics`, {
+      const response = await axios.post(`${API_URL}/api/blogs/generate-topics`, {
         category
       }, {
         withCredentials: true
@@ -47,7 +48,7 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
     try {
       // STEP 1: METADATA
       setStep(3); // Researching...
-      const metaResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-metadata`, {
+      const metaResponse = await axios.post(`${API_URL}/api/blogs/generate-metadata`, {
         topic
       }, { withCredentials: true });
       
@@ -55,7 +56,7 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
       
       // STEP 2: BODY TEXT
       setStep(4); // Writing...
-      const bodyResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-body`, {
+      const bodyResponse = await axios.post(`${API_URL}/api/blogs/generate-body`, {
         topic,
         title: blogData.title
       }, { withCredentials: true });
@@ -65,7 +66,7 @@ export default function AIBlogGenerator({ onBlogGenerated, onClose }) {
       // STEP 3: IMAGE
       setStep(5); // Drawing...
       try {
-        const imageResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/generate-image`, {
+        const imageResponse = await axios.post(`${API_URL}/api/blogs/generate-image`, {
           title: blogData.title
         }, { withCredentials: true });
         
