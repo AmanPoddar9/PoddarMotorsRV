@@ -57,7 +57,8 @@ export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles 
 
       const res = await fetch(`${API_URL}/api/upload`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include' // Send authentication cookies
       })
       
       if (!res.ok) {
