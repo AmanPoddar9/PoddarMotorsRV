@@ -14,8 +14,8 @@ const BACKEND_URL = 'https://api.poddarmotors.com';
 // Prefer an explicit environment override when available so server components
 // (which do not see NEXT_PUBLIC_*) and client components stay in sync.
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  process.env.API_URL ||
-  (process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : BACKEND_URL);
+  process.env.NODE_ENV === 'production' 
+    ? BACKEND_URL 
+    : (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:4000');
 
 export default API_URL;
