@@ -91,8 +91,16 @@ export default function AddPolicyModal({ isOpen, onClose, preselectedCustomer = 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-gray-800 rounded-2xl w-full max-w-2xl border border-gray-700 shadow-2xl my-auto overflow-hidden flex flex-col max-h-[95vh]">
+        {/* Custom Scrollbar Styles */}
+        <style jsx>{`
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        `}</style>
+
         <div className="p-6 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-gray-800 z-10">
           <h2 className="text-xl font-bold text-white">
             {step === 1 ? 'Find Customer' : 'Add Policy Details'}
@@ -102,7 +110,7 @@ export default function AddPolicyModal({ isOpen, onClose, preselectedCustomer = 
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto custom-scrollbar">
           {step === 1 ? (
             <div className="space-y-6">
               <div className="flex gap-2">
