@@ -8,56 +8,64 @@ const adminSections = [
     description: 'Manage car inspections & reports',
     icon: <FiClipboard className="w-8 h-8" />,
     href: '/admin/inspections',
-    color: 'bg-blue-600'
+    color: 'bg-blue-600',
+    permission: 'inspections.manage'
   },
   {
     title: 'Unified Customers',
     description: 'View 360° Profiles & Leads',
     icon: <FiUsers className="w-8 h-8" />,
     href: '/admin/customers',
-    color: 'bg-purple-700'
+    color: 'bg-purple-700',
+    permission: 'customers.manage'
   },
   {
     title: 'Auctions',
     description: 'Manage live car auctions',
     icon: <FiDollarSign className="w-8 h-8" />,
     href: '/admin/auctions',
-    color: 'bg-green-600'
+    color: 'bg-green-600',
+    permission: 'auctions.manage'
   },
   {
     title: 'Dealers',
     description: 'Manage dealer accounts',
     icon: <FiUserCheck className="w-8 h-8" />,
     href: '/admin/dealers',
-    color: 'bg-purple-600'
+    color: 'bg-purple-600',
+    permission: 'dealers.manage'
   },
   {
     title: 'Listings',
     description: 'Manage car listings',
     icon: <FiList className="w-8 h-8" />,
     href: '/admin/listings',
-    color: 'bg-blue-500'
+    color: 'bg-blue-500',
+    permission: 'listings.manage'
   },
   {
     title: 'Test Drives',
     description: 'View test drive bookings',
     icon: <FiCalendar className="w-8 h-8" />,
     href: '/admin/test-drives',
-    color: 'bg-green-500'
+    color: 'bg-green-500',
+    permission: 'test_drives.manage'
   },
   {
     title: 'Workshop Bookings',
     description: 'View workshop service bookings',
     icon: <FiTool className="w-8 h-8" />,
     href: '/admin/workshopbooking',
-    color: 'bg-red-500'
+    color: 'bg-red-500',
+    permission: 'workshop.manage'
   },
   {
     title: 'Testimonials',
     description: 'Manage customer testimonials',
     icon: <FiMessageSquare className="w-8 h-8" />,
     href: '/admin/testimonials',
-    color: 'bg-purple-500'
+    color: 'bg-purple-500',
+    permission: 'testimonials.manage'
   },
 
   {
@@ -65,74 +73,104 @@ const adminSections = [
     description: 'Manage website features',
     icon: <FiStar className="w-8 h-8" />,
     href: '/admin/features',
-    color: 'bg-indigo-500'
+    color: 'bg-indigo-500',
+    permission: 'admin' // Only admins
   },
   {
     title: 'Sell Requests',
     description: 'View car sell requests',
     icon: <FiFileText className="w-8 h-8" />,
     href: '/admin/sellRequests',
-    color: 'bg-pink-500'
+    color: 'bg-pink-500',
+    permission: 'sell_requests.manage'
   },
   {
     title: 'Blogs',
     description: 'Manage blog posts and articles',
     icon: <FiFileText className="w-8 h-8" />,
     href: '/admin/blogs',
-    color: 'bg-teal-500'
+    color: 'bg-teal-500',
+    permission: 'blogs.manage'
   },
   {
     title: 'Videos',
     description: 'Manage video content',
     icon: <FiVideo className="w-8 h-8" />,
     href: '/admin/videos',
-    color: 'bg-orange-500'
+    color: 'bg-orange-500',
+    permission: 'videos.manage'
   },
   {
     title: 'Customer Offers',
     description: 'Manage customer offers',
     icon: <FiUsers className="w-8 h-8" />,
     href: '/admin/customer-offers',
-    color: 'bg-cyan-500'
+    color: 'bg-cyan-500',
+    permission: 'customers.manage'
   },
   {
     title: 'Call Automation',
     description: 'Manage call automation settings',
     icon: <FiPhone className="w-8 h-8" />,
     href: '/admin/call-automation',
-    color: 'bg-lime-500'
+    color: 'bg-lime-500',
+    permission: 'admin'
   },
   {
     title: 'Prime Memberships',
     description: 'Manage prime memberships',
     icon: <FiAward className="w-8 h-8" />,
     href: '/admin/prime',
-    color: 'bg-rose-500'
+    color: 'bg-rose-500',
+    permission: 'customers.manage'
   },
   {
     title: 'Inspection Analytics',
     description: 'View inspection analytics',
     icon: <FiPieChart className="w-8 h-8" />,
     href: '/admin/dashboard',
-    color: 'bg-indigo-600'
+    color: 'bg-indigo-600',
+    permission: 'dashboard.view'
   },
   {
     title: 'Insurance',
     description: 'Manage insurance policies',
     icon: <FiShield className="w-8 h-8" />,
     href: '/admin/insurance',
-    color: 'bg-emerald-600'
+    color: 'bg-emerald-600',
+    permission: 'insurance.manage'
   },
   {
     title: 'Data Import',
     description: 'Bulk upload customers/data',
     icon: <FiUpload className="w-8 h-8" />,
     href: '/admin/import',
-    color: 'bg-orange-600'
+    color: 'bg-orange-600',
+    permission: 'admin'
   }
 ]
 
+import { useCurrentUser } from '../../utils/useCurrentUser'
+
 const Home = () => {
+  const { user, loading } = useCurrentUser()
+
+  if (loading) {
+    return <div className="min-h-screen bg-custom-black flex items-center justify-center text-white">Loading...</div>
+  }
+
+  // Filter sections based on permissions
+  const visibleSections = adminSections.filter(section => {
+    if (!user) return false;
+    if (user.role === 'admin') return true; // Super Admin sees all
+    
+    // For specific role permissions
+    if (section.permission === 'admin') return false; // Explicitly Admin only
+    
+    // Check permission array
+    return user.permissions?.includes(section.permission);
+  });
+
   return (
     <div className="min-h-screen bg-custom-black">
 
@@ -141,35 +179,42 @@ const Home = () => {
           Admin Dashboard
         </h1>
         <p className="text-lg text-custom-platinum mb-10">
-          Manage your Poddar Motors website
+          Welcome back, {user?.name || user?.username || 'Admin'}
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {adminSections.map((section, index) => (
-            <Link
-              key={index}
-              href={section.href}
-              className="block bg-custom-jet rounded-lg shadow-md hover:shadow-xl hover:shadow-custom-accent/10 transition-all duration-300 overflow-hidden group border border-white/10"
-            >
-              <div className="p-6">
-                <div className={`${section.color} w-16 h-16 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                  {section.icon}
+        {visibleSections.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleSections.map((section, index) => (
+                <Link
+                key={index}
+                href={section.href}
+                className="block bg-custom-jet rounded-lg shadow-md hover:shadow-xl hover:shadow-custom-accent/10 transition-all duration-300 overflow-hidden group border border-white/10"
+                >
+                <div className="p-6">
+                    <div className={`${section.color} w-16 h-16 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                    {section.icon}
+                    </div>
+                    <h2 className="text-xl font-bold text-white mb-2">
+                    {section.title}
+                    </h2>
+                    <p className="text-custom-platinum">
+                    {section.description}
+                    </p>
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2">
-                  {section.title}
-                </h2>
-                <p className="text-custom-platinum">
-                  {section.description}
-                </p>
-              </div>
-              <div className="bg-white/5 px-6 py-3 border-t border-white/10">
-                <span className="text-sm font-medium text-custom-accent group-hover:text-yellow-400 transition-colors">
-                  View →
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="bg-white/5 px-6 py-3 border-t border-white/10">
+                    <span className="text-sm font-medium text-custom-accent group-hover:text-yellow-400 transition-colors">
+                    View →
+                    </span>
+                </div>
+                </Link>
+            ))}
+            </div>
+        ) : (
+            <div className="text-center py-20 bg-white/5 rounded-lg border border-white/10">
+                <h3 className="text-xl text-white font-semibold">No modules assigned</h3>
+                <p className="text-gray-400 mt-2">Please ask an administrator to assign permissions to your account.</p>
+            </div>
+        )}
       </main>
     </div>
   )
