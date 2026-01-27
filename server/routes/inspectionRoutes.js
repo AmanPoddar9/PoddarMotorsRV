@@ -19,8 +19,19 @@ router.get('/booking-by-token/:token', inspectionController.getBookingByToken) /
 router.post('/bookings/:id/regenerate-token', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.regenerateInspectorToken) // Admin only
 
 
+// Middleware to allow EITHER Inspector Token OR Admin Auth
+const requireInspectorOrAdmin = (req, res, next) => {
+    if (req.headers['x-inspector-token']) {
+        return next(); // Pass to controller for token validation
+    }
+    // Fallback to standard Admin/Employee Auth
+    requireAuth(req, res, () => {
+        requireRole('admin', 'inspections.manage')(req, res, next);
+    });
+};
+
 // Report routes
-router.post('/reports', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.createReport)
+router.post('/reports', requireInspectorOrAdmin, inspectionController.createReport)
 router.get('/reports', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.getAllReports)
 router.get('/reports/public/:id', inspectionController.getPublicReport) // Public
 router.get('/reports/:id', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.getReportById)
