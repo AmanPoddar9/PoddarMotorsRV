@@ -23,15 +23,23 @@ export default function AdminInspectionsPage() {
   const fetchBookings = async () => {
     setLoading(true)
     try {
-    const url = filterStatus === 'all'
-      ? `${API_URL}/api/inspections/bookings`
-      : `${API_URL}/api/inspections/bookings?status=${filterStatus}`
+      const url = filterStatus === 'all'
+        ? `${API_URL}/api/inspections/bookings`
+        : `${API_URL}/api/inspections/bookings?status=${filterStatus}`
       
-      const res = await fetch(url)
+      const res = await fetch(url, { credentials: 'include' })
+      if (!res.ok) throw new Error('Failed to fetch bookings')
+      
       const data = await res.json()
-      setBookings(data)
+      if (Array.isArray(data)) {
+        setBookings(data)
+      } else {
+        console.error('Invalid bookings data:', data)
+        setBookings([])
+      }
     } catch (error) {
       console.error('Error fetching bookings:', error)
+      setBookings([])
     } finally {
       setLoading(false)
     }
