@@ -37,7 +37,7 @@ exports.searchCustomers = async (req, res) => {
 // Create Customer (Admin Manual Entry)
 exports.createCustomer = async (req, res) => {
   try {
-    const { name, mobile, email, vehicle, address } = req.body;
+    const { name, mobile, email, vehicle, address, alternatePhones } = req.body;
 
     // 1. Duplicate Check
     const normalizedMobile = mobile.replace(/\D/g, '').slice(-10);
@@ -63,6 +63,7 @@ exports.createCustomer = async (req, res) => {
       name,
       mobile,
       email,
+      alternatePhones,
       vehicles: vehicle ? [vehicle] : [], // Expects { regNumber, make, model... }
       addresses: address ? [address] : []
     });

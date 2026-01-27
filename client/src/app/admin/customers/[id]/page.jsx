@@ -59,7 +59,8 @@ const CustomerDetailPage = ({ params }) => {
           email: response.data.email,
           lifecycleStage: response.data.lifecycleStage,
           source: response.data.source,
-          areaCity: response.data.areaCity
+          areaCity: response.data.areaCity,
+          alternatePhones: (response.data.alternatePhones || []).join(', ')
       })
 
       // Init Tags
@@ -82,7 +83,11 @@ const CustomerDetailPage = ({ params }) => {
   const handleUpdateProfile = async (e) => {
       e.preventDefault();
       try {
-          await axios.put(`${API_URL}/api/customer/${id}`, editFormData, { withCredentials: true })
+          const payload = {
+              ...editFormData,
+              alternatePhones: editFormData.alternatePhones.split(',').map(p => p.trim()).filter(p => p)
+          }
+          await axios.put(`${API_URL}/api/customer/${id}`, payload, { withCredentials: true })
           toast.success('Profile updated!')
           toggleModal('editProfile', false)
           fetchCustomer() 
@@ -228,8 +233,9 @@ const CustomerDetailPage = ({ params }) => {
              <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <Input label="Full Name" value={editFormData.name} onChange={e => setEditFormData({...editFormData, name: e.target.value})} />
                 <Input label="Mobile" value={editFormData.mobile} onChange={e => setEditFormData({...editFormData, mobile: e.target.value})} />
-                <Input label="Email" value={editFormData.email} onChange={e => setEditFormData({...editFormData, email: e.target.value})} />
-                <Input label="City / Area" value={editFormData.areaCity} onChange={e => setEditFormData({...editFormData, areaCity: e.target.value})} />
+                 <Input label="Email" value={editFormData.email} onChange={e => setEditFormData({...editFormData, email: e.target.value})} />
+                 <Input label="City / Area" value={editFormData.areaCity} onChange={e => setEditFormData({...editFormData, areaCity: e.target.value})} />
+                 <Input label="Alternate Numbers (comma separated)" value={editFormData.alternatePhones} onChange={e => setEditFormData({...editFormData, alternatePhones: e.target.value})} />
                 
                  <div>
                     <label className="block text-sm text-gray-400 mb-1">Source</label>
@@ -399,9 +405,14 @@ const CustomerDetailPage = ({ params }) => {
                         </span>
                    </div>
                    <div className="flex flex-wrap gap-6 text-custom-platinum text-sm">
-                        <span className="flex items-center gap-2"><FiPhone className="text-custom-accent"/> {customer.mobile}</span>
-                        <span className="flex items-center gap-2"><FiMail className="text-custom-accent"/> {customer.email || 'No Email'}</span>
-                        <span className="flex items-center gap-2"><FiMapPin className="text-custom-accent"/> {customer.areaCity || 'Unknown City'}</span>
+                         <span className="flex items-center gap-2"><FiPhone className="text-custom-accent"/> {customer.mobile}</span>
+                         {customer.alternatePhones && customer.alternatePhones.length > 0 && (
+                            <span className="flex items-center gap-2 text-xs text-gray-400">
+                                <FiPhone /> {customer.alternatePhones.join(', ')}
+                            </span>
+                         )}
+                         <span className="flex items-center gap-2"><FiMail className="text-custom-accent"/> {customer.email || 'No Email'}</span>
+                         <span className="flex items-center gap-2"><FiMapPin className="text-custom-accent"/> {customer.areaCity || 'Unknown City'}</span>
                    </div>
                 </div>
                 

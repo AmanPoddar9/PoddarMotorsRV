@@ -30,7 +30,8 @@ export default function AddPolicyModal({ isOpen, onClose, preselectedCustomer = 
     // If New Customer
     customerName: '',
     customerMobile: '',
-    customerEmail: ''
+    customerEmail: '',
+    customerAlternatePhones: ''
   })
   
   const [submitting, setSubmitting] = useState(false)
@@ -184,6 +185,10 @@ export default function AddPolicyModal({ isOpen, onClose, preselectedCustomer = 
                         <div className="grid grid-cols-2 gap-4">
                             <input required placeholder="Full Name" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" />
                             <input required placeholder="Mobile Number" value={formData.customerMobile} onChange={e => setFormData({...formData, customerMobile: e.target.value})} className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <input placeholder="Email" value={formData.customerEmail} onChange={e => setFormData({...formData, customerEmail: e.target.value})} className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" />
+                            <input placeholder="Alternate Numbers" value={formData.customerAlternatePhones} onChange={e => setFormData({...formData, customerAlternatePhones: e.target.value})} className="bg-gray-900 border border-gray-700 text-white rounded px-3 py-2" />
                         </div>
                     </div>
                 )}

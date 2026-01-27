@@ -22,13 +22,17 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
   
   // Profile Edit
   const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [editForm, setEditForm] = useState({ name: '', mobile: '' })
+  const [editForm, setEditForm] = useState({ name: '', mobile: '', alternatePhones: '' })
   const [saveLoading, setSaveLoading] = useState(false)
 
   const handleSaveProfile = async () => {
       setSaveLoading(true)
       try {
-          await axios.patch(`${API_URL}/api/insurance/customers/${customer._id}`, editForm, { withCredentials: true })
+          const payload = {
+              ...editForm,
+              alternatePhones: editForm.alternatePhones.split(',').map(p => p.trim()).filter(p => p)
+          }
+          await axios.patch(`${API_URL}/api/insurance/customers/${customer._id}`, payload, { withCredentials: true })
           setIsEditingProfile(false)
           fetchData() // Refresh
       } catch (error) {
@@ -62,7 +66,11 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
 
   useEffect(() => {
       if (customer) {
-          setEditForm({ name: customer.name, mobile: customer.mobile })
+          setEditForm({ 
+              name: customer.name, 
+              mobile: customer.mobile,
+              alternatePhones: (customer.alternatePhones || []).join(', ')
+          })
       }
   }, [customer])
 
@@ -134,6 +142,12 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
                                     onChange={e => setEditForm({...editForm, mobile: e.target.value})}
                                     placeholder="Mobile"
                                 />
+                                <input 
+                                    className="bg-gray-900 text-white border border-gray-600 rounded px-2 py-1 w-full"
+                                    value={editForm.alternatePhones}
+                                    onChange={e => setEditForm({...editForm, alternatePhones: e.target.value})}
+                                    placeholder="Alternate Numbers (comma separated)"
+                                />
                                 <div className="flex gap-2 mt-1">
                                     <button 
                                         onClick={handleSaveProfile}
@@ -178,6 +192,16 @@ export default function CustomerDetailModal({ isOpen, onClose, customerId }) {
                             <FaWhatsapp className="text-green-500" />
                             <span>WhatsApp</span>
                         </button>
+                    </div>
+                )}
+
+                {!isEditingProfile && customer.alternatePhones && customer.alternatePhones.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                        {customer.alternatePhones.map((phone, i) => (
+                            <a key={i} href={`tel:${phone}`} className="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-gray-300 transition flex items-center gap-1">
+                                <FaPhone size={8} /> {phone}
+                            </a>
+                        ))}
                     </div>
                 )}
 

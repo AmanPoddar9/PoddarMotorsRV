@@ -23,6 +23,7 @@ const CustomersPage = () => {
       name: '',
       mobile: '',
       email: '',
+      alternatePhones: '',
       source: 'Walk-in'
   })
 
@@ -55,10 +56,14 @@ const CustomersPage = () => {
   const handleAddCustomer = async (e) => {
       e.preventDefault();
       try {
-          await axios.post(`${API_URL}/api/customer`, newCustomerForm, { withCredentials: true, timeout: 10000 })
+          const payload = {
+              ...newCustomerForm,
+              alternatePhones: newCustomerForm.alternatePhones.split(',').map(p => p.trim()).filter(p => p)
+          }
+          await axios.post(`${API_URL}/api/customer`, payload, { withCredentials: true, timeout: 10000 })
           toast.success('Customer created successfully')
           setIsAddModalOpen(false)
-          setNewCustomerForm({ name: '', mobile: '', email: '', source: 'Walk-in' })
+          setNewCustomerForm({ name: '', mobile: '', email: '', alternatePhones: '', source: 'Walk-in' })
           fetchCustomers(1) // Refresh list
       } catch (error) {
           console.error(error);
@@ -273,6 +278,16 @@ const CustomersPage = () => {
                             className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
                             value={newCustomerForm.email}
                             onChange={e => setNewCustomerForm({...newCustomerForm, email: e.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm text-gray-400 mb-1">Alternate Numbers (comma separated)</label>
+                         <input 
+                            type="text"
+                            placeholder="e.g. 9876543210, 8765432109"
+                            className="w-full bg-black/40 border border-white/10 rounded px-4 py-2 text-white focus:border-custom-accent focus:outline-none"
+                            value={newCustomerForm.alternatePhones}
+                            onChange={e => setNewCustomerForm({...newCustomerForm, alternatePhones: e.target.value})}
                         />
                     </div>
                      <div>

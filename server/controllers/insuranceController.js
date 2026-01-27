@@ -415,7 +415,7 @@ exports.createPolicy = async (req, res) => {
   try {
     const { 
       // Customer Data (for matching/creation)
-      customerMobile, customerName, customerEmail,
+      customerMobile, customerName, customerEmail, customerAlternatePhones,
       // Policy Data
       policyNumber, insurer, expiryDate, previousIDV, premiumAmount, coverageType,
       // Vehicle Data
@@ -441,6 +441,7 @@ exports.createPolicy = async (req, res) => {
                 name: customerName,
                 mobile: customerMobile,
                 email: customerEmail || undefined, // Handle empty strings for sparse index
+                alternatePhones: customerAlternatePhones ? customerAlternatePhones.split(',').map(p => p.trim()).filter(p => p) : [],
                 vehicles: [{ regNumber, make, model, year }]
             });
             await customer.save();
