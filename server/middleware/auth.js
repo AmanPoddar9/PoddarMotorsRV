@@ -26,12 +26,13 @@ function requireRole(...allowed) {
     // PERMISSION CHECK for Employees
     // If the 'allowed' array contains a permission string (e.g. 'workshop.manage')
     // and the user is an employee, check their permissions array.
-    if (req.user.role === 'employee') {
-        const userPermissions = req.user.permissions || [];
-        // Check if ANY required permission matches user's permissions
-        const hasPermission = allowed.some(permission => userPermissions.includes(permission));
-        if (hasPermission) return next();
-    }
+    // PERMISSION CHECK (Granular)
+    // Check if user has ANY of the specific permission strings passed in 'allowed'
+    // This now applies to ALL roles (employee, bookingManager, etc.) not just 'employee'
+    const userPermissions = req.user.permissions || [];
+    const hasPermission = allowed.some(permission => userPermissions.includes(permission));
+    
+    if (hasPermission) return next();
 
     return res.status(403).json({ message: 'Forbidden' });
   };
