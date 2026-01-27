@@ -431,13 +431,16 @@ exports.getPublicReport = async (req, res) => {
 // Get report by ID (Admin/Dealer full access)
 exports.getReportById = async (req, res) => {
   try {
+    console.log('[DEBUG] Fetching Report ID:', req.params.id); // DEBUG LOG
     const report = await InspectionReport.findById(req.params.id)
       .populate('bookingId')
     
     if (!report) {
+      console.log('[DEBUG] Report NOT FOUND for ID:', req.params.id); // DEBUG LOG
       return res.status(404).json({ error: 'Report not found' })
     }
     
+    console.log('[DEBUG] Report FOUND:', report._id); // DEBUG LOG
     res.json(report)
   } catch (error) {
     console.error('Error fetching report:', error)
