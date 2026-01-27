@@ -17,18 +17,18 @@ router.get('/', getAllBlogs);
 router.get('/slug/:slug', getBlogBySlug);
 
 // Admin routes
-router.post('/', requireAuth, requireRole('admin', 'blogEditor'), createBlog);
-router.get('/admin/all', requireAuth, requireRole('admin', 'blogEditor'), getAllBlogsAdmin);
-router.get('/:id', requireAuth, requireRole('admin', 'blogEditor'), getBlogById);
-router.put('/:id', requireAuth, requireRole('admin', 'blogEditor'), updateBlog);
-router.delete('/:id', requireAuth, requireRole('admin', 'blogEditor'), deleteBlog);
+router.post('/', requireAuth, requireRole('admin', 'blogs.manage'), createBlog);
+router.get('/admin/all', requireAuth, requireRole('admin', 'blogs.manage'), getAllBlogsAdmin);
+router.get('/:id', requireAuth, requireRole('admin', 'blogs.manage'), getBlogById);
+router.put('/:id', requireAuth, requireRole('admin', 'blogs.manage'), updateBlog);
+router.delete('/:id', requireAuth, requireRole('admin', 'blogs.manage'), deleteBlog);
 
 const { generateTopics, generateBlogMetadata, generateBlogBody, generateBlogImage } = require('../controllers/blogGeneratorController');
 
 // AI Generator Routes
-router.post('/generate-topics', requireAuth, requireRole('admin', 'blogEditor'), generateTopics);
-router.post('/generate-metadata', requireAuth, requireRole('admin', 'blogEditor'), generateBlogMetadata);
-router.post('/generate-body', requireAuth, requireRole('admin', 'blogEditor'), generateBlogBody);
-router.post('/generate-image', requireAuth, requireRole('admin', 'blogEditor'), generateBlogImage);
+router.post('/generate-topics', requireAuth, requireRole('admin', 'blogs.manage'), generateTopics);
+router.post('/generate-metadata', requireAuth, requireRole('admin', 'blogs.manage'), generateBlogMetadata);
+router.post('/generate-body', requireAuth, requireRole('admin', 'blogs.manage'), generateBlogBody);
+router.post('/generate-image', requireAuth, requireRole('admin', 'blogs.manage'), generateBlogImage);
 
 module.exports = router;

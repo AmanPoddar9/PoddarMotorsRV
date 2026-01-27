@@ -102,9 +102,9 @@ const LandingHero = () => {
           transition={{ duration: 0.8 }}
           className="font-display font-bold text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-4 md:mb-6 leading-tight"
         >
-          Find Your Perfect{' '}
+          {t('landing.hero.title_prefix')}{' '}
           <span className="bg-gradient-to-r from-custom-accent to-yellow-400 bg-clip-text text-transparent">
-            Car
+            {t('landing.hero.title_suffix')}
           </span>
         </motion.h1>
         
@@ -115,7 +115,7 @@ const LandingHero = () => {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-lg md:text-2xl text-custom-seasalt mb-8 md:mb-12 max-w-2xl mx-auto"
         >
-          Quality certified cars at the best prices. 30 years of trust, 40,000+ happy customers.
+          {t('landing.hero.subtitle')}
         </motion.p>
 
         {/* Search Bar */}
@@ -137,7 +137,7 @@ const LandingHero = () => {
                     setShowSuggestions(true)
                   }}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  placeholder="Search by brand, model..."
+                  placeholder={t('landing.search.placeholder')}
                   className="flex-1 bg-transparent text-white placeholder-white/50 outline-none text-base sm:text-lg w-full"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
@@ -150,7 +150,7 @@ const LandingHero = () => {
                 onClick={handleSearch}
                 className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-custom-accent to-yellow-400 text-custom-black font-bold rounded-xl sm:rounded-full hover:scale-105 transition-all shadow-lg text-sm sm:text-base"
               >
-                Search
+                {t('landing.search.button')}
               </button>
             </div>
 
@@ -174,7 +174,7 @@ const LandingHero = () => {
                   ))
                 ) : (
                   <div className="px-6 py-4 text-custom-platinum text-center text-sm">
-                    No suggestions found
+                    {t('landing.search.no_suggestions')}
                   </div>
                 )}
               </div>
@@ -194,13 +194,13 @@ const LandingHero = () => {
             className="group inline-flex items-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold text-lg rounded-full hover:bg-white hover:text-custom-black transition-all duration-300"
           >
             <FaCar className="group-hover:translate-x-1 transition-transform" />
-            Browse Collection
+            {t('landing.hero.cta_browse')}
           </Link>
           <Link
             href="/sell"
             className="inline-flex items-center gap-2 px-8 py-4 text-white font-semibold text-lg hover:text-custom-accent transition-all duration-300"
           >
-            Sell Your Car →
+            {t('landing.hero.cta_sell')} →
           </Link>
         </motion.div>
       </div>

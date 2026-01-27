@@ -7,7 +7,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 router.get('/', getVideos);
 
 // Admin routes
-router.post('/', requireAuth, requireRole('admin'), createVideo);
-router.delete('/:id', requireAuth, requireRole('admin'), deleteVideo);
+router.post('/', requireAuth, requireRole('admin', 'videos.manage'), createVideo);
+router.delete('/:id', requireAuth, requireRole('admin', 'videos.manage'), deleteVideo);
 
 module.exports = router;

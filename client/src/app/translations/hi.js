@@ -13,7 +13,27 @@ export const hi = {
     admin: "एडमिन पैनल",
     login: "लॉगिन",
     logout: "लॉगआउट",
-    profile: "प्रोफाइल"
+    profile: "प्रोफाइल",
+    more: "अधिक",
+    find_car: "मेरी कार खोजें",
+    success_stories: "सफलता की कहानियां",
+    prime: "प्राइम मेंबरशिप",
+    buying_guide: "खरीदने की गाइड"
+  },
+  landing: {
+    hero: {
+      title: "अपनी सपनों की कार खोजें",
+      title_prefix: "अपनी सपनों की",
+      title_suffix: "कार खोजें",
+      subtitle: "सर्वोत्तम कीमतों पर क्वालिटी प्रमाणित कारें। 30 साल का भरोसा, 40,000+ खुश ग्राहक।",
+      cta_browse: "कारें देखें",
+      cta_sell: "अपनी कार बेचें"
+    },
+    search: {
+      placeholder: "ब्रांड, मॉडल द्वारा खोजें...",
+      button: "खोजें",
+      no_suggestions: "कोई सुझाव नहीं मिला"
+    }
   },
   home: {
     hero: {
@@ -162,6 +182,7 @@ export const hi = {
     close: "बंद करें",
     rupee: "₹",
     lakh: "लाख",
-    crore: "करोड़"
+    crore: "करोड़",
+    copyright: "© {year} पोद्दार मोटर्स"
   }
 }

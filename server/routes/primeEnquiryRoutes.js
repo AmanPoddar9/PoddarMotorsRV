@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
 // @route   GET /api/prime-enquiry
 // @desc    Get all Prime Enquiries (Paginated)
 // @access  Admin only
-router.get('/', requireAuth, requireRole('admin'), async (req, res) => {
+router.get('/', requireAuth, requireRole('admin', 'customers.manage'), async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
     
@@ -103,7 +103,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req, res) => {
 // @route   PATCH /api/prime-enquiry/:id
 // @desc    Update enquiry status
 // @access  Admin only
-router.patch('/:id', requireAuth, requireRole('admin'), async (req, res) => {
+router.patch('/:id', requireAuth, requireRole('admin', 'customers.manage'), async (req, res) => {
   try {
     const { status } = req.body;
     const enquiry = await PrimeEnquiry.findByIdAndUpdate(

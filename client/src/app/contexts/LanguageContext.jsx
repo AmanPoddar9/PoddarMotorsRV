@@ -12,8 +12,16 @@ export function LanguageProvider({ children }) {
     setMounted(true)
     if (typeof window !== 'undefined') {
       const savedLang = localStorage.getItem('language')
+      
       if (savedLang && (savedLang === 'en' || savedLang === 'hi')) {
         setLanguage(savedLang)
+      } else {
+        // Auto-detect browser language if no preference saved
+        // Check if browser language starts with 'hi' (Hindi)
+        const browserLang = navigator.language || navigator.userLanguage
+        if (browserLang && browserLang.toLowerCase().startsWith('hi')) {
+          setLanguage('hi')
+        }
       }
     }
   }, [])

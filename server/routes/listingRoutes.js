@@ -9,12 +9,14 @@ const upload = multer({ storage })
 
 const { listingValidation } = require('../middleware/validators');
 
-// Create a listing
-router.post('/', upload.single('image'), listingValidation, listingController.createListing)
+const { requireAuth, requireRole } = require('../middleware/auth');
+
+// Create a listing (Protected)
+router.post('/', requireAuth, requireRole('admin', 'listings.manage'), upload.single('image'), listingValidation, listingController.createListing)
 
 router.post('/filtered', listingController.getFilteredListings)
 
-router.post('/images', upload.single('image'), listingController.uploadImage)
+router.post('/images', requireAuth, requireRole('admin', 'listings.manage'), upload.single('image'), listingController.uploadImage)
 
 const { cacheMiddleware } = require('../middleware/cache');
 
@@ -49,9 +51,9 @@ router.get('/slug/:slug', cacheMiddleware(300), listingController.getListingBySl
 router.get('/:id', cacheMiddleware(300), listingController.getListingById)
 
 // Update one listing by ID
-router.put('/:id', listingValidation, listingController.updateListingById)
+router.put('/:id', requireAuth, requireRole('admin', 'listings.manage'), listingValidation, listingController.updateListingById)
 
 // Delete one listing by ID
-router.delete('/:id', listingController.deleteListingById)
+router.delete('/:id', requireAuth, requireRole('admin', 'listings.manage'), listingController.deleteListingById)
 
 module.exports = router

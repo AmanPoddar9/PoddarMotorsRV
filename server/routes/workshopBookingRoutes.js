@@ -10,15 +10,15 @@ const { workshopBookingValidation } = require('../middleware/validators');
 router.post('/', workshopBookingValidation, workshopBookingController.createWorkshopBooking)
 
 // Get all bookings (Admin)
-router.get('/', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.getAllWorkshopBookings)
+router.get('/', requireAuth, requireRole('admin', 'workshop.manage'), workshopBookingController.getAllWorkshopBookings)
 
 // Get archived bookings (Admin)
-router.get('/archived', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.getArchivedWorkshopBookings)
+router.get('/archived', requireAuth, requireRole('admin', 'workshop.manage'), workshopBookingController.getArchivedWorkshopBookings)
 
 // Archive a booking (Admin)
-router.put('/:id/archive', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.archiveWorkshopBooking)
+router.put('/:id/archive', requireAuth, requireRole('admin', 'workshop.manage'), workshopBookingController.archiveWorkshopBooking)
 
 // Delete a booking (Admin)
-router.delete('/:id', requireAuth, requireRole('admin', 'bookingManager'), workshopBookingController.deleteWorkshopBooking)
+router.delete('/:id', requireAuth, requireRole('admin', 'workshop.manage'), workshopBookingController.deleteWorkshopBooking)
 
 module.exports = router

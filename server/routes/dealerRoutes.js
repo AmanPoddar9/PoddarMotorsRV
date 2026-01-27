@@ -14,8 +14,8 @@ router.get('/me', requireDealerAuth, dealerController.getMe);
 router.get('/profile', requireDealerAuth, dealerController.getProfile);
 
 // Admin Routes - admin can manage dealers
-router.get('/', requireAuth, requireRole('admin'), dealerController.getAllDealers);
-router.put('/:id/status', requireAuth, requireRole('admin'), dealerController.updateStatus);
+router.get('/', requireAuth, requireRole('admin', 'dealers.manage'), dealerController.getAllDealers);
+router.put('/:id/status', requireAuth, requireRole('admin', 'dealers.manage'), dealerController.updateStatus);
 
 module.exports = router;
 

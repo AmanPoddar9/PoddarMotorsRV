@@ -8,7 +8,7 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 // Apply Auth Middleware
 // Open to Admin, Manager, and Insurance Agents
 router.use(requireAuth);
-router.use(requireRole('admin', 'manager', 'insurance_agent'));
+router.use(requireRole('admin', 'insurance.manage'));
 
 // --- DASHBOARD ---
 router.get('/stats', insuranceController.getDashboardStats);

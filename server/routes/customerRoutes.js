@@ -35,21 +35,21 @@ router.get('/me', requireCustomerAuth, getMe);
 const { requireAuth, requireRole } = require('../middleware/auth');
 const customerController = require('../controllers/customerController');
 
-router.get('/all', requireAuth, requireRole('admin'), getAllCustomers);
-router.post('/', requireAuth, requireRole('admin'), customerController.createCustomer); // Create Customer Route
-router.get('/:id', requireAuth, requireRole('admin'), customerController.getCustomerDetails);
-router.put('/:id', requireAuth, requireRole('admin'), customerController.updateCustomer);
-router.post('/:id/notes', requireAuth, requireRole('admin'), customerController.addCustomerNote);
-router.put('/:id/tags', requireAuth, requireRole('admin'), customerController.manageCustomerTags);
-router.post('/:id/vehicles', requireAuth, requireRole('admin'), customerController.addCustomerVehicle);
-router.put('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin'), customerController.updateCustomerVehicle);
-router.delete('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin'), customerController.deleteCustomerVehicle);
-router.post('/:id/service-records', requireAuth, requireRole('admin'), customerController.addServiceRecord);
-router.post('/:id/insurance', requireAuth, requireRole('admin'), customerController.addCustomerInsurance);
+router.get('/all', requireAuth, requireRole('admin', 'customers.manage'), getAllCustomers);
+router.post('/', requireAuth, requireRole('admin', 'customers.manage'), customerController.createCustomer); // Create Customer Route
+router.get('/:id', requireAuth, requireRole('admin', 'customers.manage'), customerController.getCustomerDetails);
+router.put('/:id', requireAuth, requireRole('admin', 'customers.manage'), customerController.updateCustomer);
+router.post('/:id/notes', requireAuth, requireRole('admin', 'customers.manage'), customerController.addCustomerNote);
+router.put('/:id/tags', requireAuth, requireRole('admin', 'customers.manage'), customerController.manageCustomerTags);
+router.post('/:id/vehicles', requireAuth, requireRole('admin', 'customers.manage'), customerController.addCustomerVehicle);
+router.put('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin', 'customers.manage'), customerController.updateCustomerVehicle);
+router.delete('/:id/vehicles/:vehicleId', requireAuth, requireRole('admin', 'customers.manage'), customerController.deleteCustomerVehicle);
+router.post('/:id/service-records', requireAuth, requireRole('admin', 'customers.manage'), customerController.addServiceRecord);
+router.post('/:id/insurance', requireAuth, requireRole('admin', 'customers.manage'), customerController.addCustomerInsurance);
 
-router.delete('/admin/requirements/:id', requireAuth, requireRole('admin'), customerController.deleteRequirement); // New Admin Delete
+router.delete('/admin/requirements/:id', requireAuth, requireRole('admin', 'customers.manage'), customerController.deleteRequirement); // New Admin Delete
 
-router.put('/:id/prime', requireAuth, requireRole('admin'), updatePrimeStatus);
+router.put('/:id/prime', requireAuth, requireRole('admin', 'customers.manage'), updatePrimeStatus);
 
 // Requirements Routes
 const requirementController = require('../controllers/customerRequirementController');

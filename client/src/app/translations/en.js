@@ -13,7 +13,27 @@ export const en = {
     admin: "Admin Panel",
     login: "Login",
     logout: "Logout",
-    profile: "Profile"
+    profile: "Profile",
+    more: "More",
+    find_car: "Find My Car",
+    success_stories: "Success Stories",
+    prime: "Prime Membership",
+    buying_guide: "Buying Guide"
+  },
+  landing: {
+    hero: {
+      title: "Find Your Perfect Car",
+      title_prefix: "Find Your Perfect",
+      title_suffix: "Car",
+      subtitle: "Quality certified cars at the best prices. 30 years of trust, 40,000+ happy customers.",
+      cta_browse: "Browse Collection",
+      cta_sell: "Sell Your Car"
+    },
+    search: {
+      placeholder: "Search by brand, model...",
+      button: "Search",
+      no_suggestions: "No suggestions found"
+    }
   },
   home: {
     hero: {
@@ -162,6 +182,7 @@ export const en = {
     close: "Close",
     rupee: "₹",
     lakh: "Lakh",
-    crore: "Crore"
+    crore: "Crore",
+    copyright: "© {year} Poddar Motors"
   }
 }

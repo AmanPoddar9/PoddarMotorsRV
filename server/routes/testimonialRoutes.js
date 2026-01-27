@@ -8,14 +8,15 @@ const {
   deleteTestimonial
 } = require('../controllers/testimonialController');
 
+const { requireAuth, requireRole } = require('../middleware/auth');
+
 // Public routes
 router.get('/', getTestimonials);
 router.get('/:id', getTestimonial);
 
-// Protected routes (Add auth middleware later if needed, currently open for simplicity as per request)
-// In a real app, we should add verifyToken/admin middleware here
-router.post('/', createTestimonial);
-router.put('/:id', updateTestimonial);
-router.delete('/:id', deleteTestimonial);
+// Protected routes
+router.post('/', requireAuth, requireRole('admin', 'testimonials.manage'), createTestimonial);
+router.put('/:id', requireAuth, requireRole('admin', 'testimonials.manage'), updateTestimonial);
+router.delete('/:id', requireAuth, requireRole('admin', 'testimonials.manage'), deleteTestimonial);
 
 module.exports = router;
