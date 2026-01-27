@@ -123,7 +123,13 @@ export default function PolicyList({ initialFilter, initialBucket }) {
     <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
       {/* Filters & Search */}
       <div className="flex flex-col md:flex-row gap-4 justify-between mb-6">
-        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <style jsx>{`
+            .custom-tabs-scrollbar::-webkit-scrollbar { height: 4px; }
+            .custom-tabs-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-tabs-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+            .custom-tabs-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        `}</style>
+        <div className="flex gap-2 overflow-x-auto pb-3 custom-tabs-scrollbar">
           {[
             { id: 'all', label: 'All Policies' },
             { id: 'today', label: `Expiring Today (${stats.today})`, isBucket: true },
