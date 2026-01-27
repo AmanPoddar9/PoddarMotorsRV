@@ -119,7 +119,8 @@ const inspectionReportSchema = new mongoose.Schema({
     timingBeltChainNoise: checkItemSchema,
     pistonNoise: checkItemSchema,
     turboCondition: checkItemSchema,
-    oilSealLeaks: checkItemSchema // Front/Rear
+    oilSealLeaks: checkItemSchema, // Front/Rear
+    batteryCondition: checkItemSchema // New field for battery health
   },
   
   // ==================== 6. TRANSMISSION & CLUTCH (12 fields) ====================
@@ -455,6 +456,7 @@ const inspectionReportSchema = new mongoose.Schema({
     
     // Engine Detail
     engineOilFillerCap: String, // Mobil compartment
+    battery: String, // New field for battery picture
     
     damages: [String], // Multiple damage photos
     rcFront: String,

@@ -173,6 +173,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
       musicSystem: '',
       
       engineOilFillerCap: '', // Mobil compartment
+      battery: '', // New battery picture
       
       lowerCrossMemberUnderBumper: '',
       apronLHPhoto: '',
@@ -701,6 +702,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <CheckItem label="Engine Oil Leaking" name="engineOilLeaking" value={formData.engine.engineOilLeaking} onChange={(val) => updateCheckItem('engine', 'engineOilLeaking', val)} />
                   <CheckItem label="Coolant Level" name="coolantLevel" value={formData.engine.coolantLevel} onChange={(val) => updateCheckItem('engine', 'coolantLevel', val)} />
                   <CheckItem label="Turbo Condition" name="turboCondition" value={formData.engine.turboCondition} onChange={(val) => updateCheckItem('engine', 'turboCondition', val)} />
+                  <CheckItem label="Battery Health" name="batteryCondition" value={formData.engine.batteryCondition} onChange={(val) => updateCheckItem('engine', 'batteryCondition', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: Injector Noise, Timing Belt, Piston Noise, Oil Seals, etc.</p>
               </div>
@@ -1143,6 +1145,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     { key: 'vinEmbossingCloseUp', label: 'VIN Embossing' },
                     { key: 'engineBay', label: 'Engine Bay' },
                     { key: 'engineOilFillerCap', label: 'Oil Filler Cap' },
+                    { key: 'battery', label: 'Battery' },
                     { key: 'bootFloorSpareWell', label: 'Boot Floor / Spare Well' },
                     
                     // Undercarriage
