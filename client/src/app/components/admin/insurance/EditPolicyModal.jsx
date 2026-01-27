@@ -80,25 +80,33 @@ export default function EditPolicyModal({ isOpen, onClose, policy, onSuccess }) 
   const statuses = ['Pending', 'InProgress', 'Renewed', 'Lost', 'NotInterested']
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-gray-800 rounded-xl w-full max-w-md border border-gray-700 p-6 shadow-2xl">
-        <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-gray-800 rounded-xl w-full max-w-md border border-gray-700 shadow-2xl my-auto overflow-hidden flex flex-col max-h-[95vh]">
+        {/* Custom Scrollbar Styles */}
+        <style jsx>{`
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        `}</style>
+
+        <div className="p-6 border-b border-gray-700 flex justify-between items-center sticky top-0 bg-gray-800 z-10 font-bold text-white">
+            <h3 className="text-xl flex items-center gap-2">
                 Edit Policy Details
             </h3>
             <button onClick={onClose}><FaTimes className="text-gray-400 hover:text-white" /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-            
-            <div>
-                <label className="block text-xs text-gray-500 mb-1">Policy Number</label>
-                <input 
-                    className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white font-mono"
-                    value={formData.policyNumber}
-                    onChange={e => setFormData({...formData, policyNumber: e.target.value})}
-                />
-            </div>
+        <div className="p-6 overflow-y-auto custom-scrollbar">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="block text-xs text-gray-500 mb-1">Policy Number</label>
+                    <input 
+                        className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white font-mono"
+                        value={formData.policyNumber}
+                        onChange={e => setFormData({...formData, policyNumber: e.target.value})}
+                    />
+                </div>
 
             {/* Vehicle Details */}
             <div className="bg-gray-700/50 p-3 rounded border border-gray-600">
@@ -210,5 +218,6 @@ export default function EditPolicyModal({ isOpen, onClose, policy, onSuccess }) 
         </form>
       </div>
     </div>
-  )
+  </div>
+)
 }
