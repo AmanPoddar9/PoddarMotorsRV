@@ -460,8 +460,8 @@ exports.createPolicy = async (req, res) => {
     // 2. Create Policy with Default Assignment
     let assignedTo = req.body.assignedAgent || null;
 
-    // If still null, try to assign to logged-in user if they are an agent
-    if (!assignedTo && req.user && req.user.role === 'insurance_agent') {
+    // If still null, try to assign to logged-in user if they are an agent OR employee
+    if (!assignedTo && req.user && (req.user.role === 'insurance_agent' || req.user.role === 'employee')) {
         assignedTo = req.user._id;
     }
     
@@ -491,7 +491,19 @@ exports.createPolicy = async (req, res) => {
 
   } catch (error) {
     console.error('Create policy error:', error);
-    res.status(500).json({ message: 'Error creating policy' });
+    
+    // Handle Duplicate Key Errors (e.g., Policy for same vehicle & end date)
+    if (error.code === 11000) {
+        if (error.keyPattern && error.keyPattern.email) {
+            return res.status(400).json({ message: 'A customer with this email already exists but has a different mobile number.' });
+        }
+        if (error.keyPattern && error.keyPattern['vehicle.regNumber']) {
+             return res.status(400).json({ message: 'A policy for this vehicle with the same expiry date already exists.' });
+        }
+        return res.status(400).json({ message: 'Duplicate entry detected (Email, Phone, or Policy).' });
+    }
+
+    res.status(500).json({ message: 'Error creating policy: ' + error.message });
   }
 };
 
