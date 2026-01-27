@@ -1,3 +1,4 @@
+'use client'
 
 import Link from 'next/link'
 import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart, FiShield, FiUpload } from 'react-icons/fi'
