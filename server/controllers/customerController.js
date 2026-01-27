@@ -39,12 +39,18 @@ exports.createCustomer = async (req, res) => {
   try {
     const { name, mobile, email, vehicle, address, alternatePhones } = req.body;
 
-    // 1. Duplicate Check
+    // 4. Duplicate Check
     const normalizedMobile = mobile.replace(/\D/g, '').slice(-10);
-    const normalizedEmail = email ? email.toLowerCase().trim() : 'dummy_nomatch';
+    // Fix: Treat empty email as null/undefined to avoid sparse index collision
+    const normalizedEmail = email && email.trim() !== '' ? email.toLowerCase().trim() : null;
+
+    const duplicateCheck = [{ mobile: normalizedMobile }];
+    if (normalizedEmail) {
+        duplicateCheck.push({ email: normalizedEmail });
+    }
 
     const existing = await Customer.findOne({ 
-      $or: [{ mobile: normalizedMobile }, { email: normalizedEmail }] 
+      $or: duplicateCheck
     });
     
     if (existing) {
@@ -62,7 +68,7 @@ exports.createCustomer = async (req, res) => {
       customId,
       name,
       mobile,
-      email,
+      email: normalizedEmail || undefined, // Save as undefined if null/empty
       alternatePhones,
       vehicles: vehicle ? [vehicle] : [], // Expects { regNumber, make, model... }
       addresses: address ? [address] : []
