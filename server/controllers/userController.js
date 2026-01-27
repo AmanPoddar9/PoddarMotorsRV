@@ -27,6 +27,7 @@ exports.createUser = async (req, res) => {
     const newUser = new User({
       name,
       email,
+      username: req.body.username || email.split('@')[0], // Use email handle as default username
       role: role || 'employee', // Default to employee
       permissions: permissions || [],
       isActive: true

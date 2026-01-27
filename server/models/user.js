@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs'); // Switched to bcryptjs for better compatibi
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
+  username: { type: String, unique: true, sparse: true }, // Added to satisfy legacy DB index expecting username
   name: { type: String }, // Added for agent identification
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ['admin', 'employee', 'blogEditor', 'bookingManager', 'insurance_agent'], default: 'admin' },
