@@ -440,7 +440,7 @@ exports.createPolicy = async (req, res) => {
                 customId,
                 name: customerName,
                 mobile: customerMobile,
-                email: customerEmail,
+                email: customerEmail || undefined, // Handle empty strings for sparse index
                 vehicles: [{ regNumber, make, model, year }]
             });
             await customer.save();
