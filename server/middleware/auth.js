@@ -12,10 +12,27 @@ function requireAuth(req, res, next) {
   }
 }
 
+// Enhanced requireRole to handle both Roles AND specific Permissions
 function requireRole(...allowed) {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ message: 'Unauthenticated' });
+
+    // SUPER ADMIN CHECK: If user is 'admin', allow EVERYTHING.
+    if (req.user.role === 'admin') return next();
+
+    // Check if user has one of the allowed roles
     if (allowed.includes(req.user.role)) return next();
+
+    // PERMISSION CHECK for Employees
+    // If the 'allowed' array contains a permission string (e.g. 'workshop.manage')
+    // and the user is an employee, check their permissions array.
+    if (req.user.role === 'employee') {
+        const userPermissions = req.user.permissions || [];
+        // Check if ANY required permission matches user's permissions
+        const hasPermission = allowed.some(permission => userPermissions.includes(permission));
+        if (hasPermission) return next();
+    }
+
     return res.status(403).json({ message: 'Forbidden' });
   };
 }

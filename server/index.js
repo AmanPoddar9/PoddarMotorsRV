@@ -148,6 +148,7 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/price-alerts', require('./routes/priceAlerts'));
 app.use('/api/activities', require('./routes/activities'));
 app.use('/api/videos', videoRoutes);
+app.use('/api/users', require('./routes/userRoutes')); // New User Management Routes
 app.use('/api/inspections', inspectionRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/auctions', auctionRoutes);

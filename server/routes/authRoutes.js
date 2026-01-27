@@ -14,20 +14,28 @@ router.post('/login', loginValidation, async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Only allow admin role to login via this endpoint
-    if (user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied. Admin login only.' });
+    // Only allow admin OR employee role to login via this endpoint
+    if (user.role !== 'admin' && user.role !== 'employee') {
+      return res.status(403).json({ message: 'Access denied. Admin/Employee login only.' });
+    }
+    
+    // Check if employee is active
+    if (user.role === 'employee' && user.isActive === false) {
+        return res.status(403).json({ message: 'Account is deactivated. Contact Admin.' });
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { 
+          id: user._id, 
+          role: user.role,
+          name: user.name,
+          permissions: user.permissions 
+      },
       process.env.JWT_SECRET,
-      { expiresIn: '2h' }
+      { expiresIn: '12h' } // Increased to 12h for employee convenience
     );
 
     const isProduction = process.env.NODE_ENV === 'production';
-    const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
-
     const cookieOptions = {
       httpOnly: true,
       sameSite: isProduction ? 'lax' : 'lax',
@@ -36,22 +44,19 @@ router.post('/login', loginValidation, async (req, res) => {
       domain: isProduction ? '.poddarmotors.com' : undefined
     };
 
-    // Removed manual check for cookieDomain env var to enforce .poddarmotors.com strategy
-
     // Clear any existing dealer/customer auth cookies
     res.clearCookie('dealer_auth', cookieOptions);
     res.clearCookie('customer_auth', cookieOptions);
 
-    // Set admin auth cookie
+    // Set admin/employee auth cookie
     res.cookie('auth', token, {
       ...cookieOptions,
-      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+      maxAge: 12 * 60 * 60 * 1000 
     });
 
-    res.json({ message: 'Logged in', role: user.role });
-
+    res.json({ message: 'Logged in', role: user.role, permissions: user.permissions });
   } catch (error) {
-    console.error('Error during admin login:', error);
+    console.error('Error during login:', error);
     res.status(500).json({ message: 'Unexpected error during login. Please try again.' });
   }
 });
@@ -59,7 +64,6 @@ router.post('/login', loginValidation, async (req, res) => {
 // Logout – clear cookie
 router.post('/logout', (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
 
   const cookieOptions = {
     httpOnly: true,
@@ -85,11 +89,17 @@ router.get('/me', (req, res) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (payload.role !== 'admin') {
-      return res.status(403).json({ message: 'Forbidden: Admin access only' });
+    // Allow both admin and employee
+    if (payload.role !== 'admin' && payload.role !== 'employee') {
+      return res.status(403).json({ message: 'Forbidden: Admin/Employee access only' });
     }
 
-    res.json({ id: payload.id, role: payload.role });
+    res.json({ 
+        id: payload.id, 
+        role: payload.role, 
+        name: payload.name, 
+        permissions: payload.permissions 
+    });
   } catch (e) {
     res.status(401).json({ message: 'Invalid token' });
   }

@@ -1,15 +1,26 @@
-const express = require('express')
-const router = express.Router()
-const userController = require('../controllers/userController')
-const { requireAuth, requireRole } = require('../middleware/auth')
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+const { requireAuth, requireRole } = require('../middleware/auth');
 
-// Get Agents - Protected, any authenticated user can see agents (for internal dropdowns)
-router.get('/agents', requireAuth, userController.getAgents);
+// All routes require ADMIN role ("admin")
+// Existing "admin" users are now effectively "Super Admins"
+router.use(requireAuth);
+router.use(requireRole('admin'));
 
-// Create User - Protected, Admin only
-router.post('/', requireAuth, requireRole('admin'), userController.createUser);
+// Get all users
+router.get('/', userController.getUsers);
 
-// Login is handled in authRoutes.js usually, but if we need it here:
-// router.post('/login', userController.login);
+// Create new user (employee/admin/agent)
+router.post('/', userController.createUser);
 
-module.exports = router
+// Update user (permissions, password, etc)
+router.put('/:id', userController.updateUser);
+
+// Delete user
+router.delete('/:id', userController.deleteUser);
+
+// Alias /agents to / for backward compatibility if frontend uses checks for specific roles
+router.get('/agents', userController.getAgents);
+
+module.exports = router;

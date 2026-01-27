@@ -1,40 +1,106 @@
 const User = require('../models/user');
-const bcrypt = require('bcryptjs');
 
-// Get all agents (or potential agents)
-exports.getAgents = async (req, res) => {
-    try {
-        // Fetch admins and insurance agents
-        // If roles aren't strictly set yet, we might just fetch all for now, 
-        // but let's try to filter if possible.
-        // For now, return all users so Admin can assign anyone.
-        const agents = await User.find({}, 'name email role _id');
-        res.json(agents);
-    } catch (error) {
-        console.error('Error fetching agents:', error);
-        res.status(500).json({ message: 'Error fetching agents' });
-    }
+// Get all users (employees and admins)
+// For the UI, we want to list everyone so the admin can manage them.
+exports.getUsers = async (req, res) => {
+  try {
+    // Return necessary fields, exclude password hash
+    const users = await User.find({}, '-passwordHash').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
-// Create User (Admin only likely)
+// Create a new employee
 exports.createUser = async (req, res) => {
-    try {
-        const { name, email, password, role } = req.body;
-        
-        // Basic validation
-        if (!email || !password) return res.status(400).json({ message: 'Email/Password required' });
+  try {
+    const { name, email, password, permissions, role } = req.body;
 
-        const existing = await User.findOne({ email });
-        if (existing) return res.status(400).json({ message: 'User already exists' });
-
-        const user = new User({ name, email, role });
-        await user.setPassword(password);
-        await user.save();
-
-        res.status(201).json({ message: 'User created', userId: user._id });
-    } catch (error) {
-        console.error('Create User Error:', error);
-        res.status(500).json({ message: 'Error creating user' });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User with this email already exists' });
     }
+
+    const newUser = new User({
+      name,
+      email,
+      role: role || 'employee', // Default to employee
+      permissions: permissions || [],
+      isActive: true
+    });
+
+    await newUser.setPassword(password);
+    await newUser.save();
+
+    const userResponse = newUser.toObject();
+    delete userResponse.passwordHash;
+
+    res.status(201).json(userResponse);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
+// Update user (permissions, active status, or password)
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, permissions, role, isActive } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (role) user.role = role;
+    if (permissions) user.permissions = permissions;
+    if (isActive !== undefined) user.isActive = isActive;
+
+    // PASSWORD RESET LOGIC
+    // If a new password is provided, hash it and save.
+    if (password && password.trim() !== '') {
+      await user.setPassword(password);
+    }
+
+    await user.save();
+
+    const userResponse = user.toObject();
+    delete userResponse.passwordHash;
+
+    res.json(userResponse);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Delete user
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Prevent deleting self (simple check, frontend also handles this)
+    if (req.user && req.user.id === id) {
+      return res.status(400).json({ message: 'You cannot delete your own account' });
+    }
+
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Keep existing getAgents for backward compatibility if needed, or alias it
+exports.getAgents = exports.getUsers;
