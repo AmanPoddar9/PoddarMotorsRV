@@ -21,15 +21,23 @@ export default function AdminReportPage() {
 
   const fetchReport = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/inspections/reports/${id}`)
-      const data = await res.json()
-      if (res.ok) {
-        setReport(data)
-      } else {
-        alert('Report not found')
+      const res = await fetch(`${API_URL}/api/inspections/reports/${id}`, {
+        credentials: 'include'
+      })
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Failed to load report' }))
+        console.error('Failed to fetch report:', errorData)
+        alert(errorData.error || 'Report not found')
+        setLoading(false)
+        return
       }
+      
+      const data = await res.json()
+      setReport(data)
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error fetching report:', error)
+      alert('Failed to load report. Please try again.')
     } finally {
       setLoading(false)
     }
