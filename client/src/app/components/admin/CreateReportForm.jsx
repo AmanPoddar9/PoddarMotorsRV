@@ -343,11 +343,16 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
       }
       
       // Add authentication header
+      // For Admin: cookie is primary (via credentials: 'include'), but we add Bearer as fallback if stored
       if (inspectorMode && inspectorToken) {
-        // For inspector mode, send token as custom header for backend to validate
         headers['X-Inspector-Token'] = inspectorToken
-      } else {
+      } else if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`
+      }
+      
+      const fetchOptions = {
+        headers,
+        credentials: 'include' // CRITICAL: Send cookies
       }
       
       let res;
@@ -356,15 +361,15 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
         // UPDATE Existing Report
         res = await fetch(`${API_URL}/api/inspections/reports/${initialData._id}`, {
           method: 'PUT',
-          headers,
-          body: JSON.stringify(formData)
+          body: JSON.stringify(formData),
+          ...fetchOptions
         })
       } else {
         // CREATE New Report
         res = await fetch(`${API_URL}/api/inspections/reports`, {
           method: 'POST',
-          headers,
-          body: JSON.stringify(formData)
+          body: JSON.stringify(formData),
+          ...fetchOptions
         })
       }
       
