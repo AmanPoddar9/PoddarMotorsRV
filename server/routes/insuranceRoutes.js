@@ -39,10 +39,6 @@ router.get('/interactions/:customerId', insuranceController.getInteractions);
 
 // --- BULK IMPORT ---
 // Restricted to Admin/Manager only
-router.post('/import', (req, res, next) => {
-    // Only Admin/Manager can import
-    if (['admin', 'manager'].includes(req.user.role)) return next();
-    return res.status(403).json({ message: 'Forbidden' });
-}, insuranceController.importPolicies);
+router.post('/import', insuranceController.importPolicies);
 
 module.exports = router;
