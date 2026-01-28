@@ -47,12 +47,13 @@ const CheckItem = ({ label, name, value, onChange, required = false }) => {
 }
 
 
-export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tokenProp }) {
+export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tokenProp, initialData, isEditMode = false }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   
   // Priority: Props > SearchParams
-  const bookingId = bookingIdProp || searchParams.get('bookingId')
+  // If editing, use bookingId from initialData
+  const bookingId = bookingIdProp || (isEditMode && initialData?.bookingId?._id) || (isEditMode && initialData?.bookingId) || searchParams.get('bookingId')
   const inspectorMode = inspectorModeProp || searchParams.get('inspectorMode') === 'true'
   const inspectorToken = tokenProp || searchParams.get('token')
   
@@ -214,11 +215,32 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
   }
 
   // State
-  const [formData, setFormData] = useState(initialFormState)
+  // If isEditMode, merge initialFormState with initialData
+  const [formData, setFormData] = useState(() => {
+    if (isEditMode && initialData) {
+      // Ensure we merge correctly to keep structure intact
+      return {
+        ...initialFormState,
+        ...initialData,
+        // Override nested objects to ensure they exist
+        vehicleInfo: { ...initialFormState.vehicleInfo, ...(initialData.vehicleInfo || {}) },
+        photos: { ...initialFormState.photos, ...(initialData.photos || {}) },
+        finalAssessment: { ...initialFormState.finalAssessment, ...(initialData.finalAssessment || {}) }, 
+        // Ensure bookingId is preserved
+        bookingId: initialData.bookingId?._id || initialData.bookingId || bookingId
+      }
+    }
+    return initialFormState
+  })
   const [isLoaded, setIsLoaded] = useState(false)
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (ONLY if NOT in edit mode)
   useEffect(() => {
+    if (isEditMode) {
+      setIsLoaded(true)
+      return
+    }
+
     const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
     const savedData = localStorage.getItem(storageKey)
     
@@ -242,9 +264,9 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
     setIsLoaded(true)
   }, [bookingId])
 
-  // Save to localStorage on change
+  // Save to localStorage on change (ONLY if NOT in edit mode)
   useEffect(() => {
-    if (!isLoaded) return // Don't save before initial load
+    if (!isLoaded || isEditMode) return // Don't save before initial load OR if in edit mode
     
     const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
     const timer = setTimeout(() => {
@@ -256,6 +278,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
 
   // Clear draft helper
   const clearDraft = () => {
+    if (isEditMode) return 
     const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
     localStorage.removeItem(storageKey)
     if (window.confirm('Are you sure you want to clear the form? This cannot be undone.')) {
@@ -285,15 +308,27 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
         headers['Authorization'] = `Bearer ${authToken}`
       }
       
-      const res = await fetch(`${API_URL}/api/inspections/reports`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(formData)
-      })
+      let res;
+      
+      if (isEditMode) {
+        // UPDATE Existing Report
+        res = await fetch(`${API_URL}/api/inspections/reports/${initialData._id}`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify(formData)
+        })
+      } else {
+        // CREATE New Report
+        res = await fetch(`${API_URL}/api/inspections/reports`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(formData)
+        })
+      }
       
       if (res.ok) {
         const data = await res.json()
-        alert('Inspection report created successfully!')
+        alert(isEditMode ? 'Inspection report updated successfully!' : 'Inspection report created successfully!')
         
         // Redirect based on mode
         if (inspectorMode) {
@@ -305,15 +340,17 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
           alert('Thank you! Your inspection report has been submitted successfully.')
           window.location.href = '/' // Redirect to home or thank you page
         } else {
-          // Clear draft on success
-          const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
-          localStorage.removeItem(storageKey)
+          // Clear draft on success (only for new reports)
+          if (!isEditMode) {
+            const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+            localStorage.removeItem(storageKey)
+          }
           
-          router.push(`/admin/inspections/report/${data.report._id}`)
+          router.push(`/admin/inspections/report/${data.report?._id || initialData?._id}`)
         }
       } else {
-        const error = await res.json()
-        alert(`Error: ${error.message}`)
+        const errorData = await res.json()
+        alert(`Failed to ${isEditMode ? 'update' : 'create'} report: ` + (errorData.message || errorData.error))
       }
     } catch (error) {
       console.error('Error creating report:', error)
@@ -1427,7 +1464,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                 disabled={loading}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
               >
-                {loading ? 'Saving...' : 'Create Report'}
+                {loading ? 'Saving...' : (isEditMode ? 'Update Report' : 'Create Report')}
               </button>
             )}
           </div>

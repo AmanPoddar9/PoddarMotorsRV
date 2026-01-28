@@ -356,12 +356,20 @@ export default function AdminInspectionsPage() {
                   )}
 
                   {booking.status === 'Completed' && booking.inspectionReportId && (
-                    <button
-                      onClick={() => window.location.href = `/admin/inspections/report/${booking.inspectionReportId._id || booking.inspectionReportId}`}
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
-                    >
-                      View Report
-                    </button>
+                    <>
+                      <button
+                        onClick={() => window.location.href = `/admin/inspections/report/${booking.inspectionReportId._id || booking.inspectionReportId}`}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                      >
+                        View Report
+                      </button>
+                      <button
+                        onClick={() => window.location.href = `/admin/inspections/report/edit/${booking.inspectionReportId._id || booking.inspectionReportId}`}
+                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                      >
+                        Edit Report
+                      </button>
+                    </>
                   )}
 
                   {booking.status === 'In Progress' && (
