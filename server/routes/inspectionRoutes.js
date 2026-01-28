@@ -13,6 +13,7 @@ router.put('/bookings/:id/assign-inspector', requireAuth, requireRole('admin', '
 router.put('/bookings/:id/payment', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.updatePaymentStatus)
 router.delete('/bookings/:id', requireAuth, requireRole('admin', 'inspections.manage'), inspectionController.deleteBooking)
 router.get('/slots/available', inspectionController.getAvailableSlots) // Public
+router.get('/bookings/confirmation/:id', inspectionController.getBookingConfirmation) // Public (Booking Confirmation Page)
 
 // Inspector token routes
 router.get('/booking-by-token/:token', inspectionController.getBookingByToken) // Public route

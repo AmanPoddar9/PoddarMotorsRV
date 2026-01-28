@@ -101,7 +101,46 @@ const sendIntentBasedMessage = async (mobile, intent) => {
     return await sendWhatsAppMessage(cleanMobile, templateName);
 };
 
+const sendInsuranceReminder = async (customer, policy, daysToExpiry) => {
+    try {
+        if (!customer || !customer.mobile) return;
+        
+        // Template Selection Logic
+        // For now, we will use a generic reminder or specific ones if available
+        let templateName = 'insurance_expiry_reminder'; 
+        
+        // Fallback since these templates likely don't exist in your meta business account yet
+        // You generally need to create them in Meta Manager: 
+        // "Hello {{1}}, your {{2}} insurance for {{3}} expires in {{4}} days. Renew now!"
+        templateName = 'hello_world'; 
+        
+        let cleanMobile = customer.mobile.replace(/\D/g, '');
+        if (cleanMobile.length === 10) cleanMobile = '91' + cleanMobile;
+
+        // Prepare Variables based on Template
+        // Assuming universal template with basic params: name, policyType, regNumber, days
+        const components = [
+            {
+                type: 'body',
+                parameters: [
+                    { type: 'text', text: customer.name || 'Customer' },       // {{1}} Name
+                    { type: 'text', text: policy.vehicle?.regNumber || 'Vehicle' }, // {{2}} Vehicle
+                    { type: 'text', text: daysToExpiry.toString() }             // {{3}} Days
+                ]
+            }
+        ];
+
+        console.log(`[Insurance Reminder] Sending ${daysToExpiry}-day reminder to ${cleanMobile}`);
+        return await sendWhatsAppMessage(cleanMobile, templateName, 'en_US', components);
+
+    } catch (error) {
+        console.error('[Insurance Reminder] Failed:', error.message);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendWhatsAppMessage,
-    sendIntentBasedMessage
+    sendIntentBasedMessage,
+    sendInsuranceReminder
 };

@@ -57,11 +57,10 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
   const inspectorToken = tokenProp || searchParams.get('token')
   
   const [currentStep, setCurrentStep] = useState(1)
-  // ... rest of the component logic ...
   const [loading, setLoading] = useState(false)
-  
-  // Form state
-  const [formData, setFormData] = useState({
+
+  // COMPREHENSIVE INITIAL STATE
+  const initialFormState = {
     bookingId: bookingId || '',
     inspectorName: '',
     inspectorID: '',
@@ -212,7 +211,59 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
         structuralZones: 5
       }
     }
-  })
+  }
+
+  // State
+  const [formData, setFormData] = useState(initialFormState)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+    const savedData = localStorage.getItem(storageKey)
+    
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData)
+        // Merge saved data with initial structure to ensure new fields are present
+        setFormData(prev => ({
+          ...prev,
+          ...parsedData,
+          // Ensure nested objects are merged correctly if structure changed
+          vehicleInfo: { ...prev.vehicleInfo, ...(parsedData.vehicleInfo || {}) },
+          photos: { ...prev.photos, ...(parsedData.photos || {}) },
+          finalAssessment: { ...prev.finalAssessment, ...(parsedData.finalAssessment || {}) }
+        }))
+        console.log('Restored draft from localStorage')
+      } catch (e) {
+        console.error('Failed to parse saved draft', e)
+      }
+    }
+    setIsLoaded(true)
+  }, [bookingId])
+
+  // Save to localStorage on change
+  useEffect(() => {
+    if (!isLoaded) return // Don't save before initial load
+    
+    const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+    const timer = setTimeout(() => {
+      localStorage.setItem(storageKey, JSON.stringify(formData))
+    }, 500) // Debounce saving
+
+    return () => clearTimeout(timer)
+  }, [formData, bookingId, isLoaded])
+
+  // Clear draft helper
+  const clearDraft = () => {
+    const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+    localStorage.removeItem(storageKey)
+    if (window.confirm('Are you sure you want to clear the form? This cannot be undone.')) {
+      setFormData(initialFormState)
+      window.location.reload()
+    }
+  }
+
   
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -246,10 +297,18 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
         
         // Redirect based on mode
         if (inspectorMode) {
+          // Clear draft on success
+          const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+          localStorage.removeItem(storageKey)
+          
           // Show success message for inspector
           alert('Thank you! Your inspection report has been submitted successfully.')
           window.location.href = '/' // Redirect to home or thank you page
         } else {
+          // Clear draft on success
+          const storageKey = bookingId ? `inspection_draft_${bookingId}` : 'inspection_draft_new'
+          localStorage.removeItem(storageKey)
+          
           router.push(`/admin/inspections/report/${data.report._id}`)
         }
       } else {
@@ -1171,6 +1230,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                       <ImageUpload 
                         maxImages={1}
                         onImagesChange={(urls) => updateField('photos', photo.key, urls[0] || '')}
+                        initialImages={formData.photos[photo.key] ? [formData.photos[photo.key]] : []}
                       />
                       {formData.photos[photo.key] && (
                         <div className="mt-2 relative aspect-video rounded overflow-hidden">
@@ -1195,15 +1255,11 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     <ImageUpload 
                       maxImages={10}
                       onImagesChange={(urls) => {
-                        // Append new URLs to existing damages array
-                        const currentDamages = Array.isArray(formData.photos.damages) ? formData.photos.damages : [];
-                        // Check if we need to merge or replace. 
-                        // ImageUpload usually returns the full new list if it manages state, or just new files?
-                        // Looking at ImageUpload.jsx: `const newImages = [...images, ...data.urls]; handleUpload(newImages)`
-                        // So it returns the FULL list of images maintained by that component instance.
-                        // We should map that to our form field.
+                        // For multi-upload, ImageUpload (with my changes) returns the FULL list
+                        // of images it knows about. So we just replace the state.
                         updateField('photos', 'damages', urls)
                       }}
+                      initialImages={Array.isArray(formData.photos?.damages) ? formData.photos.damages : []}
                     />
                     
                     {/* Display uploaded damage photos if outside ImageUpload component's preview */}

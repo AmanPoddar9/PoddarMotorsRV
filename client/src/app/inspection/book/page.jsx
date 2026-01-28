@@ -10,6 +10,11 @@ export default function BookInspectionPage() {
   const [loading, setLoading] = useState(false)
   const [availableSlots, setAvailableSlots] = useState([])
   const [loadingSlots, setLoadingSlots] = useState(false)
+  const [minDate, setMinDate] = useState('')
+
+  useEffect(() => {
+    setMinDate(new Date().toISOString().split('T')[0])
+  }, [])
 
   const [formData, setFormData] = useState({
     // Customer Details
@@ -119,8 +124,8 @@ export default function BookInspectionPage() {
         brand: formData.brand,
         model: formData.model,
         variant: formData.variant,
-        year: parseInt(formData.year),
-        kmDriven: parseInt(formData.kmDriven),
+        year: parseInt(formData.year) || new Date().getFullYear(),
+        kmDriven: parseInt(formData.kmDriven) || 0,
         fuelType: formData.fuelType,
         transmissionType: formData.transmissionType, appointmentDate: formData.appointmentDate,
         appointmentTimeSlot: formData.appointmentTimeSlot,
@@ -142,6 +147,7 @@ export default function BookInspectionPage() {
       const bookingData = await bookingRes.json()
 
       if (!bookingRes.ok) {
+        console.error('Booking failed with status:', bookingRes.status, bookingData)
         alert(bookingData.error || 'Booking failed')
         setLoading(false)
         return
@@ -400,7 +406,7 @@ export default function BookInspectionPage() {
                     name="appointmentDate"
                     value={formData.appointmentDate}
                     onChange={handleDateChange}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={minDate}
                     className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />

@@ -167,6 +167,14 @@ app.use(errorHandler);
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    
+    // Initialize Schedulers
+    try {
+        const { initScheduler } = require('./schedulers/insuranceScheduler');
+        initScheduler();
+    } catch (e) {
+        console.error('Failed to init scheduler:', e);
+    }
   });
 
   // Initialize WebSocket (Note: WebSockets won't work standardly on Vercel Serverless)

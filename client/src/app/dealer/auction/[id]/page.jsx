@@ -57,7 +57,8 @@ export default function AuctionRoom({ params }) {
     // 1. Fetch Auction Details
     fetchAuctionDetails()
 
-    // 2. Connect Socket
+    // 2. Connect Socket (Commented out to reduce Vercel usage as auctions are not in use)
+    /*
     socket = io(API_URL)
 
     socket.emit('join_auction', id)
@@ -72,10 +73,13 @@ export default function AuctionRoom({ params }) {
         socket.disconnect()
       }
     }
+    */
   }, [id])
 
   useEffect(() => {
     if (auction) {
+      // Countdown timer (Commented out to reduce Vercel usage)
+      /*
       const timer = setInterval(() => {
         const now = new Date().getTime()
         const end = new Date(auction.endTime).getTime()
@@ -93,6 +97,7 @@ export default function AuctionRoom({ params }) {
       }, 1000)
 
       return () => clearInterval(timer)
+      */
     }
   }, [auction])
 

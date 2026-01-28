@@ -9,9 +9,9 @@ const SocialProof = () => {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
-    fetchActivities()
-    const interval = setInterval(fetchActivities, 300000) // Refresh every 5 minutes
-    return () => clearInterval(interval)
+    // fetchActivities()
+    // const interval = setInterval(fetchActivities, 300000) // Refresh every 5 minutes
+    // return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
@@ -139,10 +139,10 @@ export const ViewCounter = ({ listingId, initialCount = 0 }) => {
       }
     }
 
-    fetchViewers()
-    const interval = setInterval(fetchViewers, 180000) // Update every 3 minutes
+    // fetchViewers()
+    // const interval = setInterval(fetchViewers, 180000) // Update every 3 minutes
 
-    return () => clearInterval(interval)
+    // return () => clearInterval(interval)
   }, [listingId])
 
   const trackView = async () => {

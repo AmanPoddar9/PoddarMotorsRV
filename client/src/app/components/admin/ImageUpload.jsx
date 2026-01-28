@@ -4,16 +4,31 @@ import { useState, useRef } from 'react'
 import imageCompression from 'browser-image-compression'
 import API_URL from '../../config/api'
 
-export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles = 5, maxImages }) {
+export default function ImageUpload({ label, onUpload, onImagesChange, maxFiles = 5, maxImages, initialImages = [] }) {
   // Support both maxFiles and maxImages prop names
   const max = maxImages || maxFiles
   
   // Support both onUpload and onImagesChange callback names  
   const handleUpload = onImagesChange || onUpload
   
-  const [images, setImages] = useState([])
+  // Initialize state with initialImages
+  const [images, setImages] = useState(initialImages || [])
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
+
+  // Sync with initialImages if it changes (e.g., loaded from localStorage)
+  // But be careful not to overwrite if user has already added more images locally that haven't propogatd back yet?
+  // Actually, in a controlled component pattern or with persistence, parent is source of truth.
+  // Let's use a useEffect to update local state when initialImages changes deeply.
+  
+  // Simple check to avoid infinite loops or overwriting current work if parent re-renders
+  // We'll trust that if initialImages is provided, it's the source of truth intended by parent.
+  const prevInitialImagesRef = useRef(initialImages); // Use ref to track previous value
+
+  if (JSON.stringify(prevInitialImagesRef.current) !== JSON.stringify(initialImages)) {
+      setImages(initialImages || []);
+      prevInitialImagesRef.current = initialImages;
+  }
 
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files)

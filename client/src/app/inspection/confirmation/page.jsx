@@ -19,7 +19,7 @@ function ConfirmationContent() {
 
   const fetchBooking = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/inspections/bookings/${bookingRef}`)
+      const res = await fetch(`${API_URL}/api/inspections/bookings/confirmation/${bookingRef}`)
       const data = await res.json()
       setBooking(data)
     } catch (error) {
@@ -37,7 +37,7 @@ function ConfirmationContent() {
     )
   }
 
-  if (!booking) {
+  if (!booking || booking.error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -107,8 +107,8 @@ function ConfirmationContent() {
             <div className="border-b border-white/20 pb-3">
               <p className="text-sm text-gray-400">Inspection Location</p>
               <p className="text-white">
-                {booking.inspectionLocation.address}<br />
-                {booking.inspectionLocation.city} - {booking.inspectionLocation.pincode}
+                {booking.inspectionLocation?.address}<br />
+                {booking.inspectionLocation?.city} - {booking.inspectionLocation?.pincode}
               </p>
             </div>
 

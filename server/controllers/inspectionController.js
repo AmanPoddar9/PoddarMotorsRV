@@ -656,3 +656,37 @@ exports.regenerateInspectorToken = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+// Get booking confirmation details (public access with limited data)
+exports.getBookingConfirmation = async (req, res) => {
+  try {
+    const booking = await InspectionBooking.findById(req.params.id)
+    
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' })
+    }
+    
+    // Return only necessary details for confirmation page
+    res.json({
+      _id: booking._id,
+      customerName: booking.customerName,
+      customerPhone: booking.customerPhone,
+      customerEmail: booking.customerEmail,
+      brand: booking.brand,
+      model: booking.model,
+      variant: booking.variant,
+      registrationNumber: booking.registrationNumber,
+      year: booking.year,
+      kmDriven: booking.kmDriven,
+      fuelType: booking.fuelType,
+      transmissionType: booking.transmissionType,
+      appointmentDate: booking.appointmentDate,
+      appointmentTimeSlot: booking.appointmentTimeSlot,
+      inspectionLocation: booking.inspectionLocation,
+      status: booking.status
+    })
+  } catch (error) {
+    console.error('Error fetching booking confirmation:', error)
+    res.status(500).json({ error: error.message })
+  }
+}
