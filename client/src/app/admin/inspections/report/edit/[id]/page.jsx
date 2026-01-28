@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import CreateReportForm from '../../../../../components/admin/CreateReportForm'
 import API_URL from '../../../../../config/api'
@@ -61,11 +61,18 @@ export default function EditReportPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <CreateReportForm 
-        bookingIdProp={report.bookingId?._id || report.bookingId} 
-        initialData={report}
-        isEditMode={true}
-      />
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center text-white">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mr-3"></div>
+          Loading form...
+        </div>
+      }>
+        <CreateReportForm 
+          bookingIdProp={report.bookingId?._id || report.bookingId} 
+          initialData={report}
+          isEditMode={true}
+        />
+      </Suspense>
     </div>
   )
 }
