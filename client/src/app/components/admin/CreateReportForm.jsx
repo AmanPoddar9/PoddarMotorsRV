@@ -330,11 +330,19 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
   }
 
   
+  // Prevent implicit submission on Enter key
+  const handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     
     try {
+  // Handle file selection for Vehicle Registration Document
       // Use inspector token if in inspector mode, otherwise use admin token
       const authToken = inspectorMode && inspectorToken ? inspectorToken : localStorage.getItem('token')
       
@@ -1379,6 +1387,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     }}
                     className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
                     placeholder={`Positive point ${idx + 1}`}
+                    onKeyDown={handleEnterKey}
                   />
                 ))}
                 <button
@@ -1407,6 +1416,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     }}
                     className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white mb-2"
                     placeholder={`Issue ${idx + 1}`}
+                    onKeyDown={handleEnterKey}
                   />
                 ))}
                 <button
@@ -1445,6 +1455,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     onChange={(e) => updateField('finalAssessment', 'reconditioningEstimateLow', e.target.value)}
                     className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="₹10,000"
+                    onKeyDown={handleEnterKey}
                   />
                 </div>
                 <div>
@@ -1455,6 +1466,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                     onChange={(e) => updateField('finalAssessment', 'reconditioningEstimateHigh', e.target.value)}
                     className="w-full px-4 py-3 md:py-2 bg-gray-700 border border-gray-600 rounded text-white"
                     placeholder="₹20,000"
+                    onKeyDown={handleEnterKey}
                   />
                 </div>
               </div>
