@@ -218,14 +218,56 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
   // If isEditMode, merge initialFormState with initialData
   const [formData, setFormData] = useState(() => {
     if (isEditMode && initialData) {
+      // Helper to safely merge nested objects
+      const safeMerge = (key) => ({
+        ...initialFormState[key],
+        ...(initialData[key] || {})
+      })
+
       // Ensure we merge correctly to keep structure intact
       return {
         ...initialFormState,
         ...initialData,
-        // Override nested objects to ensure they exist
-        vehicleInfo: { ...initialFormState.vehicleInfo, ...(initialData.vehicleInfo || {}) },
-        photos: { ...initialFormState.photos, ...(initialData.photos || {}) },
-        finalAssessment: { ...initialFormState.finalAssessment, ...(initialData.finalAssessment || {}) }, 
+        
+        // Vehicle Info
+        vehicleInfo: safeMerge('vehicleInfo'),
+        
+        // Documentation
+        documentation: safeMerge('documentation'),
+        
+        // Features & Equipment
+        features: safeMerge('features'),
+        
+        // Warning Lamps
+        warningLamps: safeMerge('warningLamps'),
+        
+        // Sections
+        engine: safeMerge('engine'),
+        transmission: safeMerge('transmission'),
+        suspensionSteering: safeMerge('suspensionSteering'),
+        tyresWheels: safeMerge('tyresWheels'),
+        brakes: safeMerge('brakes'),
+        
+        bodyPanels: safeMerge('bodyPanels'),
+        structuralIntegrity: safeMerge('structuralIntegrity'),
+        paintGlass: safeMerge('paintGlass'),
+        exteriorLights: safeMerge('exteriorLights'),
+        
+        interiorControls: safeMerge('interiorControls'),
+        mirrorsWindowsWipers: safeMerge('mirrorsWindowsWipers'),
+        latchesLocks: safeMerge('latchesLocks'),
+        hvacPerformance: safeMerge('hvacPerformance'),
+        
+        underbodyExhaust: safeMerge('underbodyExhaust'),
+        drivelineAxles: safeMerge('drivelineAxles'),
+        roadTest: safeMerge('roadTest'),
+        floodFireDetection: safeMerge('floodFireDetection'),
+        accessoriesTools: safeMerge('accessoriesTools'),
+        
+        // Detailed Merges
+        photos: safeMerge('photos'),
+        finalAssessment: safeMerge('finalAssessment'),
+        
         // Ensure bookingId is preserved
         bookingId: initialData.bookingId?._id || initialData.bookingId || bookingId
       }
