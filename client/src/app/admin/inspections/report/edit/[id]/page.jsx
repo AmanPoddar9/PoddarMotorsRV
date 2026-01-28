@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import CreateReportForm from '../../../../components/admin/CreateReportForm'
-import API_URL from '../../../../config/api'
+import CreateReportForm from '../../../../../components/admin/CreateReportForm'
+import API_URL from '../../../../../config/api'
 
 export default function EditReportPage() {
   const params = useParams()
