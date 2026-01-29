@@ -144,6 +144,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/twilio', twilioRoutes);
 app.use('/api/customer-offers', customerOfferRoutes);
 app.use('/api/customer', require('./routes/customerRoutes')); // Customer Ecosystem
+app.use('/api/dealer', require('./routes/dealerRoutes'));
+app.use('/api/careers', require('./routes/jobApplicationRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/price-alerts', require('./routes/priceAlerts'));
 app.use('/api/activities', require('./routes/activities'));
