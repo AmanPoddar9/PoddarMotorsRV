@@ -6,6 +6,7 @@ import Link from 'next/link'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 import { FiArrowLeft, FiMail, FiPhone, FiMapPin, FiBriefcase, FiDownload, FiPlus, FiTrash2 } from 'react-icons/fi'
+import API_URL from '../../../../config/api'
 
 const EmployeeDetailPage = () => {
     const { id } = useParams()
@@ -16,7 +17,7 @@ const EmployeeDetailPage = () => {
 
     const fetchEmployee = async () => {
         try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/employees/${id}`)
+            const res = await axios.get(`${API_URL}/api/employees/${id}`)
             setEmployee(res.data)
         } catch (error) {
             console.error('Error fetching employee:', error)

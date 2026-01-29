@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { FiPlus, FiSearch, FiFilter, FiUser, FiPhone, FiMail } from 'react-icons/fi'
 import axios from 'axios'
 import AddEmployeeModal from '../../../components/admin/hr/AddEmployeeModal'
+import API_URL from '../../../config/api'
 
 const StaffPage = () => {
   const [employees, setEmployees] = useState([])
@@ -15,7 +16,7 @@ const StaffPage = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/employees`)
+      const res = await axios.get(`${API_URL}/api/employees`)
       setEmployees(res.data)
     } catch (error) {
       console.error('Error fetching employees:', error)

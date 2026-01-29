@@ -4,6 +4,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { FiX } from 'react-icons/fi'
 import { motion } from 'framer-motion'
+import API_URL from '../../../config/api'
 
 const AddEmployeeModal = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -29,9 +30,9 @@ const AddEmployeeModal = ({ onClose, onSuccess }) => {
     setLoading(true)
     setError(null)
     
-    console.log('API URL:', process.env.NEXT_PUBLIC_API_URL)
+    console.log('API URL:', API_URL)
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/employees`, formData)
+      await axios.post(`${API_URL}/api/employees`, formData)
       onSuccess()
     } catch (err) {
       console.error('Full Error:', err)
