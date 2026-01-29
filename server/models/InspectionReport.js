@@ -19,6 +19,24 @@ const inspectionReportSchema = new mongoose.Schema({
     required: true
   },
   
+  reportType: {
+    type: String,
+    enum: ['BS_INSPECTION', 'PDI'],
+    default: 'BS_INSPECTION'
+  },
+  
+  // PDI Specific CheckList (Optional, only for PDI)
+  pdiChecklist: {
+    vinMatch: Boolean,
+    odometerCheck: Boolean, // < 100km
+    accessoriesCheck: [String], // List of missing accessories
+    paintUniformity: Boolean,
+    scratchesFound: [String], 
+    electricalsWorking: Boolean,
+    tyreDateCheck: Boolean,
+    interiorCleanliness: String
+  },
+  
   inspectionDate: {
     type: Date,
     required: true,

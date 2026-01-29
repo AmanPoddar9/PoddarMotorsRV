@@ -1,6 +1,14 @@
 const mongoose = require('mongoose')
 
 const inspectionBookingSchema = new mongoose.Schema({
+  // Service Type
+  type: {
+    type: String,
+    enum: ['BS_INSPECTION', 'PDI'],
+    default: 'BS_INSPECTION',
+    index: true
+  },
+
   // Customer Details
   customer: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,11 +29,18 @@ const inspectionBookingSchema = new mongoose.Schema({
   },
   
   // Car Details
+  // Required for BS_INSPECTION, Optional for PDI
   registrationNumber: { 
     type: String, 
-    required: true,
     uppercase: true,
-    trim: true
+    trim: true,
+    required: function() { return this.type === 'BS_INSPECTION'; }
+  },
+  vin: {
+    type: String,
+    uppercase: true,
+    trim: true,
+    required: function() { return this.type === 'PDI'; }
   },
   brand: { 
     type: String, 
@@ -40,12 +55,12 @@ const inspectionBookingSchema = new mongoose.Schema({
     required: false 
   },
   year: { 
-    type: Number, 
-    required: true 
+    type: Number,
+    required: function() { return this.type === 'BS_INSPECTION'; }
   },
   kmDriven: { 
     type: Number, 
-    required: true 
+    default: 0
   },
   fuelType: {
     type: String,
@@ -58,6 +73,13 @@ const inspectionBookingSchema = new mongoose.Schema({
     required: true
   },
   
+  // PDI Specific Details
+  dealerDetails: {
+    name: String,
+    salespersonName: String,
+    bookingReference: String
+  },
+
   // Appointment Details
   appointmentDate: { 
     type: Date, 

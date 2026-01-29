@@ -33,8 +33,41 @@ exports.createBooking = async (req, res) => {
     await booking.save()
 
     // Send Email Notification to Dealership
-    const message = `
-      🔔 New Inspection Booking!
+    let message = ''
+    
+    if (booking.type === 'PDI') {
+      message = `
+      🔔 New PDI Booking (New Car)!
+
+      Customer: ${booking.customerName}
+      Phone: ${booking.customerPhone}
+      Email: ${booking.customerEmail || 'N/A'}
+      
+      Vehicle Details:
+      Brand: ${booking.brand}
+      Model: ${booking.model}
+      Variant: ${booking.variant || 'N/A'}
+      VIN/Ref: ${booking.vin || booking.dealerDetails?.bookingReference || 'N/A'}
+      Fuel: ${booking.fuelType}
+      Transmission: ${booking.transmissionType}
+      
+      Dealer Location:
+      Dealer Name: ${booking.dealerDetails?.name || 'N/A'}
+      Salesperson: ${booking.dealerDetails?.salespersonName || 'N/A'}
+      
+      Appointment Details:
+      Date: ${new Date(booking.appointmentDate).toISOString().split('T')[0]}
+      Time Slot: ${booking.appointmentTimeSlot}
+      Location: ${booking.inspectionLocation.address}, ${booking.inspectionLocation.city}, ${booking.inspectionLocation.pincode}
+      
+      Payment Status: ${booking.paymentStatus}
+      
+      Please log in to the admin panel to assign an inspector.
+      `;
+    } else {
+      // Standard Used Car Inspection (BS_INSPECTION)
+      message = `
+      🔔 New Used Car Inspection Booking!
 
       Customer: ${booking.customerName}
       Phone: ${booking.customerPhone}
@@ -48,7 +81,7 @@ exports.createBooking = async (req, res) => {
       Reg Number: ${booking.registrationNumber}
       Fuel: ${booking.fuelType}
       Transmission: ${booking.transmissionType}
-      access
+      
       Appointment Details:
       Date: ${new Date(booking.appointmentDate).toISOString().split('T')[0]}
       Time Slot: ${booking.appointmentTimeSlot}
@@ -57,7 +90,8 @@ exports.createBooking = async (req, res) => {
       Payment Status: ${booking.paymentStatus}
       
       Please log in to the admin panel to manage this booking.
-    `;
+      `;
+    }
 
     try {
       await sendEmail({
