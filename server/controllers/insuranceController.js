@@ -930,6 +930,15 @@ exports.importPolicies = async (req, res) => {
 
                     const existingPolicy = await InsurancePolicy.findOne({ policyNumber: row.policyNumber });
                     if (existingPolicy) {
+                        // SELF-HEAL: Update customer name if it's currently 'Unknown' and we have a better name
+                        if (row.customerName && row.customerName !== 'Unknown') {
+                            const linkedCustomer = await Customer.findById(existingPolicy.customer);
+                            if (linkedCustomer && (linkedCustomer.name === 'Unknown' || linkedCustomer.name === 'Benificiary')) {
+                                linkedCustomer.name = row.customerName;
+                                await linkedCustomer.save();
+                                // We count this as skipped for policy creation, but we improved data.
+                            }
+                        }
                         results.skipped++;
                         return;
                     }
