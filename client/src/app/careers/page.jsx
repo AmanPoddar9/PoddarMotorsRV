@@ -3,7 +3,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { jobs } from './jobs'
 import JobCard from './JobCard'
-import { FaUserTie, FaHandshake, FaChartLine } from 'react-icons/fa'
+import { FaUserTie, FaHandshake, FaChartLine, FaWhatsapp } from 'react-icons/fa'
 
 const CareersPage = () => {
   const benefits = [
