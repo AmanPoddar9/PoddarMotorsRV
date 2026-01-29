@@ -29,11 +29,13 @@ const AddEmployeeModal = ({ onClose, onSuccess }) => {
     setLoading(true)
     setError(null)
     
+    console.log('API URL:', process.env.NEXT_PUBLIC_API_URL)
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/employees`, formData)
       onSuccess()
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create employee')
+      console.error('Full Error:', err)
+      setError(err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to create employee')
     } finally {
       setLoading(false)
     }

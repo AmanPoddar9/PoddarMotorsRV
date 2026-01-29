@@ -18,7 +18,9 @@ exports.createEmployee = async (req, res) => {
     res.status(201).json({ message: 'Employee created successfully', employee: newEmployee });
   } catch (error) {
     console.error('Error creating employee:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    // Standardize error message for frontend
+    const message = error.code === 11000 ? 'Email or Employee ID already exists' : error.message;
+    res.status(500).json({ message, error: message });
   }
 };
 
