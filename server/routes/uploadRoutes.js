@@ -34,28 +34,6 @@ const uploadMedia = multer({
   }
 });
 
-// Multer for employee documents (PDFs, images, Word docs)
-const uploadDocuments = multer({ 
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = [
-      'application/pdf',
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'application/msword', // .doc
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
-    ];
-    
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only PDF, images, and Word documents are allowed'));
-    }
-  }
-});
-
 // S3 Client configuration
 const s3Client = new S3Client({
   region: process.env.AWS_REGION || 'ap-south-1',
@@ -181,72 +159,6 @@ router.post('/', requireAuth, uploadImages.array('images', 20), async (req, res)
     res.status(500).json({
       success: false,
       message: `Failed to upload images: ${error.message}`,
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-});
-
-// Upload employee documents endpoint
-router.post('/documents', requireAuth, uploadDocuments.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file provided',
-        error: 'Please upload a document file'
-      });
-    }
-
-    // Validate file
-    const validation = await validateFile(req.file);
-    if (!validation.valid) {
-      return res.status(400).json({
-        success: false,
-        message: 'File validation failed',
-        error: validation.errors.join(', ')
-      });
-    }
-
-    // Sanitize filename
-    const safeFilename = sanitizeFilename(req.file.originalname);
-    const timestamp = Date.now();
-    const folder = req.body.folder || 'employee-documents';
-    const filename = `${folder}/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
-
-    // Upload to S3
-    const params = {
-      Bucket: bucketName,
-      Key: filename,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-      ACL: 'public-read',
-    };
-
-    const command = new PutObjectCommand(params);
-    await s3Client.send(command);
-
-    const url = `https://${bucketName}.s3.ap-south-1.amazonaws.com/${filename}`;
-
-    res.status(200).json({
-      success: true,
-      message: 'Document uploaded successfully',
-      url: url,
-    });
-  } catch (error) {
-    console.error('Document upload error:', error);
-    
-    // Check for multer file size error
-    if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
-        success: false,
-        message: 'File too large',
-        error: 'File size must be less than 5MB'
-      });
-    }
-    
-    res.status(500).json({
-      success: false,
-      message: `Failed to upload document: ${error.message}`,
       error: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
