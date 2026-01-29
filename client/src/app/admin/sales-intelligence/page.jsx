@@ -596,7 +596,7 @@ export default function SalesIntelligencePage() {
                                   </div>
                               </div>
                               <a 
-                                  href={`/admin/crm/customers/${currentAnalysis.linkedCustomer?._id || currentAnalysis.linkedCustomer}`}
+                                  href={`/admin/customers/${currentAnalysis.linkedCustomer?._id || currentAnalysis.linkedCustomer}`}
                                   className="px-4 py-2 bg-white text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-50"
                               >
                                   View Profile
