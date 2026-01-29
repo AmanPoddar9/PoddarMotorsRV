@@ -150,6 +150,14 @@ const adminSections = [
     href: '/admin/import',
     color: 'bg-orange-600',
     permission: 'admin'
+  },
+  {
+    title: 'HR Manager',
+    description: 'Manage jobs & applications',
+    icon: <FiUsers className="w-8 h-8" />,
+    href: '/admin/hr',
+    color: 'bg-pink-600',
+    permission: 'careers.manage'
   }
 ]
 

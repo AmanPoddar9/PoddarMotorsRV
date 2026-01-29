@@ -24,6 +24,9 @@ const PERMISSIONS = {
         { id: 'videos.manage', label: 'Videos' },
         { id: 'testimonials.manage', label: 'Testimonials' },
     ],
+    'HR': [
+        { id: 'careers.manage', label: 'Manage Jobs & Applications' },
+    ],
     'Analysis': [
         { id: 'dashboard.view', label: 'Dashboard Analysis' },
     ]

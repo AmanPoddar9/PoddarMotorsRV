@@ -123,19 +123,12 @@ const AdminNavbar = () => {
                     </div>
                 )}
 
+
                 {/* USER MANAGEMENT (ADMIN ONLY) */}
                 {user.role === 'admin' && (
-                    <>
-                        <Link href="/admin/applications" className="text-custom-accent hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-bold transition-colors">
-                            HR Applications
-                        </Link>
-                        <Link href="/admin/jobs" className="text-custom-accent hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-bold transition-colors">
-                            Manage Jobs
-                        </Link>
-                        <Link href="/admin/users" className="text-custom-accent hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-bold transition-colors">
-                            Users
-                        </Link>
-                    </>
+                    <Link href="/admin/users" className="text-custom-accent hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-bold transition-colors">
+                        Users
+                    </Link>
                 )}
             </div>
 
