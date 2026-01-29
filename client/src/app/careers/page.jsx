@@ -1,11 +1,30 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { jobs } from './jobs'
 import JobCard from './JobCard'
 import { FaUserTie, FaHandshake, FaChartLine, FaWhatsapp } from 'react-icons/fa'
+import axios from 'axios'
 
 const CareersPage = () => {
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  React.useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/jobs`)
+        if (response.data.success) {
+          setJobs(response.data.data)
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchJobs()
+  }, [])
+
   const benefits = [
     {
       icon: FaUserTie,

@@ -39,4 +39,38 @@ router.post('/apply', async (req, res) => {
   }
 });
 
+// @route   GET /api/careers/apply
+// @desc    Get all job applications
+// @access  Private (Admin)
+router.get('/', async (req, res) => {
+  try {
+    const applications = await JobApplication.find().sort({ createdAt: -1 });
+    res.json({ success: true, count: applications.length, data: applications });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
+});
+
+// @route   PATCH /api/careers/apply/:id
+// @desc    Update application status
+// @access  Private (Admin)
+router.patch('/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const application = await JobApplication.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({ success: false, error: 'Application not found' });
+    }
+
+    res.json({ success: true, data: application });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
+});
+
 module.exports = router;
