@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { FiList, FiCalendar, FiMessageSquare, FiTag, FiStar, FiFileText, FiTool, FiVideo, FiPhone, FiAward, FiUsers, FiClipboard, FiDollarSign, FiUserCheck, FiPieChart, FiShield, FiUpload } from 'react-icons/fi'
+import { motion } from 'framer-motion'
+import { useCurrentUser } from '../../utils/useCurrentUser'
 
 const adminSections = [
   {
@@ -151,13 +153,26 @@ const adminSections = [
   }
 ]
 
-import { useCurrentUser } from '../../utils/useCurrentUser'
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+}
 
 const Home = () => {
   const { user, loading } = useCurrentUser()
 
   if (loading) {
-    return <div className="min-h-screen bg-custom-black flex items-center justify-center text-white">Loading...</div>
+    return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>
   }
 
   // Filter sections based on permissions
@@ -173,45 +188,54 @@ const Home = () => {
   });
 
   return (
-    <div className="min-h-screen bg-custom-black">
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Admin Dashboard
-        </h1>
-        <p className="text-lg text-custom-platinum mb-10">
-          Welcome back, {user?.name || user?.username || 'Admin'}
-        </p>
+    <div className="min-h-screen"> 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+        <motion.div
+           initial={{ opacity: 0, y: -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.5 }}
+           className="mb-10"
+        >
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
+            Admin Dashboard
+          </h1>
+          <p className="text-lg text-gray-400">
+            Welcome back, <span className="text-white font-medium">{user?.name || user?.username || 'Admin'}</span>
+          </p>
+        </motion.div>
 
         {visibleSections.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div 
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
             {visibleSections.map((section, index) => (
-                <Link
-                key={index}
-                href={section.href}
-                className="block bg-custom-jet rounded-lg shadow-md hover:shadow-xl hover:shadow-custom-accent/10 transition-all duration-300 overflow-hidden group border border-white/10"
-                >
-                <div className="p-6">
-                    <div className={`${section.color} w-16 h-16 rounded-lg flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                    {section.icon}
+                <motion.div key={index} variants={item}>
+                  <Link
+                    href={section.href}
+                    className="block h-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 hover:border-custom-accent/50 p-6 transition-all duration-300 group hover:bg-white/10 hover:shadow-2xl hover:shadow-custom-accent/10 hover:-translate-y-1"
+                  >
+                    <div className="flex items-start space-x-4">
+                        <div className={`${section.color} p-4 rounded-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        {section.icon}
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold text-white mb-1 group-hover:text-custom-accent transition-colors">
+                            {section.title}
+                            </h2>
+                            <p className="text-sm text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">
+                            {section.description}
+                            </p>
+                        </div>
                     </div>
-                    <h2 className="text-xl font-bold text-white mb-2">
-                    {section.title}
-                    </h2>
-                    <p className="text-custom-platinum">
-                    {section.description}
-                    </p>
-                </div>
-                <div className="bg-white/5 px-6 py-3 border-t border-white/10">
-                    <span className="text-sm font-medium text-custom-accent group-hover:text-yellow-400 transition-colors">
-                    View →
-                    </span>
-                </div>
-                </Link>
+                  </Link>
+                </motion.div>
             ))}
-            </div>
+            </motion.div>
         ) : (
-            <div className="text-center py-20 bg-white/5 rounded-lg border border-white/10">
+            <div className="text-center py-20 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
                 <h3 className="text-xl text-white font-semibold">No modules assigned</h3>
                 <p className="text-gray-400 mt-2">Please ask an administrator to assign permissions to your account.</p>
             </div>
