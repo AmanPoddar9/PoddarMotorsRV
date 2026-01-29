@@ -5,7 +5,7 @@ const JobApplication = require('../models/JobApplication');
 // @route   POST /api/careers/apply
 // @desc    Submit a new job application
 // @access  Public
-router.post('/apply', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { name, email, phone, jobId, jobTitle, experience, linkedinProfile } = req.body;
 

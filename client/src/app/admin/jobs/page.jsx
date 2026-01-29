@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import API_URL from '../../config/api'
 import { FaPlus, FaEdit, FaTrash, FaCheckCircle, FaTimesCircle, FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -29,7 +30,7 @@ const JobsPage = () => {
   const fetchJobs = async () => {
     try {
       // Fetch ALL jobs (including inactive)
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/jobs/all`, {
+      const response = await axios.get(`${API_URL}/api/careers/jobs/all`, {
         withCredentials: true
       })
       if (response.data.success) {
@@ -47,7 +48,7 @@ const JobsPage = () => {
     if (!window.confirm('Are you sure you want to delete this job?')) return
 
     try {
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/jobs/${id}`, {
+      const response = await axios.delete(`${API_URL}/api/careers/jobs/${id}`, {
         withCredentials: true
       })
       if (response.data.success) {
@@ -63,8 +64,8 @@ const JobsPage = () => {
     e.preventDefault()
     try {
       const url = editingJob 
-        ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/jobs/${editingJob._id}`
-        : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/jobs`
+        ? `${API_URL}/api/careers/jobs/${editingJob._id}`
+        : `${API_URL}/api/careers/jobs`
       
       const method = editingJob ? 'put' : 'post'
       

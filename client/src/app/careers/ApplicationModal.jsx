@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes, FaLinkedin, FaPaperPlane, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import API_URL from '../config/api'
 
 const ApplicationModal = ({ isOpen, onClose, job }) => {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ const ApplicationModal = ({ isOpen, onClose, job }) => {
         jobTitle: job.title
       }
       
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/apply`, payload)
+      const response = await axios.post(`${API_URL}/api/careers/apply`, payload)
       
       if (response.data.success) {
         toast.success('Application submitted successfully!')

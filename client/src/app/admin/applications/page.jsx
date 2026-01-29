@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import API_URL from '../../config/api'
 import { FaUser, FaEnvelope, FaPhone, FaLinkedin, FaBriefcase, FaCalendar, FaCheckCircle, FaTimesCircle, FaSearch } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
@@ -17,7 +18,7 @@ const ApplicationsPage = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/apply`, {
+      const response = await axios.get(`${API_URL}/api/careers/apply`, {
         withCredentials: true
       })
       if (response.data.success) {
@@ -34,7 +35,7 @@ const ApplicationsPage = () => {
   const updateStatus = async (id, newStatus) => {
     try {
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/careers/apply/${id}`,
+        `${API_URL}/api/careers/apply/${id}`,
         { status: newStatus },
         { withCredentials: true }
       )
