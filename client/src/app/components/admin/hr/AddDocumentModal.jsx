@@ -16,7 +16,19 @@ const AddDocumentModal = ({ employeeId, onClose, onSuccess }) => {
   const [error, setError] = useState(null)
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0])
+    const selectedFile = e.target.files[0]
+    if (!selectedFile) return
+
+    // Check file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024
+    if (selectedFile.size > maxSize) {
+      setError('File size must be less than 5MB')
+      e.target.value = '' // Clear the input
+      return
+    }
+
+    setFile(selectedFile)
+    setError(null) // Clear any previous errors
   }
 
   const handleChange = (e) => {
@@ -31,7 +43,7 @@ const AddDocumentModal = ({ employeeId, onClose, onSuccess }) => {
     fileFormData.append('folder', 'employee-documents')
 
     try {
-      const uploadRes = await axios.post(`${API_URL}/api/upload`, fileFormData, {
+      const uploadRes = await axios.post(`${API_URL}/api/upload/documents`, fileFormData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       return uploadRes.data.url
@@ -114,7 +126,7 @@ const AddDocumentModal = ({ employeeId, onClose, onSuccess }) => {
                 className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-custom-accent outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-custom-accent file:text-black file:font-medium hover:file:bg-custom-accent/80"
               />
             </div>
-            <p className="text-xs text-gray-500">Or provide URL below (if already uploaded)</p>
+            <p className="text-xs text-gray-500">Max 5MB. Or provide URL below (if already uploaded)</p>
           </div>
 
           <div className="space-y-2">
