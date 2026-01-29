@@ -6,7 +6,15 @@ const customerSchema = new mongoose.Schema({
   customId: { type: String, unique: true, index: true, sparse: true }, // e.g., PM-25-00001
   name: { type: String, required: true },
   email: { type: String, unique: true, index: true, sparse: true }, // Made optional for offline customers, sparse allows duplicates of null/undefined
-  mobile: { type: String, required: true, unique: true, index: true },
+  mobile: { 
+    type: String, 
+    required: function() {
+      return this.source !== 'Voice Agent'; // Not required for Voice Agent (field sales calls)
+    },
+    unique: true, 
+    index: true,
+    sparse: true // Allow null/undefined values
+  },
   alternatePhones: [{ type: String, index: true }], // Array for multiple contacts, indexed for search
   areaCity: { type: String }, // New field
   passwordHash: { type: String }, // Optional for offline customers
@@ -78,6 +86,22 @@ const customerSchema = new mongoose.Schema({
     bodyTypes: [{ type: String }], // SUV, Sedan, etc.
     transmission: { type: String }, // Manual, Automatic
     fuelType: { type: String }
+  },
+  
+  // New: Sales Intelligence Data
+  salesData: {
+    budget: String, // approx budget text
+    preferredCar: [String],
+    paymentMethod: { type: String, enum: ['Cash', 'Finance', 'Unknown'] },
+    financeDetails: {
+      downPayment: String,
+      financeAmount: String
+    },
+    employmentType: { type: String, enum: ['Business', 'Govt Job', 'Pvt Job', 'Other', 'Unknown'] },
+    lastCallAnalysisId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CallAnalysis'
+    }
   },
   
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Listing' }],

@@ -162,6 +162,7 @@ app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CR
 app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools
 app.use('/api/elevenlabs', require('./routes/elevenLabsRoutes'));
 app.use('/api/employees', require('./routes/employeeRoutes')); // Staff Management
+app.use('/api/audio', require('./routes/audioRoutes')); // Field Sales Audio Intelligence
 
 
 // Global Error Handler (Must be last)

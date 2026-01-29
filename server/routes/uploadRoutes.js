@@ -32,6 +32,27 @@ const uploadMedia = multer({
       cb(new Error('Only image and video files are allowed'));
     }
   }
+})
+
+// Multer for audio files (sales call recordings)
+const uploadAudio = multer({ 
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for audio files
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = [
+      'audio/webm',
+      'audio/mp4',
+      'audio/wav',
+      'audio/mpeg',
+      'audio/ogg'
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio files are allowed (webm, mp4, wav, mpeg, ogg)'));
+    }
+  }
 });
 
 // S3 Client configuration
@@ -159,6 +180,72 @@ router.post('/', requireAuth, uploadImages.array('images', 20), async (req, res)
     res.status(500).json({
       success: false,
       message: `Failed to upload images: ${error.message}`,
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+// Upload audio file endpoint (for sales call recordings)
+router.post('/audio', requireAuth, uploadAudio.single('audio'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No audio file provided',
+        error: 'Please upload an audio file'
+      });
+    }
+
+    // Validate file
+    const validation = await validateFile(req.file);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: 'File validation failed',
+        error: validation.errors.join(', ')
+      });
+    }
+
+    // Sanitize filename
+    const safeFilename = sanitizeFilename(req.file.originalname);
+    const timestamp = Date.now();
+    const filename = `sales-call-audio/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
+
+    // Upload to S3
+    const params = {
+      Bucket: bucketName,
+      Key: filename,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      ACL: 'public-read',
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+
+    const url = `https://${bucketName}.s3.ap-south-1.amazonaws.com/${filename}`;
+
+    res.status(200).json({
+      success: true,
+      message: 'Audio file uploaded successfully',
+      url: url,
+    });
+  } catch (error) {
+    console.error('Audio upload error:', error);
+    
+    // Check for multer file size error
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: 'File too large',
+        error: 'Audio file size must be less than 50MB'
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: `Failed to upload audio: ${error.message}`,
       error: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });

@@ -101,6 +101,9 @@ const AdminNavbar = () => {
                             CRM
                         </button>
                         <div className="absolute left-0 mt-0 w-48 bg-custom-jet border border-white/10 rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                            {/* New sales tool */}
+                            {hasPermission('customers.manage') && <Link href="/admin/sales-intelligence" className="block px-4 py-2 text-sm text-indigo-400 hover:bg-white/10 hover:text-indigo-300 font-semibold">🎙️ Sales Intelligence</Link>}
+                            <div className="border-t border-white/10 my-1"></div>
                             {hasPermission('customers.manage') && <Link href="/admin/customers" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Customers</Link>}
                             {hasPermission('insurance.manage') && <Link href="/admin/insurance" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Insurance</Link>}
                             {hasPermission('sell_requests.manage') && <Link href="/admin/sellRequests" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white">Sell Requests</Link>}
