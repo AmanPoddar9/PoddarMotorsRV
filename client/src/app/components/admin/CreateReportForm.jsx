@@ -854,6 +854,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <CheckItem label="Coolant Level" name="coolantLevel" value={formData.engine.coolantLevel} onChange={(val) => updateCheckItem('engine', 'coolantLevel', val)} />
                   <CheckItem label="Turbo Condition" name="turboCondition" value={formData.engine.turboCondition} onChange={(val) => updateCheckItem('engine', 'turboCondition', val)} />
                   <CheckItem label="Battery Health" name="batteryCondition" value={formData.engine.batteryCondition} onChange={(val) => updateCheckItem('engine', 'batteryCondition', val)} />
+                  <CheckItem label="Urea / AdBlue System (Diesel)" name="ureaAdBlueSystem" value={formData.engine.ureaAdBlueSystem} onChange={(val) => updateCheckItem('engine', 'ureaAdBlueSystem', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: Injector Noise, Timing Belt, Piston Noise, Oil Seals, etc.</p>
               </div>
@@ -885,6 +886,8 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <CheckItem label="Rack & Pinion" name="rackPinionPlayBootTear" value={formData.suspensionSteering.rackPinionPlayBootTear} onChange={(val) => updateCheckItem('suspensionSteering', 'rackPinionPlayBootTear', val)} />
                   <CheckItem label="Front RH Shock" name="frontRHShockAbsorber" value={formData.suspensionSteering.frontRHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'frontRHShockAbsorber', val)} />
                   <CheckItem label="Front LH Shock" name="frontLHShockAbsorber" value={formData.suspensionSteering.frontLHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'frontLHShockAbsorber', val)} />
+                  <CheckItem label="Rear RH Shock Absorber" name="rearRHShockAbsorber" value={formData.suspensionSteering.rearRHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'rearRHShockAbsorber', val)} />
+                  <CheckItem label="Rear LH Shock Absorber" name="rearLHShockAbsorber" value={formData.suspensionSteering.rearLHShockAbsorber} onChange={(val) => updateCheckItem('suspensionSteering', 'rearLHShockAbsorber', val)} />
                   <CheckItem label="Power Steering Motor" name="powerSteeringMotorEPS" value={formData.suspensionSteering.powerSteeringMotorEPS} onChange={(val) => updateCheckItem('suspensionSteering', 'powerSteeringMotorEPS', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: Rear shocks, Tie rods, Engine mounts, Lower/Upper arms, etc.</p>
@@ -897,6 +900,8 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                 <h3 className="text-xl font-semibold text-white mb-4">Brakes</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-6">
                   <CheckItem label="Overall Brakes" name="overallBrakes" value={formData.brakes.overallBrakes} onChange={(val) => updateCheckItem('brakes', 'overallBrakes', val)} />
+                  <CheckItem label="Front Brakes" name="frontBrakes" value={formData.brakes.frontBrakes} onChange={(val) => updateCheckItem('brakes', 'frontBrakes', val)} />
+                  <CheckItem label="Rear Brakes" name="rearBrakes" value={formData.brakes.rearBrakes} onChange={(val) => updateCheckItem('brakes', 'rearBrakes', val)} />
                   <CheckItem label="Front RH Disc" name="frontRHDisc" value={formData.brakes.frontRHDisc} onChange={(val) => updateCheckItem('brakes', 'frontRHDisc', val)} />
                   <CheckItem label="Front LH Disc" name="frontLHDisc" value={formData.brakes.frontLHDisc} onChange={(val) => updateCheckItem('brakes', 'frontLHDisc', val)} />
                   <CheckItem label="Calipers" name="calipers" value={formData.brakes.calipers} onChange={(val) => updateCheckItem('brakes', 'calipers', val)} />
@@ -923,6 +928,11 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <CheckItem label="Rear Bumper" name="rearBumper" value={formData.bodyPanels.rearBumper} onChange={(val) => updateCheckItem('bodyPanels', 'rearBumper', val)} />
                   <CheckItem label="RH Fender" name="rhFender" value={formData.bodyPanels.rhFender} onChange={(val) => updateCheckItem('bodyPanels', 'rhFender', val)} />
                   <CheckItem label="LH Fender" name="lhFender" value={formData.bodyPanels.lhFender} onChange={(val) => updateCheckItem('bodyPanels', 'lhFender', val)} />
+                  <CheckItem label="RH Quarter Panel" name="rhQuarterPanel" value={formData.bodyPanels.rhQuarterPanel} onChange={(val) => updateCheckItem('bodyPanels', 'rhQuarterPanel', val)} />
+                  <CheckItem label="LH Quarter Panel" name="lhQuarterPanel" value={formData.bodyPanels.lhQuarterPanel} onChange={(val) => updateCheckItem('bodyPanels', 'lhQuarterPanel', val)} />
+                  <CheckItem label="RH Running Board" name="rhRunningBoard" value={formData.bodyPanels.rhRunningBoard} onChange={(val) => updateCheckItem('bodyPanels', 'rhRunningBoard', val)} />
+                  <CheckItem label="LH Running Board" name="lhRunningBoard" value={formData.bodyPanels.lhRunningBoard} onChange={(val) => updateCheckItem('bodyPanels', 'lhRunningBoard', val)} />
+                  <CheckItem label="Boot / Dikki" name="bootDickeyTailgate" value={formData.bodyPanels.bootDickeyTailgate} onChange={(val) => updateCheckItem('bodyPanels', 'bootDickeyTailgate', val)} />
                   <CheckItem label="Roof Condition" name="roofCondition" value={formData.bodyPanels.roofCondition} onChange={(val) => updateCheckItem('bodyPanels', 'roofCondition', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: All 4 doors, Running boards, Quarter panels, Boot/Dicky</p>
@@ -964,6 +974,8 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
                   <CheckItem label="Rear Windshield" name="rearWindshield" value={formData.paintGlass.rearWindshield} onChange={(val) => updateCheckItem('paintGlass', 'rearWindshield', val)} />
                   <CheckItem label="Front RH Door Glass" name="frontRHDoorGlass" value={formData.paintGlass.frontRHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'frontRHDoorGlass', val)} />
                   <CheckItem label="Front LH Door Glass" name="frontLHDoorGlass" value={formData.paintGlass.frontLHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'frontLHDoorGlass', val)} />
+                  <CheckItem label="RH Rear Seat Window Glass" name="rearRHDoorGlass" value={formData.paintGlass.rearRHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'rearRHDoorGlass', val)} />
+                  <CheckItem label="LH Rear Seat Window Glass" name="rearLHDoorGlass" value={formData.paintGlass.rearLHDoorGlass} onChange={(val) => updateCheckItem('paintGlass', 'rearLHDoorGlass', val)} />
                 </div>
                 <p className="text-sm text-gray-400 mt-2">💡 Add: Rear door glass, Quarter glass</p>
               </div>

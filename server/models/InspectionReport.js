@@ -120,7 +120,8 @@ const inspectionReportSchema = new mongoose.Schema({
     pistonNoise: checkItemSchema,
     turboCondition: checkItemSchema,
     oilSealLeaks: checkItemSchema, // Front/Rear
-    batteryCondition: checkItemSchema // New field for battery health
+    batteryCondition: checkItemSchema, // New field for battery health
+    ureaAdBlueSystem: checkItemSchema // New field for Diesel urea/adblue
   },
   
   // ==================== 6. TRANSMISSION & CLUTCH (12 fields) ====================
@@ -180,6 +181,7 @@ const inspectionReportSchema = new mongoose.Schema({
   // ==================== 9. BRAKES (20 fields) ====================
   brakes: {
     overallBrakes: checkItemSchema,
+    frontBrakes: checkItemSchema, // New generic field
     rearBrakes: checkItemSchema,
     rearBrakeShoes: checkItemSchema,
     brakeDrumRR: checkItemSchema,
