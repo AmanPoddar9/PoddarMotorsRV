@@ -32,7 +32,7 @@ const uploadMedia = multer({
       cb(new Error('Only image and video files are allowed'));
     }
   }
-})
+});
 
 // Multer for employee documents (PDFs, images, Word docs)
 const uploadDocuments = multer({ 
