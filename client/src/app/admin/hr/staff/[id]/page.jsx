@@ -7,6 +7,8 @@ import axios from 'axios'
 import { motion } from 'framer-motion'
 import { FiArrowLeft, FiMail, FiPhone, FiMapPin, FiBriefcase, FiDownload, FiPlus, FiTrash2 } from 'react-icons/fi'
 import API_URL from '../../../../config/api'
+import AddDocumentModal from '../../../../components/admin/hr/AddDocumentModal'
+import AddAssetModal from '../../../../components/admin/hr/AddAssetModal'
 
 const EmployeeDetailPage = () => {
     const { id } = useParams()
@@ -14,6 +16,8 @@ const EmployeeDetailPage = () => {
     const [employee, setEmployee] = useState(null)
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('overview') // overview, documents, assets
+    const [showDocumentModal, setShowDocumentModal] = useState(false)
+    const [showAssetModal, setShowAssetModal] = useState(false)
 
     const fetchEmployee = async () => {
         try {
@@ -111,7 +115,7 @@ const EmployeeDetailPage = () => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xl font-bold">Documents & Contracts</h3>
-                                <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                                <button onClick={() => setShowDocumentModal(true)} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
                                     <FiPlus /> Upload Doc
                                 </button>
                             </div>
@@ -142,7 +146,7 @@ const EmployeeDetailPage = () => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xl font-bold">Assigned Assets</h3>
-                                <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                                <button onClick={() => setShowAssetModal(true)} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
                                     <FiPlus /> Assign Asset
                                 </button>
                             </div>
@@ -179,6 +183,29 @@ const EmployeeDetailPage = () => {
                         </motion.div>
                     )}
                 </div>
+
+                {/* Modals */}
+                {showDocumentModal && (
+                    <AddDocumentModal 
+                        employeeId={id}
+                        onClose={() => setShowDocumentModal(false)}
+                        onSuccess={() => {
+                            setShowDocumentModal(false)
+                            fetchEmployee() // Refresh data
+                        }}
+                    />
+                )}
+
+{showAssetModal && (
+                    <AddAssetModal 
+                        employeeId={id}
+                        onClose={() => setShowAssetModal(false)}
+                        onSuccess={() => {
+                            setShowAssetModal(false)
+                            fetchEmployee() // Refresh data
+                        }}
+                    />
+                )}
             </div>
         </div>
     )
