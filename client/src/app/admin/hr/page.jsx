@@ -19,6 +19,13 @@ const hrSections = [
     icon: <FiBriefcase className="w-8 h-8" />,
     href: '/admin/jobs',
     color: 'bg-green-600'
+  },
+  {
+    title: 'Staff Management',
+    description: 'Manage employees, documents, and assets',
+    icon: <FiBriefcase className="w-8 h-8" />, 
+    href: '/admin/hr/staff',
+    color: 'bg-purple-600'
   }
 ]
 

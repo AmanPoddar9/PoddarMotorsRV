@@ -161,6 +161,8 @@ app.use('/api/prime-enquiry', require('./routes/primeEnquiryRoutes'));
 app.use('/api/insurance', require('./routes/insuranceRoutes'));  // Insurance CRM
 app.use('/api/import', require('./routes/importRoutes')); // Bulk Import Tools
 app.use('/api/elevenlabs', require('./routes/elevenLabsRoutes'));
+app.use('/api/employees', require('./routes/employeeRoutes')); // Staff Management
+
 
 // Global Error Handler (Must be last)
 app.use(errorHandler);
