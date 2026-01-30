@@ -371,7 +371,7 @@ export default function SalesIntelligencePage() {
                                       type="text" 
                                       value={editForm.name}
                                       onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                      className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-400"
                                       placeholder="Enter customer name"
                                   />
                               </div>
@@ -381,7 +381,7 @@ export default function SalesIntelligencePage() {
                                       type="text" 
                                       value={editForm.mobile}
                                       onChange={(e) => setEditForm({...editForm, mobile: e.target.value})}
-                                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                      className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-400"
                                       placeholder="Enter phone number"
                                   />
                               </div>
@@ -391,7 +391,7 @@ export default function SalesIntelligencePage() {
                                       type="email" 
                                       value={editForm.email}
                                       onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                      className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-400"
                                       placeholder="Enter email address"
                                   />
                               </div>
@@ -402,7 +402,7 @@ export default function SalesIntelligencePage() {
                                           type="text" 
                                           value={editForm.budget}
                                           onChange={(e) => setEditForm({...editForm, budget: e.target.value})}
-                                          className="w-full px-4 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
+                                          className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 placeholder-slate-400"
                                           placeholder="e.g. 2-3 Lakhs"
                                       />
                                   </div>
@@ -412,7 +412,7 @@ export default function SalesIntelligencePage() {
                                           type="text" 
                                           value={editForm.preferredCar}
                                           onChange={(e) => setEditForm({...editForm, preferredCar: e.target.value})}
-                                          className="w-full px-4 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
+                                          className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 placeholder-slate-400"
                                           placeholder="e.g. Swift, Alto"
                                       />
                                   </div>
@@ -423,11 +423,11 @@ export default function SalesIntelligencePage() {
                                       <select 
                                           value={editForm.paymentMethod}
                                           onChange={(e) => setEditForm({...editForm, paymentMethod: e.target.value})}
-                                          className="w-full px-4 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
+                                          className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
                                       >
-                                          <option value="Unknown">Unknown</option>
-                                          <option value="Cash">Cash</option>
-                                          <option value="Finance">Finance</option>
+                                          <option value="Unknown" className="text-slate-900">Unknown</option>
+                                          <option value="Cash" className="text-slate-900">Cash</option>
+                                          <option value="Finance" className="text-slate-900">Finance</option>
                                       </select>
                                   </div>
                                   <div>
@@ -435,13 +435,13 @@ export default function SalesIntelligencePage() {
                                       <select 
                                           value={editForm.employmentType}
                                           onChange={(e) => setEditForm({...editForm, employmentType: e.target.value})}
-                                          className="w-full px-4 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
+                                          className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500"
                                       >
-                                          <option value="Unknown">Unknown</option>
-                                          <option value="Business">Business</option>
-                                          <option value="Govt Job">Govt Job</option>
-                                          <option value="Pvt Job">Pvt Job</option>
-                                          <option value="Other">Other</option>
+                                          <option value="Unknown" className="text-slate-900">Unknown</option>
+                                          <option value="Business" className="text-slate-900">Business</option>
+                                          <option value="Govt Job" className="text-slate-900">Govt Job</option>
+                                          <option value="Pvt Job" className="text-slate-900">Pvt Job</option>
+                                          <option value="Other" className="text-slate-900">Other</option>
                                       </select>
                                   </div>
                               </div>
@@ -451,7 +451,7 @@ export default function SalesIntelligencePage() {
                                       type="text" 
                                       value={editForm.address}
                                       onChange={(e) => setEditForm({...editForm, address: e.target.value})}
-                                      className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                      className="w-full px-4 py-2 bg-white text-slate-900 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-400"
                                       placeholder="e.g. Bariatu, Ranchi"
                                   />
                               </div>
