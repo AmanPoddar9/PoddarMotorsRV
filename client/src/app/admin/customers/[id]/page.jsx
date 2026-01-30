@@ -462,6 +462,52 @@ const CustomerDetailPage = ({ params }) => {
                             <StatCard label="Source" value={customer.source} color="purple" />
                         </div>
 
+                        {/* Sales Intelligence Card */}
+                        {customer.salesData && (
+                            <div className="bg-custom-jet rounded-xl border border-white/10 p-6 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5">
+                                    <FiTarget className="w-32 h-32 text-indigo-500" />
+                                </div>
+                                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-indigo-400">
+                                    <span className="text-xl">🎙️</span> Sales Intelligence
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                                    <div className="space-y-3">
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase font-bold">Budget</div>
+                                            <div className="text-lg font-bold text-white">{customer.salesData.budget || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                             <div className="text-xs text-gray-500 uppercase font-bold">Preferred Car</div>
+                                             <div className="flex flex-wrap gap-2 mt-1">
+                                                {customer.salesData.preferredCar && customer.salesData.preferredCar.length > 0 ? (
+                                                    customer.salesData.preferredCar.map((car, i) => (
+                                                        <span key={i} className="px-2 py-1 bg-indigo-900/40 text-indigo-300 rounded text-xs border border-indigo-700">{car}</span>
+                                                    ))
+                                                ) : <span className="text-gray-400">-</span>}
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase font-bold">Payment Method</div>
+                                            <div className="font-medium text-white">{customer.salesData.paymentMethod || 'Unknown'}</div>
+                                            {customer.salesData.paymentMethod === 'Finance' && customer.salesData.financeDetails && (
+                                                <div className="text-xs text-gray-400 mt-1">
+                                                    Down Payment: {customer.salesData.financeDetails.downPayment || '?'}<br/>
+                                                    Loan Amount: {customer.salesData.financeDetails.financeAmount || '?'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase font-bold">Employment</div>
+                                            <div className="font-medium text-white">{customer.salesData.employmentType || 'Unknown'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                          <div className="bg-custom-jet rounded-xl border border-white/10 p-6">
                             <div className="flex justify-between mb-4">
                                 <h3 className="text-lg font-bold flex items-center gap-2"><FiClock /> Timeline & Notes</h3>

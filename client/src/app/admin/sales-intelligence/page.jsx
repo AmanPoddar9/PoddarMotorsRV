@@ -16,6 +16,7 @@ export default function SalesIntelligencePage() {
   const [recordedFile, setRecordedFile] = useState(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState(null);
   const [activeTab, setActiveTab] = useState('record'); // 'record' | 'analytics'
+  const [showTranscript, setShowTranscript] = useState(false);
   
   // Phase 1 & 2: Review & Confirm State
   const [editForm, setEditForm] = useState({ 
@@ -63,6 +64,19 @@ export default function SalesIntelligencePage() {
     setIsProcessing(true);
     
     try {
+      // Step 0: Get Accurate Duration
+      const getDuration = (file) => new Promise((resolve) => {
+          const audio = new Audio(URL.createObjectURL(file));
+          audio.onloadedmetadata = () => {
+              resolve(Math.floor(audio.duration));
+          };
+          // Fallback if metadata fails
+          setTimeout(() => resolve(Math.floor(file.size / 16000)), 1000); 
+      });
+
+      const accurateDuration = await getDuration(recordedFile);
+      console.log('Calculated Duration:', accurateDuration);
+
       // Step 1: Upload to S3
       toast.loading('Uploading audio...', { id: 'upload' });
       const audioUrl = await uploadAudioToS3(recordedFile);
@@ -70,8 +84,7 @@ export default function SalesIntelligencePage() {
       
       // Step 2: Start analysis
       toast.loading('Analyzing call...', { id: 'analyze' });
-      const duration = Math.floor(recordedFile.size / 16000); // Rough estimate
-      const analysisResponse = await analyzeAudioCall(audioUrl, duration);
+      const analysisResponse = await analyzeAudioCall(audioUrl, accurateDuration);
       const analysisId = analysisResponse.analysisId;
       
       // Step 3: Poll for completion
@@ -352,9 +365,42 @@ export default function SalesIntelligencePage() {
                     
                     {/* Review Mode: Form & Matches */}
                     {currentAnalysis.customerAction === 'pending' && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                         {/* Left: Extracted Data Form */}
-                         <div className="space-y-6">
+                      <div className="space-y-6">
+                         {/* Transcript Toggle Section */}
+                          <div className="bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                            <button 
+                                onClick={() => setShowTranscript(!showTranscript)}
+                                className="w-full flex justify-between items-center p-4 hover:bg-slate-100 transition-colors"
+                            >
+                                <div className="flex items-center gap-2 font-bold text-indigo-600">
+                                    <FaComments /> Call Transcript
+                                </div>
+                                <div className="text-xs text-slate-500 font-semibold uppercase">{showTranscript ? 'Hide' : 'Show'}</div>
+                            </button>
+                            
+                            {showTranscript && (
+                                <div className="p-4 border-t border-slate-200 max-h-[300px] overflow-y-auto bg-white text-sm space-y-3">
+                                    {currentAnalysis.diarization && currentAnalysis.diarization.length > 0 ? (
+                                        currentAnalysis.diarization.map((turn, i) => (
+                                            <div key={i} className="flex gap-4">
+                                                <div className={`min-w-[80px] text-xs font-bold uppercase ${turn.speaker.includes('0') ? 'text-indigo-600' : 'text-green-600'}`}>
+                                                    {turn.speaker.includes('0') ? 'Sales Rep' : 'Customer'}
+                                                </div>
+                                                <div className="text-slate-700">{turn.text}</div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-slate-500 whitespace-pre-wrap italic">
+                                            {currentAnalysis.transcript || 'No transcript available.'}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             {/* Left: Extracted Data Form */}
+                             <div className="space-y-6">
                             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                               <h3 className="text-sm font-semibold text-amber-800 flex items-center mb-1">
                                   <FaUser className="mr-2" /> AI Extracted Data

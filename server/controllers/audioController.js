@@ -2,6 +2,8 @@ const { createClient } = require('@deepgram/sdk');
 const OpenAI = require('openai');
 const CallAnalysis = require('../models/CallAnalysis');
 const Customer = require('../models/Customer');
+const CarRequirement = require('../models/CarRequirement');
+const { generateCustomId } = require('../utils/idGenerator');
 
 // Initialize Deepgram client
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
@@ -113,26 +115,84 @@ async function findCustomerMatches(customerName, phoneNumber) {
   
   // Strategy 3: Fuzzy name match (contains)
   if (matches.length === 0) {
+    // 3a. Full Name Contains
     const fuzzyMatches = await Customer.find({
       name: { $regex: new RegExp(customerName, 'i') }
     }).limit(5);
     
     for (const customer of fuzzyMatches) {
-      matches.push({
-        customerId: customer._id,
-        customerName: customer.name,
-        mobile: customer.mobile,
-        email: customer.email,
-        customId: customer.customId,
-        lastContact: customer.updatedAt,
-        confidenceScore: 60,
-        matchReasons: ['name_similar']
-      });
+        if (!matches.some(m => m.customerId.equals(customer._id))) {
+             matches.push({
+                customerId: customer._id,
+                customerName: customer.name,
+                mobile: customer.mobile,
+                email: customer.email,
+                customId: customer.customId,
+                lastContact: customer.updatedAt,
+                confidenceScore: 60,
+                matchReasons: ['name_similar']
+              });
+        }
+    }
+
+    // 3b. First Name Match (Fallback: "Rohit" should match "Rohit Kumar")
+    if (matches.length === 0 && customerName.includes(' ')) {
+        const firstName = customerName.split(' ')[0];
+        if (firstName.length > 2) { // Avoid searching for 'Mr', 'Dr'
+             const firstNameMatches = await Customer.find({
+                name: { $regex: new RegExp(firstName, 'i') }
+             }).limit(5);
+
+             for (const customer of firstNameMatches) {
+                 if (!matches.some(m => m.customerId.equals(customer._id))) {
+                    matches.push({
+                        customerId: customer._id,
+                        customerName: customer.name,
+                        mobile: customer.mobile,
+                        email: customer.email,
+                        customId: customer.customId,
+                        lastContact: customer.updatedAt,
+                        confidenceScore: 40, // Lower confidence
+                        matchReasons: ['first_name_match']
+                    });
+                 }
+             }
+        }
     }
   }
   
   // Sort by confidence score
   return matches.sort((a, b) => b.confidenceScore - a.confidenceScore);
+}
+
+/**
+ * Helper: Parse budget string like "12 lakhs" to number
+ */
+function parseBudget(budgetString) {
+    if (!budgetString) return { min: 0, max: 0 };
+    
+    // Normalize text
+    const text = budgetString.toLowerCase().replace(/,/g, '');
+    let multiplier = 1;
+    
+    if (text.includes('lakh') || text.includes('lac')) multiplier = 100000;
+    if (text.includes('crore') || text.includes('cr')) multiplier = 10000000;
+    
+    // Extract numbers
+    const numbers = text.match(/[\d.]+/g);
+    if (!numbers) return { min: 0, max: 0 };
+    
+    const nums = numbers.map(n => parseFloat(n) * multiplier);
+    
+    if (nums.length === 1) {
+        // "Around 5 Lakhs" -> Min 4.5L, Max 5.5L (approx range)
+        return { min: nums[0] * 0.9, max: nums[0] * 1.1 };
+    } else if (nums.length >= 2) {
+        // "5 to 6 Lakhs"
+        return { min: Math.min(...nums), max: Math.max(...nums) };
+    }
+    
+    return { min: 0, max: 0 };
 }
 
 /**
@@ -513,11 +573,17 @@ exports.confirmCustomerAction = async (req, res) => {
 
     if (action === 'create') {
       // Create new customer
+      // 0. Generate Custom ID
+      const customId = await generateCustomId();
+
+      // Create new customer
       customer = new Customer({
+        customId,
         name: customerData.name,
-        mobile: customerData.mobile || undefined,
-        email: customerData.email || undefined,
-        source: 'Voice Agent',
+        // Treat empty strings as undefined to avoid Unique index collisions
+        mobile: (customerData.mobile && customerData.mobile.trim() !== '') ? customerData.mobile : undefined,
+        email: (customerData.email && customerData.email.trim() !== '') ? customerData.email : undefined,
+        source: 'Walk-in',
         lifecycleStage: 'Lead',
         notes: [{
           content: `Sales Call Summary: ${callAnalysis.analysis.summary || 'No summary available'}`,
@@ -554,6 +620,31 @@ exports.confirmCustomerAction = async (req, res) => {
       await customer.save();
       callAnalysis.linkedCustomer = customer._id;
 
+      // 4. Create Car Requirement (if data exists)
+      if (callAnalysis.structuredData && callAnalysis.structuredData.preferredCar && callAnalysis.structuredData.preferredCar.length > 0) {
+          const budgetRange = parseBudget(callAnalysis.structuredData.budget);
+          
+          // Create one requirement for the first preferred car
+          // (Assuming primary preference is first)
+          const primaryCar = callAnalysis.structuredData.preferredCar[0]; // "Honda City" or "Honda City 2020"
+          
+          if (primaryCar) {
+               const newReq = new CarRequirement({
+                  customer: customer._id,
+                  brand: primaryCar.split(' ')[0] || 'Unknown', // "Honda"
+                  model: primaryCar.split(' ').slice(1).join(' ') || 'Any', // "City"
+                  budgetMin: budgetRange.min,
+                  budgetMax: budgetRange.max || 0, // 0 means no limit? or required? Model says required.
+                  yearMin: 2010 // Default
+               });
+               // Handle required Max Budget if parse failed
+               if (!newReq.budgetMax) newReq.budgetMax = 50000000; // 5 Cr default cap if unknown
+
+               await newReq.save();
+               console.log(`[CallAnalysis] Auto-created CarRequirement for ${customer.name}: ${primaryCar}`);
+          }
+      }
+
     } else if (action === 'update') {
       // Update existing customer
       customer = await Customer.findById(customerId);
@@ -577,6 +668,7 @@ exports.confirmCustomerAction = async (req, res) => {
         createdAt: new Date()
       });
 
+
       // Update lifecycle stage based on sentiment
       if (callAnalysis.analysis.customerSentiment === 'Positive' && customer.lifecycleStage === 'Lead') {
         customer.lifecycleStage = 'Prospect';
@@ -596,6 +688,26 @@ exports.confirmCustomerAction = async (req, res) => {
         // Also map address to root if available and not set
         if (callAnalysis.structuredData.address && !customer.areaCity) {
              customer.areaCity = callAnalysis.structuredData.address;
+        }
+
+        // 4b. Create/Update Car Requirement on Update too?
+        // Let's create a NEW one to be safe, user can delete old ones.
+        if (callAnalysis.structuredData.preferredCar && callAnalysis.structuredData.preferredCar.length > 0) {
+             const budgetRange = parseBudget(callAnalysis.structuredData.budget);
+             const primaryCar = callAnalysis.structuredData.preferredCar[0];
+             
+             if (primaryCar) {
+                  const newReq = new CarRequirement({
+                     customer: customer._id,
+                     brand: primaryCar.split(' ')[0] || 'Unknown',
+                     model: primaryCar.split(' ').slice(1).join(' ') || 'Any',
+                     budgetMin: budgetRange.min,
+                     budgetMax: budgetRange.max || 50000000,
+                     yearMin: 2010
+                  });
+                  await newReq.save();
+                  console.log(`[CallAnalysis] Auto-added new CarRequirement for existing ${customer.name}: ${primaryCar}`);
+             }
         }
       }
 
