@@ -18,6 +18,10 @@ export default function SalesIntelligencePage() {
   const [activeTab, setActiveTab] = useState('record'); // 'record' | 'analytics'
   const [showTranscript, setShowTranscript] = useState(false);
   
+  // Progress State
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  
   // Phase 1 & 2: Review & Confirm State
   const [editForm, setEditForm] = useState({ 
      name: '', 
@@ -61,97 +65,92 @@ export default function SalesIntelligencePage() {
       return;
     }
 
-    setIsProcessing(true);
-    
-    try {
-      // Step 0: Get Accurate Duration
+      setUploadProgress(0);
+      setIsUploading(true);
+      setIsProcessing(true);
+
+      try {
+      // 1. Upload to S3 with Progress
+      // Pass a callback to track upload percentage
+      const audioUrl = await uploadAudioToS3(recordedFile, (progress) => {
+          setUploadProgress(progress);
+      });
+      
+      setIsUploading(false); // Upload done, now analyzing...
+
+      // 2. Get accurate duration (from metadata)
       const getDuration = (file) => new Promise((resolve) => {
           const audio = new Audio(URL.createObjectURL(file));
           audio.onloadedmetadata = () => {
               resolve(Math.floor(audio.duration));
           };
           // Fallback if metadata fails
-          setTimeout(() => resolve(Math.floor(file.size / 16000)), 1000); 
+          setTimeout(() => resolve(Math.floor(file.size / 16000)), 1000);
       });
-
       const accurateDuration = await getDuration(recordedFile);
-      console.log('Calculated Duration:', accurateDuration);
 
-      // Step 1: Upload to S3
-      toast.loading('Uploading audio...', { id: 'upload' });
-      const audioUrl = await uploadAudioToS3(recordedFile);
-      toast.success('Audio uploaded!', { id: 'upload' });
+      // 3. Initiate Analysis
+      const { analysisId } = await analyzeAudioCall(audioUrl, accurateDuration);
       
-      // Step 2: Start analysis
-      toast.loading('Analyzing call...', { id: 'analyze' });
-      const analysisResponse = await analyzeAudioCall(audioUrl, accurateDuration);
-      const analysisId = analysisResponse.analysisId;
-      
-      // Step 3: Poll for completion
+      // 4. Poll for results
       setIsPolling(true);
-      pollForAnalysis(analysisId);
-      
+      let attempts = 0;
+      const maxAttempts = 30;
+
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const result = await getCallAnalysis(analysisId);
+          
+          if (result.status === 'completed') {
+            clearInterval(poll);
+            setIsPolling(false);
+            setIsProcessing(false);
+            setCurrentAnalysis(result);
+            fetchCallHistory();
+            
+            // Initialize edit form if pending review
+            if (result.customerAction === 'pending') {
+                const structured = result.structuredData || {};
+                setEditForm({
+                    name: result.analysis.customerName || '',
+                    mobile: '', 
+                    email: '',
+                    address: structured.address || '',
+                    budget: structured.budget ? (typeof structured.budget === 'object' ? `${structured.budget.min}-${structured.budget.max}` : structured.budget) : '',
+                    preferredCar: structured.preferredCar ? (Array.isArray(structured.preferredCar) ? structured.preferredCar.join(', ') : structured.preferredCar) : '',
+                    paymentMethod: structured.paymentMethod || 'Unknown',
+                    employmentType: structured.employmentType || 'Unknown'
+                });
+                setSuggestedMatches(result.suggestedMatches || []);
+                toast.success('Analysis complete! Please review details.', { id: 'analyze' });
+            } else {
+                toast.success('Analysis complete!', { id: 'analyze' });
+            }
+          } else if (result.status === 'failed') {
+            clearInterval(poll);
+            setIsPolling(false);
+            setIsProcessing(false);
+            toast.error(`Analysis failed: ${result.error}`, { id: 'analyze' });
+          } else if (attempts >= maxAttempts) {
+             clearInterval(poll);
+             setIsPolling(false);
+             setIsProcessing(false);
+             toast.error('Analysis timed out', { id: 'analyze' });
+          }
+        } catch (err) {
+          console.error("Polling error", err);
+          // Don't stop polling on transient errors
+        }
+      }, 2000);
+
     } catch (error) {
-      console.error('Error processing recording:', error);
-      toast.error(error.message || 'Failed to process recording', { id: 'analyze' });
+      console.error('Analysis error:', error);
+      toast.error(error.message, { id: 'analyze' });
       setIsProcessing(false);
+      setIsUploading(false);
       setIsPolling(false);
     }
-  };
-
-  const pollForAnalysis = async (analysisId, maxAttempts = 30) => {
-    let attempts = 0;
-    
-    const poll = setInterval(async () => {
-      attempts++;
-      
-      try {
-        const analysis = await getCallAnalysis(analysisId);
-        
-        if (analysis.status === 'completed') {
-          clearInterval(poll);
-          setIsPolling(false);
-          setIsProcessing(false);
-          setCurrentAnalysis(analysis);
-          
-          // Initialize edit form and matches if pending
-          if (analysis.customerAction === 'pending' && analysis.analysis) { // Use analysis.structuredData priority if available
-             const structured = analysis.structuredData || {};
-             
-             setEditForm({
-                name: analysis.analysis.customerName || '',
-                mobile: '', // Will be filled if match selected or extracted
-                email: '',
-                address: structured.address || '',
-                budget: structured.budget || '',
-                preferredCar: structured.preferredCar ? structured.preferredCar.join(', ') : '',
-                paymentMethod: structured.paymentMethod || 'Unknown',
-                employmentType: structured.employmentType || 'Unknown'
-             });
-             setSuggestedMatches(analysis.suggestedMatches || []);
-          }
-          
-          toast.success('Analysis complete! Please review.', { id: 'analyze' });
-          fetchCallHistory(); // Refresh history
-        } else if (analysis.status === 'failed') {
-          clearInterval(poll);
-          setIsPolling(false);
-          setIsProcessing(false);
-          toast.error('Analysis failed: ' + (analysis.error || 'Unknown error'), { id: 'analyze' });
-        } else if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          setIsPolling(false);
-          setIsProcessing(false);
-          toast.error('Analysis timed out. Please check history.', { id: 'analyze' });
-        }
-      } catch (error) {
-        console.error('Polling error:', error);
-        clearInterval(poll);
-        setIsPolling(false);
-        setIsProcessing(false);
-        toast.error('Failed to check analysis status', { id: 'analyze' });
-      }
-    }, 2000); // Poll every 2 seconds
   };
 
   const getSentimentBadge = (sentiment) => {
@@ -350,12 +349,28 @@ export default function SalesIntelligencePage() {
                 {isProcessing && (
                    <div className="p-8 text-center space-y-4"> 
                       <div className="max-w-md mx-auto">
-                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-indigo-500 animate-progress origin-left"></div>
+                          {/* Progress Bar Container */}
+                          <div className="h-4 bg-slate-100 rounded-full overflow-hidden relative border border-slate-200">
+                              {isUploading ? (
+                                  <div 
+                                      className="h-full bg-indigo-600 transition-all duration-300 ease-out"
+                                      style={{ width: `${uploadProgress}%` }}
+                                  ></div>
+                              ) : (
+                                  <div className="h-full bg-indigo-500 animate-progress origin-left"></div>
+                              )}
                           </div>
-                          <p className="text-sm text-slate-500 mt-2">
-                              {isPolling ? "Finalizing analysis..." : "Uploading & Transcribing..."}
-                          </p>
+                          
+                          <div className="flex justify-between text-xs text-slate-500 mt-2 font-medium">
+                              <span>
+                                  {isUploading 
+                                    ? `Uploading Audio (${uploadProgress}%)` 
+                                    : isPolling 
+                                        ? "Finalizing Analysis..." 
+                                        : "Processing with AI..."}
+                              </span>
+                              {isUploading && <span>{uploadProgress}%</span>}
+                          </div>
                       </div>
                    </div>
                 )}

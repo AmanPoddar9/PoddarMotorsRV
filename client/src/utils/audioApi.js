@@ -1,27 +1,34 @@
+import axios from 'axios';
 import API_URL from '../app/config/api';
 
 /**
- * Upload audio file to S3
+ * Upload audio file to S3 with progress tracking
  * @param {File} audioFile - The audio file to upload
+ * @param {Function} onProgress - Callback for upload progress (0-100)
  * @returns {Promise<string>} - The S3 URL of the uploaded file
  */
-export async function uploadAudioToS3(audioFile) {
+export async function uploadAudioToS3(audioFile, onProgress) {
   const formData = new FormData();
   formData.append('audio', audioFile);
   
-  const response = await fetch(`${API_URL}/api/upload/audio`, {
-    method: 'POST',
-    body: formData,
-    credentials: 'include' // Include JWT cookie
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to upload audio');
+  try {
+    const response = await axios.post(`${API_URL}/api/upload/audio`, formData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
+      }
+    });
+
+    return response.data.url;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message || 'Failed to upload audio');
   }
-  
-  const data = await response.json();
-  return data.url; // S3 URL
 }
 
 /**
