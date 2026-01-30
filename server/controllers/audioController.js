@@ -330,7 +330,7 @@ ${transcript}`;
     console.log(`[CallAnalysis ${analysisId}] Starting OpenAI analysis...`);
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o', // Upgraded from gpt-4o-mini for better accuracy
       temperature: 0.2,
       messages: [
         { role: 'system', content: SALES_MANAGER_PROMPT },
