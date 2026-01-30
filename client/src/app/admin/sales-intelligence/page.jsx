@@ -59,6 +59,15 @@ export default function SalesIntelligencePage() {
     toast.success('Recording saved! Click "Analyze" to process.', { duration: 3000 });
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setRecordedFile(file);
+      setAudioPreviewUrl(URL.createObjectURL(file));
+      toast.success('File loaded! Click "Analyze" to process.');
+    }
+  };
+
   const handleAnalyze = async () => {
     if (!recordedFile) {
       toast.error('No recording found');
@@ -249,6 +258,29 @@ export default function SalesIntelligencePage() {
               <AudioRecorder 
                 onRecordingComplete={handleRecordingComplete}
               />
+
+              {/* Manual Upload Option */}
+              {!recordedFile && !isProcessing && (
+                  <div className="text-center mt-4">
+                      <p className="text-sm text-slate-500 mb-2">- OR -</p>
+                      <input
+                          type="file"
+                          accept="audio/*"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          id="audio-upload"
+                      />
+                      <label
+                          htmlFor="audio-upload"
+                          className="inline-flex items-center px-4 py-2 bg-white border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors"
+                      >
+                          <svg className="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                          </svg>
+                          Upload Recording File
+                      </label>
+                  </div>
+              )}
               
               {/* Audio Preview & Analyze Button */}
               {recordedFile && !isProcessing && (
