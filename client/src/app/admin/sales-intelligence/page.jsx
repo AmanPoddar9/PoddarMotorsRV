@@ -622,6 +622,7 @@ export default function SalesIntelligencePage() {
                               </div>
                          </div>
                       </div>
+                    </div>
                     )}
 
                     {/* Confirmed View (Read Only) */}
