@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import AudioRecorder from '@/components/AudioRecorder';
 import { uploadAudioToS3, analyzeAudioCall, getCallAnalysis, getCallHistory, confirmCustomerAction } from '@/utils/audioApi';
-import { FaMicrophone, FaSpinner, FaCheckCircle, FaExclamationCircle, FaUser, FaClock, FaComments, FaSearch, FaChartBar, FaTable } from 'react-icons/fa';
+import { FaMicrophone, FaSpinner, FaCheckCircle, FaExclamationCircle, FaUser, FaClock, FaComments, FaSearch, FaChartBar, FaTable, FaSave } from 'react-icons/fa';
 import SalesAnalytics from './SalesAnalytics';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
