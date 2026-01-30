@@ -59,6 +59,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
   
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [canSubmit, setCanSubmit] = useState(true) // Prevent immediate submission after step change
 
   // COMPREHENSIVE INITIAL STATE
   const initialFormState = {
@@ -339,6 +340,13 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Prevent submission if guard is active (recent step change)
+    if (!canSubmit) {
+      console.log('Submission blocked: recent step change')
+      return
+    }
+    
     setLoading(true)
     
     try {
@@ -415,8 +423,20 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
     }
   }
   
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 8))
-  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1))
+  const nextStep = () => {
+    setCanSubmit(false) // Disable submission temporarily
+    setCurrentStep(prev => Math.min(prev + 1, 8))
+  }
+  const prevStep = () => {
+    setCanSubmit(false) // Disable submission temporarily
+    setCurrentStep(prev => Math.max(prev - 1, 1))
+  }
+  
+  // Re-enable submission after step change completes
+  useEffect(() => {
+    const timer = setTimeout(() => setCanSubmit(true), 300)
+    return () => clearTimeout(timer)
+  }, [currentStep])
   
   const updateCheckItem = (category, field, value) => {
     setFormData(prev => ({
@@ -1532,7 +1552,7 @@ export default function CreateReportForm({ bookingIdProp, inspectorModeProp, tok
             ) : (
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !canSubmit}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
               >
                 {loading ? 'Saving...' : (isEditMode ? 'Update Report' : 'Create Report')}
