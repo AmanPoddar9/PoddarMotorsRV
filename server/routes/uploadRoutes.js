@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const sharp = require('sharp');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { requireAuth } = require('../middleware/auth'); // Import auth middleware
 
 // Configure multer for memory storage
@@ -248,6 +249,70 @@ router.post('/audio', requireAuth, uploadAudio.single('audio'), async (req, res)
       message: `Failed to upload audio: ${error.message}`,
       error: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+// Generate Presigned URL for direct client-side upload (Bypasses Vercel 4.5MB limit)
+router.get('/presigned-url', requireAuth, async (req, res) => {
+  try {
+    const { filename, fileType } = req.query;
+
+    if (!filename || !fileType) {
+      return res.status(400).json({
+        success: false,
+        message: 'Filename and fileType are required'
+      });
+    }
+
+    // Validate file type (Sales Audio only for now)
+    const allowedMimes = [
+      'audio/webm',
+      'audio/mp4',
+      'audio/wav',
+      'audio/mpeg',
+      'audio/ogg',
+      'audio/mp3'
+    ];
+    
+    if (!allowedMimes.includes(fileType)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid file type. Only audio files are allowed.'
+      });
+    }
+
+    // Sanitize filename
+    const safeFilename = sanitizeFilename(filename);
+    const timestamp = Date.now();
+    const key = `sales-call-audio/${timestamp}-${Math.random().toString(36).substring(7)}-${safeFilename}`;
+
+    // Create command
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      ContentType: fileType,
+      ACL: 'public-read'
+    });
+
+    // Generate signed URL
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 }); // 5 minutes
+
+    const publicUrl = `https://${bucketName}.s3.ap-south-1.amazonaws.com/${key}`;
+
+    res.status(200).json({
+      success: true,
+      uploadUrl: signedUrl,
+      publicUrl: publicUrl,
+      key: key
+    });
+
+  } catch (error) {
+    console.error('Presigned URL error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate upload URL',
+      error: error.message
     });
   }
 });
